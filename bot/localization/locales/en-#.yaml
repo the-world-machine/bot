@@ -162,33 +162,33 @@ shop:
 
 items:
   treasures:
-    bottle:
-      name: Bottle of Alcohol
-      description: A bottle of alcohol. Perfect for making molotov cocktails.
-    shirt:
-      name: Novelty Shirt
-      description: '"I herded rams and all I got was this lousy T-shirt!"'
-    journal:
-      name: Mysterious Journal
-      description: It's written in an unknown language.
     amber:
       name: Glowing Amber
       description: It has a three-leaf clover pattern.
-    pen:
-      name: Glowing Feather
-      description: A long and slender feather with glowing edges. 
+    bottle:
+      name: Bottle of Alcohol
+      description: A bottle of alcohol. Perfect for making molotov cocktails.
     card:
       name: '"Real" Library Card'
       description: Niko's own photo is glued on.
-    die:
-      name: Glowing Die
-      description: A die with glowing dots.
-    sun:
-      name: The Sun
-      description: A large lightbulb. It's the sun. 
     clover:
       name: Glowing Clover
       description: A glowing clover.
+    die:
+      name: Glowing Die
+      description: A die with glowing dots.
+    journal:
+      name: Mysterious Journal
+      description: It's written in an unknown language.
+    pen:
+      name: Glowing Feather
+      description: A long and slender feather with glowing edges. 
+    shirt:
+      name: Novelty Shirt
+      description: '"I herded rams and all I got was this lousy T-shirt!"'
+    sun:
+      name: The Sun
+      description: A large lightbulb. It's the sun. 
 
   pancakes:
     pancakes:

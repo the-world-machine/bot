@@ -1,18 +1,9 @@
 emojis = {
-  # please don't judge me i don't want to rewrite these every single time
 
+  # Common
   "icon_loading": '<a:loading:1290848643561164902>',
   "icon_wool": '<:wool:1290848297698852947>',
   "icon_sun": '<:sun:1290848333610618967>',
-
-  # Music
-  # Progress Bar
-  "bar_empty_start": '<:bar_empty_start:1280362762651828255>',
-  "bar_empty_middle": '<:bar_empty_middle:1280362590379446293>',
-  "bar_empty_end": '<:bar_empty_end:1280362634591338537>',
-  "bar_filled_middle": '<:bar_filled_middle:1280362609648074792>',
-  "bar_filled_start": '<:bar_filled_start:1280362778946699275>',
-  "bar_filled_end": '<:bar_filled_end:1280362656364105800>',
 
   "vibe": "<a:vibe:1290847354542489660>",
   "sleep": "<:sleepy:1290849529670664283>",
@@ -29,6 +20,15 @@ emojis = {
   "treasure_sun": "<:treasure_sun:1290847647372017786>",
 
   # Progress Bars
+  # Music
+  "bar_empty_start": '<:bar_empty_start:1280362762651828255>',
+  "bar_empty_middle": '<:bar_empty_middle:1280362590379446293>',
+  "bar_empty_end": '<:bar_empty_end:1280362634591338537>',
+  "bar_filled_middle": '<:bar_filled_middle:1280362609648074792>',
+  "bar_filled_start": '<:bar_filled_start:1280362778946699275>',
+  "bar_filled_end": '<:bar_filled_end:1280362656364105800>',
+
+  # Nikogotchi
   "progress_filled_start": "<:progress_filled_start:1291069871181922448>",
   "progress_filled_middle": "<:progress_filled_middle:1291069976769200209>",
   "progress_filled_end": "<:progress_filled_end:1291070082998341642>",
