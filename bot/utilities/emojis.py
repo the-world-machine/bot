@@ -4,9 +4,17 @@ emojis = {
   "icon_loading": '<a:loading:1290848643561164902>',
   "icon_wool": '<:wool:1290848297698852947>',
   "icon_sun": '<:sun:1290848333610618967>',
+  "icon_inverted_clover": '<:inverted_clover:1026135536190111755>',
+  "icon_capsule": "<:capsule:1147279938660089898>",
 
   "vibe": "<a:vibe:1290847354542489660>",
   "sleep": "<:sleepy:1290849529670664283>",
+  "refresh": "<:refresh:1147696088250335303>",
+  
+  # Pancakes
+  "pancakes": "<:pancakes_:1290847273210740757>",
+  "golden_pancakes": "<:golden_pancakes:1290847240247574610>",
+  "glitched_pancakes": "<:glitched_pancakes:1290847200112545804>",
 
   # Treasure Icons
   "treasure_amber": "<:treasure_amulet:1290847574315499530>",

@@ -1,12 +1,16 @@
+from http.client import HTTPException
 import json
 import re
-from interactions import Message, User
+from interactions import Embed, Message, User
+from localization.loc import fnum
 from utilities.shop.fetch_shop_data import reset_shop_data
 from config_loader import load_config
 import database
 import ast
 from aioconsole import aexec
 import traceback
+from termcolor import colored
+import time
 
 async def get_collection(collection: str, _id: str):
     key_to_collection: dict[str, database.Collection] = {
@@ -59,16 +63,18 @@ async def execute_dev_command(message: Message):
     match name:
         case "eval":
             method = args[1]
-            async def remove_codebloque(content: str, graceful = False):
-                await message.reply("received: \`\`\`py\n"+content+"\`\`\`")
+
+            async def remove_codebloque(content: str, graceful=False):
                 if content.startswith("```py\n") and content.endswith("```"):
                     return content[5:-3].strip()
                 else:
                     if graceful:
                         return content
-                    raise ValueError("Codeblock required")
+                    raise ValueError("py codeblock is required here.")
 
             result = None
+            runtime = None
+            start_time = time.perf_counter()
             try:
                 match method:
                     case "exec":
@@ -78,12 +84,28 @@ async def execute_dev_command(message: Message):
                     case _: 
                         result = eval(await remove_codebloque(command_content.split("eval ")[1], True))
             except ValueError as e:
-                if (str(e) == "Codeblock required"):
-                    result = f"Codeblock required. e.g. \\`\\`\\`py\\n{{code}}\\`\\`\\`"
+                if str(e) == "py codeblock is required here.":
+                    result = str(e)
             except Exception as e:
                 result = f"Exception raised: {str(e)}"
+            end_time = time.perf_counter()
+            runtime = (end_time - start_time) * 1000
             
-            await message.reply(result)
+            async def handle_reply(runtime, result, note=""):
+                desc = str(f"-# Runtime: {fnum(runtime)} ms{note}\n```py\n{result}```")
+                await message.reply(
+                    embeds=Embed(
+                        description=desc
+                    ))
+            try:
+                await handle_reply(runtime, result)
+            except Exception as e:
+                if "Description cannot exceed 4096 characters" in str(e):
+                    await handle_reply(runtime, result[0:3800], "\n-# Result too long to display, showing first 4000 characters")
+                else:
+                    result = f"Raised an exception when replying(what did you do): {str(e)}"
+                    print("Exception while replying", e)
+                    await handle_reply(runtime, result)
         case "shop":
         
             action = args[1]
@@ -180,6 +202,6 @@ async def execute_dev_command(message: Message):
                     f'`[ Error with command. ({e}) ]`'
                 )
         case _:
-            await message.reply("else condition triggered")
-    print(f"Logs - eval - - - - - - - - - - -\n{message.author.mention} ({message.author.username}) ran:\n{command_content}")
+            return await message.reply("Available commands: `eval` / `shop` / `db`. See source code for usage")
+    print(f"{colored('logs', 'yellow')} - eval - success - - - - - -\n{message.author.mention} ({message.author.username}) ran:\n{command_content}\n- - - - - - - - - - - - - - - - -")
 

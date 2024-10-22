@@ -5,18 +5,23 @@ general:
   buttons:
     _yes: "Yes"
     _no: "No"
+    _cancel: "Cancel"
+    _continue: "Continue"
+    _back: "Back"
 
 # ---------------------------------------------------------------
 
 shop:
   loading: "[ Loading Shop... [emoji:loading] ]"
 
-  user_wool: "**Current Balance: [emoji:wool][wool]**"
-  owned: "**Currently Owned:** [amount]"
+  user_wool: "**Your Balance: [emoji:wool][wool]**"
+  owned: "you have **[amount]**"
 
   buttons:
     buy: Trade
     buy_all: Trade All
+    sell: Trade in
+    sell_all: Trade in All
     go_back: Go Back
     owned: Owned
     too_poor: Cannot Afford
@@ -43,8 +48,8 @@ shop:
     - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
     - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
-  traded: "> Successfully traded [emoji:wool]**[price]** for [amount] [item_name](s)!"
-  traded_sell: "> Sucessfully traded [amount] [item_name](s) for [emoji:wool]**[price]**!"
+  traded: '> Successfully traded for [amount] "[item_name]"!'
+  traded_sell: '> Sucessfully traded in [amount] "[item_name]" for [price] Wool!'
   traded_fail: "> You cannot trade this. Please refresh the shop!"
 
   stocks: >
@@ -115,48 +120,38 @@ shop:
 
   treasures:
 
-    title: Treasures
-    sell_title: Sell Treasures
+    buy: 
+      title: Treasures
+      message: >
+        You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
+        [stock_market]
+        [selected_treasure]
+        [user_wool]
+      placeholder: Choose a treasure to trade...
+      option: '"[name]" - [price] Wool'
 
-    option: "[name] - [price] Wool"
+    sell:
+      title: Trade in Treasures
+      message: >
+        Ah... You're intrerested in trading in your treasures! That's great!
+        Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
+        [stock_market]
+        [selected_treasure]
+        [user_wool]
+      #not_selected: "*You haven't selected any treasures to trade in...*"
+      placeholder: Choose a treasure to trade in...
+      no_treasures: You have no treasures to trade in.
+      option: '"[name]" (x[amount])'
 
-    treasure_not_selected: "*You haven't selected any treasures to trade...*"
+    selection: >
+      **Currently Selected:**
 
-    buy_main: >
-      You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
-
-
-      [stock_market]
-      [selected_treasure]
-
-
-      [user_wool]
-
-    sell_main: >
-      Ah... You're intrerested in trading in your treasures! That's great!
-      Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
-
-
-      [stock_market]
-      [selected_treasure]
-
-
-      [user_wool]
-
-    selected_treasure: >
-      **Currently Selected:** [treasure_icon][treasure_name]
-
-
-      *[owned]*
+      - [treasure_icon] "**[treasure_name]**" - [owned]
 
 
       **Trade One**: [emoji:wool]**[price_one]**
 
       **Trade All**: [emoji:wool]**[price_all]** (x[amount])
-
-    placeholder_trade: Choose a treasure to trade...
-    placeholder_trade_in: Choose a treasure to trade in...
-    cannot_sell: You have no treasure to trade in.
 
 # ---------------------------------------------------------------
 
@@ -237,38 +232,38 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "[ Currently doing an action towards [user]. ]"
-  placeholder: Select an interaction.
+  selected: "[ Choose an action to perform on [user]. ]"
+  placeholder: Interactions...
 
   twm_not_being_very_happy: "[ Don't touch me [user]. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ [bot] is a discord bot, [user]. You can't really interact with it. ]"
-  twm_is_fed_up_with_you: "[ *Sigh* you cannot interact with yourself, [user]. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
 
   options:
     slap:
       name: Slap
-      action: slapped [user], probably deserved.
+      action: "[user_one] slapped [user_two], probably deserved."
     punch:
       name: Punch
-      action: punched [user], that hurts.
+      action: "[user_one] punched [user_two], that hurts."
     headpat:
       name: Head Pat
-      action: gave [user] a headpat!
+      action: "[user_one] gave [user_two] a headpat!"
     pet:
       name: Pet
-      action: pet [user]!
+      action: "[user_one] pet [user_two]!"
     hug:
       name: Hug
-      action: hugged [user]!
+      action: "[user_one] hugged [user_two]!"
     cuddle:
       name: Cuddle
-      action: cuddled with [user]!
+      action: "[user_one] cuddled with [user_two]!"
     kiss:
       name: Kiss
-      action: kissed [user]! ❤️
+      action: "[user_one] kissed [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: threw a Molotov Cocktail towards [user] ‼️
+      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️
 
 # ---------------------------------------------------------------
 
@@ -286,11 +281,10 @@ treasure:
 
 nikogotchi:
 
+  age: "**[years]**y. **[months]**mo. **[days]**d."
+
   loading: "[ Loading Nikogotchi... [emoji:loading] ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
-
-  error_title: No Nikogotchi
-  error_desc: Nikogotchi does not exist.
 
   name:
     niko: Niko
@@ -313,6 +307,9 @@ nikogotchi:
   other:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
+    error:
+      title: No Nikogotchi
+      description: This Nikogotchi no longer exists. Send it away and get a new one, or ask for help with it in the support server (you can find it on [the website](https://theworldmachine.xyz))
 
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
@@ -326,10 +323,19 @@ nikogotchi:
         **Age**: [age]
 
 
-        **Health**: [health]/50
+        **Health**: [health] / 50
+
+    renaming:
+      title: Give your Nikogotchi a new name!
+      input: 
+        label: Name
+        placeholder: Enter the new name for your Nikogotchi...
+      button: Rename # used when you use a nikogotchi capsule
+      response: > 
+        Successfully renamed your Nikogotchi!
+        "[old_name]" → "[new_name]"
 
     trade:
-
       request: >
         ### **[user]** wants to trade their Nikogotchi ([name_one]) with you!
         
@@ -342,27 +348,18 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    name: Do you want to give them a new name?
-
-    m_label: Name
-    m_title: Give your Nikogotchi a name!
+    description: Do you want to rename it? You can always do this later using `/nikogotchi rename`
 
   status:
-    normal: Your Nikogotchi seems to be doing fine.
-    pet: 🤨 [name] wants attention!
-    dirty: 🛀 [name] wants to be cleaned!
-    hungry: 🥞 [name] is feeling hungry...
-    treasure: ⛏️ [name] is currently finding treasures for you!
+    template: "-# [status]"
 
-    age: "**[years]**y. **[months]**mo. **[days]**d."
+    normal: "👍 seems to be doing fine."
+    pet: "🥺 wants attention!"
+    dirty: "🛀 wants to be cleaned!"
+    hungry: "🥞 is feeling hungry..."
+    treasure: "⛏️ currently looking for treasures!"
 
-    danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health! 🚨
-
-    treasures_found: >
-      🎉 [name] found some treasures!
-
-
-      [treasures]
+    danger: 🚨 is at low health! Use Golden Pancakes to restore their health!
 
   components:
     pet: Pet
@@ -371,40 +368,49 @@ nikogotchi:
     call_back: Call Back
 
     feed:
-      placeholder: What do you want to feed [name]?
+      placeholder: "Choose food to feed with..."
       pancakes: Feed Pancake (x[amount])
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
 
-      no_food: No Food! 😔 Get some at the shop
+      glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
+      no_food: "No Food! 😔 Get some at the shop"
       invalid: You can't feed your Nikogotchi this! Please refresh!
 
-      immortal: Your Nikogotchi has been significantly powered up after eating this mess of a pancake...
 
-  finding_treasure: "Your Nikogotchi is now finding treasure! Just be aware that their stats will decrease faster than normal, so make sure to call them back when they're done!"
-
-  died_title: "[name] passed away..."
-  died: >
-    [name] lived a full life which lasted for: [age].
+  died:
+    title: "🪦 [name] passed away..."
+    description: >
+      [name] lived a full life which lasted for: [age].
 
 
-    > Hours since last taken care of: **[time_difference]**
+      - Hours since last taken care of: **[time_difference]**
 
 
-    Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
+      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
 
 
-    🪦
+      R.I.P....
+  treasured: 
+    title: 🎉 they found some treasures!
+    message: >
+      Hours since sent to look for treasures: [hours]
+      
+      [treasures]
 
-  level_up_title: Levelled up!
-  level_up: >
-    ### Congratulations! [name] levelled up to level [level]!
+      Total: **[total]** 
+    dialogues:
+      sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
+      none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
+  levelupped:
+    title: 🏆 they levelled up to level [level]!
+    message: >
+      Here are the stat changes:
 
-    Here are the stat changes:
-
-    [stats]
+      [stats]
+    stat: "- [icon] +**[increase]** ([old_value] → [new_value])"
 
   dialogue:
     niko:
@@ -428,7 +434,7 @@ nikogotchi:
       pet:
         - ","
       cleaned:
-        - "so qlean so qeeled"
+        - "so qlean so lush"
     prophet_bot:
       fed:
         - "[My purpose is not to eat. But thank you.]"

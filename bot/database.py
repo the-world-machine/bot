@@ -99,6 +99,12 @@ class NikogotchiData(Collection):
     glitched_pancakes: int = 0
 
 @dataclass
+class StatUpdate:
+    icon: str        
+    old_value: int
+    new_value: int
+
+@dataclass
 class Nikogotchi(Collection):
     available: bool = False
     last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
@@ -128,34 +134,34 @@ class Nikogotchi(Collection):
     nid: str = '?'
     name: str = 'NONAME'
 
-    async def level_up(self, amount: int):
+    async def level_up(self, amount: int) -> List[StatUpdate]:
         
         level = self.level + amount
         
-        data = []
+        stats: List[StatUpdate] = []
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_health), 'new': int(self.max_health) + int(algorithm), 'icon': '❤️'})
+        stats.append(StatUpdate("❤️", int(self.max_health), int(self.max_health) + int(algorithm)))
         self.max_health += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_hunger), 'new': int(self.max_hunger) + int(algorithm), 'icon': '🍴'})
+        stats.append(StatUpdate("🍴", int(self.max_hunger), int(self.max_hunger) + int(algorithm)))
         self.max_hunger += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_happiness), 'new': int(self.max_happiness) + int(algorithm), 'icon': '🫂'})
+        stats.append(StatUpdate("🫂", int(self.max_happiness), int(self.max_happiness) + int(algorithm),))
         self.max_happiness += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_cleanliness), 'new': int(self.max_cleanliness) + int(algorithm), 'icon': '🧽'})
+        stats.append(StatUpdate("🧽", int(self.max_cleanliness), int(self.max_cleanliness) + int(algorithm)))
         self.max_cleanliness += algorithm
         
         algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.attack), 'new': int(self.attack) + int(algorithm), 'icon': '🗡️'})
+        stats.append(StatUpdate("🗡️", int(self.attack), int(self.attack) + int(algorithm)))
         self.attack += algorithm
         
         algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.defense), 'new': int(self.defense) + int(algorithm), 'icon': '🛡️'})
+        stats.append(StatUpdate("🛡️", int(self.defense), int(self.defense) + int(algorithm)))
         self.defense += algorithm
 
         self.level = level
@@ -167,8 +173,7 @@ class Nikogotchi(Collection):
         
         await self.update(**asdict(self))
         
-        return data
-    
+        return stats
 # ----------------------------------------------------
 
 connection_uri = load_config('database')

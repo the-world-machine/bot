@@ -63,10 +63,13 @@ def assign_variables(result: str, locale: str, **variables: str):
         
     return result
 
-def fnum(num: int, locale: str = "en-#") -> str:
-    fmtd = f'{num:,}'
-    
+def fnum(num: float | int, locale: str = "en-#") -> str:
+    if isinstance(num, float):
+        fmtd = f'{num:,.3f}'
+    else:
+        fmtd = f'{num:,}'
+
     if locale in ("ru", "uk"):
-        return fmtd.replace(",", " ")
+        return fmtd.replace(",", " ").replace(".", ",")
     else:
         return fmtd

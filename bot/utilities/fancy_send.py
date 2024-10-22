@@ -1,4 +1,4 @@
-from interactions import Embed, Message, BaseComponent
+from interactions import Embed, Message, BaseComponent, Modal
 from enum import Enum
 
 
@@ -16,6 +16,8 @@ async def fancy_message(ctx, message: str, color: int = 0x8b00cc, ephemeral=Fals
     embed = await fancy_embed(message, color)
 
     if type(ctx) == Message:
-        return await ctx.reply(embed=embed, components=components)
-
+        return await ctx.reply(embed=embed, components=components, ephemeral=ephemeral)
+    elif type(ctx) == Modal:
+        return await ctx.respond(embed=embed, components=components, ephemeral=ephemeral)
+    
     return await ctx.send(embed=embed, ephemeral=ephemeral, components=components)

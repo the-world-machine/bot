@@ -1,11 +1,12 @@
 import random
 from interactions import *
+from localization.loc import fnum
 from utilities.fancy_send import fancy_message
 import aiohttp
 
 class MiscellaneousModule(Extension):
     ''' For "one off" commands. '''
-    
+
     @slash_command(description='View how many servers the bot is in.')
     async def server_count(self, ctx: SlashContext):
         await fancy_message(ctx, f'[ I am in **{len(self.bot.guilds)}** servers. ]')
@@ -13,9 +14,9 @@ class MiscellaneousModule(Extension):
     @slash_command(description='View the bot\'s status.')
     async def bot_status(self, ctx: SlashContext):
         
-        embed = Embed()
+        embed = Embed(description="WIP")
         
-        embed.add_field('♥️ Heartbeat', str(self.bot.heart))
+        embed.add_field('♥️ Average latency:', fnum(self.bot.average_latency))
         
     @slash_command(description='A random wikipedia article.')
     async def random_wikipedia(self, ctx: SlashContext):

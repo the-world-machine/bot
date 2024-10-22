@@ -251,7 +251,7 @@ class ShopModule(Extension):
         
         await user.manage_wool(-get_background['price'])
         
-        await update(localization.l('shop.backgrounds.traded', price=get_background['price'], amount=1, item_name=localization.l(f'items.backgrounds.{bg_id}')))
+        await update(localization.l('shop.backgrounds.traded', price=get_background['price'], amount=1, name=localization.l(f'items.backgrounds.{bg_id}')))
 
     @component_callback('nikogotchi_buy')
     async def buy_nikogotchi_callback(self, ctx: ComponentContext):
@@ -405,7 +405,7 @@ class ShopModule(Extension):
         magpie = EmbedAttachment('https://cdn.discordapp.com/attachments/1025158352549982299/1176956900928131143/Magpie.webp')
         
         go_back = Button(
-            style=ButtonStyle.DANGER,
+            style=ButtonStyle.GRAY,
             custom_id='go_back',
             label=localization.l('shop.buttons.go_back')
         )
@@ -433,28 +433,28 @@ class ShopModule(Extension):
             buttons = [
                     Button(
                         label=localization.l('shop.nikogotchi.title'),
-                        emoji=PartialEmoji(id=1147279938660089898),
+                        emoji=emojis["icon_capsule"],
                         style=ButtonStyle.BLURPLE,
                         custom_id='capsules'
                     ),
                     
                     Button(
                         label=localization.l('shop.pancakes.title'),
-                        emoji=PartialEmoji(id=1147281411854839829),
+                        emoji=emojis["treasure_card"],
                         style=ButtonStyle.BLURPLE,
                         custom_id='pancakes'
                     ),
                     
                     Button(
                         label=localization.l('shop.backgrounds.title'),
-                        emoji=PartialEmoji(id=1026181558392062032),
+                        emoji=emojis["treasure_card"],
                         style=ButtonStyle.BLURPLE,
                         custom_id='Backgrounds'
                     ),
                     
                     Button(
-                        label=localization.l('shop.treasures.title'),
-                        emoji=PartialEmoji(id=1026135536190111755),
+                        label=localization.l('shop.treasures.buy.title'),
+                        emoji=emojis["icon_inverted_clover"],
                         style=ButtonStyle.BLURPLE,
                         custom_id='Treasures'
                     )
@@ -478,7 +478,7 @@ class ShopModule(Extension):
                 capsule_loc = localization.l(f'items.capsules.{item.id}')
                 
             button = Button(
-                label=b_trade,
+                label=localization.l('shop.buttons.buy'),
                 emoji=PartialEmoji(1147279947086438431),
                 style=ButtonStyle.BLURPLE,
                 custom_id=f'nikogotchi_buy'
@@ -527,11 +527,11 @@ class ShopModule(Extension):
                 amount_owned = localization.l('shop.owned', amount=owned)
                 pancake_loc: dict = localization.l(f'items.pancakes.{pancake.id}')
                 
-                pancake_text += f"<:pancake:{pancake.image}>  **{pancake_loc['name']}** - {emojis['icon_wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
+                pancake_text += f"{emojis[pancake.id]} **{pancake_loc['name']}** - {emojis['icon_wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
                 
                 button = Button(
-                    label=b_trade,
-                    emoji=PartialEmoji(id=pancake.image),
+                    label=localization.l('shop.buttons.buy'),
+                    emoji=emojis[pancake.id],
                     style=ButtonStyle.BLURPLE,
                     custom_id=f'buy_pancakes_{id_}'
                 )
@@ -586,7 +586,7 @@ class ShopModule(Extension):
                     custom_id=f'page_prev_{bg_page}'
                 ),
                 Button(
-                    label=b_trade,
+                    label=localization.l('shop.buttons.buy'),
                     style=ButtonStyle.GREEN,
                     custom_id=f'buy_bg_{background}_{bg_page}'
                 ),
@@ -622,7 +622,7 @@ class ShopModule(Extension):
             buy_price_one = 0
             buy_price_all = 0
             
-            treasure_details = localization.l('shop.treasures.treasure_not_selected')
+            treasure_details = ''
             
             user_data = await UserData(ctx.author.id).fetch()
             
@@ -650,8 +650,8 @@ class ShopModule(Extension):
                 buy_price_all = int(max_items * buy_price_one)
                 
                 treasure_details = localization.l(
-                    'shop.treasures.selected_treasure',
-                    treasure_icon=f'<:treasure:{get_selected_treasure["emoji"]}>',
+                    'shop.treasures.selection',
+                    treasure_icon=emojis[f"treasure_{selected_treasure}"],
                     treasure_name=selected_treasure_loc['name'],
                     owned=localization.l('shop.owned', amount=amount_selected),
                     price_one=buy_price_one,
@@ -680,10 +680,10 @@ class ShopModule(Extension):
                 
                 treasure_list.append(
                     StringSelectOption(
-                        label=localization.l('shop.treasures.option', name=treasure_loc['name'], price=get_treasure['price']),
+                        label=localization.l('shop.treasures.buy.option', name=treasure_loc['name'], price=get_treasure['price']),
                         description=treasure_loc['description'],
                         value=treasure,
-                        emoji=PartialEmoji(id=get_treasure['emoji'])
+                        emoji=emojis[f"treasure_{treasure}"]
                     )
                 )
             
@@ -692,15 +692,15 @@ class ShopModule(Extension):
                 get_selected_treasure = all_treasures[selected_treasure]
                 
                 button = Button(
-                    label=b_trade,
-                    emoji=PartialEmoji(id=get_selected_treasure['emoji']),
+                    label=localization.l('shop.buttons.buy'),
+                    emoji=emojis[f"treasure_{selected_treasure}"],
                     style=ButtonStyle.BLURPLE,
                     custom_id=f'treasure_buy_{selected_treasure}_One'
                 )
                 
                 button_all = Button(
                     label=localization.l('shop.buttons.buy_all'),
-                    emoji=PartialEmoji(id=get_selected_treasure['emoji']),
+                    emoji=emojis[f"treasure_{selected_treasure}"],
                     style=ButtonStyle.BLURPLE,
                     custom_id=f'treasure_buy_{selected_treasure}_All'
                 )
@@ -718,7 +718,7 @@ class ShopModule(Extension):
                 buttons.append(button_all)
             
             buttons.append(Button(
-                label=localization.l('shop.treasures.sell_title'),
+                label=localization.l('shop.treasures.sell.title'),
                 style=ButtonStyle.GREEN,
                 custom_id='sell_treasure_menu'
             ))
@@ -726,8 +726,8 @@ class ShopModule(Extension):
             buttons.append(go_back)
             
             
-            title = localization.l('shop.treasures.title')
-            description = localization.l('shop.treasures.buy_main', stock_market=stock, selected_treasure=treasure_details, user_wool=user_wool)
+            title = localization.l('shop.treasures.buy.title')
+            description = localization.l('shop.treasures.buy.message', stock_market=stock, selected_treasure=treasure_details, user_wool=user_wool)
             
             embed = Embed(
                 title=title,
@@ -741,7 +741,7 @@ class ShopModule(Extension):
             if len(treasure_list) > 0:
                 select_menu = StringSelectMenu(
                     *treasure_list,
-                    placeholder=localization.l('shop.treasures.placeholder_trade'),
+                    placeholder=localization.l('shop.treasures.buy.placeholder'),
                     custom_id=f'select_treasure',
                 )
             else:
@@ -757,13 +757,17 @@ class ShopModule(Extension):
             return embed, components
         
         elif category == 'Sell_Treasures':
-            
+            go_back = Button(
+                        label=localization.l('shop.buttons.go_back'),
+                        style=ButtonStyle.GRAY,
+                        custom_id='Treasures'
+                    )
             selected_treasure = kwargs['selected_treasure']
             selected_treasure_loc = None
             sell_price_one = 0
             sell_price_all = 0
             
-            treasure_details = localization.l('shop.treasures.treasure_not_selected')
+            treasure_details = ''
             
             user_data = await UserData(ctx.author.id).fetch()
             
@@ -783,8 +787,8 @@ class ShopModule(Extension):
                 if amount_selected > 0:
                 
                     treasure_details = localization.l(
-                        'shop.treasures.selected_treasure',
-                        treasure_icon=f'<:treasure:{get_selected_treasure["emoji"]}>',
+                        'shop.treasures.selection',
+                        treasure_icon=emojis[f"treasure_{selected_treasure}"],
                         treasure_name=selected_treasure_loc['name'],
                         owned=localization.l('shop.owned', amount=amount_selected),
                         price_one=sell_price_one,
@@ -798,20 +802,16 @@ class ShopModule(Extension):
                 
                 if amount <= 0:
                     continue
-                
                 treasure = all_treasures[treasure_nid]
                 
                 treasure_loc = localization.l(f'items.treasures.{treasure_nid}')
-                
-                emoji=PartialEmoji(id=int(treasure['emoji']))
-                
+                               
                 treasure_selection.append(
-                    
                     StringSelectOption(
                         label=f'{treasure_loc["name"]} (x{amount})',
                         value=treasure_nid,
                         description=treasure_loc['description'],
-                        emoji=emoji,
+                        emoji=emojis[f"treasure_{treasure_nid}"],
                     )
                 )
                 
@@ -824,12 +824,12 @@ class ShopModule(Extension):
                 
                 buttons = [
                     Button(
-                        label=b_trade,
+                        label=localization.l('shop.buttons.sell'),
                         custom_id=f'treasure_sell_{treasure_id}_one',
                         style=ButtonStyle.GREEN
                     ),
                     Button(
-                        label=localization.l('shop.buttons.buy_all'),
+                        label=localization.l('shop.buttons.sell_all'),
                         custom_id=f'treasure_sell_{treasure_id}_all',
                         style=ButtonStyle.GREEN
                     )
@@ -840,9 +840,9 @@ class ShopModule(Extension):
             buttons.append(go_back)    
                 
             embed = Embed(
-                title=localization.l('shop.treasures.sell_title'),
+                title=localization.l('shop.treasures.sell.title'),
                 description=localization.l(
-                    'shop.treasures.sell_main',
+                    'shop.treasures.sell.message',
                     stock_market=stock,
                     selected_treasure=treasure_details,
                    
@@ -857,13 +857,13 @@ class ShopModule(Extension):
             if len(treasure_selection) > 0:
                 select_menu = StringSelectMenu(
                     *treasure_selection,
-                    placeholder=localization.l('shop.treasures.placeholder_trade_in'),
+                    placeholder=localization.l('shop.treasures.sell.placeholder'),
                     custom_id=f'select_treasure_sell',
                 )
             else:
                 select_menu = StringSelectMenu(
                     '💥💥💥💥💥💥💥💥💥💥💥💥',
-                    placeholder=localization.l('shop.treasures.cannot_sell'),
+                    placeholder=localization.l('shop.treasures.sell.no_treasures'),
                     custom_id=f'select_treasure_sell',
                     disabled=True
                 )
