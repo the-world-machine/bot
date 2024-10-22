@@ -105,7 +105,7 @@ class NikogotchiModule(Extension):
                 style=ButtonStyle.GREY,
                 emoji=emojis["refresh"],
                 custom_id=f'{prefix}refresh{suffix}'
-            ),
+            ), 
             Button(
                 style=ButtonStyle.DANGER,
                 label='X',
@@ -292,7 +292,6 @@ class NikogotchiModule(Extension):
                 Button(style=ButtonStyle.GREEN, label=loc.l('nikogotchi.other.renaming.button'), custom_id=f'rename {ctx.author.id}'),
                 Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'no {ctx.author.id}')
             ]
-
             await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True)
 
             button: Component = await self.bot.wait_for_component(components=buttons)
@@ -664,12 +663,12 @@ class NikogotchiModule(Extension):
                 placeholder=loc.l('nikogotchi.other.renaming.input.placeholder'),
                 max_length=32
             ),
-            custom_id=f'rename_nikogotchi',
+            custom_id=f'rename_nikogotchi continue',
             title=loc.l('nikogotchi.other.renaming.title')
         )
         await ctx.send_modal(modal)
 
-    @modal_callback("rename_nikogotchi")
+    @modal_callback(re.compile(r'rename_nikogotchi.+'))
     async def on_rename_answer(self, ctx: ModalContext, name: str):
         await ctx.defer(edit_origin=True)
         loc = Localization(ctx.locale)
@@ -678,7 +677,14 @@ class NikogotchiModule(Extension):
         old_name = nikogotchi.name
         nikogotchi.name = name
         await self.save_nikogotchi(nikogotchi, ctx.author.id)
-        await fancy_message(ctx, loc.l('nikogotchi.other.renaming.response', new_name=name, old_name=old_name), ephemeral=True)
+        components = []
+        if ctx.custom_id.endswith("continue"):
+            components.append(Button(
+                style=ButtonStyle.GRAY,
+                label=loc.l('general.buttons._continue'),
+                custom_id=f'action_refresh_{ctx.author_id}'
+            ))
+        await fancy_message(ctx, loc.l('nikogotchi.other.renaming.response', new_name=name, old_name=old_name), ephemeral=True, components=components)
 
     @nikogotchi.subcommand(sub_cmd_description='Rename your Nikogotchi.')
     async def rename(self, ctx: SlashContext):
