@@ -283,7 +283,7 @@ class NikogotchiModule(Extension):
             hatched_embed = Embed(
                 title=loc.l('nikogotchi.found.title', name=nikogotchi.name),
                 color=0x8b00cc,
-                description=loc.l('nikogotchi.found.name')
+                description=loc.l('nikogotchi.found.description')
             )
 
             hatched_embed.set_image(url=selected_nikogotchi.image_url)

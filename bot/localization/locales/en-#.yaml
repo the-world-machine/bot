@@ -263,7 +263,7 @@ interact:
       action: "[user_one] kissed [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️
+      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
 
 # ---------------------------------------------------------------
 
