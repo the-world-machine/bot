@@ -108,6 +108,7 @@ class StatUpdate:
 class Nikogotchi(Collection):
     available: bool = False
     last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+    started_finding_treasure_at: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
     hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
     status: int = -1
     
