@@ -1,16 +1,16 @@
-from http.client import HTTPException
+import io
+import contextlib
 import json
 import re
-from interactions import Embed, Message, User
+from interactions import Embed, Message
 from localization.loc import fnum
 from utilities.shop.fetch_shop_data import reset_shop_data
 from config_loader import load_config
 import database
-import ast
 from aioconsole import aexec
-import traceback
 from termcolor import colored
 import time
+from asyncio import iscoroutinefunction, sleep
 
 async def get_collection(collection: str, _id: str):
     key_to_collection: dict[str, database.Collection] = {
@@ -22,20 +22,37 @@ async def get_collection(collection: str, _id: str):
     
     return key_to_collection[collection]
 
-import sys
-import io
-from contextlib import redirect_stdout
-from asyncio import iscoroutinefunction
-async def redir_prints(method, code):
-    output_capture = io.StringIO()
-    
-    with redirect_stdout(output_capture):
-        if iscoroutinefunction(method):
-            await method(code)
-        else: 
-            method(code)
+
+class CapturePrints:
+    def __init__(self, output_buffer):
+        self.output_buffer = output_buffer
+    def __enter__(self):
+        return {"print":self._capture_print,"output_buffer":self.output_buffer}
+
+    def _capture_print(self, *args, sep=' ', end='\n', file=None, flush=False):
+        output = sep.join(map(str, args))
         
-    return output_capture.getvalue()
+        self.output_buffer.write(output + end)
+
+        if flush and file is not None:
+            file.flush()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+async def redir_prints(method, code, locals=None, globals=None):
+    if locals is None:
+        locals = {}
+    output_buffer = io.StringIO()
+    with CapturePrints(output_buffer) as cp:
+        locals['print'] = cp["print"]
+        
+        if iscoroutinefunction(method):
+            await method(code, locals)
+        else: 
+            method(code, globals, locals)
+
+    return cp["output_buffer"].getvalue()
 
 async def execute_dev_command(message: Message):
     
@@ -58,9 +75,9 @@ async def execute_dev_command(message: Message):
     # Split the command into parts
     args = command_content.split(" ")
     
-    name = args[0]
+    subcommand_name = args[0]
     
-    match name:
+    match subcommand_name:
         case "eval":
             method = args[1]
 
@@ -75,19 +92,19 @@ async def execute_dev_command(message: Message):
             result = None
             runtime = None
             start_time = time.perf_counter()
-            try:
-                match method:
-                    case "exec":
-                        result = await redir_prints(exec, await remove_codebloque(command_content.split("eval exec ")[1]))
-                    case "aexec":
-                        result = await redir_prints(aexec, await remove_codebloque(command_content.split("eval aexec ")[1]))
-                    case _: 
-                        result = eval(await remove_codebloque(command_content.split("eval ")[1], True))
-            except ValueError as e:
+            # try:
+            match method:
+                case "exec":
+                    result = await redir_prints(exec, await remove_codebloque(command_content.split("eval exec ")[1]), locals(), globals())
+                case "aexec":
+                    result = await redir_prints(aexec, await remove_codebloque(command_content.split("eval aexec ")[1]), locals())
+                case _: 
+                    result = eval(await remove_codebloque(command_content.split("eval ")[1], True))
+            """except ValueError as e:
                 if str(e) == "py codeblock is required here.":
                     result = str(e)
             except Exception as e:
-                result = f"Exception raised: {str(e)}"
+                result = f"Exception raised: {str(e)}" """
             end_time = time.perf_counter()
             runtime = (end_time - start_time) * 1000
             
@@ -203,5 +220,11 @@ async def execute_dev_command(message: Message):
                 )
         case _:
             return await message.reply("Available commands: `eval` / `shop` / `db`. See source code for usage")
-    print(f"{colored('logs', 'yellow')} - eval - success - - - - - -\n{message.author.mention} ({message.author.username}) ran:\n{command_content}\n- - - - - - - - - - - - - - - - -")
-
+    formatted_command_content = command_content.replace('\n', '\n'+colored('│ ', 'yellow'))
+    if subcommand_name == "db":
+        subcommand_name += " ─"
+    
+    print(f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n"+
+          f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n"+
+          f"{colored('│', 'yellow')} {formatted_command_content}\n"+
+          f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")

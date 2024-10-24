@@ -16,11 +16,31 @@ from localization.loc import Localization, fnum
 from utilities.shop.fetch_items import fetch_treasure
 from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
 from utilities.fancy_send import *
+
+def generate_progress_bar(value: int, progress_bar_length: int, emojis=emojis):
+        progress_bar_l = []
+        
+        for i in range(progress_bar_length):
+            bar_section = 'middle'
+            if i == 0:
+                bar_section = 'start'
+            elif i == progress_bar_length - 1:
+                bar_section = 'end'
+
+            if i < value:
+                bar_fill = emojis[f'progress_filled_{bar_section}']
+            else:
+                bar_fill = emojis[f'progress_empty_{bar_section}']
+
+            progress_bar_l.append(bar_fill)
+
+        return ''.join(progress_bar_l)
+
 @dataclass
 class TreasureSeekResults:
     found_treasure: Dict[str,int]
     total_treasure: int
-    time_taken: int
+    hours_spent: int
 
 class NikogotchiModule(Extension):
     
@@ -66,9 +86,8 @@ class NikogotchiModule(Extension):
             return None
         
     async def save_nikogotchi(self, nikogotchi: Nikogotchi, uid: int):
-        
         nikogotchi_data: Nikogotchi = await Nikogotchi(uid).fetch()
-        
+
         data = nikogotchi.__dict__
 
         await nikogotchi_data.update(**data)
@@ -77,8 +96,8 @@ class NikogotchiModule(Extension):
         
         nikogotchi_data = await Nikogotchi(uid).fetch()
         
-        await nikogotchi_data.update(status=-1)
-
+        await nikogotchi_data.delete()
+    
     def nikogotchi_buttons(self, owner_id: int, locale: str):
         prefix = 'action_'
         suffix = f'_{owner_id}'
@@ -118,55 +137,27 @@ class NikogotchiModule(Extension):
 
         return relativedelta.relativedelta(datetime.now(), nikogotchi_data.hatched)
 
-    async def get_main_embeds(self, locale: str, age: relativedelta.relativedelta, dialogue: str,
+    async def get_main_embeds(self, ctx: InteractionContext, age: relativedelta.relativedelta, dialogue: str,
                                         treasure_seek_results: TreasureSeekResults | None, n: Nikogotchi, updated_stats: List[StatUpdate] | None):
 
         metadata = await fetch_nikogotchi_metadata(n.nid)
-        loc = Localization(locale)
+        loc = Localization(ctx.locale)
 
-        progress_bar_length = 5
+        age = loc.l('nikogotchi.age', years=age.years, months=age.months, days=age.days)
 
-        health_value = round((n.health / int(n.max_health)) * progress_bar_length)
-        energy_value = round((n.energy / 5) * progress_bar_length)
-        hunger_value = round((n.hunger / int(n.max_hunger)) * progress_bar_length)
-        happiness_value = round((n.happiness / int(n.max_happiness)) * progress_bar_length)
-        cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * progress_bar_length)
+        pb_length = 5
 
-        health_progress_bar = ''
-        hunger_progress_bar = ''
-        happiness_progress_bar = ''
-        cleanliness_progress_bar = ''
-
-        values = [health_value, energy_value, hunger_value, happiness_value, cleanliness_value]
-
-        for index, value in enumerate(values):
-            progress_bar_l = []
-            for i in range(progress_bar_length):
-                bar_section = 'middle'
-                if i == 0:
-                    bar_section = 'start'
-                elif i == progress_bar_length - 1:
-                    bar_section = 'end'
-    
-                if i < value:
-                    bar_fill = emojis[f'progress_filled_{bar_section}']
-                else:
-                    bar_fill = emojis[f'progress_empty_{bar_section}']
-
-                progress_bar_l.append(bar_fill)
-
-            progress = ''.join(progress_bar_l)
-
-            if index == 0:
-                health_progress_bar = progress
-            elif index == 1:
-                energy_progress_bar = progress
-            elif index == 2:
-                hunger_progress_bar = progress
-            elif index == 3:
-                happiness_progress_bar = progress
-            elif index == 4:
-                cleanliness_progress_bar = progress
+        health_value = round((n.health / int(n.max_health)) * pb_length)
+        energy_value = round((n.energy / 5) * pb_length)
+        hunger_value = round((n.hunger / int(n.max_hunger)) * pb_length)
+        happiness_value = round((n.happiness / int(n.max_happiness)) * pb_length)
+        cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * pb_length)
+        
+        health_progress_bar = generate_progress_bar(health_value, pb_length)
+        hunger_progress_bar = generate_progress_bar(hunger_value, pb_length)
+        happiness_progress_bar = generate_progress_bar(happiness_value, pb_length)
+        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, pb_length)
+        energy_progress_bar = generate_progress_bar(energy_value, pb_length)
 
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 
@@ -178,38 +169,55 @@ class NikogotchiModule(Extension):
 
         if n.hunger < 20:
             nikogotchi_status = loc.l('nikogotchi.status.hungry', name=n.name)
-
+        treasure_looking=''
         if n.status == 3:
             nikogotchi_status = loc.l('nikogotchi.status.treasure', name=n.name)
+            treasure_looking = f'  •  🎒 {loc.l("nikogotchi.status.treasuring_time", hours=round((datetime.now() - n.started_finding_treasure_at).total_seconds() / 3600))}'
 
         treasure_found = ''
-        if isinstance(treasure_seek_results, TreasureSeekResults):
+        if treasure_seek_results != None:
             treasures = ''
+            total = 0
             for (tid, amount) in treasure_seek_results.found_treasure.items():
-                    treasures += loc.l('treasure.item', amount=amount, icon=emojis[f"treasure_{tid}"], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
+                total+=amount
+                treasures += loc.l('treasure.item', amount=amount, icon=emojis[f"treasure_{tid}"], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
 
-            treasure_found = loc.l('nikogotchi.treasured.message', hours=treasure_seek_results.time_taken, treasures=treasures)+"\n"
+            treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, hours=treasure_seek_results.hours_spent)
         
         levelled_up_stats = ''
         
         if updated_stats:
             for stat in updated_stats:
-                levelled_up_stats += loc.l("nikogotchi.levelupped.stat", icon=stat.icon, old_value=stat.old_value, new_value=stat.new_value, increase=(stat.new_value - stat.old_value))+"\n"
-        if n.health < 20:
+                levelled_up_stats += loc.l("nikogotchi.levelupped.stat", 
+                        icon=stat.icon, 
+                        old_value=stat.old_value, 
+                        new_value=stat.new_value, 
+                        increase=(stat.new_value - stat.old_value))+"\n"
+                
+        if n.health < min(20, n.max_health * 0.20):
             nikogotchi_status = loc.l('nikogotchi.status.danger', name=n.name)
-        age = loc.l('nikogotchi.age', years=age.years, months=age.months, days=age.days)
-        
+            
         # crafting embeds - - -
         embeds = []
         N_embed = Embed( # nikogotchi embed
             title=n.name,
+            description=''+
+            f"❤️  {health_progress_bar} ({int(n.health)} / {int(n.max_health)})\n"+
+            f'⚡  {energy_progress_bar} ({int(n.energy)} / 5)\n'+
+            '\n'+
+            f'🍴  {hunger_progress_bar} ({int(n.hunger)} / {int(n.max_hunger)})\n'+
+            f'🫂  {happiness_progress_bar} ({n.happiness} / {int(n.max_happiness)})\n'+
+            f'🧽  {cleanliness_progress_bar} ({int(n.cleanliness)} / {int(n.max_cleanliness)})\n'+
+            '\n'+
+            f'🗡️  {int(n.attack)}  •  🛡️  {int(n.defense)}{treasure_looking}  •  ⏰  {age}\n'+
+            '\n'+
+            f'{loc.l("nikogotchi.status.template", status=nikogotchi_status)}',
+            footer=dialogue,
             color=0x8b00cc
         )
-
         N_embed.set_thumbnail(metadata.image_url)
-        N_embed.description = f'❤️  {health_progress_bar} ({int(n.health)} / {int(n.max_health)})\n⚡  {energy_progress_bar} ({int(n.energy)} / 5)\n\n🍴  {hunger_progress_bar} ({int(n.hunger)} / {int(n.max_hunger)})\n🫂  {happiness_progress_bar} ({n.happiness} / {int(n.max_happiness)})\n🧽  {cleanliness_progress_bar} ({int(n.cleanliness)} / {int(n.max_cleanliness)})\n\n🗡️  {int(n.attack)}  •  🛡️  {int(n.defense)}  •  ⏰  {age}\n\n{loc.l("nikogotchi.status.template", status=nikogotchi_status)}'
         
-        N_embed.set_footer(text=dialogue)
+        
         if levelled_up_stats:
             L_embed = Embed( # level up embed
                 title=loc.l("nikogotchi.levelupped.title", level=n.level),
@@ -241,41 +249,61 @@ class NikogotchiModule(Extension):
 
         old_nikogotchi: NikogotchiData = await NikogotchiData(uid).fetch()
         nikogotchi: Nikogotchi
-        
         if old_nikogotchi.data:
             nikogotchi = await self.convert_nikogotchi(uid)
         else:
             nikogotchi = await Nikogotchi(uid).fetch()
 
-        if nikogotchi.status > -1:
+        metadata = await fetch_nikogotchi_metadata(nikogotchi.nid)
+        if nikogotchi.status > -1 and metadata:
             msg = await fancy_message(ctx, loc.l('nikogotchi.loading'))
-
         else:
+            if not metadata and nikogotchi.nid !="?":
+                
+                buttons = [
+                    Button(style=ButtonStyle.GREEN, label=loc.l('nikogotchi.other.error.buttons.rotate'), custom_id=f'rotate'),
+                    Button(style=ButtonStyle.GRAY, label=loc.l('nikogotchi.other.error.buttons.send_away'), custom_id=f'_rehome')
+                ]
 
+                await fancy_message(ctx, loc.l('nikogotchi.other.error.description', id=nikogotchi.nid), color=0xff0000, ephemeral=True, components=buttons)
+                button_ctx = (await self.bot.wait_for_component(components=buttons)).ctx
+                
+                custom_id = button_ctx.custom_id
+
+                if custom_id == '_rehome':
+                    await self.delete_nikogotchi(ctx.author.id)
+                    embed = fancy_embed(loc.l('nikogotchi.other.send_away.success', name=nikogotchi.name))
+                    return await ctx.edit(embed=embed, components=[])
+                else:
+                    nikogotchi.available = True
             if not nikogotchi.available:
                 return await fancy_message(ctx, loc.l('nikogotchi.invalid'), ephemeral=True, color=0xff0000)
-
             selected_nikogotchi: NikogotchiMetadata = await pick_random_nikogotchi(nikogotchi.rarity)
 
             await nikogotchi.update(
                 nid = selected_nikogotchi.name,
                 name = loc.l(f'nikogotchi.name.{selected_nikogotchi.name}'),
+
                 level = 0,
                 health = 50,
                 energy = 5,
                 hunger = 50,
                 cleanliness = 50,
                 happiness = 50,
+
+                attack = 5,
+                defense = 2,
+
                 max_health = 50,
                 max_hunger = 50,
                 max_cleanliness = 50,
                 max_happiness = 50,
-                attack = 5,
-                defense = 2,
+                
                 last_interacted = datetime.now(),
                 hatched = datetime.now(),
+                started_finding_treasure_at = None,
                 available = False,
-                status=2
+                status = 2
             )
 
             nikogotchi = await self.get_nikogotchi(ctx.author.id)
@@ -286,14 +314,13 @@ class NikogotchiModule(Extension):
                 description=loc.l('nikogotchi.found.description')
             )
 
-            hatched_embed.set_image(url=selected_nikogotchi.image_url)
+            hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
 
             buttons = [
                 Button(style=ButtonStyle.GREEN, label=loc.l('nikogotchi.other.renaming.button'), custom_id=f'rename {ctx.author.id}'),
-                Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'no {ctx.author.id}')
+                Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'continue {ctx.author.id}')
             ]
-            await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True)
-
+            await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True, edit_origin=True)
             button: Component = await self.bot.wait_for_component(components=buttons)
             button_ctx = button.ctx
 
@@ -302,26 +329,25 @@ class NikogotchiModule(Extension):
                 await self.init_rename_flow(button_ctx, nikogotchi.name)
             else:
                 await button_ctx.defer(edit_origin=True)
-
+                
             await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
         await self.nikogotchi_interaction(ctx)
 
-    async def calculate_treasure_seek(self, uid: int, time_difference: float) -> TreasureSeekResults | None:
+    async def calculate_treasure_seek(self, uid: int, hours_taken: int) -> TreasureSeekResults | None:
         user_data: UserData = await UserData(uid).fetch()
-        treasures = await fetch_treasure()
 
         treasures_found = {}
         user_treasures = user_data.owned_treasures
         total_treasures = 0
-        for _ in range(round(time_difference)):
+        for _ in range(hours_taken):
             value = random.randint(0, 5000)
             treasure_id = ''
-            if value > 0:
+            if value > 10:
                 treasure_id = random.choice(["journal", "bottle", "shirt"])
-            if value > 3500:
+            elif value > 3500:
                 treasure_id = random.choice(["amber", "pen", "card"]) # TODO: store rarity in DB
-            if value > 4900:
+            elif value > 4900:
                 treasure_id = random.choice(["die", "sun", "clover"])
             
             if treasure_id:
@@ -335,7 +361,7 @@ class NikogotchiModule(Extension):
             return None
         
         await user_data.update(owned_treasures=user_treasures)
-        return TreasureSeekResults(treasures_found, int(time_difference), total_treasures)
+        return TreasureSeekResults(treasures_found, hours_taken, total_treasures)
 
     r_nikogotchi_interaction = re.compile(r'action_(feed|pet|clean|findtreasure|refresh|callback|exit)_(\d+)$')
     @component_callback(r_nikogotchi_interaction)
@@ -428,7 +454,6 @@ class NikogotchiModule(Extension):
         
         dialogue = '...'
         treasures_found = None
-        
         buttons = self.nikogotchi_buttons(uid, ctx.locale)
         select = await self.feed_nikogotchi(ctx)
 
@@ -446,14 +471,16 @@ class NikogotchiModule(Extension):
             if custom_id == 'findtreasure':
                 dialogue = loc.l('nikogotchi.treasured.dialogues.sent')
                 nikogotchi.status = 3
+                nikogotchi.started_finding_treasure_at = datetime.now()
 
-        if custom_id == 'callback':
+        if nikogotchi.started_finding_treasure_at != None and custom_id == 'callback':
+            treasures_found = await self.calculate_treasure_seek(uid, round((datetime.now() - nikogotchi.started_finding_treasure_at).total_seconds() / 3600))
             nikogotchi.status = 2
-            treasures_found = await self.calculate_treasure_seek(uid, time_difference)
+            nikogotchi.started_finding_treasure_at = False
             if treasures_found == None:
                 dialogue = loc.l('nikogotchi.treasured.dialogues.none_found')
-
-        embeds = await self.get_main_embeds(ctx.locale, age, dialogue, treasures_found, nikogotchi, None)
+        
+        embeds = await self.get_main_embeds(ctx, age, dialogue, treasures_found, nikogotchi, None)
 
         if not custom_id == 'feed':
             if nikogotchi.status == 2:
@@ -471,13 +498,11 @@ class NikogotchiModule(Extension):
 
                 buttons[2].label = str(loc.l('nikogotchi.components.call_back'))
                 buttons[2].custom_id = f'action_callback_{uid}'
-
-        await self.save_nikogotchi(nikogotchi, ctx.author.id)
-        
         try:
             await ctx.edit_origin(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
         except:
             await ctx.edit(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
+        await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
     async def feed_nikogotchi(self, ctx):
         food_options = []
@@ -638,8 +663,7 @@ class NikogotchiModule(Extension):
             Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._cancel'), custom_id=f'cancel')
         ]
 
-        embed = await fancy_embed(loc.l('nikogotchi.other.send_away.description', name=name))
-        embed.set_footer(text=loc.l('nikogotchi.other.send_away.footer'))
+        embed = fancy_embed(loc.l('nikogotchi.other.send_away.description', name=name))
 
         await ctx.send(embed=embed, ephemeral=True, components=buttons)
 
@@ -650,8 +674,10 @@ class NikogotchiModule(Extension):
 
         if custom_id == f'rehome':
             await self.delete_nikogotchi(ctx.author.id)
-            embed = await fancy_embed(loc.l('nikogotchi.other.send_away.success', name=name))
+            embed = fancy_embed(loc.l('nikogotchi.other.send_away.success', name=name))
             await ctx.edit(embed=embed, components=[])
+        else:
+            await ctx.delete() 
 
     async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str):
         loc = Localization(ctx.locale)
@@ -754,7 +780,7 @@ class NikogotchiModule(Extension):
 
         uid = user.id
 
-        embed = await fancy_embed(loc.l('nikogotchi.other.trade.request', user=ctx.author.mention, name_one=nikogotchi_one.name, name_two=nikogotchi_two.name))
+        embed = fancy_embed(loc.l('nikogotchi.other.trade.request', user=ctx.author.mention, name_one=nikogotchi_one.name, name_two=nikogotchi_two.name))
 
         buttons = [
             Button(style=ButtonStyle.SUCCESS, label=loc.l('general.buttons._yes'), custom_id=f'trade {ctx.author.id} {uid}'),
@@ -774,19 +800,19 @@ class NikogotchiModule(Extension):
             await self.save_nikogotchi(nikogotchi_two, ctx.author.id)
             await self.save_nikogotchi(nikogotchi_one, uid)
 
-            embed_two = await fancy_embed(loc.l('nikogotchi.other.trade.success', user=user.mention, name=nikogotchi_two.name))
+            embed_two = fancy_embed(loc.l('nikogotchi.other.trade.success', user=user.mention, name=nikogotchi_two.name))
             embed_two.set_image(url=two_data.image_url)
 
-            embed_one = await fancy_embed(loc.l('nikogotchi.other.trade.success', user=ctx.author.mention, name=nikogotchi_one.name))
+            embed_one = fancy_embed(loc.l('nikogotchi.other.trade.success', user=ctx.author.mention, name=nikogotchi_one.name))
             embed_one.set_image(url=one_data.image_url)
 
             await button_ctx.edit_origin(embed=embed_one, components=[])
             await ctx.edit(embed=embed_two)
         else:
-            embed = await fancy_embed(loc.l('nikogotchi.other.trade.declined'))
+            embed = fancy_embed(loc.l('nikogotchi.other.trade.declined'))
             await ctx.edit(embed=embed)
 
-            embed = await fancy_embed(loc.l('nikogotchi.other.trade.success_decline'))
+            embed = fancy_embed(loc.l('nikogotchi.other.trade.success_decline'))
 
             await button_ctx.edit_origin(embed=embed, components=[])"""
 

@@ -7,15 +7,12 @@ from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
 from localization.loc import Localization
 import random
-import dns.resolver
-dns.resolver.default_resolver=dns.resolver.Resolver(configure=False)
-dns.resolver.default_resolver.nameservers=['8.8.8.8']
 
 
 # Define the Database Schema for The World Machine:
 @dataclass
 class Collection:
-    _id: Union[str, Snowflake]
+    _id: Union[str, Snowflake] | None
         
     async def update(self, **kwargs):
         '''
@@ -23,9 +20,9 @@ class Collection:
         '''
         
         updated_data = await update_in_database(self, **kwargs)
-        
         for k, v in asdict(updated_data).items():
             setattr(self, k, v)
+        return updated_data
         
     async def fetch(self):
         '''
@@ -36,6 +33,12 @@ class Collection:
         
         return await fetch_from_database(self)
         
+    async def delete(self):
+        '''
+        Delete the current collection from the database using its _id.
+        '''
+        result = await delete_from_database(self._id)
+        return result
 @dataclass
 class UserData(Collection):
     wool: int = 5000
@@ -107,9 +110,9 @@ class StatUpdate:
 @dataclass
 class Nikogotchi(Collection):
     available: bool = False
-    last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-    started_finding_treasure_at: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-    hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+    hatched: datetime = field(default_factory=lambda: datetime.now())
+    last_interacted: datetime = field(default_factory=lambda: datetime.now())
+    started_finding_treasure_at: datetime | bool = False
     status: int = -1
     
     rarity: int = 0
@@ -181,6 +184,12 @@ connection_uri = load_config('database')
 
 connection = None
 
+# Add the delete_from_database function to handle deletion in the database
+async def delete_from_database(collection_id: Union[str, Snowflake]) -> bool:
+    db = get_database()
+    result = await db.get_collection(Collection.__name__).delete_one({'_id': collection_id})
+    return result.deleted_count > 0  # Return True if a document was deleted
+
 def create_connection():
     
     global connection
@@ -229,7 +238,6 @@ async def update_in_database(collection: Collection, **kwargs):
 
     # Update only the specified fields in the existing document
     updated_data = {**existing_data, **kwargs}
-    
     # Update the document in the database
     await db.get_collection(collection.__class__.__name__).update_one(
         {'_id': collection._id}, 

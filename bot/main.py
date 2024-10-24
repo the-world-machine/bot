@@ -12,7 +12,7 @@ import random
 import utilities.profile.profile_viewer as view
 from modules.textbox import TextboxModule
 
-print('\nStarting The World Machine... 1/4')
+print('\nStarting The World Machine... ─ 1/4')
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
 
 client = Client(
@@ -23,7 +23,7 @@ client = Client(
 
 prefixed_commands.setup(client, default_prefix='*')
 
-print("\nLoading Commands... - - - - - 2/3")
+print("\nLoading Commands... ─ ─ ─ ─ ─ ─ 2/4")
 
 load_commands.load_commands(client)
 
@@ -44,8 +44,7 @@ async def on_ready():
     # return
     ### space for testing
     
-    print("\nFinalizing... - - - - - - - - 3/3")
-    
+    print("\nFinalizing... ─ ─ ─ ─ ─ ─ ─ ─ ─ 3/4")
     create_connection()
     
     print('Database Connected')
@@ -66,8 +65,7 @@ async def on_ready():
                 print("failure")
                 pass
         
-    print("\n- - - - - - - - - - - - - - - - -")
-    print("\n   The World Machine is ready!\n\n")
+    print("\n\n─ The World Machine is ready! ─ 4/4\n\n")
 
 # Whenever a user joins a guild...
 @listen(MemberAdd)

@@ -190,7 +190,7 @@ class TextboxModule(Extension):
             placeholder='Select a face!'
         )
 
-        embed = await fancy_embed(f"[ <@{ctx.user.id}>, select a face. ]")
+        embed = fancy_embed(f"[ <@{ctx.user.id}>, select a face. ]")
 
         await ctx.edit(embed=embed, components=select_menu)
 

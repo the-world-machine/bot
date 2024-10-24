@@ -103,13 +103,13 @@ class TransmissionModule(Extension):
             custom_id='decline_phone'
         )
 
-        embed_one = await fancy_embed(f'[ Calling **{server_name}**... <a:loading:1026539890382483576> ]')
+        embed_one = fancy_embed(f'[ Calling **{server_name}**... <a:loading:1026539890382483576> ]')
 
-        embed_timeout_one = await fancy_embed('``[ Sorry! You took too long to respond! ]``', color=0xfa272d)
-        embed_timeout_two = await fancy_embed('``[ Sorry! The other server took too long to respond! ]``', color=0xfa272d)
+        embed_timeout_one = fancy_embed('``[ Sorry! You took too long to respond! ]``', color=0xfa272d)
+        embed_timeout_two = fancy_embed('``[ Sorry! The other server took too long to respond! ]``', color=0xfa272d)
 
-        embed_cancel_one = await fancy_embed('``[ Successfully Declined. ]``', color=0xfa272d)
-        embed_cancel_two = await fancy_embed('``[ Sorry! The other server declined the call! ]``', color=0xfa272d)
+        embed_cancel_one = fancy_embed('``[ Successfully Declined. ]``', color=0xfa272d)
+        embed_cancel_two = fancy_embed('``[ Sorry! The other server declined the call! ]``', color=0xfa272d)
 
         message = await select_results.ctx.send(embed=embed_one)
 
