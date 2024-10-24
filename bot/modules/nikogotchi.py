@@ -343,7 +343,7 @@ class NikogotchiModule(Extension):
         for _ in range(hours_taken):
             value = random.randint(0, 5000)
             treasure_id = ''
-            if value > 10:
+            if value > 100:
                 treasure_id = random.choice(["journal", "bottle", "shirt"])
             elif value > 3500:
                 treasure_id = random.choice(["amber", "pen", "card"]) # TODO: store rarity in DB
