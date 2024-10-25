@@ -92,19 +92,19 @@ async def execute_dev_command(message: Message):
             result = None
             runtime = None
             start_time = time.perf_counter()
-            # try:
-            match method:
-                case "exec":
-                    result = await redir_prints(exec, await remove_codebloque(command_content.split("eval exec ")[1]), locals(), globals())
-                case "aexec":
-                    result = await redir_prints(aexec, await remove_codebloque(command_content.split("eval aexec ")[1]), locals())
-                case _: 
-                    result = eval(await remove_codebloque(command_content.split("eval ")[1], True))
-            """except ValueError as e:
+            try:
+                match method:
+                    case "exec":
+                        result = await redir_prints(exec, await remove_codebloque(command_content.split("eval exec ")[1]), locals(), globals())
+                    case "aexec":
+                        result = await redir_prints(aexec, await remove_codebloque(command_content.split("eval aexec ")[1]), locals())
+                    case _: 
+                        result = eval(await remove_codebloque(command_content.split("eval ")[1], True))
+            except ValueError as e:
                 if str(e) == "py codeblock is required here.":
                     result = str(e)
             except Exception as e:
-                result = f"Exception raised: {str(e)}" """
+                result = f"Exception raised: {str(e)}"
             end_time = time.perf_counter()
             runtime = (end_time - start_time) * 1000
             
