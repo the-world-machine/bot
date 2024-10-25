@@ -17,6 +17,7 @@ class MiscellaneousModule(Extension):
         embed = Embed(description="WIP")
         
         embed.add_field('♥️ Average latency:', fnum(self.bot.average_latency))
+        await fancy_message(ctx, embed=embed)
         
     @slash_command(description='A random wikipedia article.')
     async def random_wikipedia(self, ctx: SlashContext):
