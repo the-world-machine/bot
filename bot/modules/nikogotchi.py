@@ -326,7 +326,7 @@ class NikogotchiModule(Extension):
 
             custom_id = button_ctx.custom_id
             if custom_id == f'rename {ctx.author.id}':
-                await self.init_rename_flow(button_ctx, nikogotchi.name)
+                await self.init_rename_flow(button_ctx, nikogotchi.name, True)
             else:
                 await button_ctx.defer(edit_origin=True)
                 
@@ -343,12 +343,13 @@ class NikogotchiModule(Extension):
         for _ in range(hours_taken):
             value = random.randint(0, 5000)
             treasure_id = ''
-            if value > 100:
-                treasure_id = random.choice(["journal", "bottle", "shirt"])
+
+            if value > 4900:
+                treasure_id = random.choice(["die", "sun", "clover"])
             elif value > 3500:
                 treasure_id = random.choice(["amber", "pen", "card"]) # TODO: store rarity in DB
-            elif value > 4900:
-                treasure_id = random.choice(["die", "sun", "clover"])
+            elif value > 100:
+                treasure_id = random.choice(["journal", "bottle", "shirt"])
             
             if treasure_id:
                 treasures_found.setdefault(treasure_id, 0)
@@ -673,13 +674,13 @@ class NikogotchiModule(Extension):
         custom_id = button_ctx.custom_id
 
         if custom_id == f'rehome':
-            await self.delete_nikogotchi(ctx.author.id)
+            await nikogotchi.update(available=False, status=-1, nid="?")
             embed = fancy_embed(loc.l('nikogotchi.other.send_away.success', name=name))
             await ctx.edit(embed=embed, components=[])
         else:
             await ctx.delete() 
 
-    async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str):
+    async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str, cont: bool = False):
         loc = Localization(ctx.locale)
         modal = Modal(
             ShortText(
@@ -689,14 +690,20 @@ class NikogotchiModule(Extension):
                 placeholder=loc.l('nikogotchi.other.renaming.input.placeholder'),
                 max_length=32
             ),
-            custom_id=f'rename_nikogotchi continue',
+            custom_id='rename_nikogotchi',
             title=loc.l('nikogotchi.other.renaming.title')
         )
+        if (cont):
+            modal.custom_id = 'rename_nikogotchi continue'
         await ctx.send_modal(modal)
 
-    @modal_callback(re.compile(r'rename_nikogotchi.+'))
+    @modal_callback(re.compile(r'rename_nikogotchi?.+'))
     async def on_rename_answer(self, ctx: ModalContext, name: str):
-        await ctx.defer(edit_origin=True)
+
+        if ctx.custom_id.endswith("continue"):
+            await ctx.defer(edit_origin=True)
+        else:
+            await ctx.defer(ephemeral=True)
         loc = Localization(ctx.locale)
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
 

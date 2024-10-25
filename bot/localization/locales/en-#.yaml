@@ -353,7 +353,7 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: Do you want to rename it? You can always do this later using `/nikogotchi rename`
+    description: Wanna give them a name? You can always do this later using `/nikogotchi rename`
 
   status:
     template: "-# [status]"
