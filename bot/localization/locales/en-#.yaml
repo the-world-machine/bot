@@ -308,12 +308,17 @@ nikogotchi:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
     error:
-      title: No Nikogotchi
-      description: This Nikogotchi no longer exists. Send it away and get a new one, or ask for help with it in the support server (you can find it on [the website](https://theworldmachine.xyz))
+      buttons: 
+        send_away: Send Away
+        rotate: Rotate
+      description: > 
+        [ This Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
+        
+      
+        [ What do you want to do? ]
 
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
-      footer: Dismiss this message if you change your mind.
       success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"
 
     view:
@@ -357,8 +362,8 @@ nikogotchi:
     pet: "🥺 wants attention!"
     dirty: "🛀 wants to be cleaned!"
     hungry: "🥞 is feeling hungry..."
-    treasure: "⛏️ currently looking for treasures!"
-
+    treasure: "🎒 currently looking for treasures!"
+    treasuring_time: "**[hours]**h."
     danger: 🚨 is at low health! Use Golden Pancakes to restore their health!
 
   components:
@@ -394,12 +399,11 @@ nikogotchi:
       R.I.P....
   treasured: 
     title: 🎉 they found some treasures!
-    message: >
-      Hours since sent to look for treasures: [hours]
-      
+    message: > 
       [treasures]
-
-      Total: **[total]** 
+      Total treasures: **[total]**
+      Hours spent looking: **[hours]**h.
+      
     dialogues:
       sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
       none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"

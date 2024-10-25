@@ -440,7 +440,7 @@ class ShopModule(Extension):
                     
                     Button(
                         label=localization.l('shop.pancakes.title'),
-                        emoji=emojis["treasure_card"],
+                        emoji=emojis["pancakes"],
                         style=ButtonStyle.BLURPLE,
                         custom_id='pancakes'
                     ),

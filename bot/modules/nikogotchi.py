@@ -594,7 +594,7 @@ class NikogotchiModule(Extension):
         hunger_increase = 0
         health_increase = 0
         
-        levelled_up = []
+        updated_stats = []
         
         loc = Localization(ctx.locale)
 
@@ -641,7 +641,7 @@ class NikogotchiModule(Extension):
         buttons = self.nikogotchi_buttons(ctx.author.id, ctx.locale)
         select = await self.feed_nikogotchi(ctx)
 
-        embeds = await self.get_main_embeds(ctx.locale, await self.get_nikogotchi_age(ctx.author.id),
+        embeds = await self.get_main_embeds(ctx, await self.get_nikogotchi_age(ctx.author.id),
                                                      dialogue, None, nikogotchi, updated_stats)
 
         await ctx.edit_origin(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
