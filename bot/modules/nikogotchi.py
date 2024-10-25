@@ -96,7 +96,7 @@ class NikogotchiModule(Extension):
         
         nikogotchi_data = await Nikogotchi(uid).fetch()
         
-        await nikogotchi_data.delete()
+        await nikogotchi_data.update(available=False, status=-1, nid="?")
     
     def nikogotchi_buttons(self, owner_id: int, locale: str):
         prefix = 'action_'
@@ -674,7 +674,7 @@ class NikogotchiModule(Extension):
         custom_id = button_ctx.custom_id
 
         if custom_id == f'rehome':
-            await nikogotchi.update(available=False, status=-1, nid="?")
+            await self.delete_nikogotchi(ctx.author.id)
             embed = fancy_embed(loc.l('nikogotchi.other.send_away.success', name=name))
             await ctx.edit(embed=embed, components=[])
         else:

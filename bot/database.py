@@ -237,11 +237,6 @@ async def update_in_database(collection: Collection, **kwargs):
     updated_instance = collection.__class__(**updated_data)
     return updated_instance
 
-async def delete_from_database(collection_id: Union[str, Snowflake]) -> bool:
-    db = get_database()
-    result = await db.get_collection(Collection.__name__).delete_one({'_id': collection_id})
-    return result.deleted_count > 0
-
 async def fetch_items():
     db = get_database()
     
