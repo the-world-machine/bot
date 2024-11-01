@@ -28,7 +28,7 @@ class ProfileModule(Extension):
         pass
 
     @sun.subcommand(sub_cmd_description='Give someone a sun!')
-    @slash_option(description='Who you want to give it to.', name='user', opt_type=OptionType.USER, required=True)
+    @slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
     async def give(self, ctx: SlashContext, user: User):
         
         user_data: db.UserData = await db.UserData(user.id).fetch()
