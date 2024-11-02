@@ -1,9 +1,14 @@
 from genericpath import exists
-from typing import Union
+from typing import Literal, Union
+from babel import Locale
+import humanize
 from yaml import safe_load
 import io
-from utilities.emojis import emojis
+from data.emojis import emojis
 from dataclasses import dataclass
+import humanize
+from datetime import timedelta
+from babel.dates import format_timedelta
 
 languages = {}
 
@@ -41,11 +46,11 @@ class Localization:
             return assign_variables(result, locale, **variables)
             
 def fetch_language(locale: str):
-    if exists(f'bot/localization/locales/{locale}.yaml'):
-        with open(f'bot/localization/locales/{locale}.yaml', 'r', encoding='utf-8') as f:
+    if exists(f'bot/data/locales/{locale}.yaml'):
+        with open(f'bot/data/locales/{locale}.yaml', 'r', encoding='utf-8') as f:
             return safe_load(f)
     else:
-        with open(f'bot/localization/locales/en-#.yaml', 'r', encoding='utf-8') as f:
+        with open(f'bot/data/locales/en-#.yaml', 'r', encoding='utf-8') as f:
             return safe_load(f)
     
 def assign_variables(result: str, locale: str, **variables: str):
@@ -73,3 +78,15 @@ def fnum(num: float | int, locale: str = "en-#") -> str:
         return fmtd.replace(",", " ").replace(".", ",")
     else:
         return fmtd
+    
+def fduration(duration: timedelta | float,
+              locale: Locale | str | None,
+              months: bool = True,
+              minimum_unit: Literal['year', 'month', 'week', 'day', 'hour', 'minute', 'second'] ="second", 
+              *args, **kwargs):
+    
+    if locale == "en-#":
+        locale = "en"
+    locale = Locale.parse(locale, sep='-')
+
+    return format_timedelta(delta=duration, locale=locale, granularity=minimum_unit, *args, **kwargs)

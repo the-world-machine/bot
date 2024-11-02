@@ -2,7 +2,7 @@ import json
 from interactions import *
 
 from database import ServerData
-from utilities.fancy_send import fancy_message
+from utilities.message_decorations import fancy_message
 
 
 class SettingsModule(Extension):

@@ -2,10 +2,9 @@ from dataclasses import asdict, dataclass, field
 from typing import Union, Dict, List
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
-from config_loader import load_config
+from config_loader import get_config
 from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
-from localization.loc import Localization
 import random
 
 
@@ -174,7 +173,7 @@ class Nikogotchi(Collection):
         return stats
 # ----------------------------------------------------
 
-connection_uri = load_config('database')
+connection_uri = get_config('database')
 
 connection = None
 

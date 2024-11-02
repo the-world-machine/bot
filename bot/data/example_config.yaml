@@ -9,12 +9,14 @@ pteyrodactl-api: ... # Used for developer commands.
 
 dev-command-user-list: 
     - "user ids"
+    
 music:
+    enabled: true # Disable if you don't want to setup lavalinque
     spotify:
         secret: ...
         id: ...
     
     lavalink:
-        ip: 10.100.10.10
-        port: 123
-        password: ...
+        ip: localhost
+        port: 4230
+        password: password_here

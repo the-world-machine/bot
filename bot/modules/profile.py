@@ -8,7 +8,7 @@ from interactions import Extension, SlashContext, User, OptionType, slash_comman
 import utilities.profile.badge_manager as bm
 import utilities.profile.profile_viewer as profile_viewer
 import database as db
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 
 
 class ProfileModule(Extension):

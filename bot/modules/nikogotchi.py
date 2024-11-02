@@ -6,35 +6,18 @@ import re
 import time
 from typing import Dict, List, Union
 
-from utilities.emojis import emojis
+from data.emojis import emojis
+from data.localization import Localization, fnum
 from dateutil import relativedelta
 from interactions import *
 from interactions.api.events import Component
 
 from utilities.nikogotchi_metadata import *
-from localization.loc import Localization, fnum
 from utilities.shop.fetch_items import fetch_treasure
 from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
-from utilities.fancy_send import *
+from utilities.message_decorations import fancy_embed, fancy_message, generate_progressbar
 
-def generate_progress_bar(value: int, progress_bar_length: int, emojis=emojis):
-        progress_bar_l = []
-        
-        for i in range(progress_bar_length):
-            bar_section = 'middle'
-            if i == 0:
-                bar_section = 'start'
-            elif i == progress_bar_length - 1:
-                bar_section = 'end'
 
-            if i < value:
-                bar_fill = emojis[f'progress_filled_{bar_section}']
-            else:
-                bar_fill = emojis[f'progress_empty_{bar_section}']
-
-            progress_bar_l.append(bar_fill)
-
-        return ''.join(progress_bar_l)
 
 @dataclass
 class TreasureSeekResults:
@@ -153,11 +136,11 @@ class NikogotchiModule(Extension):
         happiness_value = round((n.happiness / int(n.max_happiness)) * pb_length)
         cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * pb_length)
         
-        health_progress_bar = generate_progress_bar(health_value, pb_length)
-        hunger_progress_bar = generate_progress_bar(hunger_value, pb_length)
-        happiness_progress_bar = generate_progress_bar(happiness_value, pb_length)
-        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, pb_length)
-        energy_progress_bar = generate_progress_bar(energy_value, pb_length)
+        health_progress_bar = generate_progressbar(health_value, pb_length, "round")
+        hunger_progress_bar = generate_progressbar(hunger_value, pb_length, "round")
+        happiness_progress_bar = generate_progressbar(happiness_value, pb_length, "round")
+        cleanliness_progress_bar = generate_progressbar(cleanliness_value, pb_length, "round")
+        energy_progress_bar = generate_progressbar(energy_value, pb_length, "round")
 
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 

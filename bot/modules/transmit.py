@@ -10,7 +10,7 @@ from interactions import *
 from interactions.api.events import MessageCreate, Component
 import config_loader
 from utilities.profile.badge_manager import increment_value
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 
 from database import UserData, ServerData
 

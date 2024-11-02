@@ -2,9 +2,10 @@ import io
 import json
 import re
 from interactions import Embed, Message
-from localization.loc import fnum
+from data.emojis import emojis
+from data.localization import Localization, fnum
 from utilities.shop.fetch_shop_data import reset_shop_data
-from config_loader import load_config
+from config_loader import get_config
 import database
 from aioconsole import aexec
 from termcolor import colored
@@ -61,7 +62,7 @@ async def execute_dev_command(message: Message):
     if message.author.bot:
         return
     
-    if not str(message.author.id) in load_config('dev-command-user-list'):
+    if not str(message.author.id) in get_config('dev-command-user-list'):
         return
     
     if not message.content:

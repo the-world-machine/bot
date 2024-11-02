@@ -2,8 +2,8 @@ import random
 
 from interactions import *
 
-from utilities.emojis import emojis
-from utilities.fancy_send import *
+from data.emojis import emojis
+from utilities.message_decorations import *
 
 
 class ShippingModule(Extension):

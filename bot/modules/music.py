@@ -11,17 +11,23 @@ from interactions.api.events import *
 from interactions_lavalink import Lavalink, Player
 from interactions_lavalink.events import TrackStart, TrackException
 
-from utilities.emojis import emojis
+from data.emojis import emojis
+from data.localization import Localization
 from utilities.music.music_loaders import CustomSearch
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 # Utilities
 from utilities.music.spotify_api import Spotify
-from config_loader import load_config
+from config_loader import get_config
+spotify_creds = get_config("music.spotify")
+spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
-spotify = Spotify(client_id=load_config('music', 'spotify', 'id'), secret=load_config('music', 'spotify', 'secret'))
-
+async def get_lavalink_stats():
+    return {
+        "playing_players": "placeholder",
+        "played_time": "placeholder",
+        "played_songs": "placeholder",
+    }
 class MusicModule(Extension):
-    
     # Base Command
     @slash_command(description="Listen to music using The World Machine!")
     async def music(self, ctx: SlashContext):
@@ -33,18 +39,19 @@ class MusicModule(Extension):
 
     @listen()
     async def on_ready(self):
-        # Initializing lavalink instance on bot startup        self.lavalink: Lavalink = Lavalink(self.client)
+        # Initializing lavalink instance on bot startup        
+        self.lavalink: Lavalink = Lavalink(self.client)
 
         self.assign_node()
 
         print("Music module loaded.")
         
     def assign_node(self):
-        node_information: dict = load_config('music', 'lavalink')
+        node_information: dict = get_config('music.lavalink')
 
         # Connecting to local lavalink server
-        self.lavalink.add_node(node_information['ip'], node_information['port'], node_information['password'], "eu")
-        
+        connected = self.lavalink.add_node(node_information['ip'], node_information['port'], node_information['password'], "eu")
+
         if self.lavalink is None:
             assert('Unable to grab Lavalink Object.')
 
@@ -59,23 +66,9 @@ class MusicModule(Extension):
 
         progress_bar_length = 10
         current_time = round((player.position / track.duration) * progress_bar_length)
+        
 
-        progress_bar_l = []
-        for i in range(progress_bar_length):
-            bar_section = 'middle'
-            if i == 0:
-                bar_section = 'start'
-            elif i == progress_bar_length - 1:
-                bar_section = 'end'
- 
-            if i < current_time:
-                bar_fill = emojis[f'bar_filled_{bar_section}']
-            else:
-                bar_fill = emojis[f'bar_empty_{bar_section}']
-
-            progress_bar_l.append(bar_fill)
-
-        progress_bar = ''.join(progress_bar_l)
+        progress_bar = generate_progress_bar(current_time, 10)
         
         time = lavalink.parse_time(player.position)
         
@@ -679,7 +672,7 @@ class MusicModule(Extension):
 
         main_buttons = self.get_buttons()
 
-        niko = '<a:vibe:1027325436360929300>'
+        niko = emojis["icon_vibe"]
         player_state = 'Now Playing...'
         embed = await self.get_playing_embed(player_state, player, True)
 
