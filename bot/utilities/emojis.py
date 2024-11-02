@@ -44,3 +44,5 @@ emojis = {
   "progress_empty_middle": "<:progress_empty_middle:1291069936927637565>",
   "progress_empty_end": "<:progress_empty_end:1291070042095616041>",
 }
+# replaces all names with "i" for more embed/message space
+emojis = {key: re.sub(r'(?<=[:])\w+(?=:\d)', 'i', value) for key, value in emojis.items()}
