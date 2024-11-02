@@ -5,7 +5,7 @@ from interactions import Embed, Message
 from data.emojis import emojis
 from data.localization import Localization, fnum
 from utilities.shop.fetch_shop_data import reset_shop_data
-from config_loader import get_config
+from data.config import get_config
 import database
 from aioconsole import aexec
 from termcolor import colored

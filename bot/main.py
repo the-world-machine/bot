@@ -5,7 +5,7 @@ import interactions.ext.prefixed_commands as prefixed_commands
 
 from utilities.dev_commands import execute_dev_command
 from database import ServerData, create_connection
-from config_loader import get_config
+from data.config import get_config
 import load_commands
 import os
 import random

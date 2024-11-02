@@ -1,18 +1,11 @@
 import asyncio
-import json
 import uuid
-from typing import Union
-
-import aiofiles
-import aiohttp
-import humanfriendly
 from interactions import *
 from interactions.api.events import MessageCreate, Component
-import config_loader
 from utilities.profile.badge_manager import increment_value
 from utilities.message_decorations import *
-
-from database import UserData, ServerData
+from data.localization import ftime
+from database import ServerData
 
 from utilities.transmission_connection_manager import *
 
@@ -262,7 +255,7 @@ class TransmissionModule(Extension):
             if not done:
 
                 if disconnect_timer % 10 == 0:
-                    time = humanfriendly.format_timespan(disconnect_timer)
+                    time = ftime(disconnect_timer)
 
                     embed.set_footer(text=f'Transmission will end in {time}.')
 

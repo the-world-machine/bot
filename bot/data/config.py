@@ -1,6 +1,6 @@
 import yaml
 
-with open('bot/data/config.yaml', 'r') as f:
+with open('bot-config.yaml', 'r') as f:
     data = yaml.safe_load(f)
     print("Loaded configuration")
 

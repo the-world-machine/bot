@@ -17,6 +17,6 @@ music:
         id: ...
     
     lavalink:
-        ip: localhost
+        ip: "localhost"
         port: 4230
         password: password_here

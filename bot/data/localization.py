@@ -1,15 +1,14 @@
 from genericpath import exists
+import re
 from typing import Literal, Union
-from babel import Locale
-import humanize
 from yaml import safe_load
-import io
 from data.emojis import emojis
 from dataclasses import dataclass
 import humanize
 from datetime import timedelta
+from humanfriendly import format_timespan
+from babel import Locale
 from babel.dates import format_timedelta
-
 languages = {}
 
 @dataclass
@@ -67,7 +66,6 @@ def assign_variables(result: str, locale: str, **variables: str):
         result = result.replace(f'[{name}]', data)
         
     return result
-
 def fnum(num: float | int, locale: str = "en-#") -> str:
     if isinstance(num, float):
         fmtd = f'{num:,.3f}'
@@ -78,15 +76,31 @@ def fnum(num: float | int, locale: str = "en-#") -> str:
         return fmtd.replace(",", " ").replace(".", ",")
     else:
         return fmtd
-    
-def fduration(duration: timedelta | float,
-              locale: Locale | str | None,
-              months: bool = True,
-              minimum_unit: Literal['year', 'month', 'week', 'day', 'hour', 'minute', 'second'] ="second", 
-              *args, **kwargs):
-    
+
+def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, **kwargs) -> str:
     if locale == "en-#":
         locale = "en"
-    locale = Locale.parse(locale, sep='-')
+    locale = Locale.parse(locale)
 
-    return format_timedelta(delta=duration, locale=locale, granularity=minimum_unit, *args, **kwargs)
+    if isinstance(duration, (int, float)):
+        duration = timedelta(seconds=duration)
+    
+    formatted = format_timespan(duration.total_seconds()).replace(" and", ",")
+
+    def translate_unit(component: str) -> str:
+        print(component)
+        amount, unit = component.split(" ", 1)
+        if not unit.endswith('s'):
+            unit += "s"
+        amount = int(amount)
+        if unit == "years":
+            unit = "weeks"
+            amount *= 52.1429
+        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale, **kwargs)
+        return translated_component
+
+    translated = ", ".join([translate_unit(part) for part in formatted.split(", ")])
+
+    if bold:
+        translated = re.sub(r'(\d+)', r'**\1**', translated)
+    return translated
