@@ -17,61 +17,60 @@ def minify_emoji_names(data):
         # replaces all names with "i" for more embed space
         return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
     return data
-
 emojis = minify_emoji_names({
    
   # Common
-  "icon_loading": '<a:loading:1297357951748669520>',
-  "icon_wool": '<:wool:1297359234790588528>',
-  "icon_sun": '<:sun:1297359718792298506>',
+  "icon_loading": '<a:loading:1290848643561164902>',
+  "icon_wool": '<:wool:1290848297698852947>',
+  "icon_sun": '<:sun:1290848333610618967>',
   "icon_inverted_clover": '<:inverted_clover:1026135536190111755>',
   "icon_capsule": "<:capsule:1147279938660089898>",
 
-  "vibe": "<a:vibe:1297360784325873725>",
-  "sleep": "<:sleepy:1297360830924591134>",
+  "vibe": "<a:vibe:1290847354542489660>",
+  "sleep": "<:sleepy:1290849529670664283>",
   "refresh": "<:refresh:1147696088250335303>",
   
   # Pancakes
-  "pancakes": "<:pancakes_:1297375564880941117>",
-  "golden_pancakes": "<:golden_pancakes:1297375620073918555>",
-  "glitched_pancakes": "<:glitched_pancakes:1297375684791894048>",
+  "pancakes": "<:pancakes_:1290847273210740757>",
+  "golden_pancakes": "<:golden_pancakes:1290847240247574610>",
+  "glitched_pancakes": "<:glitched_pancakes:1290847200112545804>",
 
   # Treasure Icons
-  "treasure_amber": "<:treasure_amulet:1297361078963015775>",
-  "treasure_bottle": "<:treasure_bottle:1297360957604892725>",
-  "treasure_card": "<:treasure_card:1297360931856322602>",
-  "treasure_clover": "<:treasure_clover:1297360984687513602>",
-  "treasure_die": "<:treasure_dice:1297361026874081443>",
-  "treasure_journal": "<:treasure_journal:1297361121908363326>",
-  "treasure_pen": "<:treasure_feather:1297361100681248840>",
-  "treasure_shirt": "<:treasure_novelty_shirt:1297360883776884837>",
-  "treasure_sun": "<:treasure_sun:1297361056242335834>",
+  "treasure_amber": "<:treasure_amulet:1290847574315499530>",
+  "treasure_bottle": "<:treasure_bottle:1290847840397951047>",
+  "treasure_card": "<:treasure_card:1290847890545180682>",
+  "treasure_clover": "<:treasure_clover:1290847782906761277>",
+  "treasure_die": "<:treasure_dice:1290847718566137979>",
+  "treasure_journal": "<:treasure_journal:1290847480237391955>",
+  "treasure_pen": "<:treasure_feather:1290847530980212756>",
+  "treasure_shirt": "<:treasure_novelty_shirt:1290848009315287090>",
+  "treasure_sun": "<:treasure_sun:1290847647372017786>",
 
   "progress_bars": {
     # Music
     "square": {
       "empty": {
-        "start": '<:square_bar_empty_start:1297359831669280832>',
-        "middle": '<:square_bar_empty_middle:1297359933431484466>',
-        "end": '<:square_bar_empty_end:1297361887411044352>'
+        "start": '<:square_bar_empty_start:1280362762651828255>',
+        "middle": '<:square_bar_empty_middle:1280362590379446293>',
+        "end": '<:square_bar_empty_end:1280362634591338537>'
       },
       "filled": {
-        "start": '<:square_bar_filled_middle:1297360652599562250>',
-        "middle": '<:square_bar_filled_start:1297360697973543026>',
-        "end": '<:square_bar_filled_end:1297360738591047691>'
+        "start": '<:square_bar_filled_middle:1280362778946699275>',
+        "middle": '<:square_bar_filled_start:1280362609648074792>',
+        "end": '<:square_bar_filled_end:1280362656364105800>'
       }
     },
     # Nikogotchi
     "round": {
       "empty": {
-        "start": "<:round_bar_empty_start:1297361713980772353>",
-        "middle": "<:round_bar_empty_middle:1297361735166197860>",
-        "end": "<:round_bar_empty_end:1297361757576232980>"
+        "start": "<:round_bar_empty_start:1291069871181922448>",
+        "middle": "<:round_bar_empty_middle:1291069976769200209>",
+        "end": "<:round_bar_empty_end:1291070082998341642>"
       },
       "filled": {
-        "start": "<:round_bar_filled_start:1297361635375058965>",
-        "middle": "<:round_bar_filled_middle:1297361670670254196>",
-        "end": "<:round_bar_filled_end:1297361690073108511>"
+        "start": "<:round_bar_filled_start:1291069773739982901>",
+        "middle": "<:round_bar_filled_middle:1291069936927637565>",
+        "end": "<:round_bar_filled_end:1291070042095616041>"
       }
     }
   }
