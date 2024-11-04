@@ -28,6 +28,7 @@ class Localization:
 
         parsed_path = localization_path.split('.')
 
+        got_value = False
         attempts = 0
         
         while not got_value:
