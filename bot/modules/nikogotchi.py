@@ -129,18 +129,12 @@ class NikogotchiModule(Extension):
         age = loc.l('nikogotchi.age', years=age.years, months=age.months, days=age.days)
 
         pb_length = 5
-
-        health_value = round((n.health / int(n.max_health)))
-        energy_value = round((n.energy / 5))
-        hunger_value = round((n.hunger / int(n.max_hunger)))
-        happiness_value = round((n.happiness / int(n.max_happiness)))
-        cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)))
         
-        health_progress_bar = generate_progress_bar(health_value, n.max_health, pb_length, "round")
-        hunger_progress_bar = generate_progress_bar(hunger_value, n.max_hunger, pb_length, "round")
-        happiness_progress_bar = generate_progress_bar(happiness_value, n.max_happiness, pb_length, "round")
-        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, n.max_cleanliness, pb_length, "round")
-        energy_progress_bar = generate_progress_bar(energy_value, 5, pb_length, "round")
+        health_progress_bar = generate_progress_bar(n.health, n.max_health, pb_length, "round")
+        hunger_progress_bar = generate_progress_bar(n.hunger, n.max_hunger, pb_length, "round")
+        happiness_progress_bar = generate_progress_bar(n.happiness, n.max_happiness, pb_length, "round")
+        cleanliness_progress_bar = generate_progress_bar(n.cleanliness, n.max_cleanliness, pb_length, "round")
+        energy_progress_bar = generate_progress_bar(n.energy, 5, pb_length, "round")
         
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 
