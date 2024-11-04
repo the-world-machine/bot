@@ -28,14 +28,25 @@ class Localization:
 
         parsed_path = localization_path.split('.')
 
-        value = fetch_language(locale)
-        # Get the values for the specified category and value
-        for path in parsed_path:
+        attempts = 0
+        
+        while not got_value:
             
-            try:
-                value = value[path]
-            except:
-                return f'`{localization_path}` is not a valid localization path.'
+            value = fetch_language(locale)
+            
+            # Get the values for the specified category and value
+            for path in parsed_path:
+                
+                try:
+                    value = value[path]
+                    got_value = True
+                except:
+                    attempts += 1
+                    locale = 'en-#'
+                    got_value = False
+
+                    if attempts > 5:
+                        return f'`{localization_path}`'
         
         result = value
         
@@ -103,7 +114,7 @@ def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, 
             unit = "weeks"
             amount *= 52.1429
             
-        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale)
+        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale, **kwargs)
         return translated_component
 
     translated = ", ".join([translate_unit(part) for part in formatted.split(", ")])
