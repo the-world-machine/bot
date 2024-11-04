@@ -2,16 +2,16 @@ from dataclasses import asdict, dataclass, field
 from typing import Union, Dict, List
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
-from config_loader import load_config
+from data.config import get_config
 from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
-from localization.loc import Localization
 import random
+
 
 # Define the Database Schema for The World Machine:
 @dataclass
 class Collection:
-    _id: Union[str, Snowflake]
+    _id: Union[str, Snowflake] | None
         
     async def update(self, **kwargs):
         '''
@@ -19,9 +19,9 @@ class Collection:
         '''
         
         updated_data = await update_in_database(self, **kwargs)
-        
         for k, v in asdict(updated_data).items():
             setattr(self, k, v)
+        return updated_data
         
     async def fetch(self):
         '''
@@ -95,10 +95,17 @@ class NikogotchiData(Collection):
     glitched_pancakes: int = 0
 
 @dataclass
+class StatUpdate:
+    icon: str        
+    old_value: int
+    new_value: int
+
+@dataclass
 class Nikogotchi(Collection):
     available: bool = False
-    last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-    hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+    hatched: datetime = field(default_factory=lambda: datetime.now())
+    last_interacted: datetime = field(default_factory=lambda: datetime.now())
+    started_finding_treasure_at: datetime | bool = False
     status: int = -1
     
     rarity: int = 0
@@ -124,34 +131,34 @@ class Nikogotchi(Collection):
     nid: str = '?'
     name: str = 'NONAME'
 
-    async def level_up(self, amount: int):
+    async def level_up(self, amount: int) -> List[StatUpdate]:
         
         level = self.level + amount
         
-        data = []
+        stats: List[StatUpdate] = []
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_health), 'new': int(self.max_health) + int(algorithm), 'icon': '❤️'})
+        stats.append(StatUpdate("❤️", int(self.max_health), int(self.max_health) + int(algorithm)))
         self.max_health += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_hunger), 'new': int(self.max_hunger) + int(algorithm), 'icon': '🍴'})
+        stats.append(StatUpdate("🍴", int(self.max_hunger), int(self.max_hunger) + int(algorithm)))
         self.max_hunger += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_happiness), 'new': int(self.max_happiness) + int(algorithm), 'icon': '🫂'})
+        stats.append(StatUpdate("🫂", int(self.max_happiness), int(self.max_happiness) + int(algorithm),))
         self.max_happiness += algorithm
         
         algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.max_cleanliness), 'new': int(self.max_cleanliness) + int(algorithm), 'icon': '🧽'})
+        stats.append(StatUpdate("🧽", int(self.max_cleanliness), int(self.max_cleanliness) + int(algorithm)))
         self.max_cleanliness += algorithm
         
         algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.attack), 'new': int(self.attack) + int(algorithm), 'icon': '🗡️'})
+        stats.append(StatUpdate("🗡️", int(self.attack), int(self.attack) + int(algorithm)))
         self.attack += algorithm
         
         algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-        data.append({'old': int(self.defense), 'new': int(self.defense) + int(algorithm), 'icon': '🛡️'})
+        stats.append(StatUpdate("🛡️", int(self.defense), int(self.defense) + int(algorithm)))
         self.defense += algorithm
 
         self.level = level
@@ -163,11 +170,10 @@ class Nikogotchi(Collection):
         
         await self.update(**asdict(self))
         
-        return data
-    
+        return stats
 # ----------------------------------------------------
 
-connection_uri = load_config('database')
+connection_uri = get_config('database')
 
 connection = None
 
@@ -219,7 +225,6 @@ async def update_in_database(collection: Collection, **kwargs):
 
     # Update only the specified fields in the existing document
     updated_data = {**existing_data, **kwargs}
-    
     # Update the document in the database
     await db.get_collection(collection.__class__.__name__).update_one(
         {'_id': collection._id}, 

@@ -247,28 +247,28 @@ interact:
   options:
     slap:
       name: Шлёпнуть
-      action: шлёпнул [user], наверное заслужил.
+      action: "[user_one] шлёпнул [user_two], наверное заслужил."
     punch:
       name: Ударить
-      action: ударил [user], больновато.
+      action: "[user_one] ударил [user_two], больновато."
     headpat:
       name: Гладить по голове
-      action: сделал [user] поглаживание по голове!
+      action: "[user_one] сделал [user_two] поглаживание по голове!"
     pet:
       name: Погладить
-      action: погладил [user]!
+      action: "[user_one] погладил [user_two]!"
     hug:
       name: Обнять
-      action: обнял [user]!
+      action: "[user_one] обнял [user_two]!"
     cuddle:
       name: Близко обнять
-      action: близко обнял [user]!
+      action: "[user_one] близко обнял [user_two]!"
     kiss:
       name: Поцеловать
-      action: поцеловал [user]! ❤️
+      action: "[user_one] поцеловал [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: бросил молик в [user], 🔥🔥 КУШАТЬ ПОДАНО 🔥🔥!!! #Very unique phrase RATATATATAT RAKETA BOMBA PETARRRRDAAAA
+      action: "[user_one] бросил молик в [user_two], 🔥🔥 КУШАТЬ ПОДАНО 🔥🔥!!!" #Very unique phrase RATATATATAT RAKETA BOMBA PETARRRRDAAAA
 
 # ---------------------------------------------------------------
 

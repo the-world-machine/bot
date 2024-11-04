@@ -3,7 +3,7 @@ from interactions import *
 import json
 from uuid import uuid4
 import os
-from utilities.fancy_send import fancy_message, fancy_embed
+from utilities.message_decorations import fancy_message, fancy_embed
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
 import aiohttp
@@ -190,7 +190,7 @@ class TextboxModule(Extension):
             placeholder='Select a face!'
         )
 
-        embed = await fancy_embed(f"[ <@{ctx.user.id}>, select a face. ]")
+        embed = fancy_embed(f"[ <@{ctx.user.id}>, select a face. ]")
 
         await ctx.edit(embed=embed, components=select_menu)
 
