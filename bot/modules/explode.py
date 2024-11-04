@@ -1,8 +1,9 @@
 from interactions import *
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 import random
 import datetime
 import utilities.profile.badge_manager as bm
+from data.localization import Localization, fnum
 
 
 class ExplodeModule(Extension):
@@ -18,15 +19,15 @@ class ExplodeModule(Extension):
 
     last_called = {}
 
-    @slash_command(name='explode', description="💥💥💥💥💥💥💥💥")
+    @slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
     async def explode(self, ctx: SlashContext):
+        loc = Localization(ctx.locale)
         user_id = ctx.user.id
 
         if user_id in self.last_called:
             elapsed_time = datetime.datetime.now() - self.last_called[user_id]
             if elapsed_time.total_seconds() < 20:
-                await fancy_message(ctx, f"[ Please do not spam this command. `{round(20 - elapsed_time.total_seconds(), ndigits=0)} seconds left.` ]", ephemeral=True, color=0xfc0000)
-                return
+                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds(), ndigits=0)), ephemeral=True, color=0xfc0000)
 
         self.last_called[user_id] = datetime.datetime.now()
 
@@ -43,27 +44,27 @@ class ExplodeModule(Extension):
 
         if random_sadness == 40:
             sad = True
-
+        dialogue 
         if not sad:
             embed = Embed(description=' ')
             
             sexy_amounts = [69, 420, 42069, 69420]
             
             if explosion_amount in sexy_amounts:
-                embed.set_author(name='nice 👍')
+                dialogue = loc.l("explode.sixtyninefourtweny")
                 
             if explosion_amount >= 99999:
                 explosion_amount = 99999
-                embed.set_author(name='That\'s enough.')
-                
-                explosion_amount = ctx.author_id
+                dialogue = loc.l("explode.nineninenineninenine")
+                           
+            explosion_amount = ctx.author_id # TODO: figure this out
 
             embed.set_image(url=self.explosion_image[random_number])
-            embed.set_footer(f'The Sun has been exploded {explosion_amount} times.')
+            embed.set_footer(loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
         else:
             embed = Embed(title='...')
             embed.set_image(url=self.sad_image)
-            embed.set_footer(f'[ You killed niko. ]')
+            embed.set_footer(loc.l("explode.YouKilledNiko"))
 
         with open('bot/data/explosions.txt', 'w') as f:
             try:

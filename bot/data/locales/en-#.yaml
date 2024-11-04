@@ -9,6 +9,53 @@ general:
     _continue: "Continue"
     _back: "Back"
 
+
+# ---------------------------------------------------------------
+
+music: 
+    
+# ---------------------------------------------------------------
+
+misc:
+  miaou:
+    title: "You found..."
+    finding:
+      noik: Niko!
+      footer: A 1 in 100 chance! Lucky!
+      cat: a cat!
+
+  stats:
+    owner: "👑 @[name]"
+    names: 
+      shards: "Shards"
+      avg_ping: "Average Ping"
+      commit_hash: "Commit hash"     #
+      server_count: "Server count"
+      user_installs: "User installs" # 
+      host: "Host"                   #
+      music_listeners: "Music Listeners"
+      played_time: "Played for"
+      played_songs: "Played songs"
+      cpu_usg: "CPU usage"
+      mem_usg: "Memory usage"
+      uptime: "Uptime"
+    values:
+
+      time: "**[sec]** s."
+      percent: "**[num]**%"
+      failed_commit_hash: "N/A"
+
+  
+# ---------------------------------------------------------------
+
+explode:
+    cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
+    dialogue:
+        sixtyninefourtweny: nice 👍
+        nineninenineninenine: That's enough.
+    info: "Times you've shattered The Sun: [amount]"
+    YouKilledNiko: "[ You killed Niko. ]"
+
 # ---------------------------------------------------------------
 
 shop:
@@ -353,7 +400,7 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: Do you want to rename it? You can always do this later using `/nikogotchi rename`
+    description: Wanna give them a name? You can always do this later using `/nikogotchi rename`
 
   status:
     template: "-# [status]"

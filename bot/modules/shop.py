@@ -2,12 +2,12 @@ from dataclasses import asdict
 import random
 from interactions import *
 from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treasure
-from utilities.fancy_send import *
-from utilities.emojis import emojis
+from utilities.message_decorations import *
 from utilities.shop.fetch_shop_data import DictItem, Item, ShopData, fetch_shop_data, reset_shop_data
 from datetime import datetime, timedelta
 from database import Nikogotchi, UserData
-from localization.loc import Localization, fnum
+from data.emojis import emojis
+from data.localization import Localization, fnum
 import re
 
 class ShopModule(Extension):

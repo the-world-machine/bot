@@ -6,35 +6,18 @@ import re
 import time
 from typing import Dict, List, Union
 
-from utilities.emojis import emojis
+from data.emojis import emojis
+from data.localization import Localization, fnum
 from dateutil import relativedelta
 from interactions import *
 from interactions.api.events import Component
 
 from utilities.nikogotchi_metadata import *
-from localization.loc import Localization, fnum
 from utilities.shop.fetch_items import fetch_treasure
 from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
-from utilities.fancy_send import *
+from utilities.message_decorations import fancy_embed, fancy_message, generate_progressbar
 
-def generate_progress_bar(value: int, progress_bar_length: int, emojis=emojis):
-        progress_bar_l = []
-        
-        for i in range(progress_bar_length):
-            bar_section = 'middle'
-            if i == 0:
-                bar_section = 'start'
-            elif i == progress_bar_length - 1:
-                bar_section = 'end'
 
-            if i < value:
-                bar_fill = emojis[f'progress_filled_{bar_section}']
-            else:
-                bar_fill = emojis[f'progress_empty_{bar_section}']
-
-            progress_bar_l.append(bar_fill)
-
-        return ''.join(progress_bar_l)
 
 @dataclass
 class TreasureSeekResults:
@@ -96,7 +79,7 @@ class NikogotchiModule(Extension):
         
         nikogotchi_data = await Nikogotchi(uid).fetch()
         
-        await nikogotchi_data.delete()
+        await nikogotchi_data.update(available=False, status=-1, nid="?")
     
     def nikogotchi_buttons(self, owner_id: int, locale: str):
         prefix = 'action_'
@@ -153,11 +136,11 @@ class NikogotchiModule(Extension):
         happiness_value = round((n.happiness / int(n.max_happiness)) * pb_length)
         cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * pb_length)
         
-        health_progress_bar = generate_progress_bar(health_value, pb_length)
-        hunger_progress_bar = generate_progress_bar(hunger_value, pb_length)
-        happiness_progress_bar = generate_progress_bar(happiness_value, pb_length)
-        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, pb_length)
-        energy_progress_bar = generate_progress_bar(energy_value, pb_length)
+        health_progress_bar = generate_progressbar(health_value, pb_length, "round")
+        hunger_progress_bar = generate_progressbar(hunger_value, pb_length, "round")
+        happiness_progress_bar = generate_progressbar(happiness_value, pb_length, "round")
+        cleanliness_progress_bar = generate_progressbar(cleanliness_value, pb_length, "round")
+        energy_progress_bar = generate_progressbar(energy_value, pb_length, "round")
 
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 
@@ -326,7 +309,7 @@ class NikogotchiModule(Extension):
 
             custom_id = button_ctx.custom_id
             if custom_id == f'rename {ctx.author.id}':
-                await self.init_rename_flow(button_ctx, nikogotchi.name)
+                await self.init_rename_flow(button_ctx, nikogotchi.name, True)
             else:
                 await button_ctx.defer(edit_origin=True)
                 
@@ -343,12 +326,13 @@ class NikogotchiModule(Extension):
         for _ in range(hours_taken):
             value = random.randint(0, 5000)
             treasure_id = ''
-            if value > 100:
-                treasure_id = random.choice(["journal", "bottle", "shirt"])
+
+            if value > 4900:
+                treasure_id = random.choice(["die", "sun", "clover"])
             elif value > 3500:
                 treasure_id = random.choice(["amber", "pen", "card"]) # TODO: store rarity in DB
-            elif value > 4900:
-                treasure_id = random.choice(["die", "sun", "clover"])
+            elif value > 100:
+                treasure_id = random.choice(["journal", "bottle", "shirt"])
             
             if treasure_id:
                 treasures_found.setdefault(treasure_id, 0)
@@ -679,7 +663,7 @@ class NikogotchiModule(Extension):
         else:
             await ctx.delete() 
 
-    async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str):
+    async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str, cont: bool = False):
         loc = Localization(ctx.locale)
         modal = Modal(
             ShortText(
@@ -689,14 +673,20 @@ class NikogotchiModule(Extension):
                 placeholder=loc.l('nikogotchi.other.renaming.input.placeholder'),
                 max_length=32
             ),
-            custom_id=f'rename_nikogotchi continue',
+            custom_id='rename_nikogotchi',
             title=loc.l('nikogotchi.other.renaming.title')
         )
+        if (cont):
+            modal.custom_id = 'rename_nikogotchi continue'
         await ctx.send_modal(modal)
 
-    @modal_callback(re.compile(r'rename_nikogotchi.+'))
+    @modal_callback(re.compile(r'rename_nikogotchi?.+'))
     async def on_rename_answer(self, ctx: ModalContext, name: str):
-        await ctx.defer(edit_origin=True)
+
+        if ctx.custom_id.endswith("continue"):
+            await ctx.defer(edit_origin=True)
+        else:
+            await ctx.defer(ephemeral=True)
         loc = Localization(ctx.locale)
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
 

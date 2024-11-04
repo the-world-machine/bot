@@ -1,7 +1,7 @@
 from interactions import *
-from utilities.fancy_send import *
-from utilities.emojis import *
-from localization.loc import Localization
+from utilities.message_decorations import *
+from data.emojis import *
+from data.localization import Localization
 
 class InteractModule(Extension):
     

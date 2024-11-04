@@ -2,10 +2,9 @@ from dataclasses import asdict, dataclass, field
 from typing import Union, Dict, List
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
-from config_loader import load_config
+from data.config import get_config
 from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
-from localization.loc import Localization
 import random
 
 
@@ -33,12 +32,6 @@ class Collection:
         
         return await fetch_from_database(self)
         
-    async def delete(self):
-        '''
-        Delete the current collection from the database using its _id.
-        '''
-        result = await delete_from_database(self._id)
-        return result
 @dataclass
 class UserData(Collection):
     wool: int = 5000
@@ -180,15 +173,9 @@ class Nikogotchi(Collection):
         return stats
 # ----------------------------------------------------
 
-connection_uri = load_config('database')
+connection_uri = get_config('database')
 
 connection = None
-
-# Add the delete_from_database function to handle deletion in the database
-async def delete_from_database(collection_id: Union[str, Snowflake]) -> bool:
-    db = get_database()
-    result = await db.get_collection(Collection.__name__).delete_one({'_id': collection_id})
-    return result.deleted_count > 0  # Return True if a document was deleted
 
 def create_connection():
     

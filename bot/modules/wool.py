@@ -1,11 +1,11 @@
 import asyncio
 import dataclasses
 from interactions import *
-from utilities.fancy_send import fancy_message
+from utilities.message_decorations import fancy_message
 import database as db
 import utilities.profile.badge_manager as badge_manager
-from utilities.emojis import emojis
-from localization.loc import fnum
+from data.emojis import emojis
+from data.localization import Localization, fnum
 
 from datetime import datetime, timedelta
 

@@ -1,10 +1,14 @@
 from genericpath import exists
-from typing import Union
+import re
+from typing import Literal, Union
 from yaml import safe_load
-import io
-from utilities.emojis import emojis
+from data.emojis import emojis
 from dataclasses import dataclass
-
+import humanize
+from datetime import timedelta
+from humanfriendly import format_timespan
+from babel import Locale
+from babel.dates import format_timedelta
 languages = {}
 
 @dataclass
@@ -41,11 +45,11 @@ class Localization:
             return assign_variables(result, locale, **variables)
             
 def fetch_language(locale: str):
-    if exists(f'bot/localization/locales/{locale}.yaml'):
-        with open(f'bot/localization/locales/{locale}.yaml', 'r', encoding='utf-8') as f:
+    if exists(f'bot/data/locales/{locale}.yaml'):
+        with open(f'bot/data/locales/{locale}.yaml', 'r', encoding='utf-8') as f:
             return safe_load(f)
     else:
-        with open(f'bot/localization/locales/en-#.yaml', 'r', encoding='utf-8') as f:
+        with open(f'bot/data/locales/en-#.yaml', 'r', encoding='utf-8') as f:
             return safe_load(f)
     
 def assign_variables(result: str, locale: str, **variables: str):
@@ -62,7 +66,6 @@ def assign_variables(result: str, locale: str, **variables: str):
         result = result.replace(f'[{name}]', data)
         
     return result
-
 def fnum(num: float | int, locale: str = "en-#") -> str:
     if isinstance(num, float):
         fmtd = f'{num:,.3f}'
@@ -73,3 +76,31 @@ def fnum(num: float | int, locale: str = "en-#") -> str:
         return fmtd.replace(",", " ").replace(".", ",")
     else:
         return fmtd
+
+def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, **kwargs) -> str:
+    if locale == "en-#":
+        locale = "en"
+    locale = Locale.parse(locale)
+
+    if isinstance(duration, (int, float)):
+        duration = timedelta(seconds=duration)
+    
+    formatted = format_timespan(duration.total_seconds()).replace(" and", ",")
+
+    def translate_unit(component: str) -> str:
+        print(component)
+        amount, unit = component.split(" ", 1)
+        if not unit.endswith('s'):
+            unit += "s"
+        amount = int(amount)
+        if unit == "years":
+            unit = "weeks"
+            amount *= 52.1429
+        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale, **kwargs)
+        return translated_component
+
+    translated = ", ".join([translate_unit(part) for part in formatted.split(", ")])
+
+    if bold:
+        translated = re.sub(r'(\d+)', r'**\1**', translated)
+    return translated

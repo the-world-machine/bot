@@ -1,5 +1,7 @@
 # World Machine
 bot/data/config.yaml
+bot-config.yaml
+application.yml
 bot/data/last_shop_reset_date.json
 bot/data/explosions.txt
 bot/data/shop.json
@@ -16,4 +18,3 @@ __pycache__/
 
 
 blob/*
-bot/data/shop.json

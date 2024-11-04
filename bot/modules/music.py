@@ -11,17 +11,23 @@ from interactions.api.events import *
 from interactions_lavalink import Lavalink, Player
 from interactions_lavalink.events import TrackStart, TrackException
 
-from utilities.emojis import emojis
+from data.emojis import emojis
+from data.localization import Localization
 from utilities.music.music_loaders import CustomSearch
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 # Utilities
 from utilities.music.spotify_api import Spotify
-from config_loader import load_config
+from data.config import get_config
+spotify_creds = get_config("music.spotify")
+spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
-spotify = Spotify(client_id=load_config('music', 'spotify', 'id'), secret=load_config('music', 'spotify', 'secret'))
-
+async def get_lavalink_stats():
+    return {
+        "playing_players": "placeholder",
+        "played_time": "placeholder",
+        "played_songs": "placeholder",
+    }
 class MusicModule(Extension):
-    
     # Base Command
     @slash_command(description="Listen to music using The World Machine!")
     async def music(self, ctx: SlashContext):
@@ -33,18 +39,19 @@ class MusicModule(Extension):
 
     @listen()
     async def on_ready(self):
-        # Initializing lavalink instance on bot startup        self.lavalink: Lavalink = Lavalink(self.client)
+        # Initializing lavalink instance on bot startup        
+        self.lavalink: Lavalink = Lavalink(self.client)
 
         self.assign_node()
 
         print("Music module loaded.")
         
     def assign_node(self):
-        node_information: dict = load_config('music', 'lavalink')
+        node_information: dict = get_config('music.lavalink')
 
         # Connecting to local lavalink server
-        self.lavalink.add_node(node_information['ip'], node_information['port'], node_information['password'], "eu")
-        
+        connected = self.lavalink.add_node(node_information['ip'], node_information['port'], node_information['password'], "eu")
+
         if self.lavalink is None:
             assert('Unable to grab Lavalink Object.')
 
@@ -59,23 +66,9 @@ class MusicModule(Extension):
 
         progress_bar_length = 10
         current_time = round((player.position / track.duration) * progress_bar_length)
+        
 
-        progress_bar_l = []
-        for i in range(progress_bar_length):
-            bar_section = 'middle'
-            if i == 0:
-                bar_section = 'start'
-            elif i == progress_bar_length - 1:
-                bar_section = 'end'
- 
-            if i < current_time:
-                bar_fill = emojis[f'bar_filled_{bar_section}']
-            else:
-                bar_fill = emojis[f'bar_empty_{bar_section}']
-
-            progress_bar_l.append(bar_fill)
-
-        progress_bar = ''.join(progress_bar_l)
+        progress_bar = generate_progress_bar(current_time, 10)
         
         time = lavalink.parse_time(player.position)
         
@@ -102,7 +95,7 @@ class MusicModule(Extension):
         i = (page * 10) - 9
         
         if player.current is None:
-            return await fancy_embed('[ There are no tracks in the player! ]')
+            return fancy_embed('[ There are no tracks in the player! ]')
 
         for song in queue:
             title = song.title
@@ -210,10 +203,10 @@ class MusicModule(Extension):
             return await fancy_message(ctx, "[ No results found. ]", color=0xff0000, ephemeral=True)
 
         player.store('Channel', ctx.channel)
+        player.store('Message', message)
         
         [player.add(track, requester=int(ctx.author.id)) for track in tracks]
 
-        await message.delete()
         if player.is_playing:
             add_to_queue_embed = self.added_to_playlist_embed(ctx, player, tracks[0])
 
@@ -526,7 +519,7 @@ class MusicModule(Extension):
         
         player: Player = event.player
         
-        channel = player.fetch('Channel')
+        message: Message = player.fetch('Message')
         player.store('Error', True)
         
         embed = Embed(
@@ -537,7 +530,7 @@ class MusicModule(Extension):
         
         print(f'Error occurred when playing a track. "{event.message}"')
         
-        await channel.send(content=emojis['sleep'], embed=embed, components=[])
+        await message.edit(content=emojis['sleep'], embed=embed, components=[])
         
     @listen()
     async def voice_state_update(self, event: VoiceUserLeave):
@@ -675,14 +668,15 @@ class MusicModule(Extension):
         player_uid = str(uuid.uuid4())
 
         player.store('uid', player_uid)
+        message: Message = player.fetch('Message')
 
         main_buttons = self.get_buttons()
 
-        niko = '<a:vibe:1027325436360929300>'
+        niko = emojis["icon_vibe"]
         player_state = 'Now Playing...'
         embed = await self.get_playing_embed(player_state, player, True)
 
-        message = await channel.send(content=niko, embed=embed, components=main_buttons)
+        message = await message.edit(content=niko, embed=embed, components=main_buttons)
 
         stopped_track = player.current
 

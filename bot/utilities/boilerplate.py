@@ -1,7 +1,7 @@
 from interactions import *
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 import utilities.profile.badge_manager as badge_manager
-from utilities.emojis import *
+from data.emojis import *
 
 
 class _Module(Extension):
