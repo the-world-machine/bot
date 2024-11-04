@@ -457,10 +457,10 @@ class NikogotchiModule(Extension):
                 nikogotchi.status = 3
                 nikogotchi.started_finding_treasure_at = datetime.now()
 
-        if custom_id == 'callback':
+        if custom_id == 'callback' and nikogotchi.status == 3:
             treasures_found = await self.calculate_treasure_seek(uid, round((datetime.now() - nikogotchi.started_finding_treasure_at).total_seconds() / 3600))
             nikogotchi.status = 2
-            nikogotchi.started_finding_treasure_at = datetime.now()
+            nikogotchi.started_finding_treasure_at = datetime.now() # this was false
             if treasures_found == None:
                 dialogue = loc.l('nikogotchi.treasured.dialogues.none_found')
         
