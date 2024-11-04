@@ -422,7 +422,7 @@ class NikogotchiModule(Extension):
             embed = Embed(
                 title=loc.l('nikogotchi.died.title', name=nikogotchi.name),
                 color=0x696969,
-                description=loc.l('nikogotchi.died.description', name=nikogotchi.name, age=age, time_difference=fnum(int(time_difference))
+                description=loc.l('nikogotchi.died.description', name=nikogotchi.name, age=age, time_difference=fnum(int(time_difference)))
             )
             
             await self.delete_nikogotchi(uid)
