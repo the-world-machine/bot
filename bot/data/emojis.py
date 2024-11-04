@@ -10,6 +10,16 @@ def flatten_emojis(data: dict, parent_key: str=''):
       items.append((key, v))
   return dict(items)
 
+def unflatten_emojis(flat_data: dict) -> dict:
+    unflattened = {}
+    for flat_key, value in flat_data.items():
+        keys = flat_key.split(".")
+        d = unflattened
+        for key in keys[:-1]:
+            d = d.setdefault(key, {})
+        d[keys[-1]] = value
+    return unflattened
+  
 def minify_emoji_names(data):
     if isinstance(data, dict):
         return {key: minify_emoji_names(value) for key, value in data.items()}
