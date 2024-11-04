@@ -1,10 +1,7 @@
 token: ...
 bot-id: "..." # Recommended to use the production bot ID. 
 
-status:
-    type: playing
-    value: OneShot
-
+status: sitton on top of the Tower
 do-avatar-rolling: true # Only affect bots that have been put in bot-id
 
 database: mongodb+srv://localhost
