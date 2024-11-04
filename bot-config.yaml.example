@@ -1,7 +1,10 @@
 token: ...
 bot-id: "..." # Recommended to use the production bot ID. 
 
-status: sitting atop the Tower
+status:
+    type: playing
+    value: OneShot
+
 do-avatar-rolling: true # Only affect bots that have been put in bot-id
 
 database: mongodb+srv://localhost
@@ -9,12 +12,14 @@ pteyrodactl-api: ... # Used for developer commands.
 
 dev-command-user-list: 
     - "user ids"
+    
 music:
+    enabled: true # Disable if you don't want to setup lavalinque
     spotify:
         secret: ...
         id: ...
     
     lavalink:
-        ip: 10.100.10.10
-        port: 123
-        password: ...
+        ip: "localhost"
+        port: 4230
+        password: password_here

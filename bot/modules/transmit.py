@@ -1,18 +1,11 @@
 import asyncio
-import json
 import uuid
-from typing import Union
-
-import aiofiles
-import aiohttp
-import humanfriendly
 from interactions import *
 from interactions.api.events import MessageCreate, Component
-import config_loader
 from utilities.profile.badge_manager import increment_value
-from utilities.fancy_send import *
-
-from database import UserData, ServerData
+from utilities.message_decorations import *
+from data.localization import ftime
+from database import ServerData
 
 from utilities.transmission_connection_manager import *
 
@@ -103,13 +96,13 @@ class TransmissionModule(Extension):
             custom_id='decline_phone'
         )
 
-        embed_one = await fancy_embed(f'[ Calling **{server_name}**... <a:loading:1026539890382483576> ]')
+        embed_one = fancy_embed(f'[ Calling **{server_name}**... <a:loading:1026539890382483576> ]')
 
-        embed_timeout_one = await fancy_embed('``[ Sorry! You took too long to respond! ]``', color=0xfa272d)
-        embed_timeout_two = await fancy_embed('``[ Sorry! The other server took too long to respond! ]``', color=0xfa272d)
+        embed_timeout_one = fancy_embed('``[ Sorry! You took too long to respond! ]``', color=0xfa272d)
+        embed_timeout_two = fancy_embed('``[ Sorry! The other server took too long to respond! ]``', color=0xfa272d)
 
-        embed_cancel_one = await fancy_embed('``[ Successfully Declined. ]``', color=0xfa272d)
-        embed_cancel_two = await fancy_embed('``[ Sorry! The other server declined the call! ]``', color=0xfa272d)
+        embed_cancel_one = fancy_embed('``[ Successfully Declined. ]``', color=0xfa272d)
+        embed_cancel_two = fancy_embed('``[ Sorry! The other server declined the call! ]``', color=0xfa272d)
 
         message = await select_results.ctx.send(embed=embed_one)
 
@@ -262,7 +255,7 @@ class TransmissionModule(Extension):
             if not done:
 
                 if disconnect_timer % 10 == 0:
-                    time = humanfriendly.format_timespan(disconnect_timer)
+                    time = ftime(disconnect_timer)
 
                     embed.set_footer(text=f'Transmission will end in {time}.')
 

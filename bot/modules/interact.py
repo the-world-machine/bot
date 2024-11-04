@@ -1,7 +1,7 @@
 from interactions import *
-from utilities.fancy_send import *
-from utilities.emojis import *
-from localization.loc import Localization
+from utilities.message_decorations import *
+from data.emojis import *
+from data.localization import Localization
 
 class InteractModule(Extension):
     
@@ -45,22 +45,18 @@ class InteractModule(Extension):
         loc = Localization(ctx.locale)
 
         if ctx.author.id == who.id:
-            await fancy_message(ctx, loc.l('interact.twm_is_fed_up_with_you', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
-            return
+            return await fancy_message(ctx, loc.l('interact.twm_is_fed_up_with_you', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
         
         if who.id == self.bot.user.id:
-            await fancy_message(ctx, loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
-            return
+            return await fancy_message(ctx, loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
         
-        if who.bot:
+        """if who.bot:
             await fancy_message(ctx, loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
-            return
+            return"""
         
         menu = await self.open_interactions_select(ctx.locale, who)
         
-        localization = Localization(ctx.locale)
-        
-        await ctx.send(content=localization.l('interact.selected', user=who.mention), components=menu, ephemeral=True)
+        await ctx.send(content=loc.l('interact.selected', user=who.mention), components=menu, ephemeral=True)
     
     @component_callback('interaction_selected')
     async def menu_callback(self, ctx: ComponentContext):
@@ -73,9 +69,5 @@ class InteractModule(Extension):
         user = result[1]
         
         localization = Localization(ctx.locale)
-        
-        action = localization.l(f'interact.options.{interaction}.action', user=user)
-        
-        result = f'[ {ctx.author.mention} {action} ]'
-        
-        await ctx.channel.send(result)
+               
+        await ctx.channel.send(localization.l(f'interact.options.{interaction}.action', user_one=user, user_two=ctx.author.mention))
