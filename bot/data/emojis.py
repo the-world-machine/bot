@@ -63,14 +63,14 @@ emojis = minify_emoji_names({
     # Nikogotchi
     "round": {
       "empty": {
-        "start": "<:round_bar_empty_start:1291069871181922448>",
-        "middle": "<:round_bar_empty_middle:1291069976769200209>",
-        "end": "<:round_bar_empty_end:1291070082998341642>"
+        "start": "<:round_bar_empty_start:1291069773739982901>",
+        "middle": "<:round_bar_empty_middle:1291069936927637565>",
+        "end": "<:round_bar_empty_end:1291070042095616041>"
       },
       "filled": {
-        "start": "<:round_bar_filled_start:1291069773739982901>",
-        "middle": "<:round_bar_filled_middle:1291069936927637565>",
-        "end": "<:round_bar_filled_end:1291070042095616041>"
+        "start": "<:round_bar_filled_start:1291069871181922448>",
+        "middle": "<:round_bar_filled_middle:1291069976769200209>",
+        "end": "<:round_bar_filled_end:1291070082998341642>"
       }
     }
   }
