@@ -14,7 +14,6 @@ motor==3.4.0
 pymongo==4.8.0
 PyYAML
 deepl
-
 python_dateutil==2.8.2
 PyYAML==6.0.2
 termcolor==2.5.0
