@@ -8,7 +8,7 @@ status:
 do-avatar-rolling: true # Only affect bots that have been put in bot-id
 
 database: mongodb+srv://localhost
-pteyrodactl-api: ... # Used for developer commands.
+dev-command-prefix: "[.]" # E.g. <.> (.) [.] {.} ^.^
 
 dev-command-user-list: 
     - "user ids"

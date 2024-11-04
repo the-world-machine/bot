@@ -68,8 +68,10 @@ async def execute_dev_command(message: Message):
     if not message.content:
         return
     
+    prefix = get_config('dev-command-prefix').split('.')
+    
     # This is not a valid command if brackets do not surround the message.
-    if not (message.content[0] == '{' or message.content[-1] == '}'):
+    if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
         return
     
     # Remove the brackets
