@@ -27,6 +27,7 @@ async def get_lavalink_stats():
         "played_time": "placeholder",
         "played_songs": "placeholder",
     }
+    
 class MusicModule(Extension):
     # Base Command
     @slash_command(description="Listen to music using The World Machine!")
@@ -59,16 +60,14 @@ class MusicModule(Extension):
 
     async def get_playing_embed(self, player_status: str, player: Player, allowed_control: bool):
 
-        track = player.current
+        track: lavalink.AudioTrack = player.current
 
         if track is None:
             return
 
         progress_bar_length = 10
-        current_time = round((player.position / track.duration) * progress_bar_length)
-        
 
-        progress_bar = generate_progress_bar(current_time, progress_bar_length, 'square')
+        progress_bar = generate_progress_bar(player.position, track.duration, progress_bar_length, 'square')
         
         time = lavalink.parse_time(player.position)
         

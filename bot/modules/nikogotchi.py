@@ -130,17 +130,17 @@ class NikogotchiModule(Extension):
 
         pb_length = 5
 
-        health_value = round((n.health / int(n.max_health)) * pb_length)
-        energy_value = round((n.energy / 5) * pb_length)
-        hunger_value = round((n.hunger / int(n.max_hunger)) * pb_length)
-        happiness_value = round((n.happiness / int(n.max_happiness)) * pb_length)
-        cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * pb_length)
+        health_value = round((n.health / int(n.max_health)))
+        energy_value = round((n.energy / 5))
+        hunger_value = round((n.hunger / int(n.max_hunger)))
+        happiness_value = round((n.happiness / int(n.max_happiness)))
+        cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)))
         
-        health_progress_bar = generate_progress_bar(health_value, pb_length, "round")
-        hunger_progress_bar = generate_progress_bar(hunger_value, pb_length, "round")
-        happiness_progress_bar = generate_progress_bar(happiness_value, pb_length, "round")
-        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, pb_length, "round")
-        energy_progress_bar = generate_progress_bar(energy_value, pb_length, "round")
+        health_progress_bar = generate_progress_bar(health_value, n.max_health, pb_length, "round")
+        hunger_progress_bar = generate_progress_bar(hunger_value, n.max_hunger, pb_length, "round")
+        happiness_progress_bar = generate_progress_bar(happiness_value, n.max_happiness, pb_length, "round")
+        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, n.max_cleanliness, pb_length, "round")
+        energy_progress_bar = generate_progress_bar(energy_value, 5, pb_length, "round")
         
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 

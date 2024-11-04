@@ -28,19 +28,29 @@ async def fancy_message(ctx, message: str | None = None, color: int = 0x8b00cc, 
     
     return await ctx.send(embeds=embeds, ephemeral=ephemeral, components=components)
 
-def generate_progress_bar(value: int, progress_bar_length: int, shape: Literal["square", "round"] = "square"):
-            out = ""
-            
-            for i in range(progress_bar_length):
-                bar_section = 'middle'
-                if i == 0:
-                    bar_section = 'start'
-                elif i == progress_bar_length - 1:
-                    bar_section = 'end'
+def generate_progress_bar(value: int, max_value: int, progress_bar_length: int, shape: Literal["square", "round"] = "square"):
+    # Ensure value does not exceed max_value
+    if value > max_value:
+        value = max_value
+    elif value < 0:
+        value = 0
 
-                if i < value:
-                    out += emojis['progress_bars'][shape]['filled'][bar_section]
-                else:
-                    out += emojis['progress_bars'][shape]['empty'][bar_section]
+    # Calculate the number of filled sections based on the value and max_value
+    filled_length = int((value / max_value) * progress_bar_length)
+    
+    out = ""
+    
+    for i in range(progress_bar_length):
+        bar_section = 'middle'
+        
+        if i == 0:
+            bar_section = 'start'
+        elif i == progress_bar_length - 1:
+            bar_section = 'end'
 
-            return out
+        if i < filled_length:
+            out += emojis['progress_bars'][shape]['filled'][bar_section]
+        else:
+            out += emojis['progress_bars'][shape]['empty'][bar_section]
+
+    return out
