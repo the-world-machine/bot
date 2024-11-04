@@ -19,10 +19,3 @@ aioconsole
 termcolor
 psutil
 babel
-python_dateutil==2.8.2
-PyYAML==6.0.2
-termcolor==2.5.0
-humanize
-aioconsole
-termcolor
-psutil
