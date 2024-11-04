@@ -80,6 +80,9 @@ def fnum(num: float | int, locale: str = "en-#") -> str:
 def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, **kwargs) -> str:
     if locale == "en-#":
         locale = "en"
+        
+    locale = locale.replace('-', '_')
+        
     locale = Locale.parse(locale)
 
     if isinstance(duration, (int, float)):
@@ -88,15 +91,19 @@ def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, 
     formatted = format_timespan(duration.total_seconds()).replace(" and", ",")
 
     def translate_unit(component: str) -> str:
+        
         print(component)
         amount, unit = component.split(" ", 1)
+        
         if not unit.endswith('s'):
             unit += "s"
-        amount = int(amount)
+            
+        amount = float(amount)
         if unit == "years":
             unit = "weeks"
             amount *= 52.1429
-        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale, **kwargs)
+            
+        translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale)
         return translated_component
 
     translated = ", ".join([translate_unit(part) for part in formatted.split(", ")])

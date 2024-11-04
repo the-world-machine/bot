@@ -31,7 +31,7 @@ misc:
       avg_ping: "Average Ping"
       commit_hash: "Commit hash"     #
       server_count: "Server count"
-      user_installs: "User installs" # 
+      user_installs: "User installs" #
       host: "Host"                   #
       music_listeners: "Music Listeners"
       played_time: "Played for"
@@ -159,7 +159,7 @@ shop:
       [user_wool]
     
     owned: > 
-      Thanks! You can equip this background on [the site, in the profile settings](https://theworldmachine.xyz/profile)
+      Thanks! You can equip this background on your **[Profile Settings](https://theworldmachine.xyz/profile)!**
 
 
       [user_wool]
@@ -405,13 +405,14 @@ nikogotchi:
   status:
     template: "-# [status]"
 
-    normal: "👍 seems to be doing fine."
-    pet: "🥺 wants attention!"
-    dirty: "🛀 wants to be cleaned!"
-    hungry: "🥞 is feeling hungry..."
-    treasure: "🎒 currently looking for treasures!"
+    normal: "Currently doing fine."
+    normal-rare: "Waiting for something to happen?"
+    pet: "🥺 [name] wants attention!"
+    dirty: "🛀 [name] wants to be cleaned!"
+    hungry: "🥞 [name] is feeling hungry..."
+    treasure: "🎒 [name] is currently looking for treasures!"
     treasuring_time: "**[hours]**h."
-    danger: 🚨 is at low health! Use Golden Pancakes to restore their health!
+    danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
 
   components:
     pet: Pet
@@ -427,7 +428,7 @@ nikogotchi:
 
       glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
-      no_food: "No Food! 😔 Get some at the shop"
+      no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh!
 
 

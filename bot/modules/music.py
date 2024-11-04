@@ -68,7 +68,7 @@ class MusicModule(Extension):
         current_time = round((player.position / track.duration) * progress_bar_length)
         
 
-        progress_bar = generate_progress_bar(current_time, 10)
+        progress_bar = generate_progress_bar(current_time, progress_bar_length, 'square')
         
         time = lavalink.parse_time(player.position)
         
@@ -672,7 +672,7 @@ class MusicModule(Extension):
 
         main_buttons = self.get_buttons()
 
-        niko = emojis["icon_vibe"]
+        niko = emojis["vibe"]
         player_state = 'Now Playing...'
         embed = await self.get_playing_embed(player_state, player, True)
 

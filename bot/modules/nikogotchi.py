@@ -15,7 +15,7 @@ from interactions.api.events import Component
 from utilities.nikogotchi_metadata import *
 from utilities.shop.fetch_items import fetch_treasure
 from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
-from utilities.message_decorations import fancy_embed, fancy_message, generate_progressbar
+from utilities.message_decorations import fancy_embed, fancy_message, generate_progress_bar
 
 
 
@@ -136,14 +136,17 @@ class NikogotchiModule(Extension):
         happiness_value = round((n.happiness / int(n.max_happiness)) * pb_length)
         cleanliness_value = round((n.cleanliness / int(n.max_cleanliness)) * pb_length)
         
-        health_progress_bar = generate_progressbar(health_value, pb_length, "round")
-        hunger_progress_bar = generate_progressbar(hunger_value, pb_length, "round")
-        happiness_progress_bar = generate_progressbar(happiness_value, pb_length, "round")
-        cleanliness_progress_bar = generate_progressbar(cleanliness_value, pb_length, "round")
-        energy_progress_bar = generate_progressbar(energy_value, pb_length, "round")
-
+        health_progress_bar = generate_progress_bar(health_value, pb_length, "round")
+        hunger_progress_bar = generate_progress_bar(hunger_value, pb_length, "round")
+        happiness_progress_bar = generate_progress_bar(happiness_value, pb_length, "round")
+        cleanliness_progress_bar = generate_progress_bar(cleanliness_value, pb_length, "round")
+        energy_progress_bar = generate_progress_bar(energy_value, pb_length, "round")
+        
         nikogotchi_status = loc.l('nikogotchi.status.normal')
 
+        if random.randint(0, 100) == 20:
+            nikogotchi_status = loc.l('nikogotchi.status.normal-rare')
+        
         if n.happiness < 20:
             nikogotchi_status = loc.l('nikogotchi.status.pet', name=n.name)
 
@@ -155,7 +158,7 @@ class NikogotchiModule(Extension):
         treasure_looking=''
         if n.status == 3:
             nikogotchi_status = loc.l('nikogotchi.status.treasure', name=n.name)
-            treasure_looking = f'  •  🎒 {loc.l("nikogotchi.status.treasuring_time", hours=round((datetime.now() - n.started_finding_treasure_at).total_seconds() / 3600))}'
+            treasure_looking = f'  •  🎒 {loc.l("nikogotchi.status.treasuring_time", name=n.name, hours=round((datetime.now() - n.started_finding_treasure_at).total_seconds() / 3600))}'
 
         treasure_found = ''
         if treasure_seek_results != None:
