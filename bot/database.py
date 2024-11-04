@@ -105,7 +105,7 @@ class Nikogotchi(Collection):
     available: bool = False
     hatched: datetime = field(default_factory=lambda: datetime.now())
     last_interacted: datetime = field(default_factory=lambda: datetime.now())
-    started_finding_treasure_at: datetime | bool = False
+    started_finding_treasure_at: datetime = field(default_factory=lambda: datetime.now())
     status: int = -1
     
     rarity: int = 0

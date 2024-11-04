@@ -281,7 +281,7 @@ class NikogotchiModule(Extension):
                 
                 last_interacted = datetime.now(),
                 hatched = datetime.now(),
-                started_finding_treasure_at = None,
+                started_finding_treasure_at = datetime.now(),
                 available = False,
                 status = 2
             )
@@ -388,6 +388,9 @@ class NikogotchiModule(Extension):
         )
 
         last_interacted = nikogotchi.last_interacted
+        
+        if nikogotchi.started_finding_treasure_at == False:
+            await nikogotchi.update(started_finding_treasure_at=datetime.now())
 
         current_time = datetime.now()
 
