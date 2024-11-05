@@ -21,92 +21,100 @@ class Localization:
     _locales = {}
     _last_modified = {}
 
-    def l(self, localization_path: str, guild_locale: str | None = None, **variables: str) -> Union[str, list[str], dict]:
-        locale = guild_locale if guild_locale else self.locale
-        
+    def l(self, localization_path: str, locale: str | None = None, **variables: str) -> Union[str, list[str], dict]:
+        if locale == None:
+            locale = self.locale
+
         if '-' in locale:
-            l_prefix = locale.split('-')[0]  # Create prefix for locale, e.g., en_UK and en_US becomes en.
+            l_prefix = locale.split('-')[0]
             if locale.startswith(l_prefix):
                 locale = l_prefix + '-#'
 
-        parsed_path = localization_path.split('.')
 
         got_value = False
         attempts = 0
-        
+        value = self.fetch_language(locale)
+
         while not got_value:
-            value = self.fetch_language(locale)
+            try:
+                value = self.rabbit(value, localization_path)
+                got_value = True
+            except KeyError:
+                attempts += 1
+                locale = 'en-#'
+                got_value = False
 
-            # Get the values for the specified category and value
-            for path in parsed_path:
-                try:
-                    value = value[path]
-                    got_value = True
-                except KeyError:  # Be specific about the error type
-                    attempts += 1
-                    locale = 'en-#'
-                    got_value = False
+                if attempts > 5:
+                    return f'`{localization_path}`'
 
-                    if attempts > 5:
-                        return f'`{localization_path}`'
-        
         result = value
-        
+
         if isinstance(result, (dict, list)):
             return result
         else:
             return self.assign_variables(result, locale, **variables)
 
-    def l_all(self, localization_path: str, locale_override: str = None, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+    @staticmethod
+    def l_all(localization_path: str, locale_override: str = None, **variables: str) -> dict[str, Union[str, list[str], dict]]:
         results = {}
-        
-        available_locales = self.locales_list()
-        
+
+        available_locales = Localization.locales_list()
+
         if locale_override:
             available_locales = [locale_override]
 
         for locale in available_locales:
             try:
-                value = self.fetch_language(locale)
-                parsed_path = localization_path.split('.')
+                value = Localization.fetch_language(locale)
 
-                for path in parsed_path:
-                    value = value[path]
+                value = Localization.rabbit(value, localization_path)
 
-                results[locale] = self.assign_variables(value, locale, **variables)
+                results[locale] = Localization.assign_variables(value, locale, **variables)
             except (KeyError, FileNotFoundError):
                 results[locale] = f'`{localization_path}` not found'
 
         return results
 
-    def locales_list(self) -> list[str]:
+    
+    @staticmethod
+    def locales_list() -> list[str]:
         locale_dir = Path('bot/data/locales')
         locales = []
 
-        for file in locale_dir.glob('*.yaml'):
+        for file in locale_dir.glob('*.yml'):
             locale_name = file.stem
             locales.append(locale_name)
 
         return locales
-
-    def fetch_language(self, locale: str):
-        if locale in self._locales and os.path.getmtime(f'bot/data/locales/{locale}.yml') == self._last_modified.get(locale):
-            return self._locales[locale]
+    
+    @staticmethod
+    def fetch_language(locale: str):
+        if locale in Localization._locales and os.path.getmtime(f'bot/data/locales/{locale}.yml') == Localization._last_modified.get(locale):
+            return Localization._locales[locale]
 
         if exists(f'bot/data/locales/{locale}.yml'):
             with open(f'bot/data/locales/{locale}.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
-                self._locales[locale] = data
-                self._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
+                Localization._locales[locale] = data
+                Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
                 return data
         else:
             with open(f'bot/data/locales/en-#.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
-                self._locales[locale] = data
-                self._last_modified[locale] = os.path.getmtime(f'bot/data/locales/en-#.yml')
+                Localization._locales[locale] = data
+                Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/en-#.yml')
                 return data
+            
+    @staticmethod
+    def rabbit(value: dict, raw_path: str) -> Union[str, list, dict]:
+        parsed_path: list[str] = raw_path.split('.')
 
-    def assign_variables(self, result: str, locale: str, **variables: str):
+        for path in parsed_path:
+            value = value[path]
+        return value
+    
+    @staticmethod
+    def assign_variables(result: str, locale: str, **variables: str):
         emoji_dict = {f'emoji:{name.replace("icon_", "")}': emojis[name] for name in emojis.keys()}
         
         for name, data in {**variables, **emoji_dict}.items():
