@@ -20,10 +20,18 @@ class Localization:
     locale: str
     _locales = {}
     _last_modified = {}
-
+    
     def l(self, localization_path: str, locale: str | None = None, **variables: str) -> Union[str, list[str], dict]:
         if locale == None:
             locale = self.locale
+
+        return self.sl(localization_path=localization_path, locale=locale, **variables)
+    
+    @staticmethod
+    def sl(localization_path: str, locale: str, **variables: str) -> Union[str, list[str], dict]:
+        """ Static version of .l for single use (where making another Localization() makes it cluttery)"""
+        if locale == None:
+            raise ValueError("No locale provided")
 
         if '-' in locale:
             l_prefix = locale.split('-')[0]
@@ -33,11 +41,11 @@ class Localization:
 
         got_value = False
         attempts = 0
-        value = self.fetch_language(locale)
+        value = Localization.fetch_language(locale)
 
         while not got_value:
             try:
-                value = self.rabbit(value, localization_path)
+                value = Localization.rabbit(value, localization_path)
                 got_value = True
             except KeyError:
                 attempts += 1
@@ -52,7 +60,7 @@ class Localization:
         if isinstance(result, (dict, list)):
             return result
         else:
-            return self.assign_variables(result, locale, **variables)
+            return Localization.assign_variables(result, locale, **variables)
 
     @staticmethod
     def l_all(localization_path: str, locale_override: str = None, **variables: str) -> dict[str, Union[str, list[str], dict]]:
