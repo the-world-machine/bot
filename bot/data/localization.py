@@ -93,14 +93,14 @@ class Localization:
         if locale in self._locales and os.path.getmtime(f'bot/data/locales/{locale}.yml') == self._last_modified.get(locale):
             return self._locales[locale]
 
-        if exists(f'bot/data/locales/{locale}.yaml'):
-            with open(f'bot/data/locales/{locale}.yaml', 'r', encoding='utf-8') as f:
+        if exists(f'bot/data/locales/{locale}.yml'):
+            with open(f'bot/data/locales/{locale}.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
                 self._locales[locale] = data
                 self._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
                 return data
         else:
-            with open(f'bot/data/locales/en-#.yaml', 'r', encoding='utf-8') as f:
+            with open(f'bot/data/locales/en-#.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
                 self._locales[locale] = data
                 self._last_modified[locale] = os.path.getmtime(f'bot/data/locales/en-#.yml')
