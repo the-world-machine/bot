@@ -51,7 +51,7 @@ class MiscellaneousModule(Extension):
         embed.add_field(loc.l("misc.stats.names.server_count"),
                         total_servers, inline=True)
         embed.add_field(loc.l("misc.stats.names.uptime"),
-                        ftime(self.bot.start_time - datetime.now(), ctx.locale, "uk", minimum_unit="hour", format="short", threshold=1), inline=True)
+                        ftime(self.bot.start_time - datetime.now(), ctx.locale), inline=True)
         #embed.add_field(loc.l("misc.stats.names.user_installs"),
         #                len(self.bot.app.users)) # NONEXISTENT
         #embed.add_field(loc.l("misc.stats.names.commit_hash"),

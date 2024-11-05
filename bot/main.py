@@ -38,6 +38,10 @@ async def pick_avatar():
     return random_avatar
 
 
+print("\nFinalizing... ─ ─ ─ ─ ─ ─ ─ ─ ─ 3/4")
+create_connection()
+
+print('Database Connected')
 @listen(Ready)
 async def on_ready():
     
@@ -45,10 +49,6 @@ async def on_ready():
     # return
     ### space for testing
     
-    print("\nFinalizing... ─ ─ ─ ─ ─ ─ ─ ─ ─ 3/4")
-    create_connection()
-    
-    print('Database Connected')
 
     await client.change_presence(status=Status.ONLINE, activity=Activity(type=ActivityType.CUSTOM, name=get_config('status')))
     await view.load_badges()
