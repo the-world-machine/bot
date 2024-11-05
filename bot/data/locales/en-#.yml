@@ -6,8 +6,9 @@ general:
     _yes: "Yes"
     _no: "No"
     _cancel: "Cancel"
-    _continue: "Continue"
     _back: "Back"
+    _continue: "Continue"
+    _open_site: "Open Website"
 
 
 # ---------------------------------------------------------------
@@ -44,7 +45,11 @@ misc:
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
+    
+# ---------------------------------------------------------------
 
+settings: 
+  profile: "You can view your profile over on the website!"
   
 # ---------------------------------------------------------------
 
