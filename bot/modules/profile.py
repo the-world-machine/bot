@@ -8,7 +8,7 @@ from interactions import Extension, SlashContext, User, OptionType, slash_comman
 import utilities.profile.badge_manager as bm
 import utilities.profile.profile_viewer as profile_viewer
 import database as db
-from utilities.fancy_send import *
+from utilities.message_decorations import *
 
 
 class ProfileModule(Extension):
@@ -28,7 +28,7 @@ class ProfileModule(Extension):
         pass
 
     @sun.subcommand(sub_cmd_description='Give someone a sun!')
-    @slash_option(description='Who you want to give it to.', name='user', opt_type=OptionType.USER, required=True)
+    @slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
     async def give(self, ctx: SlashContext, user: User):
         
         user_data: db.UserData = await db.UserData(user.id).fetch()

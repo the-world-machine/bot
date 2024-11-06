@@ -1,16 +1,16 @@
 {
-    "last_reset_date": "2024-03-25 00:00:00",
+    "last_reset_date": "2024-10-02 00:00:00",
     "backgrounds": [
-        "Lamplighter",
         "Library",
-        "Ruins"
+        "Factory",
+        "Refuge"
     ],
     "treasures": [
-        "pen",
+        "sun",
         "card",
-        "clover"
+        "bottle"
     ],
-    "stock_price": 0.3,
-    "stock_value": -0.4,
-    "motd": 5
+    "stock_price": 1.0,
+    "stock_value": 0.3,
+    "motd": 0
 }

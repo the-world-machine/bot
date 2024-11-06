@@ -1,39 +1,32 @@
-import asyncio
 
 from interactions import *
-from interactions.api.events import MessageCreate, MemberAdd, Ready, GuildJoin
+from interactions.api.events import MemberAdd, Ready, MessageCreate
 import interactions.ext.prefixed_commands as prefixed_commands
 
+from utilities.dev_commands import execute_dev_command
 from database import ServerData, create_connection
-from config_loader import *
+from data.config import get_config
 import load_commands
 import os
 import random
 import utilities.profile.profile_viewer as view
-import utilities.profile.badge_manager as badge_manager
-import utilities.fetch_capsule_characters as chars
-
 from modules.textbox import TextboxModule
 
-from utilities.shop.fetch_shop_data import fetch_treasure
-print('\nStarting The World Machine... 1/4')
+print('\nStarting The World Machine... ─ 1/4')
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
 
-client = Client(
+client = AutoShardedClient(
     intents=intents,
     disable_dm_commands=True,
-    send_command_tracebacks=False
+    send_command_tracebacks=False,
+    send_not_ready_messages=True
 )
 
 prefixed_commands.setup(client, default_prefix='*')
 
-print("\nLoading Commands... 2/4")
+print("\nLoading Commands... ─ ─ ─ ─ ─ ─ 2/4")
 
 load_commands.load_commands(client)
-
-print('\nLoading Additional Extensions... 3/4')
-
-client.load_extension("interactions.ext.sentry", token=load_config('sentry'))  # Debugging and errors.
 
 async def pick_avatar():
     get_avatars = os.listdir('bot/images/profile_pictures')
@@ -42,8 +35,13 @@ async def pick_avatar():
     avatar = File('bot/images/profile_pictures/' + random_avatar)
 
     await client.user.edit(avatar=avatar)
+    return random_avatar
 
 
+print("\nFinalizing... ─ ─ ─ ─ ─ ─ ─ ─ ─ 3/4")
+create_connection()
+
+print('Database Connected')
 @listen(Ready)
 async def on_ready():
     
@@ -51,42 +49,45 @@ async def on_ready():
     # return
     ### space for testing
     
-    print("\nFinalizing... 4/4")
-    
-    create_connection()
-    
-    print('Database Connected')
 
-    await client.change_presence(status=Status.ONLINE, activity=Activity(type=ActivityType.PLAYING, name='OneShot'))
-    chars.get_characters()
+    await client.change_presence(status=Status.ONLINE, activity=Activity(type=ActivityType.CUSTOM, name=get_config('status')))
     await view.load_badges()
 
-    if client.user.id == 1015629604536463421:
-        await pick_avatar()
-    else:
-        try:
-            await client.user.edit(avatar=File('bot/images/unstable.png'))
-        except:
-            pass
+    if get_config('do-avatar-rolling', ignore_None=True): 
+        print("Rolling avatar", end=" ... ")
+        if client.user.id == int(get_config('bot-id')):
+            used = await pick_avatar()
+            print(f"used {used}")
+        else:
+            try:
+                await client.user.edit(avatar=File('bot/images/unstable.png'))
+                print("used unstable")
+            except:
+                print("failure")
+                pass
         
-    print("\n----------------------------------------")
-    print("\nThe World Machine is ready!\n\n")
+    print("\n\n─ The World Machine is ready! ─ 4/4\n\n")
 
 # Whenever a user joins a guild...
 @listen(MemberAdd)
 async def on_guild_join(event: MemberAdd):
+    if client.user.id != int(get_config('bot-id')):
+        return
     
-    # If not the main bot, please don't send welcome messages.
-    if client.user.id != 1015629604536463421:
+    if event.member.bot:
         return
     
     # Check to see if we should generate a welcome message
-    server_data: ServerData = await ServerData(event.guild_id).fetch() # type: ignore
+    server_data: ServerData = await ServerData(event.guild_id).fetch()
     
     if not server_data.welcome_message:
         return
 
     # Generate welcome textbox.
     await TextboxModule.generate_welcome_message(event.guild, event.member, server_data.welcome_message)
+    
+@listen(MessageCreate)
+async def on_message_create(event: MessageCreate):
+    await execute_dev_command(event.message)
 
-client.start(load_config('token'))
+client.start(get_config('token'))

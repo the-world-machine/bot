@@ -6,7 +6,7 @@ import aiohttp
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 from interactions import User
 from utilities.shop.fetch_items import fetch_background, fetch_badge
-from localization.loc import fnum
+from data.localization import fnum
 
 import database as db
 

@@ -1,12 +1,9 @@
 from datetime import datetime
 import random
-import aiofiles
-import json
 
-from utilities.shop.fetch_items import fetch_background, fetch_treasure
-from localization.loc import Localization
+from database import fetch_items, update_shop
+from data.localization import Localization
 from dataclasses import dataclass
-import json
 
 @dataclass
 class DictItem:
@@ -21,85 +18,50 @@ class Item:
     image: int
     id: str
 
+@dataclass
 class ShopData:
     
-    last_reset_date: datetime
+    last_updated: datetime
     background_stock: list[DictItem]
     treasure_stock: list[DictItem]
     stock_price: float
     stock_value: float
     motd: int
-    
-    async def setup_shop(self, data: dict):
-        
-        backgrounds = data['backgrounds']
-        treasures = data['treasures']
-        
-        self.last_reset_date: datetime = datetime.strptime(data['last_reset_date'], "%Y-%m-%d %H:%M:%S")
-        
-        self.background_stock: list[DictItem] = []
-        
-        all_bgs = await fetch_background()
-        
-        for nid in backgrounds:
-            
-            bg = all_bgs[nid]
-            
-            if bg['type'] == 0:
-                continue
-            
-            self.background_stock.append(DictItem(nid=nid, **bg))
-            
-        self.treasure_stock: list[DictItem] = []
-        
-        all_treasures = await fetch_treasure()
-            
-        for nid in treasures:
-            
-            treasure = all_treasures[nid]
-            
-            treasure["image"] = int(treasure["image"])
-            self.treasure_stock.append(DictItem(nid=nid, type=0, **treasure))
-        
-        self.stock_price = data['stock_price']
-        self.stock_value = data['stock_value']
-        self.motd = data['motd']
-        
-        return self
 
 async def fetch_shop_data():
     
-    data: str = await fetch_shop()
+    items = await fetch_items()
      
-    shop_data = ShopData()
+    shop_data = ShopData(
+        items['shop']['last_updated'],
+        items['shop']['backgrounds'],
+        items['shop']['treasures'],
+        items['shop']['stock']['price'],
+        items['shop']['stock']['value'],
+        items['shop']['motd']
+    )
     
-    return await shop_data.setup_shop(data)
-
-async def fetch_shop():
-    async with aiofiles.open('bot/data/shop.json', 'r') as f:
-        strdata = await f.read()
-    
-    return json.loads(strdata)
-
-async def update_shop(shop_data: dict):
-    async with aiofiles.open('bot/data/shop.json', 'w') as f:
-        await f.write(json.dumps(shop_data, indent=4))
+    return shop_data
 
 async def reset_shop_data(loc: str):
     
-    data: dict = await fetch_shop()
+    items = await fetch_items()
+    data = items['shop']
     
-    unparsed_backgrounds = await fetch_background()
+    all_bgs = items['backgrounds']
+    backgrounds = {}
     
-    backgrounds = [bg for bg in unparsed_backgrounds if unparsed_backgrounds[bg]['type'] != 0]
+    for bg in all_bgs:
+        if all_bgs[bg]['purchasable']:
+            backgrounds[bg] = all_bgs[bg]
         
-    treasures = await fetch_treasure()
+    treasures = items['treasures']
     motds = Localization(loc).l('shop.motds')
     
     data['backgrounds'] = []
     data['treasures'] = []
     
-    n_backgrounds = random.sample(backgrounds, 3)
+    n_backgrounds = random.sample(list(backgrounds.keys()), 3)
     n_treasures = random.sample(list(treasures.keys()), 3)
     
     data['backgrounds'] = n_backgrounds
@@ -108,27 +70,25 @@ async def reset_shop_data(loc: str):
     
     now = datetime.now()
     
-    data['last_reset_date'] = datetime.strftime(datetime(now.year, now.month, now.day, hour=0, minute=0, second=0), '%Y-%m-%d %H:%M:%S')
+    data['last_updated'] = datetime(now.year, now.month, now.day, hour=0, minute=0, second=0)
     
     is_positive = random.choice([True, False])
     
-    if data['stock_price'] < 0.5:
+    if data['stock']['price'] < 0.5:
         is_positive = True
     
-    if data['stock_price'] > 1.5:
+    if data['stock']['price'] > 1.5:
         is_positive = False
     
     if is_positive:
-        data['stock_value'] = round(random.uniform(0.3, 0.7), 1)
+        data['stock']['value'] = round(random.uniform(0.3, 0.7), 1)
     else:
-        data['stock_value'] = round(random.uniform(-0.3, -0.7), 1)    
+        data['stock']['value'] = round(random.uniform(-0.3, -0.7), 1)    
     
-    price_change = data['stock_price'] + data['stock_value']
+    price_change = data['stock']['price'] + data['stock']['value']
     
-    data['stock_price'] = round(min(2, max(0.2, price_change)), 1)
+    data['stock']['price'] = round(min(2, max(0.2, price_change)), 1)
     
     await update_shop(data)
     
-    shop_data = ShopData()
-    
-    return await shop_data.setup_shop(data)
+    return await fetch_shop_data()

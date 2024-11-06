@@ -1,0 +1,37 @@
+# the lavalink configuration file, download and run the lavalink.jar to use this
+# there's also a toggle in the bot-config.yaml if you don't want music at all
+
+server:
+  port: 4230
+  address: "localhost"
+
+lavalink:
+  server:
+    sources:
+      youtube: false
+    password: "password_here"
+  plugins:
+    # Replace 1.8.3 with the latest version
+    # it'll show here https://github.com/lavalink-devs/youtube-source/releases/latest
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.8.3"
+      snapshot: false
+  http2:
+    disabled: false
+  websocket:
+    sessions:
+      maximum: 100
+
+# this part under may change any time, if it doesn't work:
+# make sure to follow whatever's here https://github.com/lavalink-devs/youtube-source/tree/1.8.3?tab=readme-ov-file#plugin
+# for "v4"
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+    clients:
+      - MUSIC
+      - ANDROID_VR
+      - WEB
+      - WEBEMBEDDED

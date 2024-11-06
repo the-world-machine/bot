@@ -1,15 +1,20 @@
 import asyncio
 import dataclasses
 from interactions import *
-from utilities.fancy_send import fancy_message
+from utilities.message_decorations import fancy_message
 import database as db
 import utilities.profile.badge_manager as badge_manager
-import utilities.bot_icons as icons
-from localization.loc import fnum
+from data.emojis import emojis
+from data.localization import Localization, fnum
 
 from datetime import datetime, timedelta
 
 import random
+
+@dataclasses.dataclass
+class Slot:
+    emoji: int
+    value: float
 
 
 class WoolModule(Extension):
@@ -53,12 +58,12 @@ class WoolModule(Extension):
 
         await fancy_message(
             ctx,
-            f"[ **{user.username}** has <:wool:1044668364422918176>**{fnum(wool)}**. ]",
+            f"[ **{user.username}** has {emojis['icon_wool']}**{fnum(wool)}**. ]",
         )
         
     @wool.subcommand(sub_cmd_description='Give someone your wool.')
     @slash_option(description='Who to give your wool to...', name='user', required=True, opt_type=OptionType.USER)
-    @slash_option(description='The amount to give, as long as you can afford it.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1, max_value=999999)
+    @slash_option(description='The amount to give, as long as you can afford it.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1)
     async def give(self, ctx: SlashContext, user: User, amount: int):
         
         if user.id == ctx.author.id:
@@ -79,12 +84,12 @@ class WoolModule(Extension):
         if amount > 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {icons.icon_wool}{fnum(amount)} to {user.mention}, how generous!",
+                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, how generous!",
             )
         elif amount == 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {icons.icon_wool}{fnum(amount)} to {user.mention}, not very generous!",
+                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, not very generous!",
             )
         else:
             await fancy_message(
@@ -151,26 +156,26 @@ class WoolModule(Extension):
             footer=EmbedFooter(text=value),
             color=color
         ))
-    
-    @dataclasses.dataclass
-    class Slot:
-        emoji: int
-        value: float
         
     slots = [
-        Slot(1026207765661761596, 0.2),
-        Slot(1026181554919182416, 0.3),
-        Slot(1026181503597678602, 0.4),
-        Slot(1026181557230256128, 0.8),
-        Slot(1026181556051648634, 1.0),
-        Slot(1026207773559619644, 1.2),
-        Slot(1026199772232695838, 1.4),
+        Slot(1290847840397951047, 0.1),
+        Slot(1290847480237391955, 0.15),
+        Slot(1290847574315499530, 0.2),
+        Slot(1290848009315287090, 0.5),
+        Slot(1290847840397951047, 0.1),
+        Slot(1290847480237391955, 0.15),
+        Slot(1290847574315499530, 0.2),
+        Slot(1290848009315287090, 0.5),
+        Slot(1290847890545180682, 0.8),
+        Slot(1290847718566137979, 1.0),
+        Slot(1290847647372017786, 1.12),
+        Slot(1290847782906761277, 1.5),
         
-        Slot(1147182669562654851, -1.0),
-        Slot(1147182669562654851, -1.0),
-        Slot(1147182669562654851, -1.0)
+        Slot(1291071376517501119, -0.2),
+        Slot(1291071376517501119, -0.2),
+        Slot(1291071376517501119, -0.2)
     ]
-    
+
     slot_value = 10
     
     @wool.subcommand()
@@ -184,17 +189,26 @@ class WoolModule(Extension):
         Here is the following slots you can roll and their value:
         '''
         
+        existing_slots = []
+        
         for slot in self.slots:
             
-            if slot.emoji != 1147182669562654851:
+            
+            if slot.emoji != 1291071376517501119:
+                
+                if slot.emoji in existing_slots:
+                    continue
+                
+                existing_slots.append(slot.emoji)
+                
                 text += f'\n- <:icon:{slot.emoji}> **{int(slot.value * 100)} points**'
             
-        text += f'\n\n- <:penguin:1147182669562654851> **-100 point penalty.**\n\nPoints are added up and them multiplied by your bet. You also get double points when you hit a jackpot.'
+        text += f'\n\n- <:penguin:1291071376517501119> **-20 point penalty.**\n\nPoints are added up and them multiplied by your bet. You also get double points when you hit a jackpot.'
 
         await fancy_message(ctx, text)
         
     @wool.subcommand()
-    @slash_option(description='The amount of wool to gamble.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=100, max_value=999_999)
+    @slash_option(description='The amount of wool to gamble.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=100)
     async def gamble(self, ctx: SlashContext, amount: int):
         '''Waste your wool away with slots. Totally not a scheme by Magpie.'''
         
@@ -217,9 +231,9 @@ class WoolModule(Extension):
             
             slots.append(selected_slots)
                 
-        def generate_column(column: list[list[self.Slot]], i: int):
+        def generate_column(column: list[list[Slot]], i: int):
             
-            def image(slot: self.Slot):
+            def image(slot: Slot):
                 return f'<:slot:{slot.emoji}>'
             
             slot_a = 0
@@ -288,7 +302,7 @@ class WoolModule(Extension):
                         ticker += f'{s} ┋ '
             
             return Embed(
-                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {icons.icon_wool}{fnum(amount)}.\n{ticker}",
+                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icon_wool']}**{fnum(amount)}**.\n{ticker}",
                 color=0x8B00CC,
             )
             
@@ -336,23 +350,23 @@ class WoolModule(Extension):
             slot_c_value = slot.value
             
             await asyncio.sleep(1)
-                
+
         if slot_a_value == slot_b_value == slot_c_value:
-            jackpot_bonus = 100
+            additional_scoring = 100
         else:
-            jackpot_bonus = 1
+            additional_scoring = 1
                 
         win_amount = int(
-            (slot_a_value + slot_b_value + slot_c_value) * jackpot_bonus * (amount / 2)
+            (slot_a_value + slot_b_value + slot_c_value) * additional_scoring * (amount / 2)
         )
         
         if win_amount < 0:
             win_amount = 0
-
+            
         await user_data.manage_wool(win_amount)
         
         if win_amount > 0:
-            if jackpot_bonus > 1:
+            if additional_scoring > 1:
                 result_embed.color = 0xFFFF00
                 result_embed.set_footer(
                     text=f"JACKPOT! 🎉 {ctx.author.username} won back {fnum(abs(win_amount))} wool!"

@@ -1,10 +1,3 @@
-# World Machine
-bot/data/config.yaml
-bot/data/last_shop_reset_date.json
-bot/data/explosions.txt
-
-bot/images/*.png
-
 .idea
 .mypy_cache
 .vscode
@@ -15,4 +8,7 @@ __pycache__/
 
 
 blob/*
-bot/data/shop.json
+
+bot-config.yml
+lavalink/application.yml
+lavalink/{plugins,Lavalink.jar}

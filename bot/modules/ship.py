@@ -2,38 +2,37 @@ import random
 
 from interactions import *
 
-import utilities.bot_icons as icons
-from utilities.fancy_send import *
+from data.emojis import emojis
+from utilities.message_decorations import *
 
 
 class ShippingModule(Extension):
 
     @slash_command(description="Ship two people together.")
     @slash_option(name="who", description="First person. Can be a user.", opt_type=OptionType.STRING, required=True)
-    @slash_option(name="what", description="Second person. Can be a user.", opt_type=OptionType.STRING, required=True)
-    async def ship(self, ctx: SlashContext, who: str, what: str):
+    @slash_option(argument_name="whomst", name="with", description="Second person. Can be a user.", opt_type=OptionType.STRING, required=True)
+    async def ship(self, ctx: SlashContext, who: str, whomst: str):
         
         if '<' in who:
             parsed_id = who.strip('<@>')
             user = await self.bot.fetch_user(int(parsed_id))
 
             who = user.display_name
-        if '<' in what:
-            parsed_id = what.strip('<@>')
+        if '<' in whomst:
+            parsed_id = whomst.strip('<@>')
             user = await self.bot.fetch_user(int(parsed_id))
 
-            what = user.display_name
-
-        if who == ctx.author.display_name and who == what:
+            whomst = user.display_name
+        if who == ctx.author.display_name and who == whomst:
             return await fancy_message(ctx, "[ Do you need a hug? ]", color=0xff0000, ephemeral=True)
 
-        seed = len(who) + len(what)
+        seed = len(who) + len(whomst)
         random.seed(seed)
 
         love_percentage = random.randint(0, 100)
 
         name_a_part = who[0 : len(who) // 2] # Get the first half of the first name.
-        name_b_part = what[-len(what) // 2 :] # Get the last half of the second name.
+        name_b_part = whomst[-len(whomst) // 2 :] # Get the last half of the second name.
         
         name = name_a_part + name_b_part # Combine the names together.
 

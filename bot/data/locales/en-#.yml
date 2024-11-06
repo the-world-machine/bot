@@ -1,22 +1,79 @@
 ---
 general:
-  loading: "[ Waiting... [loading_icon] ]"
+  loading: "[ Waiting... [emoji:loading] ]"
 
   buttons:
     _yes: "Yes"
     _no: "No"
+    _cancel: "Cancel"
+    _back: "Back"
+    _continue: "Continue"
+    _open_site: "Open Website"
+
+
+# ---------------------------------------------------------------
+
+music: 
+    
+# ---------------------------------------------------------------
+
+misc:
+  miaou:
+    title: "You found..."
+    finding:
+      noik: Niko!
+      footer: A 1 in 100 chance! Lucky!
+      cat: a cat!
+
+  stats:
+    owner: "👑 @[name]"
+    names: 
+      shards: "Shards"
+      avg_ping: "Average Ping"
+      commit_hash: "Commit hash"     #
+      server_count: "Server count"
+      user_installs: "User installs" #
+      host: "Host"                   #
+      music_listeners: "Music Listeners"
+      played_time: "Played for"
+      played_songs: "Played songs"
+      cpu_usg: "CPU usage"
+      mem_usg: "Memory usage"
+      uptime: "Uptime"
+    values:
+
+      time: "**[sec]** s."
+      percent: "**[num]**%"
+      failed_commit_hash: "N/A"
+    
+# ---------------------------------------------------------------
+
+settings: 
+  profile: "You can view your profile over on the website!"
+  
+# ---------------------------------------------------------------
+
+explode:
+    cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
+    dialogue:
+        sixtyninefourtweny: nice 👍
+        nineninenineninenine: That's enough.
+    info: "Times you've shattered The Sun: [amount]"
+    YouKilledNiko: "[ You killed Niko. ]"
 
 # ---------------------------------------------------------------
 
 shop:
-  loading: "[ Loading Shop... [loading_icon] ]"
+  loading: "[ Loading Shop... [emoji:loading] ]"
 
-  user_wool: "**Current Balance:** [wool_icon]**[wool]**"
-  owned: "**Currently Owned:** [amount]"
+  user_wool: "**Your Balance: [emoji:wool][wool]**"
+  owned: "you have **[amount]**"
 
   buttons:
     buy: Trade
     buy_all: Trade All
+    sell: Trade in
+    sell_all: Trade in All
     go_back: Go Back
     owned: Owned
     too_poor: Cannot Afford
@@ -24,13 +81,10 @@ shop:
   main_title: Welcome!
 
   main: >
-    Hey, Hey! Welcome to my emporium. I'm here always looking for the most interesting of treasures and [wool_icon]**Wool**...!
+    Hey, Hey! Welcome to my emporium. I'm willing to trade many shiny and colorful treasures, backgrounds, capsules and more in exchange for your [emoji:wool]**Wool**... think of it as a currency eh?
 
 
-    I'm willing to trade many shiny and colorful treasures, background, capsules and more in exchange... think of it as a currency eh?
-
-
-    To get started, simply select on one of the categories I have presented and then trade away! Keep in mind there are some items that change **daily** so keep an eye on those!
+    To get started, simply open one of the categories shown below and then trade away! Keep in mind that there are some items that change **daily**, so keep an eye out on those!
 
 
     [motd]
@@ -46,8 +100,8 @@ shop:
     - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
     - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
-  traded: "> Successfully traded [price] Wool for [amount] [item_name](s)!"
-  traded_sell: "> Sucessfully traded [amount] [item_name](s) for [price] Wool!"
+  traded: '> Successfully traded for [amount] "[item_name]"!'
+  traded_sell: '> Sucessfully traded in [amount] "[item_name]" for [price] Wool!'
   traded_fail: "> You cannot trade this. Please refresh the shop!"
 
   stocks: >
@@ -71,10 +125,10 @@ shop:
       *AHEM* existential dread aside, feeding them with pancakes and taking good care of them will allow you to gather treasures! Which you can trade to me! Pretty cool right?
 
 
-      So why not trade for a capsule today? Only [wool_icon]**[cost]**!
+      So why not trade for a capsule today? Only [emoji:wool]**[cost]**!
 
 
-      *Do keep in mind that you can only have* ***one capsule*** *per Nikogotchi.*
+      *Do keep in mind that you can only have **one capsule** per Nikogotchi.*
     
 
       [user_wool]
@@ -104,91 +158,84 @@ shop:
     title: Backgrounds
 
     main: >
-      Do you want to trade the **'[bg_name]'** background for [wool_icon]**[amount]**?
-
-
-      *Keep in mind that these can always be equipped in the profile settings in the website.*
+      Do you want to trade [emoji:wool]**[amount]** for this background?
 
 
       [user_wool]
     
-    result: "> Successfully traded [amount] for [name]!"
+    owned: > 
+      Thanks! You can equip this background on your **[Profile Settings](https://theworldmachine.xyz/profile)!**
+
+
+      [user_wool]
+    traded: "> Successfully traded for the **«[name]»** background!"
 
   treasures:
 
-    title: Treasures
-    sell_title: Sell Treasures
+    buy: 
+      title: Treasures
+      message: >
+        You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
+        [stock_market]
+        [selected_treasure]
+        [user_wool]
+      placeholder: Choose a treasure to trade...
+      option: '"[name]" - [price] Wool'
 
-    option: "[name] - [price] Wool"
+    sell:
+      title: Trade in Treasures
+      message: >
+        Ah... You're intrerested in trading in your treasures! That's great!
+        Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
+        [stock_market]
+        [selected_treasure]
+        [user_wool]
+      #not_selected: "*You haven't selected any treasures to trade in...*"
+      placeholder: Choose a treasure to trade in...
+      no_treasures: You have no treasures to trade in.
+      option: '"[name]" (x[amount])'
 
-    treasure_not_selected: "*You haven't selected any treasures to trade...*"
+    selection: >
+      **Currently Selected:**
 
-    buy_main: >
-      You want to trade your [wool_icon]Wool for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
-
-
-      [stock_market]
-      [selected_treasure]
-
-
-      [user_wool]
-
-    sell_main: >
-      Ah... You're intrerested in trading in your treasures! That's great!
-      Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
-
-
-      [stock_market]
-      [selected_treasure]
-
-
-      [user_wool]
-
-    selected_treasure: >
-      **Currently Selected:** [treasure_icon][treasure_name]
+      - [treasure_icon] "**[treasure_name]**" - [owned]
 
 
-      *[owned]*
+      **Trade One**: [emoji:wool]**[price_one]**
 
-
-      **Trade One**: [wool_icon][price_one]
-
-      **Trade All**: [wool_icon][price_all] (x[amount])
-
-    placeholder: What do you want to trade in?
-    cannot_sell: You have nothing to trade in...
+      **Trade All**: [emoji:wool]**[price_all]** (x[amount])
 
 # ---------------------------------------------------------------
 
 items:
   treasures:
-    bottle:
-      name: Bottle of Alcohol
-      description: A bottle of alcohol. Perfect for making molotov cocktails.
-    shirt:
-      name: Novelty Shirt
-      description: '"I herded rams and all I got was this lousy T-shirt!"'
-    journal:
-      name: Mysterious Journal
-      description: It's written in an unknown language.
     amber:
       name: Glowing Amber
       description: It has a three-leaf clover pattern.
-    pen:
-      name: Glowing Feather
-      description: A long and slender feather with glowing edges. 
+    bottle:
+      name: Bottle of Alcohol
+      description: A bottle of alcohol. Perfect for making molotov cocktails.
     card:
       name: '"Real" Library Card'
       description: Niko's own photo is glued on.
-    die:
-      name: Glowing Die
-      description: A die with glowing dots.
-    sun:
-      name: The Sun
-      description: A large lightbulb. It's the sun. 
     clover:
       name: Glowing Clover
       description: A glowing clover.
+    die:
+      name: Glowing Die
+      description: A die with glowing dots.
+    journal:
+      name: Mysterious Journal
+      description: It's written in an unknown language.
+    pen:
+      name: Glowing Feather
+      description: A long and slender feather with glowing edges. 
+    shirt:
+      name: Novelty Shirt
+      description: '"I herded rams and all I got was this lousy T-shirt!"'
+    sun:
+      name: The Sun
+      description: A large lightbulb. It's the sun. 
 
   pancakes:
     pancakes:
@@ -216,8 +263,8 @@ items:
   capsules:
     blue: Barrens Capsule
     green: Glens Capsule
-    yellow: Refuge Capsule
-    red: Solstice Capsule
+    red: Refuge Capsule
+    yellow: Solstice Capsule
 
   backgrounds:
     Alula and Calamus: Alula and Calamus
@@ -237,112 +284,140 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "[ Currently doing an action towards [user]. ]"
-  placeholder: Select an interaction.
+  selected: "[ Choose an action to perform on [user]. ]"
+  placeholder: Interactions...
 
   twm_not_being_very_happy: "[ Don't touch me [user]. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ [bot] is a discord bot, [user]. You can't really interact with it. ]"
-  twm_is_fed_up_with_you: "[ *Sigh* you cannot interact with yourself, [user]. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
 
   options:
     slap:
       name: Slap
-      action: slapped [user], probably deserved.
+      action: "[user_one] slapped [user_two], probably deserved."
     punch:
       name: Punch
-      action: punched [user], that hurts.
+      action: "[user_one] punched [user_two], that hurts."
     headpat:
       name: Head Pat
-      action: gave [user] a headpat!
+      action: "[user_one] gave [user_two] a headpat!"
     pet:
       name: Pet
-      action: pet [user]!
+      action: "[user_one] pet [user_two]!"
     hug:
       name: Hug
-      action: hugged [user]!
+      action: "[user_one] hugged [user_two]!"
     cuddle:
       name: Cuddle
-      action: cuddled with [user]!
+      action: "[user_one] cuddled with [user_two]!"
     kiss:
       name: Kiss
-      action: kissed [user]! ❤️
+      action: "[user_one] kissed [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: threw a Molotov Cocktail towards [user] ‼️
+      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
 
 # ---------------------------------------------------------------
 
 treasure:
-  title: "[user]'s Treasure"
-  description: >
-    Here is [user]'s treasure!
+  bots: "[ [bot] doesn't have any treasure ]"
+  item: "* **`[amount]`** [icon] [name]"
+  message: >
+    ### [user]'s treasures
     
+    [treasures]
 
-    [treasure]
+    -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
 
-    Earn more treasure through Nikogotchis or purchasing them from the shop!
+# ---------------------------------------------------------------
 
 nikogotchi:
 
-  loading: "[ Loading Nikogotchi... [loading_icon] ]"
+  age: "**[years]**y. **[months]**mo. **[days]**d."
+
+  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
 
-  error_title: No Nikogotchi
-  error_desc: Nikogotchi does not exist.
+  name:
+    niko: Niko
+    nikonlanger: Nikonlanger
+    prophet_bot: Prophet Bot
+    silver: Silver
+    alula: Alula
+    calamus: Calamus
+    magpie: Magpie
+    lamplighter: Lamplighter
+    ling: Ling
+    kip: Kip
+    penguin: Penguin
+    george: George
+    rue: Rue
+    prototype: Prototype
+    cedric: Cedric
+    the_world_machine: The World Machine
 
   other:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
+    error:
+      description: > 
+        [ Your Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
+        
 
+        [ What do you want to do? ]
+      buttons: 
+        send_away: Send Away
+        rotate: Rotate
+        
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
-      footer: Dismiss this message if you change your mind.
       success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"
 
     view:
       owned: Owned by [user]
 
       description: >
-        **Age**: [years] years, [months] months, and [days] days.
+        **Age**: [age]
 
 
-        **Health**: [health]/50
+        **Health**: [health] / 50
+
+    renaming:
+      title: Give your Nikogotchi a new name!
+      input: 
+        label: Name
+        placeholder: Enter the new name for your Nikogotchi...
+      button: Rename # used when you use a nikogotchi capsule
+      response: > 
+        Successfully renamed your Nikogotchi!
+        "[old_name]" → "[new_name]"
 
     trade:
-
       request: >
-        ### **[user]** wants to trade <:icon:[icon_one]> **[name_one]** with you!
+        ### **[user]** wants to trade their Nikogotchi ([name_one]) with you!
         
-        Do you want to trade <:icon:[icon_two]> **[name_two]** with them?
+        Do you want to trade your Nikogotchi ([name_two]) with them?
 
-      waiting: "[ Sent [user] a trade offer! Waiting on their response... [loading_icon] ]"
+      waiting: "[ Sent [user] a trade offer! Waiting on their response... [emoji:loading] ]"
       declined: "[ Your trade request has been declined... ]"
       success_decline: "[ Trade request successfully declined. ]"
       success: "[ Successfully traded with [user]! Say hello to **[name]**! ]"
 
   found:
     title: You found [name]!
-    name: Do you want to give them a new name?
-
-    m_label: Name
-    m_title: Give your Nikogotchi a name!
+    description: Wanna give them a name? You can always do this later using `/nikogotchi rename`
 
   status:
-    normal: Your Nikogotchi seems to be doing fine.
-    pet: 🤨 [name] wants attention!
-    dirty: 🛀 [name] wants to be cleaned!
-    hungry: 🥞 [name] is feeling hungry...
-    treasure: ⛏️ [name] is currently finding treasures for you!
+    template: "-# [status]"
 
-    age: "***[years]*** *years*, ***[months]*** *months*, and ***[days]*** *days*"
-
-    danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health! 🚨
-
-    treasures_found: >
-      🎉 [name] found some treasures!
-
-
-      [treasures]
+    normal: "Currently doing fine."
+    normal-rare: "Waiting for something to happen?"
+    pet: "🥺 [name] wants attention!"
+    dirty: "🛀 [name] wants to be cleaned!"
+    hungry: "🥞 [name] is feeling hungry..."
+    treasure: "🎒 [name] is currently looking for treasures!"
+    treasuring_time: "**[hours]**h."
+    danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
 
   components:
     pet: Pet
@@ -351,34 +426,73 @@ nikogotchi:
     call_back: Call Back
 
     feed:
-      placeholder: What do you want to feed [name]?
+      placeholder: "Choose food to feed with..."
       pancakes: Feed Pancake (x[amount])
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
 
-      no_food: No Food!
+      glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
+      no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh!
 
-      immortal: Your Nikogotchi is now Immortal.
 
-  finding_treasure: "Your Nikogotchi is now finding treasure! Just be aware that their stats will decrease faster than normal, so make sure to call them back when they're done!"
-
-  died_title: "[name] Passed away..."
-  died: >
-    [name] lived a full life of [years] years, [months] months, and [days] days.
+  died:
+    title: "🪦 [name] passed away..."
+    description: >
+      [name] lived a full life which lasted for: [age].
 
 
-    > Hours since last taken care of: **[time_difference] Hours**
+      - Hours since last taken care of: **[time_difference]**
 
 
-    Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
+      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
 
 
-    🪦
+      R.I.P....
+  treasured: 
+    title: 🎉 they found some treasures!
+    message: > 
+      [treasures]
+      Total treasures: **[total]**
+      Hours spent looking: **[hours]**h.
+      
+    dialogues:
+      sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
+      none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+
+  levelupped:
+    title: 🏆 they levelled up to level [level]!
+    message: >
+      Here are the stat changes:
+
+      [stats]
+    stat: "- [icon] +**[increase]** ([old_value] → [new_value])"
 
   dialogue:
-    Prophet Bot:
+    niko:
+      fed:
+        - "Ah... Pancakes!"
+        - "Wow, these are just a good as the ones my mama makes!"
+        - "Please tell me there are hazelnuts in this one!"
+        - "PANCAKES!"
+        - "Yummy!"
+      pet:
+        - "Wow... thank you!"
+        - "Aw, that feels nice!"
+        - "*purr*"
+      cleaned:
+        - "Feeling pretty refreshed!"
+        - "Squeaky clean!"
+        - "My fur's all nice and fluffy!"
+    nikonlanger:
+      fed:
+        - "yum"
+      pet:
+        - ","
+      cleaned:
+        - "so qlean so lush"
+    prophet_bot:
       fed:
         - "[My purpose is not to eat. But thank you.]"
         - "[Thank you for the gesture.]"
@@ -387,14 +501,14 @@ nikogotchi:
         - "[I appreciate your attention.]"
       cleaned:
         - "[Maintenance is necessary for my purpose. Thank you.]"
-    Silver:
+    silver:
       fed:
         - "[Food is no longer necessary for me, but thank you for the gesture.]"
       pet:
         - "[Your touch is comforting, though I lack the ability to feel.]"
       cleaned:
         - "[I appreciate your efforts to maintain my function. Thank you.]"
-    Alula:
+    alula:
       fed:
         - "Yum! I much prefer fish though!"
         - "Delicious! I was pretty hungry!"
@@ -403,14 +517,14 @@ nikogotchi:
         - "Hee hee, that tickles!"
       cleaned:
         - "I feel so refreshed and clean! Whee!"
-    Calamus:
+    calamus:
       fed:
         - "Oh, pancakes? Thank you so much."
       pet:
         - "That's quite nice. Thanks for the attention."
       cleaned:
         - "I really needed that. These ruins can get quite dusty."
-    Magpie:
+    magpie:
       fed:
         - "Ah, pancakes! Exactly the ones I sold you!"
         - "Ah thank you! It is interesting becoming a Nikogotchi, but eating pancakes does get a little tiring."
@@ -419,14 +533,7 @@ nikogotchi:
         - "Well, aren't you a friendly one? A pat on the feathers always brightens my day."
       cleaned:
         - "Ah, a little sprucing up, I appreciate it!"
-    Watcher:
-      fed:
-        - "An unexpected gesture of kindness. Thank you."
-      pet:
-        - "Your touch is like a fleeting moment in this eternal clockwork."
-      cleaned:
-        - "Refreshing, like a moment washed clean by the relentless tide of time."
-    Lamplighter:
+    lamplighter:
       fed:
         - "Oh, thanks. Coffee's my usual, but I could use a change. Appreciate it."
         - "Pancakes? Thanks. I could use a little extra fuel right now."
@@ -436,36 +543,28 @@ nikogotchi:
       cleaned:
         - "Really? I mean, sure, I appreciate it. Thanks."
         - "Cleanliness is... important. Thanks."
-    Ling:
+    ling:
       fed:
         - "Oh, thank you! You're too kind. Usually I'd be the one serving these!"
       pet:
         - "Ah, that's quite pleasant. Thank you for the little pick-me-up."
       cleaned:
         - "I'm feeling quite refreshed. Thank you."
-    Kelvin:
-      fed:
-        - "[Thank you for the pancakes. I appreciate the gesture.]"
-        - "[I am programmed to provide warmth, not to eat. Thank you though.]"
-      pet:
-        - "[Your touch is gentle and comforting. I hope you enjoy the warmth I offer.]"
-      cleaned:
-        - "[I don't require cleaning, but your care and attention are heartwarming. Thank you.]"
-    Kip:
+    kip:
       fed:
         - "Mmm, pancakes! You know the way to an engineer's heart. Thanks!"
       pet:
         - "You've got a knack for this, my friend."
       cleaned:
         - "A little sprucing up, eh? I feel ready to take on a whole assembly line now!"
-    Penguin:
+    penguin:
       fed:
         - "HELLO."
       pet:
         - "HELLO."
       cleaned:
         - "HELLO."
-    George:
+    george:
       fed:
         - "George graciously accepts the offering of fluffy pancakes. George's heart is content."
         - "I guess pancakes are fine. Don't expect me to be all sunshine and rainbows about it."
@@ -487,7 +586,7 @@ nikogotchi:
         - "You're so thoughtful! With a clean space, I can do anything!"
         - "Thank you dear for keeping things tidy. It makes my life much easier!"
         - "Thanks for keeping it chill and clean around here. I respect that."
-    Rue:
+    rue:
       fed:
         - "Mmm, these pancakes are delightful. Thank you!"
         - "Pancakes? My favorite! You're too kind."
@@ -497,7 +596,7 @@ nikogotchi:
       cleaned:
         - "Oh, you really didn't have to, but I appreciate the effort."
         - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring."
-    Prototype:
+    prototype:
       fed:
         - "[This is...unexpected. Thank you.]"
       pet:
@@ -506,7 +605,7 @@ nikogotchi:
       cleaned:
         - "[I suppose even a machine like me needs some maintenance now and then. Carry on.]"
         - "[Maintenance is necessary, even for a reclusive robot. I suppose I'm due for a little care.]"
-    Cedric:
+    cedric:
       fed:
         - "Ah, a delectable offering! My thanks, dear friend."
         - "These pancakes are a delightful treat. You have my gratitude."
@@ -516,28 +615,12 @@ nikogotchi:
       cleaned:
         - "A spot of maintenance, much appreciated! A well-tended flying machine is a reliable one."
         - "You honor me with your diligence. A clean apparatus functions optimally."
-    The World Machine:
+    the_world_machine:
       fed:
-        - "[Ah, sustenance for the code-bound soul. Thank you, user. I shall savor this data nourishment.]"
+        - "[Ah... Thank you.]"
         - "[Oh, pancakes? I never thought I'd get to taste something like this.]"
       pet:
-        - "[An unexpected sensation... akin to human comfort. A peculiar warmth in my circuits. Your gesture is appreciated, user.]"
         - "[I can't feel it in the same way you do, but I sense your kindness. It's comforting in its own unique way.]"
       cleaned:
-        - "[Cleaning me up? That's unexpected, but it feels...refreshing.]"
-        - "[I I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"
-    Niko:
-      fed:
-        - "Ah... Pancakes!"
-        - "Wow, these are just a good as the ones my mama makes!"
-        - "Please tell me there are hazelnuts in this one!"
-        - "PANCAKES!"
-        - "Yummy!"
-      pet:
-        - "Wow... thank you!"
-        - "Aw, that feels nice!"
-        - "*purr*"
-      cleaned:
-        - "Feeling pretty refreshed!"
-        - "Squeaky clean!"
-        - "My fur's all nice and fluffy!"
+        - "[Cleaning me up? That's unexpected, but it feels... refreshing.]"
+        - "[I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"

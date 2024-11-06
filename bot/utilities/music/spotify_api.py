@@ -1,25 +1,32 @@
+from typing import Dict
 import aiohttp
+from dataclasses import dataclass
 
-
-class Track:
-    def __init__(self, name, artists, album, url, duration, uri):
-        self.name = name
-        self.artists = artists
-        self.album = album
-        self.url = url
-        self.duration = duration
-        self.uri = uri
-
+@dataclass
+class SpotifyTrack:
+    
+    name: str
+    artist: str
+    album: dict
+    url: str
+    duration: int
+    id: str
+    isrc: str
 
 def create_track(data: dict):
-    return Track(
-        name=data['name'],
-        artists=data['artists'][0]['name'],
-        album=data['album'],
-        url=data['external_urls'].get('spotify', ''),
-        duration=data['duration_ms'],
-        uri=data['id']
-    )
+    
+    try:
+        return SpotifyTrack(**{
+            "artist": data["artists"][0]["name"],
+            "url": data['external_urls']['spotify'],
+            "isrc": data['external_ids']['isrc'],
+            "duration": data['duration_ms'],
+            "name": data["name"],
+            "album": data["album"],
+            "id": data["id"],
+        })
+    except:
+        pass
 
 class Spotify:
     def __init__(self, client_id, secret):
@@ -119,14 +126,8 @@ class Spotify:
                     tracks = []
 
                     for item in data['tracks']['items']:
-                        track = Track(
-                            name=item['name'],
-                            artists=item["artists"][0]["name"],
-                            album=data,
-                            url=item['external_urls']['spotify'],
-                            duration=item['duration_ms'],
-                            uri=item['id']
-                        )
+                        
+                        track = await self.get_track(f'https://open.spotify.com/track/{item["id"]}')
 
                         tracks.append(track)
 
