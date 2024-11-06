@@ -66,8 +66,8 @@ class InteractModule(Extension):
         result = ctx.values[0].split('_')
         
         interaction = result[0]
-        user = result[1]
+        target_user = result[1]
         
         localization = Localization(ctx.locale)
                
-        await ctx.channel.send(localization.l(f'interact.options.{interaction}.action', user_one=user, user_two=ctx.author.mention))
+        await ctx.channel.send(localization.l(f'interact.options.{interaction}.action', user_one=ctx.author.mention, user_two=target_user))
