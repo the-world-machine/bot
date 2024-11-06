@@ -1,3 +1,6 @@
+# the lavalink configuration file, download and run the lavalink.jar to use this
+# there's also a toggle in the bot-config.yaml if you don't want music at all
+
 server:
   port: 4230
   address: "localhost"
@@ -31,4 +34,4 @@ plugins:
       - MUSIC
       - ANDROID_VR
       - WEB
-      - WEBEMBEDDED 
+      - WEBEMBEDDED

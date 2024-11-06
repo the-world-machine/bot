@@ -6,8 +6,9 @@ general:
     _yes: "Yes"
     _no: "No"
     _cancel: "Cancel"
-    _continue: "Continue"
     _back: "Back"
+    _continue: "Continue"
+    _open_site: "Open Website"
 
 
 # ---------------------------------------------------------------
@@ -44,7 +45,11 @@ misc:
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
+    
+# ---------------------------------------------------------------
 
+settings: 
+  profile: "You can view your profile over on the website!"
   
 # ---------------------------------------------------------------
 
@@ -355,15 +360,15 @@ nikogotchi:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
     error:
+      description: > 
+        [ Your Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
+        
+
+        [ What do you want to do? ]
       buttons: 
         send_away: Send Away
         rotate: Rotate
-      description: > 
-        [ This Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
         
-      
-        [ What do you want to do? ]
-
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
       success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"

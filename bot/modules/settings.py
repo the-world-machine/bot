@@ -2,26 +2,28 @@ import json
 from interactions import *
 
 from database import ServerData
-from utilities.message_decorations import fancy_message
-
+from utilities.message_decorations import fancy_embed, fancy_message
+from data.localization import Localization
 
 class SettingsModule(Extension):
-    @slash_command(description="Change settings for yourself.")
-    async def user_settings(self, ctx: SlashContext):
-        await fancy_message(
-            ctx,
-            "[ Hello! This command has been moved to: https://www.theworldmachine.xyz/profile ]",
-            ephemeral=True,
+    
+    @slash_command(description="Settings.")
+    async def settings(self, ctx: SlashContext):
+        pass
+
+    @settings.subcommand(
+        sub_cmd_description="Edit your profile."
+    )
+    async def profile(self, ctx: SlashContext):
+        components = Button(
+            style=ButtonStyle.URL,
+            label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
+            url="https://theworldmachine.xyz/profile"
         )
+        await fancy_message(ctx, message=Localization.sl('settings.profile', locale=ctx.locale), ephemeral=True, components=components)
 
-    @slash_command(description="Change settings for the server you are on.")
-    async def server_settings(self, ctx: SlashContext):
-        print("Server Settings")
-        pass
-
-    @slash_command(description="Base command for Transmission Settings.")
-    async def transmission_settings(self, ctx: SlashContext):
-        pass
+    server = settings.group(name="server")
+    transmissions = settings.group(name="transmissions")
 
     async def check(self, ctx: SlashContext):
 
@@ -31,7 +33,7 @@ class SettingsModule(Extension):
 
         return True
 
-    @transmission_settings.subcommand(
+    @transmissions.subcommand(
         sub_cmd_description="The transmission channel to use to allow other servers to call. Leave blank to disable."
     )
     @slash_option(
@@ -59,7 +61,7 @@ class SettingsModule(Extension):
             ephemeral=True,
         )
 
-    @transmission_settings.subcommand(
+    @transmissions.subcommand(
         sub_cmd_description="Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE]."
     )
     @slash_option(
@@ -86,7 +88,7 @@ class SettingsModule(Extension):
                 ctx, "[ Successfully disabled transmission images. ]", ephemeral=True
             )
 
-    @transmission_settings.subcommand(
+    @transmissions.subcommand(
         sub_cmd_description="Disable/Enable whether transmission receivers are shown Oneshot characters instead of users."
     )
     @slash_option(
@@ -113,7 +115,7 @@ class SettingsModule(Extension):
                 ctx, "[ Successfully disabled anonymous mode. ]", ephemeral=True
             )
 
-    @transmission_settings.subcommand(
+    @transmissions.subcommand(
         sub_cmd_description="Block a server from being able to call."
     )
     @slash_option(
@@ -175,7 +177,7 @@ class SettingsModule(Extension):
 
         await ctx.send(servers)
 
-    @server_settings.subcommand()
+    @server.subcommand()
     async def welcome_message(self, ctx: SlashContext):
         "Edit this server's welcome message."
 

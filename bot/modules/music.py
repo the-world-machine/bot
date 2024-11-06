@@ -45,7 +45,7 @@ class MusicModule(Extension):
 
         self.assign_node()
 
-        print("Music module loaded.")
+        print("Lavalink node assigning started...")
         
     def assign_node(self):
         node_information: dict = get_config('music.lavalink')
