@@ -2,18 +2,16 @@ from genericpath import exists
 import re
 from typing import Literal, Union
 from yaml import safe_load
-from data.emojis import emojis
+from data.emojis import emojis, flatten_emojis
 from dataclasses import dataclass
 from datetime import timedelta
 from humanfriendly import format_timespan
 from babel import Locale
 from babel.dates import format_timedelta
 import os
-
-languages = {}
-
-import os
 from pathlib import Path
+f_emojis = flatten_emojis(emojis)
+emoji_dict = {f'emoji:{name.replace("icon_", "")}': f_emojis[name] for name in f_emojis}
 
 @dataclass
 class Localization:
@@ -21,14 +19,15 @@ class Localization:
     _locales = {}
     _last_modified = {}
     
-    def l(self, localization_path: str, locale: str | None = None, **variables: str) -> Union[str, list[str], dict]:
+
+    def l(self, localization_path: str, locale: str | None = None, **variables: dict[str, any]) -> Union[str, list[str], dict]:
         if locale == None:
             locale = self.locale
 
         return self.sl(localization_path=localization_path, locale=locale, **variables)
     
     @staticmethod
-    def sl(localization_path: str, locale: str, **variables: str) -> Union[str, list[str], dict]:
+    def sl(localization_path: str, locale: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
         """ Static version of .l for single use (where making another Localization() makes it cluttery)"""
         if locale == None:
             raise ValueError("No locale provided")
@@ -43,44 +42,21 @@ class Localization:
         attempts = 0
         value = Localization.fetch_language(locale)
 
-        while not got_value:
-            try:
-                value = Localization.rabbit(value, localization_path)
-                got_value = True
-            except KeyError:
-                attempts += 1
-                locale = 'en-#'
-                got_value = False
-
-                if attempts > 5:
-                    return f'`{localization_path}`'
-
-        result = value
-
-        if isinstance(result, (dict, list)):
-            return result
-        else:
-            return Localization.assign_variables(result, locale, **variables)
+        value = Localization.rabbit(value, localization_path)
+        
+        return Localization.assign_variables(value, locale, **variables)
 
     @staticmethod
-    def l_all(localization_path: str, locale_override: str = None, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+    def l_all(localization_path: str, **variables: str) -> dict[str, Union[str, list[str], dict]]:
         results = {}
+        
+        for locale in Localization.locales_list():
+            value = Localization.fetch_language(locale)
 
-        available_locales = Localization.locales_list()
+            value = Localization.rabbit(value, localization_path, Localization.fetch_language("en-#"))
 
-        if locale_override:
-            available_locales = [locale_override]
-
-        for locale in available_locales:
-            try:
-                value = Localization.fetch_language(locale)
-
-                value = Localization.rabbit(value, localization_path)
-
-                results[locale] = Localization.assign_variables(value, locale, **variables)
-            except (KeyError, FileNotFoundError):
-                results[locale] = f'`{localization_path}` not found'
-
+            results[locale] = Localization.assign_variables(value, locale, **variables)
+            
         return results
 
     
@@ -114,27 +90,53 @@ class Localization:
                 return data
             
     @staticmethod
-    def rabbit(value: dict, raw_path: str) -> Union[str, list, dict]:
+    def rabbit(value: dict, raw_path: str, fallback_value: dict = None, full_path = None) -> Union[str, list, dict]:
+        # probably too much code? it works for now..
+        if not full_path:
+            full_path = raw_path
+        if not raw_path:
+            return value
         parsed_path: list[str] = raw_path.split('.')
-
+        went_through: list[str] = []
         for path in parsed_path:
-            value = value[path]
-        return value
+            got_value = False
+            attempts = 0
+            while not got_value:
+                try:
+                    if isinstance(value, dict):
+                        value = Localization.rabbit(value[path], '.'.join(parsed_path[len(went_through)+1:]), fallback_value, full_path)
+                    got_value = True
+                except KeyError as e:
+                    print(e)
+                    attempts += 1
+                    got_value = False
+
+                    if attempts > 5:
+                        return f'Rabitting `{full_path}` 404'
+                went_through.append(path)
+            return value
     
     @staticmethod
-    def assign_variables(result: str, locale: str, **variables: str):
-        emoji_dict = {f'emoji:{name.replace("icon_", "")}': emojis[name] for name in emojis.keys()}
-        
-        for name, data in {**variables, **emoji_dict}.items():
-            if isinstance(data, (int, float)):
-                data = fnum(data, locale)
-            elif not isinstance(data, str):
-                data = str(data)
+    def assign_variables(input: Union[str, list, dict], locale: str, **variables: dict[str, any]):
+        if isinstance(input, str):
+            result = input
+            for name, data in {**variables, **emoji_dict}.items():
+                if isinstance(data, (int, float)):
+                    data = fnum(data, locale)
+                elif not isinstance(data, str):
+                    data = str(data)
 
-            result = result.replace(f'[{name}]', data)
-        
-        return result
-    
+                result = result.replace(f'[{name}]', data)
+            return result
+        elif isinstance(input, list):
+            processed = []
+            for elem in input:
+                processed.append(Localization.assign_variables(elem, locale, **variables))
+            return processed
+        elif isinstance(input, dict):
+            for key, value in input.items():
+                input[key] = Localization.assign_variables(value, locale, **variables)
+            return input    
 def fnum(num: float | int, locale: str = "en-#") -> str:
     if isinstance(num, float):
         fmtd = f'{num:,.3f}'
