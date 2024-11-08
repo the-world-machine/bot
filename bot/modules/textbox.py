@@ -1,7 +1,6 @@
 from datetime import datetime
 import io
 from interactions import *
-import json
 from uuid import uuid4
 import os
 
@@ -9,10 +8,9 @@ import yaml
 from data.emojis import emojis
 from data.localization import Localization
 from utilities.message_decorations import fancy_message, fancy_embed
+from utilities.profile.profile_viewer import get_image
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
-import aiohttp
-import aiofiles
 
 class Face:
     def __init__(self, name: str, emoji: int):
@@ -29,22 +27,6 @@ class Character:
 
     def __repr__(self):
         return f"Character(name={self.name}, faces={self.faces})"
-
-_yac: dict[str, Image.Image] = {}
-
-async def get_Image(url: str) -> Image.Image:
-    if url in _yac:
-        return _yac[url]
-    
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            if resp.status == 200:
-                file = io.BytesIO(await resp.read())
-
-                _yac[url] = file
-                return Image.open(_yac[url])
-            else:
-                raise ValueError(f"{resp.status} Discord cdn shittig!!")
             
 class TextboxModule(Extension):
     _characters = None
@@ -74,7 +56,7 @@ class TextboxModule(Extension):
     async def generate_welcome_message(guild: Guild, user: Member, message: str):
 
         uuid = str(uuid4())
-
+        #message = Localization.assign_variables(
         message = message.replace('[user]', user.username)
         message = message.replace('[server]', guild.name)
 
@@ -88,7 +70,7 @@ class TextboxModule(Extension):
     @staticmethod
     async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox"):
         img = Image.open("bot/images/textbox/niko-background.png")
-        icon = await get_Image(url=icon_url)
+        icon = await get_image(url=icon_url)
         icon = icon.resize((96, 96))
         
         fnt = ImageFont.truetype("bot/font/TerminusTTF-Bold.ttf", 20)

@@ -712,17 +712,16 @@ class NikogotchiModule(Extension):
 
         return await self.init_rename_flow(ctx, nikogotchi.name)
 
-    @nikogotchi.subcommand(sub_cmd_description='Show off your Nikogotchi, or view someone else\'s.!')
-    @slash_option('user', description='The user to view.', opt_type=OptionType.USER)
+    @nikogotchi.subcommand(sub_cmd_description="Show your nikogotchi in chat!")
+    @slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
     async def show(self, ctx: SlashContext, user: User = None):
+        loc = Localization(ctx.locale)
         if user is None:
             user = ctx.user
 
         uid = user.id
 
         nikogotchi = await self.get_nikogotchi(uid)
-        
-        loc = Localization(ctx.locale)
 
         if nikogotchi is None:
             return await fancy_message(ctx, loc.l('nikogotchi.other.other_invalid'), ephemeral=True, color=0xff0000)

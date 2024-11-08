@@ -11,17 +11,6 @@ class SettingsModule(Extension):
     async def settings(self, ctx: SlashContext):
         pass
 
-    @settings.subcommand(
-        sub_cmd_description="Edit your profile."
-    )
-    async def profile(self, ctx: SlashContext):
-        components = Button(
-            style=ButtonStyle.URL,
-            label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
-            url="https://theworldmachine.xyz/profile"
-        )
-        await fancy_message(ctx, message=Localization.sl('settings.profile', locale=ctx.locale), ephemeral=True, components=components)
-
     server = settings.group(name="server")
     transmissions = settings.group(name="transmissions")
 

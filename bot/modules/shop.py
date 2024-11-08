@@ -211,10 +211,7 @@ class ShopModule(Extension):
     r_buy_bg = re.compile(r'buy_bg_(.*)_(\d+)')
     @component_callback(r_buy_bg)
     async def buy_bg_callback(self, ctx: ComponentContext):
-        
         await ctx.defer(edit_origin=True)
-        
-        localization = Localization(ctx.locale)
         
         user: UserData = await UserData(ctx.author.id).fetch()
         
@@ -230,28 +227,23 @@ class ShopModule(Extension):
         get_background = all_bgs[bg_id]
         
         owned_backgrounds = user.owned_backgrounds
-        
-        async def update(text: str):
-            embed, components = await self.embed_manager(ctx, 'Backgrounds', page=page)
-            embed.set_footer(text)
-            
-            await ctx.send(embed=embed, components=components, ephemeral=True)
-        
+                
+        embed, components = await self.embed_manager(ctx, 'Backgrounds', page=page)
         if bg_id in owned_backgrounds:
-            return await update(localization.l('shop.traded_fail'))
-        
-        if user.wool < get_background['price']:
-            return await update(localization.l('shop.traded_fail'))
-        
-        owned_backgrounds.append(bg_id)
-        
-        await user.update(
-            owned_backgrounds=owned_backgrounds,
-        )
-        
-        await user.manage_wool(-get_background['price'])
-        
-        await update(localization.l('shop.backgrounds.traded', price=get_background['price'], amount=1, name=localization.l(f'items.backgrounds.{bg_id}')))
+            embed.set_footer(Localization.sl('shop.buttons.owned', locale=ctx.locale))
+        elif user.wool < get_background['price']:
+            embed.set_footer(Localization.sl('shop.buttons.too_poor', locale=ctx.locale))
+        else:
+            
+            owned_backgrounds.append(bg_id)
+
+            await user.update(
+                owned_backgrounds=owned_backgrounds,
+            )
+            embed.description = Localization.sl('shop.backgrounds.newly_owned', locale=ctx.locale, user_wool=Localization.sl('shop.user_wool', wool=user.wool, locale=ctx.locale))
+            await user.manage_wool(-get_background['price'])
+            embed.set_footer(Localization.sl('shop.backgrounds.traded', locale=ctx.locale))
+        await ctx.send(embed=embed, components=components, ephemeral=True)
 
     @component_callback('nikogotchi_buy')
     async def buy_nikogotchi_callback(self, ctx: ComponentContext):
@@ -606,7 +598,7 @@ class ShopModule(Extension):
                 buy_button.label = b_poor
             
             if background in user_backgrounds:
-                embed.description = localization.l('shop.backgrounds.owned', user_wool=user_wool)
+                embed.description = None
                 buy_button.disabled = True
                 buy_button.style = ButtonStyle.RED
                 buy_button.label = b_owned

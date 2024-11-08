@@ -2,11 +2,12 @@ import io
 import json
 import textwrap
 import aiofiles
-import aiohttp
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
-from interactions import User
+from interactions import File, User
+from data.emojis import emojis
+from utilities.misc import get_image
 from utilities.shop.fetch_items import fetch_background, fetch_badge
-from data.localization import fnum
+from data.localization import Localization, fnum
 
 import database as db
 
@@ -23,35 +24,24 @@ async def load_badges():
     global badges
     global icons
 
-    images = []
     icons = []
     
     badges = await fetch_badge()
 
     for _, badge in badges.items():
-        img = await GetImage(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png')
+        img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
         img = img.convert('RGBA')
         img = img.resize((35, 35), Image.NEAREST)
         icons.append(img)
 
-    wool_icon = await GetImage('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
-    sun_icon = await GetImage('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
+    wool_icon = await get_image('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+    sun_icon = await get_image('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
 
     print('Loaded Badges')
 
-
-async def open_badges():
-    async with aiofiles.open('bot/data/badges.json', 'r') as f:
-        strdata = await f.read()
-
-    return json.loads(strdata)
-
-
-async def draw_badges(user: User):
+async def draw_badges(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
     if wool_icon is None:
         await load_badges()
-
-    msg = f'{user.username}\'s Profile'
 
     user_id = user.id
     user_pfp = user.display_avatar.url
@@ -59,20 +49,18 @@ async def draw_badges(user: User):
     user_data: db.UserData = await db.UserData(user_id).fetch()
 
     backgrounds = await fetch_background()
-    image = await GetImage(backgrounds[user_data.equipped_bg]['image'])
+    image = await get_image(backgrounds[user_data.equipped_bg]['image'])
 
     fnt = ImageFont.truetype("bot/font/TerminusTTF-Bold.ttf", 25)  # Font
     title_fnt = ImageFont.truetype("bot/font/TerminusTTF-Bold.ttf", 25)  # Font
 
-    base_profile = ImageDraw.Draw(image)
+    base_profile = ImageDraw.Draw(image, "RGBA")
 
-    base_profile.text((42, 32), msg, font=title_fnt, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
+    base_profile.text((42, 32), Localization.sl("profile.view.image.title", locale, username=user.username), font=title_fnt, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
 
-    description = textwrap.fill(user_data.profile_description, 35)
+    base_profile.text((210, 140), f"{textwrap.fill(user_data.profile_description, 35)}", font=fnt, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000, align='center')
 
-    base_profile.text((210, 140), f"{description}", font=fnt, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000, align='center')
-
-    pfp = await GetImage(user_pfp)
+    pfp = await get_image(user_pfp)
 
     pfp = pfp.resize((148, 148))
 
@@ -131,16 +119,9 @@ async def draw_badges(user: User):
            stroke_fill=0x000000)
     image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-    base_profile.text((42, 251), 'Unlocked Stamps:', font=fnt, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000)
+    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=fnt, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000)
 
-    image.save('bot/images/profile_viewer/result.png')
-
-
-async def GetImage(image_url: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(image_url) as resp:
-            img_data = await resp.read()
-            
-            image = io.BytesIO(img_data)
-            
-            return Image.open(image)
+    img_buffer = io.BytesIO()
+    image.save(img_buffer, format="PNG")
+    img_buffer.seek(0)
+    return File(file=img_buffer, file_name=f"{filename}.png", description=description)

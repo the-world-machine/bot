@@ -10,7 +10,6 @@ general:
     _continue: "Continue"
     _open_site: "Open Website"
 
-
 # ---------------------------------------------------------------
 
 music: 
@@ -48,9 +47,20 @@ misc:
     
 # ---------------------------------------------------------------
 
-settings: 
-  profile: "You can view your profile over on the website!"
-  
+profile:
+  view: 
+    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
+    bots: "[ Bots don't have profiles. ]"
+    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+
+    image: 
+      name: "[userid] profile"
+      title: "[username]'s Profile"
+      unlocked:
+        stamps: "Unlocked Stamps:"
+  edit: 
+    text: "You can edit your profile over on the website!" 
+
 # ---------------------------------------------------------------
 
 explode:
@@ -162,17 +172,17 @@ shop:
 
 
       [user_wool]
-    
-    owned: > 
-      Thanks! You can equip this background on your **[Profile Settings](https://theworldmachine.xyz/profile)!**
+
+    newly_owned: > 
+      Thanks! Now you are a proud owner of this background.
 
 
       [user_wool]
-    traded: "> Successfully traded for the **«[name]»** background!"
+    traded: "> Successfully traded for this background!"
 
   treasures:
 
-    buy: 
+    buy:
       title: Treasures
       message: >
         You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
