@@ -18,7 +18,7 @@ def edicted(emojis):
     emoji_dict = {f'emoji:{name.replace("icons.", "")}': f_emojis[name] for name in f_emojis}
 edicted(emojis)
 on_emojis_update(edicted)
-print(emoji_dict)
+
 @dataclass
 class Localization:
     locale: str
