@@ -1,16 +1,15 @@
 from datetime import datetime
 import io
 from interactions import *
-from uuid import uuid4
 import os
-
+from utilities.misc import get_image
 import yaml
-from data.emojis import emojis
-from data.localization import Localization
+from utilities.emojis import emojis
+from utilities.localization import Localization
 from utilities.message_decorations import fancy_message, fancy_embed
-from utilities.profile.profile_viewer import get_image
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+
 
 class Face:
     def __init__(self, name: str, emoji: int):
@@ -54,15 +53,11 @@ class TextboxModule(Extension):
 
     @staticmethod
     async def generate_welcome_message(guild: Guild, user: Member, message: str):
-
-        uuid = str(uuid4())
         #message = Localization.assign_variables(
         message = message.replace('[user]', user.username)
         message = message.replace('[server]', guild.name)
 
-        image = await TextboxModule.generate_dialogue(message,
-                                                  'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless',
-                                                  uuid)
+        image = await TextboxModule.generate_dialogue(message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless')
 
         file = File(file=image, description=message)
         await guild.system_channel.send(user.mention, files=file)
@@ -194,14 +189,14 @@ class TextboxModule(Extension):
 
         value = char_ctx.ctx.values[0]
 
-        await ctx.edit(embeds=fancy_embed(f"[ Generating Image... {emojis['icon_loading']} ]"))
+        await ctx.edit(embeds=fancy_embed(f"[ Generating Image... {emojis['icons']['loading']} ]"))
 
         if value == '964952736460312576':
             icon = ctx.author.avatar.url
         else:
             icon = f'https://cdn.discordapp.com/emojis/{value}.png'
             
-        await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icon_loading']} ]"), components=[])
+        await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icons']['loading']} ]"), components=[])
         file = await TextboxModule.generate_dialogue(text, icon, animated)
         await ctx.channel.send(message=f"-# [ by {ctx.user.mention} ]", files=file)
         await ctx.edit(embeds=fancy_embed(f"[ Done! ]"))

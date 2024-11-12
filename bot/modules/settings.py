@@ -3,8 +3,8 @@ from interactions import *
 
 from database import ServerData
 from utilities.message_decorations import fancy_embed, fancy_message
-from data.localization import Localization
 
+# TODO: localelelele
 class SettingsModule(Extension):
     
     @slash_command(description="Settings.")

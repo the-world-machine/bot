@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import aiofiles
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
-from data.localization import Localization
+from utilities.localization import Localization
 import utilities.profile.badge_manager as bm
-import utilities.profile.profile_viewer as profile_viewer
+from utilities.profile.main import draw_profile
 import database as db
 from utilities.message_decorations import *
 
@@ -69,7 +69,7 @@ class ProfileModule(Extension):
 
         message = await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
 
-        image = await profile_viewer.draw_badges(user,
+        image = await draw_profile(user,
                                                  filename=loc.l("profile.view.image.name", username=user.id),
                                                  description=loc.l("profile.view.image.title", username=user.username),
                                                  locale=ctx.locale)

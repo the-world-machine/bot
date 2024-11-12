@@ -4,10 +4,10 @@ import textwrap
 import aiofiles
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 from interactions import File, User
-from data.emojis import emojis
+from utilities.emojis import emojis
 from utilities.misc import get_image
 from utilities.shop.fetch_items import fetch_background, fetch_badge
-from data.localization import Localization, fnum
+from utilities.localization import Localization, fnum
 
 import database as db
 
@@ -39,7 +39,7 @@ async def load_badges():
 
     print('Loaded Badges')
 
-async def draw_badges(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
+async def draw_profile(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
     if wool_icon is None:
         await load_badges()
 

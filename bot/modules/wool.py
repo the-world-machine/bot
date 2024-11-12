@@ -4,8 +4,8 @@ from interactions import *
 from utilities.message_decorations import fancy_message
 import database as db
 import utilities.profile.badge_manager as badge_manager
-from data.emojis import emojis
-from data.localization import Localization, fnum
+from utilities.emojis import emojis
+from utilities.localization import Localization, fnum
 
 from datetime import datetime, timedelta
 
@@ -58,7 +58,7 @@ class WoolModule(Extension):
 
         await fancy_message(
             ctx,
-            f"[ **{user.username}** has {emojis['icon_wool']}**{fnum(wool)}**. ]",
+            f"[ **{user.username}** has {emojis['icons']['wool']}**{fnum(wool)}**. ]",
         )
         
     @wool.subcommand(sub_cmd_description='Give someone your wool.')
@@ -84,12 +84,12 @@ class WoolModule(Extension):
         if amount > 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, how generous!",
+                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, how generous!",
             )
         elif amount == 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, not very generous!",
+                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, not very generous!",
             )
         else:
             await fancy_message(
@@ -302,7 +302,7 @@ class WoolModule(Extension):
                         ticker += f'{s} ┋ '
             
             return Embed(
-                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icon_wool']}**{fnum(amount)}**.\n{ticker}",
+                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(amount)}**.\n{ticker}",
                 color=0x8B00CC,
             )
             

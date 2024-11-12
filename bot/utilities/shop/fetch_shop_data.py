@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 
 from database import fetch_items, update_shop
-from data.localization import Localization
+from utilities.localization import Localization
 from dataclasses import dataclass
 
 @dataclass

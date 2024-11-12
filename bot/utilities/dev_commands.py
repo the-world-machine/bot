@@ -2,10 +2,10 @@ import io
 import json
 import re
 from interactions import Embed, Message
-from data.emojis import emojis
-from data.localization import Localization, fnum
+from utilities.emojis import emojis
+from utilities.localization import Localization, fnum
 from utilities.shop.fetch_shop_data import reset_shop_data
-from data.config import get_config
+from utilities.config import get_config
 import database
 from aioconsole import aexec
 from termcolor import colored

@@ -5,11 +5,11 @@ import interactions.ext.prefixed_commands as prefixed_commands
 
 from utilities.dev_commands import execute_dev_command
 from database import ServerData, create_connection
-from data.config import get_config
+from utilities.config import get_config
 import load_commands
 import os
 import random
-import utilities.profile.profile_viewer as view
+from utilities.profile.main import load_badges
 from modules.textbox import TextboxModule
 
 print('\nStarting The World Machine... ─ 1/4')
@@ -51,7 +51,7 @@ async def on_ready():
     
 
     await client.change_presence(status=Status.ONLINE, activity=Activity(type=ActivityType.CUSTOM, name=get_config('status')))
-    await view.load_badges()
+    await load_badges()
 
     if get_config('do-avatar-rolling', ignore_None=True): 
         print("Rolling avatar", end=" ... ")

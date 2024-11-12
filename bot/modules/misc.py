@@ -5,7 +5,7 @@ import psutil
 import platform
 import subprocess
 from interactions import *
-from data.localization import Localization, fnum, ftime
+from utilities.localization import Localization, fnum, ftime
 from modules.music import get_lavalink_stats
 from utilities.message_decorations import fancy_embed, fancy_message
 from datetime import datetime

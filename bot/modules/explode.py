@@ -3,7 +3,7 @@ from utilities.message_decorations import *
 import random
 import datetime
 import utilities.profile.badge_manager as bm
-from data.localization import Localization, fnum
+from utilities.localization import Localization, fnum
 
 
 class ExplodeModule(Extension):

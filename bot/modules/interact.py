@@ -1,7 +1,6 @@
 from interactions import *
 from utilities.message_decorations import *
-from data.emojis import *
-from data.localization import Localization
+from utilities.localization import Localization
 
 class InteractModule(Extension):
     

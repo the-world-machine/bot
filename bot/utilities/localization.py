@@ -2,7 +2,6 @@ from genericpath import exists
 import re
 from typing import Literal, Union
 from yaml import safe_load
-from data.emojis import emojis, flatten_emojis
 from dataclasses import dataclass
 from datetime import timedelta
 from humanfriendly import format_timespan
@@ -10,9 +9,16 @@ from babel import Locale
 from babel.dates import format_timedelta
 import os
 from pathlib import Path
-f_emojis = flatten_emojis(emojis)
-emoji_dict = {f'emoji:{name.replace("icon_", "")}': f_emojis[name] for name in f_emojis}
-
+from utilities.config import get_config
+from utilities.emojis import emojis, flatten_emojis, on_emojis_update
+emoji_dict = {}
+def edicted(emojis):
+    global emoji_dict
+    f_emojis = flatten_emojis(emojis)
+    emoji_dict = {f'emoji:{name.replace("icons.", "")}': f_emojis[name] for name in f_emojis}
+edicted(emojis)
+on_emojis_update(edicted)
+print(emoji_dict)
 @dataclass
 class Localization:
     locale: str
@@ -32,14 +38,7 @@ class Localization:
         if locale == None:
             raise ValueError("No locale provided")
 
-        if '-' in locale:
-            l_prefix = locale.split('-')[0]
-            if locale.startswith(l_prefix):
-                locale = l_prefix + '-#'
 
-
-        got_value = False
-        attempts = 0
         value = Localization.fetch_language(locale)
 
         value = Localization.rabbit(value, localization_path)
@@ -53,7 +52,7 @@ class Localization:
         for locale in Localization.locales_list():
             value = Localization.fetch_language(locale)
 
-            value = Localization.rabbit(value, localization_path, Localization.fetch_language("en-#"))
+            value = Localization.rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")))
 
             results[locale] = Localization.assign_variables(value, locale, **variables)
             
@@ -75,20 +74,31 @@ class Localization:
     def fetch_language(locale: str):
         if locale in Localization._locales and os.path.getmtime(f'bot/data/locales/{locale}.yml') == Localization._last_modified.get(locale):
             return Localization._locales[locale]
-
-        if exists(f'bot/data/locales/{locale}.yml'):
+        
+        locales = Localization.locales_list()
+        
+        def load(locale):
             with open(f'bot/data/locales/{locale}.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
                 Localization._locales[locale] = data
                 Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
                 return data
-        else:
-            with open(f'bot/data/locales/en-#.yml', 'r', encoding='utf-8') as f:
-                data = safe_load(f)
-                Localization._locales[locale] = data
-                Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/en-#.yml')
-                return data
+
+        if "-" in locale:
+            locale_prefix = locale.split('-')[0]
             
+            possible_locales = [f"{locale_prefix}-{region}" for region in locales if region.startswith(locale_prefix)]
+            
+            for possible_locale in possible_locales:
+                if possible_locale in locales:
+                    locale = possible_locale
+                    break
+
+            if locale not in locales:
+                locale = "en"
+
+        return load(locale)
+
     @staticmethod
     def rabbit(value: dict, raw_path: str, fallback_value: dict = None, full_path = None) -> Union[str, list, dict]:
         # probably too much code? it works for now..
@@ -112,7 +122,7 @@ class Localization:
                     got_value = False
 
                     if attempts > 5:
-                        return f'Rabitting `{full_path}` 404'
+                        return f'Localization `{full_path}` not found'
                 went_through.append(path)
             return value
     
@@ -137,16 +147,24 @@ class Localization:
             for key, value in input.items():
                 input[key] = Localization.assign_variables(value, locale, **variables)
             return input    
-def fnum(num: float | int, locale: str = "en-#") -> str:
+def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
     if isinstance(num, float):
-        fmtd = f'{num:,.3f}'
+        num = round(num, 3)
+        if locale in ("ru", "uk"):
+            fmtd = '{: ,}'.format(num)
+        else:
+            fmtd = '{:,.3f}'.format(num)
     else:
-        fmtd = f'{num:,}'
+        if locale in ("ru", "uk"):
+            fmtd = '{: }'.format(num)
+        else:
+            fmtd = '{:,}'.format(num)
+    
+    if ordinal and isinstance(num, int) and locale not in ("ru", "uk"):
+        fmtd += english_ordinal_for(num)
+    
+    return fmtd
 
-    if locale in ("ru", "uk"):
-        return fmtd.replace(",", " ").replace(".", ",")
-    else:
-        return fmtd
 
 def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, format: Literal['narrow', 'short', 'medium', 'long'] ="short", **kwargs) -> str:
     if locale == "en-#":
@@ -180,3 +198,14 @@ def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, 
     if bold:
         translated = re.sub(r'(\d+)', r'**\1**', translated)
     return translated
+
+def english_ordinal_for(n: int | float):
+    if isinstance(n, float):
+        n = str(n).split('.')[1][0]
+
+    if 10 <= int(n) % 100 <= 20:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(int(n) % 10, 'th')
+    
+    return suffix

@@ -2,7 +2,7 @@ from interactions import Embed, Message, BaseComponent, Modal
 from enum import Enum
 from typing import Literal
 
-from data.emojis import emojis
+from utilities.emojis import emojis
 
 
 class FColor(Enum):

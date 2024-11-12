@@ -1,11 +1,9 @@
 import random
 
 from interactions import *
-
-from data.emojis import emojis
 from utilities.message_decorations import *
 
-
+# TODO: localiazeeeeeeeeee
 class ShippingModule(Extension):
 
     @slash_command(description="Ship two people together.")

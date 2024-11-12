@@ -2,7 +2,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Union, Dict, List
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
-from data.config import get_config
+from utilities.config import get_config
 from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
 import random

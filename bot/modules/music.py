@@ -11,13 +11,13 @@ from interactions.api.events import *
 from interactions_lavalink import Lavalink, Player
 from interactions_lavalink.events import TrackStart, TrackException
 
-from data.emojis import emojis
-from data.localization import Localization
+from utilities.emojis import emojis
+from utilities.localization import Localization
 from utilities.music.music_loaders import CustomSearch
 from utilities.message_decorations import *
 # Utilities
 from utilities.music.spotify_api import Spotify
-from data.config import get_config
+from utilities.config import get_config
 spotify_creds = get_config("music.spotify")
 spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
@@ -192,7 +192,7 @@ class MusicModule(Extension):
                 tries += 1
             
         
-        message = await fancy_message(ctx, f"[ Loading search results... {emojis['icon_loading']} ]")
+        message = await fancy_message(ctx, f"[ Loading search results... {emojis['icons']['loading']} ]")
 
         result = await self.lavalink.client.get_tracks(song, check_local=True)
         tracks = result.tracks
@@ -245,7 +245,7 @@ class MusicModule(Extension):
             return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=0xff0000,
                                        ephemeral=True)
 
-        message = await fancy_message(ctx, f"[ Loading search results... {emojis['icon_loading']} ]")
+        message = await fancy_message(ctx, f"[ Loading search results... {emojis['icons']['loading']} ]")
 
         player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 
@@ -529,7 +529,7 @@ class MusicModule(Extension):
         
         print(f'Error occurred when playing a track. "{event.message}"')
         
-        await message.edit(content=emojis['sleep'], embed=embed, components=[])
+        await message.edit(content=emojis['icons']['sleep'], embed=embed, components=[])
         
     @listen()
     async def voice_state_update(self, event: VoiceUserLeave):
@@ -671,7 +671,7 @@ class MusicModule(Extension):
 
         main_buttons = self.get_buttons()
 
-        niko = emojis["vibe"]
+        niko = emojis['icons']["vibe"]
         player_state = 'Now Playing...'
         embed = await self.get_playing_embed(player_state, player, True)
 

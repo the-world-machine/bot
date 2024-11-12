@@ -6,8 +6,8 @@ import re
 import time
 from typing import Dict, List, Union
 
-from data.emojis import emojis
-from data.localization import Localization, fnum
+from utilities.emojis import emojis
+from utilities.localization import Localization, fnum
 from dateutil import relativedelta
 from interactions import *
 from interactions.api.events import Component
@@ -105,7 +105,7 @@ class NikogotchiModule(Extension):
             ),
             Button(
                 style=ButtonStyle.GREY,
-                emoji=emojis["refresh"],
+                emoji=emojis['icons']["refresh"],
                 custom_id=f'{prefix}refresh{suffix}'
             ), 
             Button(
@@ -160,7 +160,7 @@ class NikogotchiModule(Extension):
             total = 0
             for (tid, amount) in treasure_seek_results.found_treasure.items():
                 total+=amount
-                treasures += loc.l('treasure.item', amount=amount, icon=emojis[f"treasure_{tid}"], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
+                treasures += loc.l('treasure.item', amount=amount, icon=emojis['treasures'][tid], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
 
             treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, hours=treasure_seek_results.hours_spent)
         
@@ -381,7 +381,7 @@ class NikogotchiModule(Extension):
             
             components=[
                 Button(
-                    emoji=emojis["refresh"],
+                    emoji=emojis['icons']["refresh"],
                     custom_id=f'action_refresh_{ctx.author.id}',
                     style=ButtonStyle.GREY)
             ]
@@ -827,7 +827,7 @@ class NikogotchiModule(Extension):
             
             name = treasure_loc[treasure_nid]['name']
 
-            treasure_string += loc.l('treasure.item', amount=owned_treasures.get(treasure_nid, 0), icon=emojis[f"treasure_{treasure_nid}"], name=name)+"\n"
+            treasure_string += loc.l('treasure.item', amount=owned_treasures.get(treasure_nid, 0), icon=emojis['treasures'][treasure_nid], name=name)+"\n"
         
         await ctx.send(embed=Embed(
             description=str(loc.l('treasure.message', user=user.mention, treasures=treasure_string)),

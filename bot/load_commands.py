@@ -1,6 +1,6 @@
 import os
 import interactions
-from data.config import get_config
+from utilities.config import get_config
 
 def load_commands(client: interactions.Client):
 
