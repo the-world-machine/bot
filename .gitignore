@@ -8,7 +8,7 @@ __pycache__/
 
 
 blob/*
-
+bot/data/emojis.yml
 bot-config.yml
 lavalink/application.yml
-lavalink/{plugins,Lavalink.jar}
+lavalink/{plugins, plugins/*,Lavalink.jar}
