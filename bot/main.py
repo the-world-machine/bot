@@ -2,7 +2,7 @@ from interactions.api.events import MemberAdd, Ready, MessageCreate
 import interactions.ext.prefixed_commands as prefixed_commands
 from utilities.dev_commands import execute_dev_command
 from database import ServerData, create_connection
-from utilities.module_loader import reload_modules
+from utilities.module_loader import load_modules
 from utilities.profile.main import load_badges
 from utilities.misc import set_random_avatar
 from modules.textbox import TextboxModule
@@ -24,7 +24,7 @@ prefixed_commands.setup(client, default_prefix='*')
 
 print("\n─ Loading Commands... ─ ─ ─ ─ ─ 2/4")
 
-reload_modules(client)
+load_modules(client)
 
 print("\n─ Finalizing... ─ ─ ─ ─ ─ ─ ─ ─ 3/4")
 create_connection()
