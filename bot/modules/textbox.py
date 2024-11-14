@@ -2,6 +2,7 @@ from datetime import datetime
 import io
 from interactions import *
 import os
+from utilities.config import get_config
 from utilities.misc import get_image
 import yaml
 from utilities.emojis import emojis
@@ -68,7 +69,7 @@ class TextboxModule(Extension):
         icon = await get_image(url=icon_url)
         icon = icon.resize((96, 96))
         
-        fnt = ImageFont.truetype("bot/font/TerminusTTF-Bold.ttf", 20)
+        fnt = ImageFont.truetype(get_config("textbox.font"), 20)
         text_x, text_y = 20, 17
         img_buffer = io.BytesIO()
         frames = []  # Using ImageSequence-compatible frames list
@@ -198,5 +199,5 @@ class TextboxModule(Extension):
             
         await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icons']['loading']} ]"), components=[])
         file = await TextboxModule.generate_dialogue(text, icon, animated)
-        await ctx.channel.send(message=f"-# [ by {ctx.user.mention} ]", files=file)
+        await ctx.channel.send(content=f"-# [ by {ctx.user.mention} ]", files=file, allowed_mentions={'users':[]})
         await ctx.edit(embeds=fancy_embed(f"[ Done! ]"))
