@@ -132,5 +132,5 @@ def watch_me():
     observer.join()
 
 watcher_thread = Thread(target=watch_me)
-watcher_thread.daemon = True # maquese it stop when program exits
+watcher_thread.daemon = True
 watcher_thread.start()
