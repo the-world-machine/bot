@@ -1,13 +1,16 @@
 token: ...
+database: mongodb+srv://localhost
+
 bot-id: "..." # Recommended to use the production bot ID. 
 
-status: sitton on top of the Tower
-do-avatar-rolling: true # Only affect bots that have been put in bot-id
+statuses: 
+- text: chilling on top of The Tower
+  emoji: icons.vibe # optional
+do-avatar-rolling: true # For "true" uses unstable.png if the token doesn't login to bot-id
 
-database: mongodb+srv://localhost
-dev-command-prefix: "[.]" # E.g. <.> (.) [.] {.} ^.^
 
-dev-command-user-list: 
+dev-command-marker: "[.]" # E.g. <.> (.) [.] {.} ^.^
+devs: 
     - "user ids"
     
 music:
@@ -22,6 +25,9 @@ music:
         password: password_here
 
 localization:
+    debug: true # Whether to show detailed error messages for not found paths
     fallback-locale: en # make sure the locale is 100% complete
-    # TODO: make fallback-locale nullable (only return paths)
     path: "bot/data/locales"
+
+textbox:
+    font: "bot/data/fonts/TerminusTTF-Bold.ttf"

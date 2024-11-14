@@ -23,6 +23,7 @@ aioconsole = "*"
 aiofiles = "*"
 pillow = "*"
 psutil = "*"
+deepcopy = "*"
 
 [dev-packages]
 

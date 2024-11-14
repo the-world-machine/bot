@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from utilities.config import get_config
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
-from utilities.misc import rabbit
+from utilities.misc import freeze, rabbit
 
 emoji_dict = {}
 def edicted(emojis):
@@ -21,9 +21,17 @@ def edicted(emojis):
 edicted(emojis)
 on_emojis_update(edicted)
 
+debug: bool = False
 @dataclass
 class Localization:
+    global debug
     locale: str
+    def __init__(self, ctx):
+        self.locale = ctx.locale
+        if ctx.user.id in get_config("devs"):
+            self.debug = True
+        if get_config("localization.debug"):
+            self.debug = True
     _locales = {}
     _last_modified = {}
     
@@ -43,18 +51,18 @@ class Localization:
 
         value = Localization.fetch_language(locale)
 
-        value = rabbit(value, localization_path)
+        value = rabbit(value, localization_path, raise_on_not_found=False, simple_error=not debug)
         
         return Localization.assign_variables(value, locale, **variables)
 
     @staticmethod
-    def l_all(localization_path: str, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+    def sl_all(localization_path: str, **variables: str) -> dict[str, Union[str, list[str], dict]]:
         results = {}
         
         for locale in Localization.locales_list():
             value = Localization.fetch_language(locale)
 
-            value = rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")))
+            value = rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")), raise_on_not_found=False, simple_error=not debug)
 
             results[locale] = Localization.assign_variables(value, locale, **variables)
             
@@ -82,7 +90,7 @@ class Localization:
         def load(locale):
             with open(f'bot/data/locales/{locale}.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
-                Localization._locales[locale] = data
+                Localization._locales[locale] = freeze(data)
                 Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
                 return data
 

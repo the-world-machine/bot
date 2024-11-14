@@ -21,7 +21,7 @@ class ExplodeModule(Extension):
 
     @slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
     async def explode(self, ctx: SlashContext):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         user_id = ctx.user.id
 
         if user_id in self.last_called:
