@@ -21,11 +21,7 @@ music:
         port: 4230
         password: password_here
 
-paths:
-    locales: "bot/data/locales"
-    emojis: "bot/data/emojis.yml"
-    characters: "bot/data/characters.yml"
-
 localization:
     fallback-locale: en # make sure the locale is 100% complete
-    # TODO: make fallback-locale nullable
+    # TODO: make fallback-locale nullable (only return paths)
+    path: "bot/data/locales"
