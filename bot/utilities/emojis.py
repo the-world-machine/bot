@@ -67,7 +67,7 @@ class EmojiFileHandler(FileSystemEventHandler):
     def on_modified(self, event):
         global emojis
         if event.src_path.endswith("emojis.yml"):
-            print(f"{colored('┌ Reloading modified', 'yellow')} ─ ─ emojis.yml")
+            print(f"{colored('┌ Reloading a modified', 'yellow')} ─ emojis.yml")
             old_emojis = emojis
             new_emojis = load_emojis()
             

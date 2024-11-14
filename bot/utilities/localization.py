@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 from utilities.config import get_config
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
+from utilities.misc import rabbit
+
 emoji_dict = {}
 def edicted(emojis):
     global emoji_dict
@@ -41,7 +43,7 @@ class Localization:
 
         value = Localization.fetch_language(locale)
 
-        value = Localization.rabbit(value, localization_path)
+        value = rabbit(value, localization_path)
         
         return Localization.assign_variables(value, locale, **variables)
 
@@ -52,7 +54,7 @@ class Localization:
         for locale in Localization.locales_list():
             value = Localization.fetch_language(locale)
 
-            value = Localization.rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")))
+            value = rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")))
 
             results[locale] = Localization.assign_variables(value, locale, **variables)
             
@@ -98,33 +100,6 @@ class Localization:
                 locale = "en"
 
         return load(locale)
-
-    @staticmethod
-    def rabbit(value: dict, raw_path: str, fallback_value: dict = None, full_path = None) -> Union[str, list, dict]:
-        # probably too much code? it works for now..
-        if not full_path:
-            full_path = raw_path
-        if not raw_path:
-            return value
-        parsed_path: list[str] = raw_path.split('.')
-        went_through: list[str] = []
-        for path in parsed_path:
-            got_value = False
-            attempts = 0
-            while not got_value:
-                try:
-                    if isinstance(value, dict):
-                        value = Localization.rabbit(value[path], '.'.join(parsed_path[len(went_through)+1:]), fallback_value, full_path)
-                    got_value = True
-                except KeyError as e:
-                    print(e)
-                    attempts += 1
-                    got_value = False
-
-                    if attempts > 5:
-                        return f'Localization `{full_path}` not found'
-                went_through.append(path)
-            return value
     
     @staticmethod
     def assign_variables(input: Union[str, list, dict], locale: str, **variables: dict[str, any]):
@@ -146,7 +121,10 @@ class Localization:
         elif isinstance(input, dict):
             for key, value in input.items():
                 input[key] = Localization.assign_variables(value, locale, **variables)
-            return input    
+            return input
+
+
+
 def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
     if isinstance(num, float):
         num = round(num, 3)
