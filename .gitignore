@@ -13,3 +13,4 @@ bot-config.yml
 lavalink/application.yml
 lavalink/plugins/
 lavalink/Lavalink.jar
+Pipfile.lock

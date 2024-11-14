@@ -8,7 +8,7 @@
       "name": "Run bot",
       "type": "debugpy",
       "request": "launch",
-      "program": "pipenv run bot",
+      "program": "bot/main.py",
       "console": "integratedTerminal"
     },
     {
