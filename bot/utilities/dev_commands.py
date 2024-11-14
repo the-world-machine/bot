@@ -11,6 +11,7 @@ from utilities.emojis import emojis
 from utilities.config import get_config
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction, sleep
+from utilities.module_loader import reload_modules
 from utilities.localization import Localization, fnum
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
@@ -86,6 +87,13 @@ async def execute_dev_command(message: Message):
     subcommand_name = args[0]
     
     match subcommand_name:
+        case "bot":
+            action = args[1]
+            match action:
+                case "refresh":
+                    msg = await message.reply(f"`[ Reloading modules... `{emojis['icons']['loading']}` ]`")
+                    modules = reload_modules(msg.client)
+                    await message.reply(f"`[ Reloaded `**`{len(modules)}`**` modules ]`")
         case "eval":
             code = command_content.split(f"eval ")
             referenced_message = message.get_referenced_message();
@@ -213,7 +221,7 @@ async def execute_dev_command(message: Message):
                     await collection.update(**data)
                     
                     await message.reply(
-                        f'`[ Successfully updated value(s). ]`'
+                        '`[ Successfully updated. ]`'
                     )
                     
                 if action == 'view':
