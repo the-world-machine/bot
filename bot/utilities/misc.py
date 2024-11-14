@@ -20,7 +20,6 @@ async def get_image(url: str) -> Image.Image:
       else:
         raise ValueError(f"{resp.status} Discord cdn shittig!!")
       
-
 def rabbit(
   value: dict,
   raw_path: str,
@@ -68,7 +67,7 @@ def rabbit(
     array = False
     if '[' in path and ']' in path:
       key, index = path.split('[')
-      index = int(index[:-1])  # Remove closing bracket and convert to int
+      index = int(index[:-1])
       array = True
   
     try:
@@ -77,31 +76,24 @@ def rabbit(
       elif isinstance(value, dict):
         value = value[path]
       else:
-        # Continue recursion if path is not a direct match, it's likely nested
         return rabbit(value, '.'.join(parsed_path[len(went_through) + 1:]), fallback_value, _full_path, raise_on_not_found, _error_message, simple_error)
     except (KeyError, IndexError, ValueError) as e:
-      # Construct the error message dynamically
-      failed_part = parsed_path[len(went_through)]  # Get the part of the path that failed
+      failed_part = parsed_path[len(went_through)]
       
-      # Build the path before the failed part, add the failed part, and then the rest
-      before_failed = '.'.join(parsed_path[:len(went_through)])  # Path before failure
-      after_failed = '.'.join(parsed_path[len(went_through)+1:])  # Path after failure
+      before_failed = '.'.join(parsed_path[:len(went_through)])
+      after_failed = '.'.join(parsed_path[len(went_through)+1:])
       
       if simple_error:
-        # Simple error message with just the path, no highlighting
         error_message = _error_message.replace("[path]", f"{before_failed}.{failed_part}{'.' + after_failed if after_failed else ''}")
       else:
-        # Highlight the failed part of the path
         if before_failed:
           full_error_path = f"`{before_failed}.`**{failed_part}**`"
         else:
           full_error_path = f"`**{failed_part}**`"
         
-        # Include the remaining path after the failure
         if after_failed:
           full_error_path += f".{after_failed}`"
         
-        # Combine everything into the final error message
         error_message = _error_message.replace("[path]", full_error_path)
     
       if raise_on_not_found:
