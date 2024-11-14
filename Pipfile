@@ -24,5 +24,9 @@ psutil = "*"
 python_version = "3.11"
 python_full_version = "3.11.10"
 
+[metadata]
+name = "The World Machine"
+repository = "https://github.com/the-world-machine/the-world-machine"
+
 [scripts]
 bot = "python bot/main.py"
