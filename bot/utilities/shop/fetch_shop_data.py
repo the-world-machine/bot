@@ -43,7 +43,7 @@ async def fetch_shop_data():
     
     return shop_data
 
-async def reset_shop_data(loc: str):
+async def reset_shop_data():
     
     items = await fetch_items()
     data = items['shop']
@@ -56,7 +56,7 @@ async def reset_shop_data(loc: str):
             backgrounds[bg] = all_bgs[bg]
         
     treasures = items['treasures']
-    motds = Localization(loc).l('shop.motds')
+    motds = Localization.sl('shop.motds', locale=get_config('localizations.main-locale'))
     
     data['backgrounds'] = []
     data['treasures'] = []

@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from utilities.config import get_config
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
-from utilities.misc import freeze, rabbit
+from utilities.misc import FrozenDict, rabbit
 
 emoji_dict = {}
 def edicted(emojis):
@@ -22,16 +22,19 @@ edicted(emojis)
 on_emojis_update(edicted)
 
 debug: bool = False
+fallback_locale: str = get_config("localization.main-locale")
 @dataclass
 class Localization:
     global debug
+    global fallback_locale
     locale: str
     def __init__(self, ctx):
+        global debug
+        global fallback_locale
         self.locale = ctx.locale
-        if ctx.user.id in get_config("devs"):
-            self.debug = True
         if get_config("localization.debug"):
-            self.debug = True
+            debug = True
+            fallback_locale = None
     _locales = {}
     _last_modified = {}
     
@@ -43,7 +46,7 @@ class Localization:
         return self.sl(localization_path=localization_path, locale=locale, **variables)
     
     @staticmethod
-    def sl(localization_path: str, locale: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+    def sl(localization_path: str, locale: str, raise_on_not_found: bool = False, **variables: dict[str, any]) -> Union[str, list[str], dict]:
         """ Static version of .l for single use (where making another Localization() makes it cluttery)"""
         if locale == None:
             raise ValueError("No locale provided")
@@ -51,18 +54,25 @@ class Localization:
 
         value = Localization.fetch_language(locale)
 
-        value = rabbit(value, localization_path, raise_on_not_found=False, simple_error=not debug)
+        value = rabbit(value, 
+                       localization_path, 
+                       fallback_value=Localization.fetch_language(fallback_locale) if fallback_locale else None, 
+                       raise_on_not_found=raise_on_not_found,
+                       _error_message="[path] ([error], debug mode ON)" if debug else "[path]")
         
         return Localization.assign_variables(value, locale, **variables)
 
     @staticmethod
-    def sl_all(localization_path: str, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+    def sl_all(localization_path: str, raise_on_not_found: bool = False, **variables: str) -> dict[str, Union[str, list[str], dict]]:
         results = {}
         
         for locale in Localization.locales_list():
             value = Localization.fetch_language(locale)
 
-            value = rabbit(value, localization_path, Localization.fetch_language(get_config("localization.fallback-locale")), raise_on_not_found=False, simple_error=not debug)
+            value = rabbit(value,
+                           localization_path, 
+                           raise_on_not_found=raise_on_not_found, 
+                           _error_message="[path] ([error], debug mode ON)" if debug else "[path]")
 
             results[locale] = Localization.assign_variables(value, locale, **variables)
             
@@ -90,7 +100,7 @@ class Localization:
         def load(locale):
             with open(f'bot/data/locales/{locale}.yml', 'r', encoding='utf-8') as f:
                 data = safe_load(f)
-                Localization._locales[locale] = freeze(data)
+                Localization._locales[locale] = FrozenDict(data)
                 Localization._last_modified[locale] = os.path.getmtime(f'bot/data/locales/{locale}.yml')
                 return data
 
@@ -127,8 +137,11 @@ class Localization:
                 processed.append(Localization.assign_variables(elem, locale, **variables))
             return processed
         elif isinstance(input, dict):
+            new_dict = {}
             for key, value in input.items():
-                input[key] = Localization.assign_variables(value, locale, **variables)
+                new_dict[key] = Localization.assign_variables(value, locale, **variables)
+            return new_dict
+        else:
             return input
 
 

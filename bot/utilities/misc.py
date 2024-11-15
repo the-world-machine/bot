@@ -25,32 +25,45 @@ async def get_image(url: str) -> Image.Image:
       else:
         raise ValueError(f"{resp.status} Discord cdn shittig!!")
 
-class FrozenDict(Mapping):
+class FrozenDict(dict):
     def __init__(self, data):
-        self._data = {k: freeze(v) for k, v in data.items()}
+        frozen_data = {k: self._freeze(v) for k, v in data.items()}
+        super().__init__(frozen_data)
 
-    def __getitem__(self, key):
-        return self._data[key]
+    def _freeze(self, value):
+        """Recursively convert dictionaries to FrozenDict and lists to tuples."""
+        if isinstance(value, dict):
+            return FrozenDict(value)
+        elif isinstance(value, list):
+            return tuple(self._freeze(item) for item in value)
+        elif isinstance(value, tuple):
+            return tuple(self._freeze(item) for item in value)
+        else:
+            return value
 
-    def __iter__(self):
-        return iter(self._data)
+    def __setitem__(self, key, value):
+        raise TypeError("FrozenDict is immutable")
 
-    def __len__(self):
-        return len(self._data)
+    def __delitem__(self, key):
+        raise TypeError("FrozenDict is immutable")
+
+    def clear(self):
+        raise TypeError("FrozenDict is immutable")
+
+    def pop(self, key, default=None):
+        raise TypeError("FrozenDict is immutable")
+
+    def popitem(self):
+        raise TypeError("FrozenDict is immutable")
+
+    def setdefault(self, key, default=None):
+        raise TypeError("FrozenDict is immutable")
+
+    def update(self, *args, **kwargs):
+        raise TypeError("FrozenDict is immutable")
 
     def __repr__(self):
-        return f"FrozenDict({self._data})"
-
-def freeze(data):
-    """Recursively freeze a structure of dicts and lists."""
-    if isinstance(data, Mapping):
-        return FrozenDict(data)
-    elif isinstance(data, list):
-        return tuple(freeze(item) for item in data)
-    elif isinstance(data, tuple):
-        return tuple(freeze(item) for item in data)
-    else:
-        return data
+        return f"FrozenDict({super().__repr__()})"
 
 import copy
 from typing import Union, Optional
@@ -62,7 +75,7 @@ def rabbit(
   fallback_value: dict = None,
   _full_path: Optional[str] = None,
   raise_on_not_found: bool = True,
-  _error_message: str = "Rabbit fail [path] ([error])",
+  _error_message: str | None = None,
   simple_error: bool = False,
   deepcopy: bool = False,
 ) -> Union[str, list, dict, int, bool, float, None, datetime.date, datetime.datetime]:
@@ -93,6 +106,8 @@ def rabbit(
     - If `raw_path` is empty, the function returns `value` as is.
     - List elements can be accessed using square brackets, e.g., "somearray[0]".
   """
+  if not _error_message:
+     _error_message = "Rabbit fail [path] ([error])"
   if not _full_path:
     _full_path = raw_path
   if not raw_path:
@@ -132,8 +147,10 @@ def rabbit(
         # Ensure value is a dictionary or list, or fallback_value is
         if not isinstance(value, (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
           error_msg = f"expected nested structure, found {type(value).__name__}"
+          if not fallback_value and not simple_error:
+            error_msg += f", no fallback passed"
           if fallback_value:
-            error_msg += f" and {type(fallback_value).__name__} in fallback"
+            error_msg += f", {type(fallback_value).__name__} in fallback"
           raise TypeError(error_msg)
 
     except (KeyError, IndexError, ValueError, TypeError) as e:
@@ -143,7 +160,7 @@ def rabbit(
       after_failed = '.'.join(parsed_path[len(went_through)+1:])
       
       if simple_error:
-        error_message = _error_message.replace("[path]", f"{before_failed}.{failed_part}{'.' + after_failed if after_failed else ''}")
+        error_message = f"{before_failed}.{failed_part}{'.' + after_failed if after_failed else ''}"
       else:
         if before_failed:
           full_error_path = f"`{before_failed}.`**`{failed_part}`**"

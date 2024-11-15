@@ -60,7 +60,7 @@ class ProfileModule(Extension):
     @profile.subcommand(sub_cmd_description='View a profile.')
     @slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
     async def view(self, ctx: SlashContext, user: User = None):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         if user is None:
             user = ctx.user
         url = "https://theworldmachine.xyz/profile"
@@ -70,9 +70,9 @@ class ProfileModule(Extension):
         message = await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
 
         image = await draw_profile(user,
-                                                 filename=loc.l("profile.view.image.name", username=user.id),
-                                                 description=loc.l("profile.view.image.title", username=user.username),
-                                                 locale=ctx.locale)
+                                   filename=loc.l("profile.view.image.name", username=user.id),
+                                   description=loc.l("profile.view.image.title", username=user.username),
+                                   locale=ctx.locale)
         
         components = []
         if user == ctx.user:

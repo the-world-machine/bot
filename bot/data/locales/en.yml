@@ -11,7 +11,7 @@ general:
 
 # ---------------------------------------------------------------
 
-music: 
+music: ~
     
 # ---------------------------------------------------------------
 
@@ -43,7 +43,14 @@ misc:
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
+  roll:
+    rolling: Rolling d[sides]...
+    rolled: "[ Rolled a [text], totaling at **[total]**. ]"
+    one: "[ Rolled a 1 ]"
+
+  wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
+
 # ---------------------------------------------------------------
 
 profile:

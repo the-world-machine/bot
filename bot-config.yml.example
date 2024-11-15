@@ -26,7 +26,7 @@ music:
 
 localization:
     debug: true # Whether to show detailed error messages for not found paths
-    fallback-locale: en # make sure the locale is 100% complete
+    main-locale: en # make sure the locale is 100% complete
     path: "bot/data/locales"
 
 textbox:

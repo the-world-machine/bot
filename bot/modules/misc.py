@@ -31,7 +31,7 @@ class MiscellaneousModule(Extension):
     @slash_command(description='View various statistics about the bot.')
     async def stats(self, ctx: SlashContext):
         await ctx.defer()
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         
         lavalink_stats = await get_lavalink_stats()
 
@@ -70,14 +70,15 @@ class MiscellaneousModule(Extension):
         
     @slash_command(description='A random wikipedia article.')
     async def random_wikipedia(self, ctx: SlashContext):
+        loc = Localization(ctx)
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://en.wikipedia.org/api/rest_v1/page/random/summary') as resp:
                 if resp.status == 200:
                     get_search = await resp.json()
 
-                    result = get_search['content_urls']['desktop']['page']
-
-                    await fancy_message(ctx, f'[ [Here]({result}) is your random wikipedia article. It\'s about {get_search["title"]}... I think... ]')
+                    await fancy_message(ctx, loc.l("misc.wikipedia",
+                                                   link=get_search['content_urls']['desktop']['page'],
+                                                   title=get_search["title"]))
 
     @slash_command(description='bogus')
     async def amogus(self, ctx: SlashContext):
@@ -89,12 +90,12 @@ class MiscellaneousModule(Extension):
     @slash_option(description='What sided dice to roll.', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
     @slash_option(description='How many to roll.', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
     async def roll(self, ctx: SlashContext, sides: int, amount: int = 1):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         dice = random.randint(1, sides)
 
         if amount == 1:
-            description = f'[ Rolled a **{dice}**. ]'
+            description = loc.l("misc.roll.one", side=dice)
         else:
             text = ''
             previous_total = 0
@@ -116,11 +117,12 @@ class MiscellaneousModule(Extension):
 
                 previous_total = total
 
-            description = f'[ Rolled a {text}, totaling at **{total}**. ]'
-
-        embed = Embed(title=f'Rolling d{sides}...', description=description, color=0x8b00cc)
-        embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=96&quality=lossless')
-
+            description = loc.l("misc.roll.rolled", text=sides, total=total)
+        title = loc.l("misc.roll.rolling", sides=sides)
+        print(title)
+        embed = Embed(title=title, description=description, color=0x8b00cc)
+        embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
+        
         await ctx.send(embeds=embed)
         
     @slash_command(description="Get a random picture of a cat.")

@@ -197,7 +197,7 @@ async def execute_dev_command(message: Message):
                 await message.reply(f"```yml\n{dump(shop)}```")
             
             if action == 'reset':
-                await reset_shop_data('en-US')
+                await reset_shop_data()
                 
                 await message.reply('`[ Successfully reset shop. ]`')
         case "db":
