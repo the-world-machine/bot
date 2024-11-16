@@ -233,7 +233,7 @@ items:
       description: 一個大的燈泡。就是太陽。
 
   pancakes:
-    pancakes:
+    normal:
       name: 鬆餅
       description: >
         供應 Nikogotchi 的最基本需求。
@@ -242,7 +242,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: 金色鬆餅
       description: >
         貴，但值得。
@@ -251,7 +251,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: 我甚至不知道這是怎麼來的。
 

@@ -247,7 +247,7 @@ items:
       name: Сонце
       description: Велика лампочка. Це сонце.
   pancakes:
-    pancakes:
+    normal:
       name: Млинці
       description: >
         Мінімальна доза їжі для Нікоґотчі.
@@ -256,7 +256,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: Золоті Млинці
       description: >
         Коштовне, але варте цього.
@@ -265,7 +265,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: Я даже не знаю як це сюди потрапило.
 

@@ -88,11 +88,12 @@ shop:
   buttons:
     buy: Trade
     buy_all: Trade All
+    too_poor: Cannot Afford
+    too_poor_all: Cannot Afford All
     sell: Trade in
     sell_all: Trade in All
     go_back: Go Back
-    owned: Owned
-    too_poor: Cannot Afford
+    owned: Owned 
 
   main_title: Welcome!
 
@@ -254,7 +255,7 @@ items:
       description: A large lightbulb. It's the sun. 
 
   pancakes:
-    pancakes:
+    normal:
       name: Pancakes
       description: >
         The bare minimum for feeding a Nikogotchi.
@@ -263,7 +264,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: Golden Pancakes
       description: >
         Expensive, but worth it.
@@ -272,7 +273,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: I don't even know how this got here.
 
