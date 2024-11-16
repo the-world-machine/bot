@@ -2,6 +2,7 @@ from datetime import datetime
 import random
 
 from database import fetch_items, update_shop
+from utilities.config import get_config
 from utilities.localization import Localization
 from dataclasses import dataclass
 

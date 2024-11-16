@@ -414,6 +414,7 @@ class ShopModule(Extension):
         b_trade: str = loc.l('shop.buttons.buy')
         b_owned: str = loc.l('shop.buttons.owned')
         b_poor: str = loc.l('shop.buttons.too_poor')
+        b_poor_all: str = loc.l('shop.buttons.too_poor_all')
         
         if category == 'main_shop' or category == 'go_back':
             
@@ -528,7 +529,7 @@ class ShopModule(Extension):
                 amount_owned = loc.l('shop.owned', amount=owned)
                 pancake_loc: dict = loc.l(f'items.pancakes.{pancake_id}')
                 
-                pancake_text += f"{emojis['pancakes'][pancake_id]} **{pancake_loc['name']}** - {emojis['icon_wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
+                pancake_text += f"{emojis['pancakes'][pancake_id]} **{pancake_loc['name']}** - {emojis['icons']['wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
                 
                 button = Button(
                     label=loc.l('shop.buttons.buy'),

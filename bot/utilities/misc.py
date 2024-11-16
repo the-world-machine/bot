@@ -1,6 +1,7 @@
 import os
 import copy
 import random
+import subprocess
 import aiohttp
 import datetime
 from PIL import Image
@@ -27,6 +28,8 @@ async def get_image(url: str) -> Image.Image:
 
 class FrozenDict(dict):
     def __init__(self, data):
+        if not isinstance(data, (dict, list, tuple)):
+           raise ValueError("Value must be a dict, list or a tuple")
         frozen_data = {k: self._freeze(v) for k, v in data.items()}
         super().__init__(frozen_data)
 
@@ -112,7 +115,6 @@ def rabbit(
     _full_path = raw_path
   if not raw_path:
     return value
-
   parsed_path = raw_path.split('.')
   went_through = []
   key = None
@@ -125,26 +127,26 @@ def rabbit(
     else:
       key = path
       index = None
-    
     try:
-      # First, try accessing the key/index from the main value
       if key is not None and index is not None:
         value = value[key][index]
         if fallback_value:
-          fallback_value = fallback_value[key][index]  # Access from fallback value
-      elif isinstance(value, dict) and key in value:
-        value = value[key]
-        if fallback_value and key in fallback_value:
-          fallback_value = fallback_value[key]  # Access from fallback value
-      else:
-        if fallback_value and key in fallback_value:
-          return fallback_value[key]  # Return from fallback_value if key not found in value
+          fallback_value = fallback_value[key][index]
+      elif isinstance(value, dict):
+        if key in value:
+          value = value[key]
         else:
-          raise KeyError(f"{key} not found")
+           value = None
+        if fallback_value:
+          fallback_value = fallback_value[key]
+      else:
+        raise KeyError(f"{key} not found")
 
-      # Check if there are more segments in the path and if value/fallback_value are appropriate
+      if value == None:
+        value = fallback_value
+      if value == None:
+        raise KeyError(f"{key} not found")
       if len(parsed_path) > len(went_through) + 1:
-        # Ensure value is a dictionary or list, or fallback_value is
         if not isinstance(value, (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
           error_msg = f"expected nested structure, found {type(value).__name__}"
           if not fallback_value and not simple_error:
@@ -178,18 +180,20 @@ def rabbit(
     
     went_through.append(path)
 
-  # Perform deepcopy of value if necessary
   if deepcopy and isinstance(value, (dict, list)):
-    value = copy.deepcopy(value)
+    return copy.deepcopy(value)
 
   return value
 
 
-async def set_random_avatar(client: Client):
-    get_avatars = os.listdir('bot/images/profile_pictures')
-    random_avatar = random.choice(get_avatars)
+async def set_random_avatar(client: Client) -> str:
+  get_avatars = os.listdir('bot/images/profile_pictures')
+  random_avatar = random.choice(get_avatars)
 
-    avatar = File('bot/images/profile_pictures/' + random_avatar)
+  avatar = File('bot/images/profile_pictures/' + random_avatar)
 
-    await client.user.edit(avatar=avatar)
-    return random_avatar
+  await client.user.edit(avatar=avatar)
+  return random_avatar
+
+def get_git_hash() -> str:
+  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout

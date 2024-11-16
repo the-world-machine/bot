@@ -15,7 +15,13 @@ def fancy_embed(text: str, color: int = 0x8b00cc):
     return Embed(description=text, color=color)
 
 
-async def fancy_message(ctx, message: str | None = None, color: int = 0x8b00cc, ephemeral=False, components: list[BaseComponent] = [], embed: Embed | None = None, embeds: list[Embed] | None = None):
+async def fancy_message(ctx,
+                        message: str | None = None, 
+                        color: int = 0x8b00cc, 
+                        ephemeral=False, 
+                        components: list[BaseComponent] = [], 
+                        embed: Embed | None = None, 
+                        embeds: list[Embed] | None = None):
     if embed == None:
         embed = fancy_embed(message, color)
     if embeds == None:

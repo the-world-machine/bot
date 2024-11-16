@@ -3,31 +3,20 @@ import aiohttp
 import platform
 import psutil
 import platform
-import subprocess
 from interactions import *
 from utilities.localization import Localization, fnum, ftime
 from modules.music import get_lavalink_stats
 from utilities.message_decorations import fancy_embed, fancy_message
 from datetime import datetime
+from utilities.misc import get_git_hash
 
-
-def get_git_hash():
-    try:
-        # Run the command `git rev-parse HEAD` to get the current commit hash
-        result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        result = result.stdout
-        print(f"Found git hash: {result}")
-        return result  # Return the commit hash without leading/trailing whitespace
-    except Exception as e:
-        print(f"Error retrieving git hash: {e}")
-        return "N/A"  # Return a default value in case of an error
-
-# Example usage
-commit_hash = get_git_hash()
-
-class MiscellaneousModule(Extension):
-    ''' For "one off" commands. '''
+try:
+    commit_hash = get_git_hash()
+    print(f"Found git hash: {commit_hash}")
+except Exception as e:
+    print(f"Error retrieving git hash: {e}")
     
+class MiscellaneousModule(Extension):
     @slash_command(description='View various statistics about the bot.')
     async def stats(self, ctx: SlashContext):
         await ctx.defer()
@@ -37,8 +26,8 @@ class MiscellaneousModule(Extension):
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
         total_servers = sum(len(shard.client.guilds) for shard in self.bot.shards)
-
-        embed = fancy_embed(loc.l("misc.stats.owner", name=self.bot.owner.username))
+        text = loc.l("misc.stats.owner", name=self.bot.owner.username)
+        embed = fancy_embed(text)
         
         embed.add_field(loc.l("misc.stats.names.avg_ping"),
                         loc.l("misc.stats.values.time", sec=fnum(self.bot.latency, ctx.locale)), inline=True)
@@ -51,7 +40,7 @@ class MiscellaneousModule(Extension):
         embed.add_field(loc.l("misc.stats.names.server_count"),
                         total_servers, inline=True)
         embed.add_field(loc.l("misc.stats.names.uptime"),
-                        ftime(self.bot.start_time - datetime.now(), ctx.locale), inline=True)
+                        ftime(datetime.now() - self.bot.start_time, ctx.locale), inline=True)
         #embed.add_field(loc.l("misc.stats.names.user_installs"),
         #                len(self.bot.app.users)) # NONEXISTENT
         #embed.add_field(loc.l("misc.stats.names.commit_hash"),

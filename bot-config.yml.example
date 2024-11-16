@@ -1,14 +1,12 @@
 token: ...
 database: mongodb+srv://localhost
 
-bot-id: "..." # Recommended to use the production bot ID. 
+bot-id: ... # Recommended to use the production bot ID. 
 
-statuses: 
-- text: chilling on top of The Tower
-  emoji: icons.vibe # optional
+status: Chilling on top of The Tower
 do-avatar-rolling: true # For "true" uses unstable.png if the token doesn't login to bot-id
 
-
+dev-server-id: "1017479547664482444"
 dev-command-marker: "[.]" # E.g. <.> (.) [.] {.} ^.^
 devs: 
     - "user ids"
@@ -25,9 +23,18 @@ music:
         password: password_here
 
 localization:
-    debug: true # Whether to show detailed error messages for not found paths
     main-locale: en # make sure the locale is 100% complete
-    path: "bot/data/locales"
+    debug: true # Whether to show detailed error messages for not found paths
+    assigned:
+        ru:
+            - "831530536781873163"
+            - "545986448231497728"
+        uk:
+            - "744276454946242723"
+        en:
+            - "302883948424462346"
+            - "744276454946242723"
+    
 
 textbox:
     font: "bot/data/fonts/TerminusTTF-Bold.ttf"

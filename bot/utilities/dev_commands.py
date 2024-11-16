@@ -3,6 +3,8 @@ import re
 import sys
 import time
 import json
+import yaml
+import aiohttp
 import database
 from yaml import dump
 from aioconsole import aexec
@@ -68,9 +70,8 @@ async def execute_dev_command(message: Message):
     if not message.content:
         return
     
-    if not str(message.author.id) in get_config('devs'):
+    if not str(message.author.id) in get_config('devs') or not str(message.author.id) in get_config("localizations.assigned.ru"):
         return
-    
     
     prefix = get_config('dev-command-marker').split('.')
     
@@ -85,7 +86,35 @@ async def execute_dev_command(message: Message):
     args = command_content.split(" ")
     
     subcommand_name = args[0]
-    
+    if str(message.author.id) in get_config("localizations.assigned.ru") and subcommand_name in ("new_ru"):
+        if not message.attachments:
+            return await message.reply("`[ Please attach a locale file ]`")
+        
+        attachment = message.attachments[0]
+        
+        try:
+            # Download the file using aiohttp
+            async with aiohttp.ClientSession() as session:
+                async with session.get(attachment.url) as response:
+                    if response.status != 200:
+                        return await message.reply(f"`[ Failed to download the file: HTTP {response.status} ]`")
+                    
+                    content = await response.text()
+
+            # Parse the content as YAML
+            parsed_data = yaml.safe_load(content)
+            
+            # Apply the localization override
+            Localization.local_override("ru", parsed_data)
+            
+            return await message.reply("`[ Done ]`")
+        except yaml.YAMLError as e:
+            return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
+        except Exception as e:
+            return await message.reply(f"`[ Failed to process the localization file: {str(e)} ]`")
+    elif not str(message.author.id) in get_config('devs'):
+        return
+
     match subcommand_name:
         case "bot":
             action = args[1]
