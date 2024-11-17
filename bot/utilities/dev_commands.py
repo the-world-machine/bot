@@ -3,18 +3,16 @@ import re
 import sys
 import time
 import json
-import yaml
-import aiohttp
 import database
 from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
 from utilities.emojis import emojis
+from utilities.localization import fnum
 from utilities.config import get_config
 from interactions import Embed, Message
-from asyncio import iscoroutinefunction, sleep
+from asyncio import iscoroutinefunction
 from utilities.module_loader import reload_modules
-from utilities.localization import Localization, fnum
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
 
@@ -70,48 +68,19 @@ async def execute_dev_command(message: Message):
     if not message.content:
         return
     
-    if str(message.author.id) not in get_config('devs') + get_config("localizations.assigned.ru"):
+    if str(message.author.id) not in get_config('devs'):
         return
     
     prefix = get_config('dev-command-marker').split('.')
     
-    # This is not a valid command if brackets do not surround the message.
     if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
         return
     
-    # Remove the brackets
     command_content = message.content[1:-1].strip()
     
-    # Split the command into parts
     args = command_content.split(" ")
     
     subcommand_name = args[0]
-    if str(message.author.id) in get_config("localizations.assigned.ru") and subcommand_name in ("new_ru"):
-        if not message.attachments:
-            return await message.reply("`[ Please attach a locale file ]`")
-        
-        attachment = message.attachments[0]
-        
-        try:
-            # Download the file using aiohttp
-            async with aiohttp.ClientSession() as session:
-                async with session.get(attachment.url) as response:
-                    if response.status != 200:
-                        return await message.reply(f"`[ Failed to download the file: HTTP {response.status} ]`")
-                    
-                    content = await response.text()
-
-            parsed_data = yaml.safe_load(content)
-            
-            Localization.local_override("ru", parsed_data)
-            
-            return await message.reply("`[ Done ]`")
-        except yaml.YAMLError as e:
-            return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
-        except Exception as e:
-            return await message.reply(f"`[ Unknown exception: {str(e)} ]`")
-    elif str(message.author.id) not in get_config('devs'):
-        return
 
     match subcommand_name:
         case "bot":

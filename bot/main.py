@@ -1,13 +1,14 @@
-from interactions.api.events import MemberAdd, Ready, MessageCreate
-import interactions.ext.prefixed_commands as prefixed_commands
-from utilities.dev_commands import execute_dev_command
-from database import ServerData, create_connection
-from utilities.module_loader import load_modules
-from utilities.profile.main import load_badges
-from utilities.misc import set_random_avatar
-from modules.textbox import TextboxModule
-from utilities.config import get_config
 from interactions import *
+from utilities.config import get_config
+from modules.textbox import TextboxModule
+from utilities.misc import set_random_avatar
+from utilities.profile.main import load_badges
+from utilities.module_loader import load_modules
+from database import ServerData, create_connection
+from utilities.loc_commands import execute_loc_command
+from utilities.dev_commands import execute_dev_command
+import interactions.ext.prefixed_commands as prefixed_commands
+from interactions.api.events import MemberAdd, Ready, MessageCreate
 
 print('\n─ Starting The World Machine... 1/4')
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
@@ -49,7 +50,6 @@ async def on_ready():
 
     print("\n\n─ The World Machine is ready! ─ 4/4\n\n")
 
-# Whenever a user joins a guild...
 @listen(MemberAdd)
 async def on_guild_join(event: MemberAdd):
     if client.user.id != int(get_config('bot-id')):
@@ -70,5 +70,9 @@ async def on_guild_join(event: MemberAdd):
 @listen(MessageCreate)
 async def on_message_create(event: MessageCreate):
     await execute_dev_command(event.message)
+
+@listen(MessageCreate)
+async def on_message_create(event: MessageCreate):
+    await execute_loc_command(event.message)
 
 client.start(get_config('token'))

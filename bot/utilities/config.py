@@ -1,5 +1,5 @@
-from pathlib import Path
 import yaml
+from pathlib import Path
 from utilities.misc import rabbit
 
 bcpath = Path("bot-config.yml")

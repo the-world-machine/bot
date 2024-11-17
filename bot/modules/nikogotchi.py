@@ -1,19 +1,15 @@
-from dataclasses import dataclass
-import json
-import random
-from datetime import datetime, timedelta
 import re
-import time
-from typing import Dict, List, Union
-
-from utilities.emojis import emojis
-from utilities.localization import Localization, fnum
-from dateutil import relativedelta
+import random
 from interactions import *
-from interactions.api.events import Component
-
+from datetime import datetime
+from dataclasses import dataclass
+from dateutil import relativedelta
+from utilities.emojis import emojis
+from typing import Dict, List, Union
 from utilities.nikogotchi_metadata import *
+from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
+from utilities.localization import Localization, fnum
 from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
 from utilities.message_decorations import fancy_embed, fancy_message, generate_progress_bar
 
