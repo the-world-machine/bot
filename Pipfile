@@ -1,0 +1,33 @@
+[metadata]
+name = "The World Machine"
+repository = "https://github.com/the-world-machine/the-world-machine"
+
+[scripts]
+bot = "python bot/main.py"
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.10"
+
+[packages]
+"interactions.py" = "*"
+termcolor = "*"
+pyyaml = "*"
+watchdog = "*"
+humanfriendly = "*"
+dnspython = "*"
+interactions-lavalink = "*"
+babel = "*"
+motor = "*"
+aioconsole = "*"
+aiofiles = "*"
+pillow = "*"
+psutil = "*"
+deepcopy = "*"
+
+[dev-packages]
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"

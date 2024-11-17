@@ -6,8 +6,8 @@ import re
 import time
 from typing import Dict, List, Union
 
-from data.emojis import emojis
-from data.localization import Localization, fnum
+from utilities.emojis import emojis
+from utilities.localization import Localization, fnum
 from dateutil import relativedelta
 from interactions import *
 from interactions.api.events import Component
@@ -81,11 +81,11 @@ class NikogotchiModule(Extension):
         
         await nikogotchi_data.update(available=False, status=-1, nid="?")
     
-    def nikogotchi_buttons(self, owner_id: int, locale: str):
+    def nikogotchi_buttons(self, ctx, owner_id: int):
         prefix = 'action_'
         suffix = f'_{owner_id}'
         
-        loc = Localization(locale)
+        loc = Localization(ctx)
 
         return [
             Button(
@@ -105,7 +105,7 @@ class NikogotchiModule(Extension):
             ),
             Button(
                 style=ButtonStyle.GREY,
-                emoji=emojis["refresh"],
+                emoji=emojis['icons']["refresh"],
                 custom_id=f'{prefix}refresh{suffix}'
             ), 
             Button(
@@ -124,7 +124,7 @@ class NikogotchiModule(Extension):
                                         treasure_seek_results: TreasureSeekResults | None, n: Nikogotchi, updated_stats: List[StatUpdate] | None):
 
         metadata = await fetch_nikogotchi_metadata(n.nid)
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         age = loc.l('nikogotchi.age', years=age.years, months=age.months, days=age.days)
 
@@ -160,7 +160,7 @@ class NikogotchiModule(Extension):
             total = 0
             for (tid, amount) in treasure_seek_results.found_treasure.items():
                 total+=amount
-                treasures += loc.l('treasure.item', amount=amount, icon=emojis[f"treasure_{tid}"], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
+                treasures += loc.l('treasure.item', amount=amount, icon=emojis['treasures'][tid], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
 
             treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, hours=treasure_seek_results.hours_spent)
         
@@ -225,7 +225,7 @@ class NikogotchiModule(Extension):
     async def check(self, ctx: SlashContext):
 
         uid = ctx.author.id
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         old_nikogotchi: NikogotchiData = await NikogotchiData(uid).fetch()
         nikogotchi: Nikogotchi
@@ -368,7 +368,7 @@ class NikogotchiModule(Extension):
         if custom_id == 'exit':
             await ctx.delete()
             
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
             
         nikogotchi = await self.get_nikogotchi(uid)
 
@@ -381,7 +381,7 @@ class NikogotchiModule(Extension):
             
             components=[
                 Button(
-                    emoji=emojis["refresh"],
+                    emoji=emojis['icons']["refresh"],
                     custom_id=f'action_refresh_{ctx.author.id}',
                     style=ButtonStyle.GREY)
             ]
@@ -438,7 +438,7 @@ class NikogotchiModule(Extension):
         
         dialogue = '...'
         treasures_found = None
-        buttons = self.nikogotchi_buttons(uid, ctx.locale)
+        buttons = self.nikogotchi_buttons(ctx, uid)
         select = await self.feed_nikogotchi(ctx)
 
         if nikogotchi.status == 2:
@@ -495,7 +495,7 @@ class NikogotchiModule(Extension):
         
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
         
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         
         options = False
 
@@ -580,7 +580,7 @@ class NikogotchiModule(Extension):
         
         updated_stats = []
         
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         if value == 'goldenpancake':
             if golden_pancakes <= 0:
@@ -622,7 +622,7 @@ class NikogotchiModule(Extension):
 
         await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
-        buttons = self.nikogotchi_buttons(ctx.author.id, ctx.locale)
+        buttons = self.nikogotchi_buttons(ctx, ctx.author.id)
         select = await self.feed_nikogotchi(ctx)
 
         embeds = await self.get_main_embeds(ctx, await self.get_nikogotchi_age(ctx.author.id),
@@ -633,7 +633,7 @@ class NikogotchiModule(Extension):
     @nikogotchi.subcommand(sub_cmd_description='Send away your Nikogotchi.')
     async def send_away(self, ctx: SlashContext):
         
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
         
@@ -664,7 +664,7 @@ class NikogotchiModule(Extension):
             await ctx.delete() 
 
     async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str, cont: bool = False):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         modal = Modal(
             ShortText(
                 custom_id='name',
@@ -682,12 +682,12 @@ class NikogotchiModule(Extension):
 
     @modal_callback(re.compile(r'rename_nikogotchi?.+'))
     async def on_rename_answer(self, ctx: ModalContext, name: str):
+        loc = Localization(ctx)
 
         if ctx.custom_id.endswith("continue"):
             await ctx.defer(edit_origin=True)
         else:
             await ctx.defer(ephemeral=True)
-        loc = Localization(ctx.locale)
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
 
         old_name = nikogotchi.name
@@ -704,25 +704,23 @@ class NikogotchiModule(Extension):
 
     @nikogotchi.subcommand(sub_cmd_description='Rename your Nikogotchi.')
     async def rename(self, ctx: SlashContext):
-        loc = Localization(ctx.locale)
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
 
         if nikogotchi is None:
-            return await fancy_message(ctx, loc.l('nikogotchi.other.you_invalid'), ephemeral=True, color=0xff0000)
+            return await fancy_message(ctx, Localization.sl('nikogotchi.other.you_invalid', locale=ctx.locale), ephemeral=True, color=0xff0000)
 
         return await self.init_rename_flow(ctx, nikogotchi.name)
 
-    @nikogotchi.subcommand(sub_cmd_description='Show off your Nikogotchi, or view someone else\'s.!')
-    @slash_option('user', description='The user to view.', opt_type=OptionType.USER)
+    @nikogotchi.subcommand(sub_cmd_description="Show your nikogotchi in chat!")
+    @slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
     async def show(self, ctx: SlashContext, user: User = None):
+        loc = Localization(ctx)
         if user is None:
             user = ctx.user
 
         uid = user.id
 
         nikogotchi = await self.get_nikogotchi(uid)
-        
-        loc = Localization(ctx.locale)
 
         if nikogotchi is None:
             return await fancy_message(ctx, loc.l('nikogotchi.other.other_invalid'), ephemeral=True, color=0xff0000)
@@ -751,11 +749,11 @@ class NikogotchiModule(Extension):
     """@nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
     @slash_option('user', description='The user to trade with.', opt_type=OptionType.USER, required=True)
     async def trade(self, ctx: SlashContext, user: User):
+        loc = Localization(ctx)
 
         nikogotchi_one = await self.get_nikogotchi(ctx.author.id)
         nikogotchi_two = await self.get_nikogotchi(user.id)
         
-        loc = Localization(ctx.locale)
         
         if nikogotchi_one is None:
             return await fancy_message(ctx, loc.l('nikogotchi.other.you_invalid'), ephemeral=True, color=0xff0000)
@@ -810,7 +808,7 @@ class NikogotchiModule(Extension):
     @integration_types(guild=True, user=True)
     @slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
     async def treasures(self, ctx: SlashContext, user: User = None):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         if user is None:
             user = ctx.user
@@ -828,7 +826,7 @@ class NikogotchiModule(Extension):
             
             name = treasure_loc[treasure_nid]['name']
 
-            treasure_string += loc.l('treasure.item', amount=owned_treasures.get(treasure_nid, 0), icon=emojis[f"treasure_{treasure_nid}"], name=name)+"\n"
+            treasure_string += loc.l('treasure.item', amount=owned_treasures.get(treasure_nid, 0), icon=emojis['treasures'][treasure_nid], name=name)+"\n"
         
         await ctx.send(embed=Embed(
             description=str(loc.l('treasure.message', user=user.mention, treasures=treasure_string)),

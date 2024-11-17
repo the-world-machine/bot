@@ -1,13 +1,14 @@
 token: ...
-bot-id: "..." # Recommended to use the production bot ID. 
-
-status: sitton on top of the Tower
-do-avatar-rolling: true # Only affect bots that have been put in bot-id
-
 database: mongodb+srv://localhost
-dev-command-prefix: "[.]" # E.g. <.> (.) [.] {.} ^.^
 
-dev-command-user-list: 
+bot-id: ... # Recommended to use the production bot ID. 
+
+status: Chilling on top of The Tower
+do-avatar-rolling: true # For "true" uses unstable.png if the token doesn't login to bot-id
+
+dev-server-id: "1017479547664482444"
+dev-command-marker: "[.]" # E.g. <.> (.) [.] {.} ^.^
+devs: 
     - "user ids"
     
 music:
@@ -20,3 +21,20 @@ music:
         ip: "localhost"
         port: 4230
         password: password_here
+
+localization:
+    main-locale: en # make sure the locale is 100% complete
+    debug: true # Whether to show detailed error messages for not found paths
+    assigned:
+        ru:
+            - "831530536781873163"
+            - "545986448231497728"
+        uk:
+            - "744276454946242723"
+        en:
+            - "302883948424462346"
+            - "744276454946242723"
+    
+
+textbox:
+    font: "bot/data/fonts/TerminusTTF-Bold.ttf"

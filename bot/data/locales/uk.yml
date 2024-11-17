@@ -1,18 +1,17 @@
----
 general:
   loading: "[ Завантаження... [emoji:loading] ]"
 
   buttons:
     _yes: "Так"
     _no: "Ні"
-    _cancel: Скасувати
-    _back: Назад
-    _continue: Далі
+    _cancel: "Скасувати"
+    _back: "Назад"
+    _continue: "Далі"
     _open_site: "Відкрити Cайт"
-    
+
 # ---------------------------------------------------------------
 
-music: 
+music: ~
     
 # ---------------------------------------------------------------
 
@@ -40,8 +39,6 @@ misc:
       mem_usg: "Використання пам'яті"
       uptime: "Час безперервної роботи"
     values:
-      failed_commit_hash: "Немає даних"
-
 
       time: "**[sec]** с."
       percent: "**[num]**%"
@@ -49,9 +46,21 @@ misc:
     
 # ---------------------------------------------------------------
 
-settings: 
-  profile: "You can view your profile over on the website!"
-  
+
+profile:
+  view: 
+    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редагувати Свій Профіль"
+    bots: "[ У ботів немає профілів. ]"
+    loading: "[ Завантаження профіля [user]... [emoji:loading] ]"
+
+    image: 
+      name: "профіль [userid]"
+      title: "Профіль [username]"
+      unlocked:
+        stamps: "Розблоковані Бейджи:"
+  edit: 
+    text: "You can view your profile over on the website!" 
+
 # ---------------------------------------------------------------
 
 explode:
@@ -126,7 +135,7 @@ shop:
       *КХМ* екзистенційні роздуми вбік, якщо годувати їх млинцями й гарно за ними доглядати, ти зможеш збирати скарби! А ці скарби можна обміняти на щось у мене! Досить круто, правда?
 
 
-      То чому б не обмінятися на капсулу сьогодні? Усього за **[cost]**[emoji:вовна]!
+      То чому б не обмінятися на капсулу сьогодні? Усього за **[cost]**[emoji:wool]!
 
 
       *Зверни увагу, що можна мати **лише одну капсулу** на кожного Нікоґотчі.*
@@ -160,16 +169,16 @@ shop:
 
     main: >
       Хочеш придбати цей фон за **[amount]**[emoji:wool]?
-
       
-      [user_wool]
-
-      owned: > 
-      Дякую! Ти можеш обладнати цей фон на [сайті, в налаштуваннях профілю](https://theworldmachine.xyz/profile)
-
 
       [user_wool]
-    traded: "> Успішно придбано фон **«[name]»**!"
+
+    newly_owned: > 
+      Дякую! Відтепер ви щасливий власник цього фону
+
+
+      [user_wool]
+    traded: "> Успішно придбано фон!"
 
   treasures:
 
@@ -238,7 +247,7 @@ items:
       name: Сонце
       description: Велика лампочка. Це сонце.
   pancakes:
-    pancakes:
+    normal:
       name: Млинці
       description: >
         Мінімальна доза їжі для Нікоґотчі.
@@ -247,7 +256,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: Золоті Млинці
       description: >
         Коштовне, але варте цього.
@@ -256,7 +265,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: Я даже не знаю як це сюди потрапило.
 

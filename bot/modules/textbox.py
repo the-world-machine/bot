@@ -1,18 +1,16 @@
 from datetime import datetime
 import io
 from interactions import *
-import json
-from uuid import uuid4
 import os
-
+from utilities.config import get_config
+from utilities.misc import get_image
 import yaml
-from data.emojis import emojis
-from data.localization import Localization
+from utilities.emojis import emojis
+from utilities.localization import Localization
 from utilities.message_decorations import fancy_message, fancy_embed
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
-import aiohttp
-import aiofiles
+
 
 class Face:
     def __init__(self, name: str, emoji: int):
@@ -29,22 +27,6 @@ class Character:
 
     def __repr__(self):
         return f"Character(name={self.name}, faces={self.faces})"
-
-_yac: dict[str, Image.Image] = {}
-
-async def get_Image(url: str) -> Image.Image:
-    if url in _yac:
-        return _yac[url]
-    
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            if resp.status == 200:
-                file = io.BytesIO(await resp.read())
-
-                _yac[url] = file
-                return Image.open(_yac[url])
-            else:
-                raise ValueError(f"{resp.status} Discord cdn shittig!!")
             
 class TextboxModule(Extension):
     _characters = None
@@ -72,15 +54,11 @@ class TextboxModule(Extension):
 
     @staticmethod
     async def generate_welcome_message(guild: Guild, user: Member, message: str):
-
-        uuid = str(uuid4())
-
+        #message = Localization.assign_variables(
         message = message.replace('[user]', user.username)
         message = message.replace('[server]', guild.name)
 
-        image = await TextboxModule.generate_dialogue(message,
-                                                  'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless',
-                                                  uuid)
+        image = await TextboxModule.generate_dialogue(message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless')
 
         file = File(file=image, description=message)
         await guild.system_channel.send(user.mention, files=file)
@@ -88,10 +66,10 @@ class TextboxModule(Extension):
     @staticmethod
     async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox"):
         img = Image.open("bot/images/textbox/niko-background.png")
-        icon = await get_Image(url=icon_url)
+        icon = await get_image(url=icon_url)
         icon = icon.resize((96, 96))
         
-        fnt = ImageFont.truetype("bot/font/TerminusTTF-Bold.ttf", 20)
+        fnt = ImageFont.truetype(get_config("textbox.font"), 20)
         text_x, text_y = 20, 17
         img_buffer = io.BytesIO()
         frames = []  # Using ImageSequence-compatible frames list
@@ -212,14 +190,14 @@ class TextboxModule(Extension):
 
         value = char_ctx.ctx.values[0]
 
-        await ctx.edit(embeds=fancy_embed(f"[ Generating Image... {emojis['icon_loading']} ]"))
+        await ctx.edit(embeds=fancy_embed(f"[ Generating Image... {emojis['icons']['loading']} ]"))
 
         if value == '964952736460312576':
             icon = ctx.author.avatar.url
         else:
             icon = f'https://cdn.discordapp.com/emojis/{value}.png'
             
-        await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icon_loading']} ]"), components=[])
+        await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icons']['loading']} ]"), components=[])
         file = await TextboxModule.generate_dialogue(text, icon, animated)
-        await ctx.channel.send(message=f"-# [ by {ctx.user.mention} ]", files=file)
+        await ctx.channel.send(content=f"-# [ by {ctx.user.mention} ]", files=file, allowed_mentions={'users':[]})
         await ctx.edit(embeds=fancy_embed(f"[ Done! ]"))

@@ -1,4 +1,3 @@
----
 general:
   loading: "[ Waiting... [emoji:loading] ]"
 
@@ -10,10 +9,9 @@ general:
     _continue: "Continue"
     _open_site: "Open Website"
 
-
 # ---------------------------------------------------------------
 
-music: 
+music: ~
     
 # ---------------------------------------------------------------
 
@@ -45,12 +43,30 @@ misc:
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
+  roll:
+    rolling: Rolling d[sides]...
+    rolled: "[ Rolled a [text], totaling at **[total]**. ]"
+    one: "[ Rolled a 1 ]"
+
+  wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
+
 # ---------------------------------------------------------------
 
-settings: 
-  profile: "You can view your profile over on the website!"
-  
+profile:
+  view: 
+    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
+    bots: "[ Bots don't have profiles. ]"
+    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+
+    image: 
+      name: "[userid] profile"
+      title: "[username]'s Profile"
+      unlocked:
+        stamps: "Unlocked Stamps:"
+  edit: 
+    text: "You can edit your profile over on the website!" 
+
 # ---------------------------------------------------------------
 
 explode:
@@ -72,11 +88,12 @@ shop:
   buttons:
     buy: Trade
     buy_all: Trade All
+    too_poor: Cannot Afford
+    too_poor_all: Cannot Afford All
     sell: Trade in
     sell_all: Trade in All
     go_back: Go Back
-    owned: Owned
-    too_poor: Cannot Afford
+    owned: Owned 
 
   main_title: Welcome!
 
@@ -162,17 +179,17 @@ shop:
 
 
       [user_wool]
-    
-    owned: > 
-      Thanks! You can equip this background on your **[Profile Settings](https://theworldmachine.xyz/profile)!**
+
+    newly_owned: > 
+      Thanks! Now you are a proud owner of this background.
 
 
       [user_wool]
-    traded: "> Successfully traded for the **«[name]»** background!"
+    traded: "> Successfully traded for this background!"
 
   treasures:
 
-    buy: 
+    buy:
       title: Treasures
       message: >
         You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
@@ -238,7 +255,7 @@ items:
       description: A large lightbulb. It's the sun. 
 
   pancakes:
-    pancakes:
+    normal:
       name: Pancakes
       description: >
         The bare minimum for feeding a Nikogotchi.
@@ -247,7 +264,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: Golden Pancakes
       description: >
         Expensive, but worth it.
@@ -256,7 +273,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: I don't even know how this got here.
 

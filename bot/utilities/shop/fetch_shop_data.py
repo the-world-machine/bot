@@ -2,7 +2,8 @@ from datetime import datetime
 import random
 
 from database import fetch_items, update_shop
-from data.localization import Localization
+from utilities.config import get_config
+from utilities.localization import Localization
 from dataclasses import dataclass
 
 @dataclass
@@ -43,7 +44,7 @@ async def fetch_shop_data():
     
     return shop_data
 
-async def reset_shop_data(loc: str):
+async def reset_shop_data():
     
     items = await fetch_items()
     data = items['shop']
@@ -56,7 +57,7 @@ async def reset_shop_data(loc: str):
             backgrounds[bg] = all_bgs[bg]
         
     treasures = items['treasures']
-    motds = Localization(loc).l('shop.motds')
+    motds = Localization.sl('shop.motds', locale=get_config('localizations.main-locale'))
     
     data['backgrounds'] = []
     data['treasures'] = []

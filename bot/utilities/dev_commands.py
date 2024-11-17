@@ -1,18 +1,23 @@
 import io
-import json
 import re
-from interactions import Embed, Message
-from data.emojis import emojis
-from data.localization import Localization, fnum
-from utilities.shop.fetch_shop_data import reset_shop_data
-from data.config import get_config
+import sys
+import time
+import json
+import yaml
+import aiohttp
 import database
+from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
-import time
+from utilities.emojis import emojis
+from utilities.config import get_config
+from interactions import Embed, Message
 from asyncio import iscoroutinefunction, sleep
+from utilities.module_loader import reload_modules
+from utilities.localization import Localization, fnum
 from traceback import _parse_value_tb, TracebackException
-import sys
+from utilities.shop.fetch_shop_data import reset_shop_data
+
 async def get_collection(collection: str, _id: str):
     key_to_collection: dict[str, database.Collection] = {
         'user': database.UserData(_id),
@@ -62,13 +67,13 @@ async def execute_dev_command(message: Message):
     if message.author.bot:
         return
     
-    if not str(message.author.id) in get_config('dev-command-user-list'):
-        return
-    
     if not message.content:
         return
     
-    prefix = get_config('dev-command-prefix').split('.')
+    if not str(message.author.id) in get_config('devs') or not str(message.author.id) in get_config("localizations.assigned.ru"):
+        return
+    
+    prefix = get_config('dev-command-marker').split('.')
     
     # This is not a valid command if brackets do not surround the message.
     if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
@@ -81,14 +86,56 @@ async def execute_dev_command(message: Message):
     args = command_content.split(" ")
     
     subcommand_name = args[0]
-    
+    if str(message.author.id) in get_config("localizations.assigned.ru") and subcommand_name in ("new_ru"):
+        if not message.attachments:
+            return await message.reply("`[ Please attach a locale file ]`")
+        
+        attachment = message.attachments[0]
+        
+        try:
+            # Download the file using aiohttp
+            async with aiohttp.ClientSession() as session:
+                async with session.get(attachment.url) as response:
+                    if response.status != 200:
+                        return await message.reply(f"`[ Failed to download the file: HTTP {response.status} ]`")
+                    
+                    content = await response.text()
+
+            # Parse the content as YAML
+            parsed_data = yaml.safe_load(content)
+            
+            # Apply the localization override
+            Localization.local_override("ru", parsed_data)
+            
+            return await message.reply("`[ Done ]`")
+        except yaml.YAMLError as e:
+            return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
+        except Exception as e:
+            return await message.reply(f"`[ Failed to process the localization file: {str(e)} ]`")
+    elif not str(message.author.id) in get_config('devs'):
+        return
+
     match subcommand_name:
+        case "bot":
+            action = args[1]
+            match action:
+                case "refresh":
+                    msg = await message.reply(f"`[ Reloading modules... `{emojis['icons']['loading']}` ]`")
+                    modules = reload_modules(msg.client)
+                    await message.reply(f"`[ Reloaded `**`{len(modules)}`**` modules ]`")
         case "eval":
-            method = args[1] if len(args) > 1 else ''
-            _args = command_content.split(f"eval{method} ")
-            if method.startswith("```py\n"):
-                _args = command_content.split(f"eval ")
-            code = _args[1] if len(_args) > 1 else ''
+            code = command_content.split(f"eval ")
+            referenced_message = message.get_referenced_message();
+            reply_content = referenced_message.content if referenced_message and referenced_message.content else None
+
+            if len(code) == 1 and reply_content and reply_content.startswith("```py\n"):
+                code = reply_content
+            elif len(code) > 1 and code[1].startswith("```py\n"):
+                code = command_content.split(f"eval ")[1]
+            else:
+                code = ""
+
+
             if code.startswith("```py\n") and code.endswith("```"):
                 code = code[5:-3].strip()
                 if "await" in code:
@@ -96,9 +143,7 @@ async def execute_dev_command(message: Message):
                 else:
                     method = "exec"
             else:
-                code = command_content.split(f"eval ")[1] if len(command_content.split(f"eval ")) > 1 else ''
                 method = "eval"
-            
 
             result = None
             runtime = None
@@ -152,7 +197,7 @@ async def execute_dev_command(message: Message):
                 if result == None and method in ("aexec", "exec"):
                     desc+="\n-# Nothing was printed"
                 else:
-                    desc+=f"\n```py\n{str(result).replace('```', '{` ``}')}```"
+                    desc+=f"\n```py\n{str(result).replace('```', '` ``')}```"
                 color = None
                 if raisure:
                     color = 0xff0000
@@ -177,22 +222,13 @@ async def execute_dev_command(message: Message):
             items = await database.fetch_items()
             shop = items['shop']
             
-            if action == 'view':
-                result = '```\n'
-                    
-                for key in shop.keys():
-                    result += f'{key}: {str(shop[key])}\n'
-                    
-                result += '```'
-                
-                await message.reply(result)
+            if action == 'view':                
+                await message.reply(f"```yml\n{dump(shop)}```")
             
             if action == 'reset':
-                await reset_shop_data('en-US')
+                await reset_shop_data()
                 
-                await message.reply(
-                    f'`[ Successfully reset shop. ]`'
-                )
+                await message.reply('`[ Successfully reset shop. ]`')
         case "db":
             try:
                 action = args[1]
@@ -214,7 +250,7 @@ async def execute_dev_command(message: Message):
                     await collection.update(**data)
                     
                     await message.reply(
-                        f'`[ Successfully updated value(s). ]`'
+                        '`[ Successfully updated. ]`'
                     )
                     
                 if action == 'view':
@@ -266,7 +302,7 @@ async def execute_dev_command(message: Message):
                     f'`[ Error with command. ({e}) ]`'
                 )
         case _:
-            return await message.reply("Available commands: `eval` / `shop` / `db`. See source code for usage")
+            return await message.reply("Available commands: `eval` / `shop` / `db` / `bot`. See source code for usage")
     formatted_command_content = command_content.replace('\n', '\n'+colored('│ ', 'yellow'))
     if subcommand_name == "db":
         subcommand_name += " ─"

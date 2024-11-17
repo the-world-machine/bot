@@ -3,7 +3,7 @@ from utilities.message_decorations import *
 import random
 import datetime
 import utilities.profile.badge_manager as bm
-from data.localization import Localization, fnum
+from utilities.localization import Localization, fnum
 
 
 class ExplodeModule(Extension):
@@ -21,7 +21,7 @@ class ExplodeModule(Extension):
 
     @slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
     async def explode(self, ctx: SlashContext):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         user_id = ctx.user.id
 
         if user_id in self.last_called:
