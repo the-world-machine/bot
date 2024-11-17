@@ -70,7 +70,7 @@ async def execute_dev_command(message: Message):
     if not message.content:
         return
     
-    if not str(message.author.id) in get_config('devs') or not str(message.author.id) in get_config("localizations.assigned.ru"):
+    if str(message.author.id) not in get_config('devs') + get_config("localizations.assigned.ru"):
         return
     
     prefix = get_config('dev-command-marker').split('.')
@@ -101,18 +101,16 @@ async def execute_dev_command(message: Message):
                     
                     content = await response.text()
 
-            # Parse the content as YAML
             parsed_data = yaml.safe_load(content)
             
-            # Apply the localization override
             Localization.local_override("ru", parsed_data)
             
             return await message.reply("`[ Done ]`")
         except yaml.YAMLError as e:
             return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
         except Exception as e:
-            return await message.reply(f"`[ Failed to process the localization file: {str(e)} ]`")
-    elif not str(message.author.id) in get_config('devs'):
+            return await message.reply(f"`[ Unknown exception: {str(e)} ]`")
+    elif str(message.author.id) not in get_config('devs'):
         return
 
     match subcommand_name:
@@ -130,8 +128,8 @@ async def execute_dev_command(message: Message):
 
             if len(code) == 1 and reply_content and reply_content.startswith("```py\n"):
                 code = reply_content
-            elif len(code) > 1 and code[1].startswith("```py\n"):
-                code = command_content.split(f"eval ")[1]
+            elif len(code) > 1:
+                code = command_content.split("eval ")[1]
             else:
                 code = ""
 
