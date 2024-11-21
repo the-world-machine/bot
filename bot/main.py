@@ -1,16 +1,17 @@
+print('\n─ Starting The World Machine... 1/4')
+
 from interactions import *
-from utilities.config import get_config
+from utilities.config import get_config # checks prerequisites !!!! it's important that it's the first custom module
 from modules.textbox import TextboxModule
-from utilities.misc import set_random_avatar
 from utilities.profile.main import load_badges
 from utilities.module_loader import load_modules
 from database import ServerData, create_connection
 from utilities.loc_commands import execute_loc_command
 from utilities.dev_commands import execute_dev_command
-import interactions.ext.prefixed_commands as prefixed_commands
+from utilities.misc import set_random_avatar, set_status
 from interactions.api.events import MemberAdd, Ready, MessageCreate
 
-print('\n─ Starting The World Machine... 1/4')
+
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
 
 client = AutoShardedClient(
@@ -18,10 +19,13 @@ client = AutoShardedClient(
     disable_dm_commands=True,
     send_command_tracebacks=False,
     send_not_ready_messages=True,
-    activity=Activity(name="activity", type=ActivityType.CUSTOM, state=get_config("status", ignore_None=True))
 )
 
-prefixed_commands.setup(client, default_prefix='*')
+statuses = get_config("bot.status", ignore_None=True)
+if statuses != None:
+    @Task.create(IntervalTrigger(get_config("bot.roll-interval")))
+    async def roll_status(override: str = None):
+        return await set_status(client, statuses)
 
 print("\n─ Loading Commands... ─ ─ ─ ─ ─ 2/4")
 
@@ -33,11 +37,15 @@ create_connection()
 print('Database Connected')
 @listen(Ready)
 async def on_ready():
+    print(f"─ Logged in as {client.user.tag} ({client.user.id})")
     await load_badges()
 
-    if get_config('do-avatar-rolling', ignore_None=True): 
+    if statuses != None:
+        await roll_status()
+        roll_status.start()
+    if get_config('bot.avatar-rolling', ignore_None=True): 
         print("Rolling avatar", end=" ... ")
-        if client.user.id == int(get_config('bot-id')):
+        if client.user.id == int(get_config('bot.main-id')):
             used = await set_random_avatar(client)
             print(f"used {used}")
         else:
@@ -52,7 +60,7 @@ async def on_ready():
 
 @listen(MemberAdd)
 async def on_guild_join(event: MemberAdd):
-    if client.user.id != int(get_config('bot-id')):
+    if str(client.user.id) != str(get_config('bot.main-id')):
         return
     
     if event.member.bot:
@@ -69,10 +77,8 @@ async def on_guild_join(event: MemberAdd):
     
 @listen(MessageCreate)
 async def on_message_create(event: MessageCreate):
-    await execute_dev_command(event.message)
+    res = await execute_dev_command(event.message)
+    if not res:
+        await execute_loc_command(event.message)
 
-@listen(MessageCreate)
-async def on_message_create(event: MessageCreate):
-    await execute_loc_command(event.message)
-
-client.start(get_config('token'))
+client.start(get_config('bot.token'))

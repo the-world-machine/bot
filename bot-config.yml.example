@@ -1,40 +1,46 @@
-token: ...
-database: mongodb+srv://localhost
+bot:
+    token: ~
+    main-id: ~ # use the production id, enables prod-specific stuff (Changing pfp, welcome messages) when client ends up logging into it
+    avatar-rolling: true # uses unstable.png if client id doesn't match main-id defined above
+    statuses: ~ # can be just text, or a list
+    # ^ acts like a localization string
+    # you can use [shard_count] [guild_count] [token]
+    roll-interval: 3600 # seconds
 
-bot-id: ... # Recommended to use the production bot ID. 
+dev:
+    server: 
+        id: ~ # server id, in ""
 
-status: Chilling on top of The Tower
-do-avatar-rolling: true # For "true" uses unstable.png if the token doesn't login to bot-id
+    command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^
+    whitelist:
+        - ~
+        - ~ # user ids, all in ""
 
-dev-server-id: "1017479547664482444"
-dev-command-marker: "[.]" # E.g. <.> (.) [.] {.} ^.^
-devs: 
-    - "user ids"
+    
+    
+database:
+    dns-fix: false # use this if you're on termux and connecting to db doesn't work
+    uri: ~ # should have the login and password in it, example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
+    
+
+localization:
+    main-locale: en # make sure the locale is 100% complete
+    debug: true # Whether to show detailed error messages for not found paths
+    whitelist:
+        en:
+            - ~ 
+            - ~ # user ids, all in ""
     
 music:
-    enabled: true # Disable if you don't want to setup lavalinque
-    spotify:
-        secret: ...
-        id: ...
+    enabled: true # disable if you don't want to setup lavalink
+    spotify: # used for "/music play song: ..." autocomplete
+        secret: ~
+        id: ~
     
     lavalink:
         ip: "localhost"
         port: 4230
         password: password_here
-
-localization:
-    main-locale: en # make sure the locale is 100% complete
-    debug: true # Whether to show detailed error messages for not found paths
-    assigned:
-        ru:
-            - "831530536781873163"
-            - "545986448231497728"
-        uk:
-            - "744276454946242723"
-        en:
-            - "302883948424462346"
-            - "744276454946242723"
-    
 
 textbox:
     font: "bot/data/fonts/TerminusTTF-Bold.ttf"

@@ -6,9 +6,11 @@ from utilities.config import get_config
 from datetime import datetime
 from interactions import Embed, SlashContext, SlashContext, Snowflake
 import random
-import dns.resolver
-dns.resolver.default_resolver=dns.resolver.Resolver(configure=False)
-dns.resolver.default_resolver.nameservers=['8.8.8.8']
+if get_config("database.dns-fix", ignore_None=True):
+    import dns.resolver
+    dns.resolver.default_resolver=dns.resolver.Resolver(configure=False)
+    dns.resolver.default_resolver.nameservers=['8.8.8.8']
+connection_uri = get_config('database.uri')
 
 # Define the Database Schema for The World Machine:
 @dataclass
@@ -175,7 +177,6 @@ class Nikogotchi(Collection):
         return stats
 # ----------------------------------------------------
 
-connection_uri = get_config('database')
 
 connection = None
 

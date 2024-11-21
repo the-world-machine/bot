@@ -57,7 +57,7 @@ async def reset_shop_data():
             backgrounds[bg] = all_bgs[bg]
         
     treasures = items['treasures']
-    motds = Localization.sl('shop.motds', locale=get_config('localizations.main-locale'))
+    motds = Localization.sl('shop.motds', locale=get_config('localization.main-locale'))
     
     data['backgrounds'] = []
     data['treasures'] = []

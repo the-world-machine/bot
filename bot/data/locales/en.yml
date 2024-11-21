@@ -304,41 +304,50 @@ interact:
   selected: "[ Choose an action to perform on [user]. ]"
   placeholder: Interactions...
 
-  twm_not_being_very_happy: "[ Don't touch me [user]. ]"
+  twm_not_being_very_happy: "[ Don't touch me, [user]. ]"
   twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
   twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
 
   options:
+    boop:
+      name: Boop
+      messages: 
+        - "[user_one] booped [user_two]"
+        - "[user_one] pokes the nose of [user_two]!"
+        - "[user_one] reaches out and boops [user_two]!"
+        - "[user_one] felt silly and booped [user_two]!"
+        - "[user_one] leaves [user_two] in confusion via a boop!"
+        - "[user_one] left [user_two] speechless post-boop!"
     slap:
       name: Slap
-      action: "[user_one] slapped [user_two], probably deserved."
+      messages: "[user_one] slapped [user_two], probably deserved."
     punch:
       name: Punch
-      action: "[user_one] punched [user_two], that hurts."
-    headpat:
-      name: Head Pat
-      action: "[user_one] gave [user_two] a headpat!"
+      messages: "[user_one] punched [user_two], that hurts."
     pet:
       name: Pet
-      action: "[user_one] pet [user_two]!"
+      messages: "[user_one] pet [user_two]!"
+    headpat:
+      name: Head Pat
+      messages: "[user_one] gave [user_two] a headpat!"
     hug:
       name: Hug
-      action: "[user_one] hugged [user_two]!"
+      messages: "[user_one] hugged [user_two]!"
     cuddle:
       name: Cuddle
-      action: "[user_one] cuddled with [user_two]!"
+      messages: "[user_one] cuddled with [user_two]!"
     kiss:
       name: Kiss
-      action: "[user_one] kissed [user_two]! ❤️"
+      messages: "[user_one] kissed [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
+      messages: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
 
 # ---------------------------------------------------------------
 
 treasure:
   bots: "[ [bot] doesn't have any treasure ]"
-  item: "* **`[amount]`** [icon] [name]"
+  item: "- **`[amount]`** [icon] [name]"
   message: >
     ### [user]'s treasures
     

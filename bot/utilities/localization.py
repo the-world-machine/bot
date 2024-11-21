@@ -38,7 +38,7 @@ def on_file_update(filename):
 	text = f'─ Reloading locale {locale}'
 	print(f"{colored(text, 'yellow')}", end=" ─ ─ ─ ")
 	_locales[locale] = FrozenDict(load_locale(locale))
-	if locale == get_config("localizations.main-locale"):
+	if locale == get_config("localization.main-locale"):
 		fallback_locale = _locales[locale]
 	print("done")
 
@@ -60,19 +60,20 @@ def get_locale(locale):
 	return _locales[locale]
 
 
-print("Loading locales")
+print("Loading locales...")
 
 subscribe("locales/", on_file_update)
-
+loaded = 0
 for file in Path('bot/data/locales').glob('*.yml'):
 	name = file.stem
 	_locales[name] = load_locale(name)
-	print("Loaded "+name)
+	print("| "+name)
+	loaded += 1
+print(f"Done ({loaded})")
 
-
-if not get_config("localizations.debug"):
+if not get_config("localization.debug"):
 	debug = True
-	fallback_locale = get_locale(get_config("localizations.main-locale"))
+	fallback_locale = get_locale(get_config("localization.main-locale"))
 
 @dataclass
 class Localization:
@@ -118,30 +119,6 @@ class Localization:
 			
 		return results
 	
-def assign_variables(input: Union[str, list, dict], locale: str, **variables: dict[str, any]):
-	if isinstance(input, str):
-		result = input
-		for name, data in {**variables, **emoji_dict}.items():
-			if isinstance(data, (int, float)):
-				data = fnum(data, locale)
-			elif not isinstance(data, str):
-				data = str(data)
-
-			result = result.replace(f'[{name}]', data)
-		return result
-	elif isinstance(input, list):
-		processed = []
-		for elem in input:
-			processed.append(assign_variables(elem, locale, **variables))
-		return processed
-	elif isinstance(input, dict):
-		new_dict = {}
-		for key, value in input.items():
-			new_dict[key] = assign_variables(value, locale, **variables)
-		return new_dict
-	else:
-		return input
-
 def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 	if isinstance(num, float):
 		num = round(num, 3)
@@ -202,3 +179,27 @@ def english_ordinal_for(n: int | float):
 		suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(int(n) % 10, 'th')
 	
 	return suffix
+
+def assign_variables(input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]):
+	if isinstance(input, str):
+		result = input
+		for name, data in {**variables, **emoji_dict}.items():
+			if isinstance(data, (int, float)):
+				data = fnum(data, locale)
+			elif not isinstance(data, str):
+				data = str(data)
+
+			result = result.replace(f'[{name}]', data)
+		return result
+	elif isinstance(input, list):
+		processed = []
+		for elem in input:
+			processed.append(assign_variables(elem, locale, **variables))
+		return processed
+	elif isinstance(input, dict):
+		new_dict = {}
+		for key, value in input.items():
+			new_dict[key] = assign_variables(value, locale, **variables)
+		return new_dict
+	else:
+		return input

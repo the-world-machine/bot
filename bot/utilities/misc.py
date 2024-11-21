@@ -7,12 +7,12 @@ import subprocess
 from PIL import Image
 from io import BytesIO
 from typing import Union, Optional
-from interactions import Client, File
+from interactions import Activity, ActivityType, Client, File
 
 class FrozenDict(dict):
     def __init__(self, data):
         if not isinstance(data, (dict, list, tuple)):
-           raise ValueError("Value must be a dict, list or a tuple")
+           raise ValueError("Value must be a dict, list or a tuple. Received "+type(data))
         frozen_data = {k: self._freeze(v) for k, v in data.items()}
         super().__init__(frozen_data)
 
@@ -150,7 +150,7 @@ def rabbit(
             error_msg += f", {type(fallback_value).__name__} in fallback"
           raise TypeError(error_msg)
 
-    except (KeyError, IndexError, ValueError, TypeError) as e:
+    except (KeyError, IndexError, ValueError, TypeError, StupidError) as e:
       if return_None_on_not_found and not raise_on_not_found:
          return None
       failed_part = parsed_path[len(went_through)]
@@ -191,5 +191,16 @@ async def set_random_avatar(client: Client) -> str:
   await client.user.edit(avatar=avatar)
   return random_avatar
 
+async def set_status(client: Client, text: str | list, log=True):
+  from utilities.localization import assign_variables
+  status = assign_variables(
+    input=text if isinstance(text, str) else random.choice(text),
+    shard_count=len(client.shards),
+    guild_count=len(client.guilds),
+    token=client.token
+  )
+  if log:
+    print("Setting status to: "+status)
+  return await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
 def get_git_hash() -> str:
   return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout

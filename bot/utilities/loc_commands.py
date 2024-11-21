@@ -4,7 +4,7 @@ from itertools import chain
 from termcolor import colored
 from interactions import Message
 from utilities.config import get_config
-from utilities.localization import Localization
+from utilities.localization import local_override
 
 async def execute_loc_command(message: Message):
     
@@ -14,10 +14,10 @@ async def execute_loc_command(message: Message):
     if not message.content:
         return
     
-    if str(message.author.id) not in list(chain(*get_config("localizations.assigned").values())):
+    if str(message.author.id) not in list(chain(*get_config("localization.whitelist").values())):
         return
     
-    prefix = get_config('dev-command-marker').split('.')
+    prefix = get_config('dev.command-marker').split('.')
     
     if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
         return
@@ -37,8 +37,8 @@ async def execute_loc_command(message: Message):
             locale = attachment.filename.split(".yml")[0]
             if not locale or not attachment.filename.endswith(".yml"):
                 return await message.reply("`[ Invalid filename ]`")
-            if str(message.author.id) not in get_config(f"localizations.assigned.{locale.strip('.[]')}"):
-                return await message.reply("`[ You are not assigned to this locale ]`")
+            if str(message.author.id) not in get_config(f"localizations.whitelist.{locale.strip('.[]')}"):
+                return await message.reply("`[ You are not whitelisted for this locale ]`")
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.get(attachment.url) as response:
@@ -49,9 +49,9 @@ async def execute_loc_command(message: Message):
                 
                 parsed_data = yaml.safe_load(content)
                 
-                Localization.local_override(locale, parsed_data)
+                local_override(locale, parsed_data)
                 
-                return await message.reply("`[ Updated {locale} locale ]`")
+                return await message.reply(f"`[ Updated {locale} locale ]`")
             except yaml.YAMLError as e:
                 return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
             except Exception as e:

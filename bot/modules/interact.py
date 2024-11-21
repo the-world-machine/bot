@@ -1,21 +1,18 @@
+import random
 from interactions import *
 from utilities.message_decorations import *
-from utilities.localization import Localization
+from utilities.localization import Localization, assign_variables
 
-class InteractModule(Extension):
-    
-    async def open_interactions_select(self, loc: Localization, user: User):
+def make_interactions_select_menu(loc: Localization, uid: User) -> StringSelectMenu:
         option_list = []
         
         interactions: dict[str, dict[str, str]] = loc.l('interact.options')
-        
-        user_mention = user.mention
         
         for id_, interaction in interactions.items():
             option_list.append(
                 StringSelectOption(
                     label=interaction['name'],
-                    value=f'{id_}_{user_mention}'
+                    value=f'{id_}_{uid}'
                 )
             )
         
@@ -25,12 +22,13 @@ class InteractModule(Extension):
             custom_id='interaction_selected'
         )
 
+class InteractModule(Extension):
     @slash_command()
-    @slash_option(name='who', description='The users you want to do the action towards.', opt_type=OptionType.USER)
-    async def interaction(self, ctx: SlashContext, who: User):
-        '''Interact with other users in various ways.'''
+    @slash_option(name='with', description='The person you want to interact with', opt_type=OptionType.USER, required=True, argument_name="user")
+    async def interaction(self, ctx: SlashContext, user: User):
+        '''Interact with others in various ways (sends a message in chat).'''
         
-        await self.start_interaction(ctx, who)
+        await self.start_interaction(ctx, user)
         
     @user_context_menu('💡 Interact...')
     async def interaction_context(self, ctx: ContextMenuContext):
@@ -51,19 +49,21 @@ class InteractModule(Extension):
             await fancy_message(ctx, loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
             return"""
         
-        menu = await self.open_interactions_select(loc, who)
+        menu = make_interactions_select_menu(loc, who.id)
         
         await ctx.send(content=loc.l('interact.selected', user=who.mention), components=menu, ephemeral=True)
     
     @component_callback('interaction_selected')
     async def menu_callback(self, ctx: ComponentContext):
-        
+        loc = Localization(ctx)
         await ctx.defer(edit_origin=True)
         
-        result = ctx.values[0].split('_')
+        args = ctx.values[0].split('_')
+        user = ctx.client.get_user(args[1])
+        text = loc.l(f'interact.options.{args[0]}.messages')
+        if isinstance(text, list):
+            text = random.choice(text)
         
-        interaction = result[0]
-        user = result[1]
-        
-               
-        await ctx.channel.send(Localization.sl(f'interact.options.{interaction}.action', locale=ctx.locale, user_one=user, user_two=ctx.author.mention))
+        await ctx.channel.send(assign_variables(text, locale=ctx.locale, user_one=ctx.author.mention, user_two=user.mention))
+
+        await ctx.edit(components=[make_interactions_select_menu(loc, user.id)])
