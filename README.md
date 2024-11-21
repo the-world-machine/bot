@@ -48,8 +48,9 @@ D:\...\the-world-machine> pipenv install
 ```
 This should install all dependencies needed to run the bot.
 
-### Step 2: bot-config.yml
-There is file called `bot-config.yml.example` which has stuff to configure the bot, including the bot token, database endpoints and api keys. Rename or duplicate this file to `bot-config.yml` in the same folder and fill it in.
+### Step 2: Fill in configs
+There is file called `bot-config.example.yml` which has stuff to configure the bot, including the bot token, database endpoints and api keys. Rename or duplicate this file to `bot-config.yml` in the same folder and fill it in. <br>
+A similar file is also located in the lavalink directory.
 
 ### Step 3: Running the bot.
 ```commandline
