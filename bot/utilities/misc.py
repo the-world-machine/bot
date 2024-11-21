@@ -1,30 +1,13 @@
 import os
 import copy
 import random
-import subprocess
 import aiohttp
 import datetime
+import subprocess
 from PIL import Image
 from io import BytesIO
 from typing import Union, Optional
-from collections.abc import Mapping
 from interactions import Client, File
-
-_yac: dict[str, Image.Image] = {}
-
-async def get_image(url: str) -> Image.Image:
-  if url in _yac:
-    return Image.open(_yac[url])
-  
-  async with aiohttp.ClientSession() as session:
-    async with session.get(url) as resp:
-      if resp.status == 200:
-        file = BytesIO(await resp.read())
-
-        _yac[url] = file
-        return Image.open(_yac[url])
-      else:
-        raise ValueError(f"{resp.status} Discord cdn shittig!!")
 
 class FrozenDict(dict):
     def __init__(self, data):
@@ -68,47 +51,59 @@ class FrozenDict(dict):
     def __repr__(self):
         return f"FrozenDict({super().__repr__()})"
 
-import copy
-from typing import Union, Optional
-import datetime
+class StupidError(Exception): ...
+  
+_yac: dict[str, Image.Image] = {}
+
+async def get_image(url: str) -> Image.Image:
+  if url in _yac:
+    return Image.open(_yac[url])
+  
+  async with aiohttp.ClientSession() as session:
+    async with session.get(url) as resp:
+      if resp.status == 200:
+        file = BytesIO(await resp.read())
+
+        _yac[url] = file
+        return Image.open(_yac[url])
+      else:
+        raise ValueError(f"{resp.status} Discord cdn shittig!!")
 
 def rabbit(
   value: dict,
-  raw_path: str,
+  path: str,
   fallback_value: dict = None,
   _full_path: Optional[str] = None,
+  return_None_on_not_found: bool = False,
   raise_on_not_found: bool = True,
   _error_message: str | None = None,
   simple_error: bool = False,
   deepcopy: bool = False,
 ) -> Union[str, list, dict, int, bool, float, None, datetime.date, datetime.datetime]:
   """
-  Retrieves a nested value from a dictionary based on a dot-separated path.
-  Supports handling lists with indexed access (e.g., "somearray[0]").
+  Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
 
-  This function navigates through nested dictionaries according to the specified path. 
-  If a key in the path is not found, it either returns an error message or raises an exception,
-  depending on the `raise_on_not_found` parameter. Recursion is used to traverse nested levels.
+  It either returns the found value itself, or an error message as the value. You can customize the error message with the `_error_message` argument
 
-  :param value: The dictionary to search within.
-  :param raw_path: A dot-separated path string, where each segment represents a key at a deeper level. Can support list indices like "somearray[0]".
-  :param fallback_value: A dictionary containing fallback values to use if a key is missing in `value`.
-  :param raise_on_not_found: If `True`, raises a `ValueError` if a key in `raw_path` is not found. If `False`, returns an error message.
-  :param _full_path: The original path (**you are not supposed to pass this**; it's for error reporting when `raw_path` is modified during recursion).
-  :param _error_message: A custom error message template for missing keys. Use `[path]` to insert the full path in the error message, and `[error]` to get the specific error message.
-  :param simple_error: If `True`, returns a simplified error message with just the path that failed, without highlighting. Defaults to `False` for highlighted error messages.
-  :param deepcopy: Whether to do a deepcopy of the dicts/lists before returning.
+  :param value: The dictionary to search within
+  :param raw_path: A dot-separated path string, where each segment represents a key at a deeper level. Can support list indices like "somearray[0]"
+  :param raise_on_not_found: If `True`, raises a `ValueError` if a key in `raw_path` is not found. If `False`, returns the error message as str
+  :param _error_message: A custom error message template for missing keys. Use `[path]` to insert the full path in the error message, and `[error]` to get the specific error message
+  
+  :param _full_path: do not pass this thanks
 
-  :returns: The value found at the specified path, or an error message if the path is invalid.
-  :rtype: Union[str, list, dict, int, bool, float, None, datetime.date, datetime.datetime]
+  :returns: The value the rabbit ended up on
 
-  :raises ValueError: If `raise_on_not_found` is `True` and a key in `raw_path` is not found in `value`.
+  :raises ValueError: If `raise_on_not_found` is `True` and a key in `raw_path` is not found in `value`
 
   :notes: 
-    - This function is recursive, meaning it calls itself when it finds nested dictionaries to navigate further.
-    - If `raw_path` is empty, the function returns `value` as is.
-    - List elements can be accessed using square brackets, e.g., "somearray[0]".
+    - If `raw_path` is empty, the function returns `value` as is
+    - List elements are accessed using square brackets, e.g. "somearray[0]"
   """
+  raw_path = path
+  path = None
+  if return_None_on_not_found and raise_on_not_found:
+      raise StupidError("the passed arguments make total sense")
   if not _error_message:
      _error_message = "Rabbit fail [path] ([error])"
   if not _full_path:
@@ -117,7 +112,7 @@ def rabbit(
     return value
   parsed_path = raw_path.split('.')
   went_through = []
-  key = None
+  key = None 
   index = None
   
   for path in parsed_path:
@@ -156,6 +151,8 @@ def rabbit(
           raise TypeError(error_msg)
 
     except (KeyError, IndexError, ValueError, TypeError) as e:
+      if return_None_on_not_found and not raise_on_not_found:
+         return None
       failed_part = parsed_path[len(went_through)]
       
       before_failed = '.'.join(parsed_path[:len(went_through)])
@@ -184,7 +181,6 @@ def rabbit(
     return copy.deepcopy(value)
 
   return value
-
 
 async def set_random_avatar(client: Client) -> str:
   get_avatars = os.listdir('bot/images/profile_pictures')
