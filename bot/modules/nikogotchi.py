@@ -20,7 +20,7 @@ from utilities.message_decorations import Colors, fancy_message, make_progress_b
 class TreasureSeekResults:
     found_treasure: Dict[str,int]
     total_treasure: int
-    hours_spent: int
+    time_spent: timedelta
 
 class NikogotchiModule(Extension):
     
@@ -157,7 +157,7 @@ class NikogotchiModule(Extension):
                 total+=amount
                 treasures += loc.l('treasure.item', amount=amount, icon=emojis['treasures'][tid], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
 
-            treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, hours=treasure_seek_results.hours_spent)
+            treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, time=ftime(treasure_seek_results.time_spent))
         
         levelled_up_stats = ''
         
@@ -345,7 +345,7 @@ class NikogotchiModule(Extension):
                 
         
         await user_data.update(owned_treasures=user_treasures)
-        return TreasureSeekResults(treasures_found, time_taken, amount)
+        return TreasureSeekResults(treasures_found, amount, time_taken)
 
     r_nikogotchi_interaction = re.compile(r'action_(feed|pet|clean|findtreasure|refresh|callback|exit)_(\d+)$')
     @component_callback(r_nikogotchi_interaction)
