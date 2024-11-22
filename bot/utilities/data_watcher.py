@@ -12,6 +12,8 @@ class FileWatcher(FileSystemEventHandler):
 	def on_modified(self, event: FileModifiedEvent):
 		if not isinstance(event, FileModifiedEvent): 
 			return;
+
+		event.src_path = event.src_path.replace("\\", "/")
 		for callback in callbaques:
 			p = event.src_path.split("bot/data/")[1]
 			if p.startswith(callback[0]):

@@ -409,7 +409,7 @@ nikogotchi:
         **Age**: [age]
 
 
-        **Health**: [health] / 50
+        **Health**: [health] / [max_health]
 
     renaming:
       title: Give your Nikogotchi a new name!

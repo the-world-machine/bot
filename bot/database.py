@@ -15,7 +15,7 @@ connection_uri = get_config('database.uri')
 # Define the Database Schema for The World Machine:
 @dataclass
 class Collection:
-    _id: Union[str, Snowflake] | None
+    _id: Union[str, None, Snowflake]
         
     async def update(self, **kwargs):
         '''
