@@ -119,8 +119,7 @@ class NikogotchiModule(Extension):
 
         return datetime.now() - nikogotchi_data.hatched
 
-    async def get_main_embeds(self, ctx: InteractionContext, dialogue: str,
-                                        treasure_seek_results: TreasureSeekResults | None, n: Nikogotchi, updated_stats: List[StatUpdate] | None):
+    async def get_main_embeds(self, ctx: InteractionContext, dialogue: str, treasure_seek_results: TreasureSeekResults | None, n: Nikogotchi, updated_stats: List[StatUpdate] | None) -> List[Embed]:
 
         metadata = await fetch_nikogotchi_metadata(n.nid)
         loc = Localization(ctx)
@@ -727,7 +726,7 @@ class NikogotchiModule(Extension):
         return await self.init_rename_flow(ctx, nikogotchi.name)
 
     @nikogotchi.subcommand(sub_cmd_description="Show your nikogotchi in chat!")
-    @slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER, required=True)
+    @slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
     async def show(self, ctx: SlashContext, user: User = None):
         loc = Localization(ctx)
         if user is None:
@@ -742,8 +741,10 @@ class NikogotchiModule(Extension):
         
         metadata = await fetch_nikogotchi_metadata(nikogotchi.nid)
 
-        embed = await self.get_main_embeds(ctx, loc.l('nikogotchi.other.view.owned', user=ctx.author.username), None, nikogotchi, None)
+        embed = await self.get_main_embeds(ctx, '', None, nikogotchi, None)
 
+        embed[0].set_footer(loc.l('nikogotchi.other.view.owned', user=user.username), user.avatar_url)
+        
         await ctx.send(embed=embed[0])
 
     @nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
@@ -823,7 +824,7 @@ class NikogotchiModule(Extension):
 
     @slash_command(description='View what treasure you or someone else has!')
     @integration_types(guild=True, user=True)
-    @slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER, required=True)
+    @slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
     async def treasures(self, ctx: SlashContext, user: User = None):
         loc = Localization(ctx)
 
