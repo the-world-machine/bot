@@ -2,7 +2,7 @@ bot:
     token: ~
     main-id: ~ # use the production id, enables prod-specific stuff (Changing pfp, welcome messages) when client ends up logging into it
     avatar-rolling: true # uses unstable.png if client id doesn't match main-id defined above
-    statuses: ~ # can be just text, or a list
+    statuses: ~ # can also be a list of strs
     # ^ acts like a localization string
     # you can use [shard_count] [guild_count] [token]
     roll-interval: 3600 # seconds
@@ -16,12 +16,9 @@ dev:
         - ~
         - ~ # user ids, all in ""
 
-    
-    
 database:
     dns-fix: false # use this if you're on termux and connecting to db doesn't work
     uri: ~ # should have the login and password in it, example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
-    
 
 localization:
     main-locale: en # make sure the locale is 100% complete
@@ -30,7 +27,7 @@ localization:
         en:
             - ~ 
             - ~ # user ids, all in ""
-    
+
 music:
     enabled: true # disable if you don't want to setup lavalink
     spotify: # used for "/music play song: ..." autocomplete
