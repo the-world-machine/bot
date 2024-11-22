@@ -12,7 +12,7 @@ general:
 # ---------------------------------------------------------------
 
 music: ~
-    
+
 # ---------------------------------------------------------------
 
 misc:
@@ -78,6 +78,7 @@ explode:
           - why would you do that
           - hey...
           - ~ # don't touch this one, the bot inserts a random amount of dots here
+        
         sixninefourtwo: nice 👍
         nineninenineninenine: That's enough.
     info: "Times you've shattered The Sun: [amount]"
@@ -323,6 +324,7 @@ interact:
         - "[user_one] reaches out and boops [user_two]!"
         - "[user_one] felt silly and booped [user_two]!"
         - "[user_one] leaves [user_two] in confusion via a boop!"
+        - "[user_one] gives [user_two] an unexpected boop!"
         - "[user_one] left [user_two] speechless post-boop!"
     slap:
       name: Slap
@@ -356,7 +358,7 @@ treasure:
   item: "- **`[amount]`** [icon] [name]"
   message: >
     ### [user]'s treasures
-    
+
     [treasures]
 
     -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
@@ -366,6 +368,7 @@ treasure:
 nikogotchi:
   loading: "[ Loading Nikogotchi... [emoji:loading] ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
+  owned: Owned by [user]
 
   name:
     niko: Niko
@@ -397,19 +400,10 @@ nikogotchi:
       buttons: 
         send_away: Send Away
         rotate: Rotate
-        
+
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
       success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"
-
-    view:
-      owned: Owned by [user]
-
-      description: >
-        **Age**: [age]
-
-
-        **Health**: [health] / [max_health]
 
     renaming:
       title: Give your Nikogotchi a new name!
@@ -623,7 +617,7 @@ nikogotchi:
         - "A little scratch behind the ears is always appreciated."
       cleaned:
         - "Oh, you really didn't have to, but I appreciate the effort."
-        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring."
+        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring"
     prototype:
       fed:
         - "[This is...unexpected. Thank you.]"
