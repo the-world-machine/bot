@@ -3,7 +3,6 @@ bot = "python bot/main.py"
 
 [requires]
 python_version = "3.11"
-python_full_version = "3.11.9"
 
 [packages]
 "interactions.py" = "*"
