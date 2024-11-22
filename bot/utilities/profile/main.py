@@ -1,11 +1,12 @@
 import io
 import textwrap
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 from interactions import File, User
-from utilities.config import get_config
 from utilities.misc import get_image
-from utilities.shop.fetch_items import fetch_background, fetch_badge
+from utilities.config import get_config
+from utilities.message_decorations import Colors
 from utilities.localization import Localization, fnum
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from utilities.shop.fetch_items import fetch_background, fetch_badge
 
 import database as db
 
@@ -55,7 +56,7 @@ async def draw_profile(user: User, filename: str, description: str, locale: str 
 
     base_profile.text((42, 32), Localization.sl("profile.view.image.title", locale, username=user.username), font=font, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
 
-    base_profile.text((210, 140), f"{textwrap.fill(user_data.profile_description, 35)}", font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000, align='center')
+    base_profile.text((210, 140), f"{textwrap.fill(user_data.profile_description, 35)}", font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK, align='center')
 
     pfp = await get_image(user_pfp)
 
@@ -109,14 +110,14 @@ async def draw_profile(user: User, filename: str, description: str, locale: str 
     wool = user_data.wool
     sun = user_data.suns
     base_profile.text((648, 70), f'{fnum(wool)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
-           stroke_fill=0x000000)
+           stroke_fill=Colors.BLACK)
     image.paste(wool_icon, (659, 63), wool_icon.convert('RGBA'))
 
     base_profile.text((648, 32), f'{fnum(sun)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
-           stroke_fill=0x000000)
+           stroke_fill=Colors.BLACK)
     image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=0x000000)
+    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK)
 
     img_buffer = io.BytesIO()
     image.save(img_buffer, format="PNG")

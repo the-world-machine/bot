@@ -1,5 +1,6 @@
 import database as db
 from interactions import *
+from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge
 
 import aiofiles
@@ -23,7 +24,7 @@ async def earn_badge(ctx: GuildChannel, badge_name: str, badge_data: dict, targe
     embed = Embed(
         title='You got a badge!',
         description=f'<@{int(target.id)}>{type_descrim[badge_data["type"]]}',
-        color=0x8b00cc
+        color=Colors.YELLOW
     )
 
     embed.set_footer('You can change this notification using "/settings badge_notifications"')

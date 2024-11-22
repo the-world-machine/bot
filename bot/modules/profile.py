@@ -34,10 +34,10 @@ class ProfileModule(Extension):
         user_data: db.UserData = await db.UserData(user.id).fetch()
 
         if user.bot:
-            return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=0xFF0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=Colors.BAD, ephemeral=True)
 
         if user.id == ctx.author.id:
-            return await fancy_message(ctx, "[ Nuh uh! ]", color=0xFF0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Nuh uh! ]", color=Colors.BAD, ephemeral=True)
                 
         now = datetime.now()
         
@@ -45,7 +45,7 @@ class ProfileModule(Extension):
 
         if now < last_reset_time:
             time_unix = last_reset_time.timestamp()
-            return await fancy_message(ctx, f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=0xFF0000)
+            return await fancy_message(ctx, f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
 
         # reset the limit if it is a new day
         if now >= last_reset_time:

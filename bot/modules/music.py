@@ -76,7 +76,7 @@ class MusicModule(Extension):
 
         description = f'From **{track.author}**\n\n{current} <:Sun:1026207773559619644> {total}\n{progress_bar}\n\n'
 
-        embed = Embed(title=track.title, description=description, url=track.uri, color=0x8b00cc)
+        embed = Embed(title=track.title, description=description, url=track.uri, color=Colors.DEFAULT)
         embed.set_author(name=player_status)
         embed.set_thumbnail(self.get_cover_image(track.identifier))
 
@@ -129,7 +129,7 @@ class MusicModule(Extension):
 
         description = f'### Currently Playing:\n**{track.title}** from **{track.author}** <:Sun:1026207773559619644>\n\n*There are currently* ***{len(player.queue)}*** *songs in the queue.*\n*Approximately* ***{hours} hours*** and ***{minutes} minutes*** *left.*\n### Next Up...'
 
-        queue_embed = Embed(description=description, color=0x8b00cc)
+        queue_embed = Embed(description=description, color=Colors.DEFAULT)
 
         queue_embed.set_author(name=f'Queue for {guild.name}', icon_url=guild.icon.url)
         queue_embed.set_thumbnail(url=self.get_cover_image(track.identifier))
@@ -176,7 +176,7 @@ class MusicModule(Extension):
         # Getting user's voice state
         voice_state = ctx.member.voice
         if not voice_state or not voice_state.channel:
-            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=0xff0000,
+            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=Colors.BAD,
                                        ephemeral=True)
 
         player = None
@@ -189,7 +189,7 @@ class MusicModule(Extension):
             except:
                 
                 if tries > 2:
-                    return await fancy_message(ctx, "[ An error has occurred, please try again later. ]", color=0xff0000)
+                    return await fancy_message(ctx, "[ An error has occurred, please try again later. ]", color=Colors.BAD)
                 
                 self.assign_node()
                 tries += 1
@@ -202,7 +202,7 @@ class MusicModule(Extension):
 
         if len(tracks) == 0:
             await message.delete()
-            return await fancy_message(ctx, "[ No results found. ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ No results found. ]", color=Colors.BAD, ephemeral=True)
 
         player.store('Channel', ctx.channel)
         player.store('Message', message)
@@ -226,7 +226,7 @@ class MusicModule(Extension):
             title=track.title,
             url=track.uri,
             description=f'From **{track.author}** was added to the queue.',
-            color=0x1fef2f
+            color=Colors.GREEN
         )
 
         add_to_queue_embed.set_author(name='Requested by ' + ctx.member.username,
@@ -245,7 +245,7 @@ class MusicModule(Extension):
         voice_state = ctx.member.voice
 
         if not voice_state or not voice_state.channel:
-            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=0xff0000,
+            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=Colors.BAD,
                                        ephemeral=True)
 
         message = await fancy_message(ctx, f"[ Loading search results... {emojis['icons']['loading']} ]")
@@ -255,7 +255,7 @@ class MusicModule(Extension):
         fetched_tracks: list[lavalink.AudioTrack] = await player.get_tracks(file.url)
 
         if len(fetched_tracks) == 0:
-            return await fancy_message(ctx, "[ Attachment must either be a video or audio file. ]", color=0xff0000,
+            return await fancy_message(ctx, "[ Attachment must either be a video or audio file. ]", color=Colors.BAD,
                                        ephemeral=True)
 
         track: lavalink.AudioTrack = fetched_tracks[0]
@@ -285,7 +285,7 @@ class MusicModule(Extension):
         player: Player = self.lavalink.get_player(ctx.guild_id)
 
         if player is None:
-            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=Colors.BAD, ephemeral=True)
 
         player.current = None
         await self.lavalink.disconnect(ctx.guild_id)
@@ -301,22 +301,22 @@ class MusicModule(Extension):
     async def jump(self, ctx: SlashContext, position: int):
         
         if await self.on_cooldown(ctx.author):
-            return await fancy_message(ctx, "[ You are on cooldown! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
 
         voice_state = ctx.member.voice
         if not voice_state or not voice_state.channel:
-            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=Colors.BAD, ephemeral=True)
 
         player: Player = self.lavalink.get_player(ctx.guild_id)
 
         if player is None:
-            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=Colors.BAD, ephemeral=True)
 
         if len(player.queue) == 0:
-            return await fancy_message(ctx, "[ Queue is empty! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Queue is empty! ]", color=Colors.BAD, ephemeral=True)
 
         if position > len(player.queue) or position < 0:
-            return await fancy_message(ctx, "[ Invalid position! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Invalid position! ]", color=Colors.BAD, ephemeral=True)
 
         song = player.queue[position]
 
@@ -336,23 +336,23 @@ class MusicModule(Extension):
 
         voice_state = ctx.member.voice
         if not voice_state or not voice_state.channel:
-            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=0xff0000,
+            return await fancy_message(ctx, "[ You're not connected to a voice channel. ]", color=Colors.BAD,
                                        ephemeral=True)
 
         player: Player = self.lavalink.get_player(ctx.guild_id)
 
         if player is None:
-            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=0xff0000,
+            return await fancy_message(ctx, "[ Player not found, try putting on some music! ]", color=Colors.BAD,
                                        ephemeral=True)
 
         if len(player.queue) == 0:
-            return await fancy_message(ctx, "[ Queue is empty! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Queue is empty! ]", color=Colors.BAD, ephemeral=True)
 
         if position > len(player.queue) or position < 0:
-            return await fancy_message(ctx, "[ Invalid position! ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Invalid position! ]", color=Colors.BAD, ephemeral=True)
         
         if not self.can_modify(player.queue[position].requester, ctx.author, ctx.guild_id):
-            return await fancy_message(ctx, "[ You can't remove this song. ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ You can't remove this song. ]", color=Colors.BAD, ephemeral=True)
 
         song = player.queue[position]
 
@@ -495,10 +495,10 @@ class MusicModule(Extension):
         player = self.lavalink.get_player(ctx.guild_id)
 
         if not player:
-            return await fancy_message(ctx, '[ An error occurred, please try again later. ]', ephemeral=True, color=0xff0000)
+            return await fancy_message(ctx, '[ An error occurred, please try again later. ]', ephemeral=True, color=Colors.BAD)
 
         if len(player.queue) == 0:
-            return await fancy_message(ctx, '[ No song in queue. ]', ephemeral=True, color=0xff0000)
+            return await fancy_message(ctx, '[ No song in queue. ]', ephemeral=True, color=Colors.BAD)
 
         queue = player.queue[::-1]
 
@@ -527,7 +527,7 @@ class MusicModule(Extension):
         embed = Embed(
             title='An error occurred when playing this track.',
             description=f'Please try again later.',
-            color=0x696969
+            color=Colors.RED
         )
         
         print(f'Error occurred when playing a track. "{event.message}"')
@@ -640,14 +640,14 @@ class MusicModule(Extension):
                 lyric_data: dict = await jsondata.json()
 
         if 'error' in lyric_data.keys():
-            return await ctx.send(embed=Embed(title=f'{track.title} Lyrics', description='`[ No Lyrics found. ]`', color=0xFF0000))
+            return await ctx.send(embed=Embed(title=f'{track.title} Lyrics', description='`[ No Lyrics found. ]`', color=Colors.BAD))
 
         lyrics = lyric_data['lyrics']
 
         if len(lyrics) > 4080:
             song = f'{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})'
 
-        return await ctx.send(embed=Embed(title=f'{track.title} Lyrics', description=f'```{lyrics}```', color=0x8b00cc, footer=EmbedFooter(text=f'Lyrics provided by Some Random API')))
+        return await ctx.send(embed=Embed(title=f'{track.title} Lyrics', description=f'```{lyrics}```', color=Colors.DEFAULT, footer=EmbedFooter(text=f'Lyrics provided by Some Random API')))
     
     @music.subcommand()
     async def fetch_player(self, ctx: SlashContext):
@@ -725,7 +725,7 @@ class MusicModule(Extension):
             embed = Embed(
                 title='An error occurred when playing this track.',
                 description=f'Please try again later.',
-                color=0x696969
+                color=Colors.RED
             )
             
             embed.set_author(name="Stopped Playing...")
@@ -735,7 +735,7 @@ class MusicModule(Extension):
                 title=stopped_track.title,
                 url=stopped_track.uri,
                 description=f'From **{stopped_track.author}**',
-                color=0x696969
+                color=Colors.GRAY
             )
 
             embed.set_author(name="Stopped Playing...")
@@ -759,7 +759,7 @@ class MusicModule(Extension):
             player.store("current_page", 1)
 
             if len(player.queue) < 1:
-                return await fancy_message(ctx, '[ No songs in queue, use ``/music play`` to add some! ]', ephemeral=True, color=0xff0000)
+                return await fancy_message(ctx, '[ No songs in queue, use ``/music play`` to add some! ]', ephemeral=True, color=Colors.BAD)
 
             embed = await self.get_queue_embed(player, 1)
 
@@ -772,7 +772,7 @@ class MusicModule(Extension):
             return await ctx.edit(message, embed=embed)
 
         if not await self.can_modify(player.current.requester, ctx.author, ctx.guild.id):
-            await fancy_message(ctx, '[ You cannot modify the player. ]', ephemeral=True, color=0xff0d13)
+            await fancy_message(ctx, '[ You cannot modify the player. ]', ephemeral=True, color=Colors.RED)
             return
 
         await ctx.defer(edit_origin=True)
@@ -827,7 +827,7 @@ class MusicModule(Extension):
         if ctx.custom_id == 'shuffle':
             
             if await self.on_cooldown(ctx.author):
-                return await fancy_message(ctx, "[ You are on cooldown! ]", color=0xff0000, ephemeral=True)
+                return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
             
             random.shuffle(player.queue)
             message = await ctx.channel.send(f'[ {ctx.author.mention} Shuffled the Queue. ]')

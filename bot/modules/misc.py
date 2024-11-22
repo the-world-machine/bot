@@ -93,7 +93,7 @@ class MiscellaneousModule(Extension):
         embed = Embed(
             title=loc.l("misc.roll.rolling", sides=sides),
             description=description,
-            color=0x8b00cc)
+            color=Colors.DEFAULT)
         embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
         
         await ctx.send(embeds=embed)
@@ -103,7 +103,7 @@ class MiscellaneousModule(Extension):
         loc = Localization(ctx.locale)
         embed = Embed(
             title=loc.l("misc.miaou.title"),
-            color=0x7e00b8
+            color=Colors.DEFAULT
         )
 
         if random.randint(0, 100) == 67:

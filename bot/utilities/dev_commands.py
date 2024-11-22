@@ -12,6 +12,7 @@ from utilities.localization import fnum
 from utilities.config import get_config
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
+from utilities.message_decorations import Colors
 from utilities.module_loader import reload_modules
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
@@ -165,9 +166,9 @@ async def execute_dev_command(message: Message):
                     desc+="\n-# Nothing was printed"
                 else:
                     desc+=f"\n```py\n{str(result).replace('```', '` ``')}```"
-                color = None
+                color = Colors.DEFAULT
                 if raisure:
-                    color = 0xff0000
+                    color = Colors.BAD
                 return await message.reply(
                     embeds=Embed(
                         color=color,

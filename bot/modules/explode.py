@@ -27,7 +27,7 @@ class ExplodeModule(Extension):
         if uid in self.last_called:
             elapsed_time = datetime.datetime.now() - self.last_called[uid]
             if elapsed_time.total_seconds() < 20:
-                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds())), ephemeral=True, color=0xfc0000)
+                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds())), ephemeral=True, color=Colors.RED)
 
         self.last_called[uid] = datetime.datetime.now()
 

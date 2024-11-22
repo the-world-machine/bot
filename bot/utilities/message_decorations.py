@@ -4,14 +4,23 @@ from interactions import Color, Message, BaseComponent, Modal, Embed
 
 
 class Colors:
-    PURE_RED = Color.from_hex("FF0000")
+    DEFAULT = TWM_PURPLE = Color.from_hex("6600ff")
+
     RED = BAD = Color.from_hex("bf2626")
     GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("666666")
-    GREEN = Color.from_hex("26bf26")
-    WARN = WARNING = ORANGE = Color.from_hex("d9732b")
+    GREEN = AWESOME = Color.from_hex("#26bf26")
+    YELLOW = Color.from_hex("#bfbf26")
+    TEAL = Color.from_hex("#008080")
+    ORANGE = WARN = WARNING = Color.from_hex("d9732b")
+
+    BLACK = Color.from_hex("#000000")
+    WHITE = Color.from_hex("#000000")
+
+    PURE_RED = Color.from_hex("FF0000")
+    PURE_YELLOW = Color.from_hex("#FFFF00")
     PURE_ORANGE = Color.from_hex("ff6a00")
     PURE_GREEN = Color.from_hex("00ff00")
-    DEFAULT = TWM_PURPLE = Color.from_hex("6600ff")
+    PASTEL_RED = Color.from_hex("ff6961")
     
 async def fancy_message(ctx,
                         message: str = None, 

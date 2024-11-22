@@ -66,10 +66,10 @@ class TransmissionModule(Extension):
 		other_server_data: ServerData = await ServerData(other_server).fetch()
 		
 		if other_server in server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=0xfa272d, ephemeral=True)
+			return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Color.BAD, ephemeral=True)
 		
 		if ctx.guild_id in other_server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=0xfa272d, ephemeral=True)
+			return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Color.BAD, ephemeral=True)
 
 		get_channel: ServerData = await ServerData(other_server).fetch()
 		get_channel = get_channel.transmit_channel
@@ -78,7 +78,7 @@ class TransmissionModule(Extension):
 
 			return await fancy_message(select_results.ctx,
 									   '[ Sorry, but the server you selected has opted to disable call transmissions, or simply has not set a channel. ]',
-									   color=0xfa272d, ephemeral=True)
+									   color=Color.BAD, ephemeral=True)
 
 		other_server_channel: GuildText = await self.bot.fetch_channel(get_channel, force=True)
 
@@ -397,7 +397,7 @@ class TransmissionModule(Extension):
 		final_text = message.content
 
 		embed = Embed(
-			color=0x2b2d31,
+			color=Colors.DARKER_WHITE,
 			description=final_text
 		)
 

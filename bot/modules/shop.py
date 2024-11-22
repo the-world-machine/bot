@@ -314,7 +314,7 @@ class ShopModule(Extension):
             
             embed, components = await self.embed_manager(ctx, item_category)
             
-            embed.color = 0x02f2c6
+            embed.color = Colors.TEAL
             embed.set_footer(result_text)
             
             return await ctx.edit(embed=embed, components=components)
@@ -347,7 +347,7 @@ class ShopModule(Extension):
         
         embed, components = await self.embed_manager(ctx, ctx.custom_id, page=0)
             
-        embed.color = 0x02f2c6
+        embed.color = Colors.TEAL
         
         await ctx.edit(embed=embed, components=components)
     
@@ -384,7 +384,7 @@ class ShopModule(Extension):
                 
         embed, components = await self.embed_manager(ctx, 'Backgrounds', page=bg_page)
         
-        embed.color = 0x02f2c6
+        embed.color = Colors.TEAL # TODO: check up on why is this here
         
         await ctx.edit(embed=embed, components=components)
         
@@ -429,7 +429,7 @@ class ShopModule(Extension):
                 title=title,
                 description=description,
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             buttons = [
@@ -507,7 +507,7 @@ class ShopModule(Extension):
                 title=title,
                 description=description,
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             return embed, buttons
@@ -554,7 +554,7 @@ class ShopModule(Extension):
                 title=title,
                 description=description,
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             return embed, buttons
@@ -576,7 +576,7 @@ class ShopModule(Extension):
                 title=background_name,
                 description=background_description,
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             embed.set_image(url=fetched_background["image"])
@@ -735,7 +735,7 @@ class ShopModule(Extension):
                 title=title,
                 description=description,
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             select_menu = None
@@ -851,7 +851,7 @@ class ShopModule(Extension):
                     user_wool=user_wool
                 ),
                 thumbnail=magpie,
-                color=0x02f2c6
+                color=Colors.TEAL
             )
             
             select_menu = None
@@ -882,6 +882,6 @@ class ShopModule(Extension):
         await self.load_shop()
         
         embed, button = await self.embed_manager(ctx, 'main_shop')
-        embed.color = 0x02f2c6
+        embed.color = Colors.TEAL
         
         await ctx.send(embed=embed, components=button)
