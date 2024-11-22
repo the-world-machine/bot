@@ -211,7 +211,6 @@ async def fetch_from_database(collection: Collection) -> Collection:
     for key in result.keys():
         if collection.__dict__.get(key, None) is not None:
             collection_dict[key] = result[key]
-    
     return collection.__class__(**collection_dict)
 
 async def new_entry(collection: Collection):
