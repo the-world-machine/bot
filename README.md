@@ -8,16 +8,16 @@
 
 ### A discord bot based off the videogame OneShot, and built using the `interactions-py` library.
 
-For more information on what you can do with this bot, check out our [website.](https://www.theworldmachine.xyz/invite)
+For more information on what you can do with this bot, check out our [website](https://www.theworldmachine.xyz/invite).
 </div>
 
 ---
 ## Contributing:
 
 ### Localization
-In `bot/localization/locales` there are different localization files. Using `en_#.yaml` as a base, you are free to contribute your own language to the bot.
-> As of right now, only the `/shop`, `/interact` and `/nikogotchi` commands support localization.
-
+In `bot/data/locales` there are YAML files with the localization strings. Using `en.yml` as a base, you are free to contribute your own language to the bot.
+> [!NOTE] 
+> `/music`, `/wool` & `/transmission` do not have localizations yet
 ### Pull Requests
 As with any other repo, pull requests and bug reporting is always welcomed.
 
@@ -26,24 +26,33 @@ Contributing in any way to the discord bot will have your name be put in the web
 
 ---
 ## Running your own instance:
-### Step 0: Install Python 3.11.5
-For Windows you can get the installer [here](https://www.python.org/downloads/release/python-3115/#:~:text=Full%20Changelog-,files,-Version), for Linux you can search for your package manager's solution.<br>
+### Step 0: Install Python 3.11
+For Windows/macOS you can get the installer [here](https://www.python.org/downloads/release/python-31110/), for Linux you can search for your package manager's solution.<br>
 
 You can check which version of python you're running with this command
 ```commandline
 C:\> python --version
-Python 3.11.5
+Python 3.11.10
 ```
 
-### Step 1: Download Dependencies.
-To download dependencies, run this in your console:
+### Step 0.1: Install pipenv
 ```commandline
-pip install -r requirements.txt
+C:\> python -m pip install pipenv
+```
+
+### Step 1: Install Dependencies.
+(after cloning the repo, and navigating to that folder)
+To install all of the dependencies, run this in your console:
+```commandline
+D:\...\the-world-machine> pipenv install
 ```
 This should install all dependencies needed to run the bot.
 
-### Step 2: config.yaml
-In `bot/data` there is file called `example_config.yaml` which has information for APIs and other sensitive information that should be included. You need to create a file in the same directory called `config.yaml` with the information filled.
+### Step 2: Fill in configs
+There is file called `bot-config.example.yml` which has stuff to configure the bot, including the bot token, database endpoints and api keys. Rename or duplicate this file to `bot-config.yml` in the same folder and fill it in. <br>
+A similar file is also located in the lavalink directory.
 
 ### Step 3: Running the bot.
-If everything is done right, the bot should run.
+```commandline
+pipenv run bot
+```

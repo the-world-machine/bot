@@ -5,8 +5,9 @@ from datetime import datetime, timedelta
 import aiofiles
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
+from utilities.localization import Localization
 import utilities.profile.badge_manager as bm
-import utilities.profile.profile_viewer as profile_viewer
+from utilities.profile.main import draw_profile
 import database as db
 from utilities.message_decorations import *
 
@@ -30,16 +31,13 @@ class ProfileModule(Extension):
     @sun.subcommand(sub_cmd_description='Give someone a sun!')
     @slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
     async def give(self, ctx: SlashContext, user: User):
-        
         user_data: db.UserData = await db.UserData(user.id).fetch()
 
         if user.bot:
-            await fancy_message(ctx, "[ Can't send bots suns! ]", color=0xFF0000, ephemeral=True)
-            return
+            return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=Colors.BAD, ephemeral=True)
 
         if user.id == ctx.author.id:
-            await fancy_message(ctx, "[ Can't give yourself a sun! ]", color=0xFF0000, ephemeral=True)
-            return
+            return await fancy_message(ctx, "[ Nuh uh! ]", color=Colors.BAD, ephemeral=True)
                 
         now = datetime.now()
         
@@ -47,7 +45,7 @@ class ProfileModule(Extension):
 
         if now < last_reset_time:
             time_unix = last_reset_time.timestamp()
-            return await fancy_message(ctx, f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=0xFF0000)
+            return await fancy_message(ctx, f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
 
         # reset the limit if it is a new day
         if now >= last_reset_time:
@@ -60,30 +58,41 @@ class ProfileModule(Extension):
         await ctx.send(f'[ {ctx.author.mention} gave {user.mention} a sun! <:Sun:1026207773559619644> ]')
         
     @profile.subcommand(sub_cmd_description='View a profile.')
-    @slash_option(description='The user\'s profile to view.', name='user', opt_type=OptionType.USER, required=True)
-    async def view(self, ctx: SlashContext, user: User):
-
+    @slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
+    async def view(self, ctx: SlashContext, user: User = None):
+        loc = Localization(ctx)
+        if user is None:
+            user = ctx.user
+        url = "https://theworldmachine.xyz/profile"
         if user.bot:
-            return await ctx.send('[ Cannot view profiles of bots. ]', ephemeral=True)
+            return await ctx.send(loc.l("profile.view.bot"), ephemeral=True)
 
-        msg = f'[ Loading {user.username}\'s profile... <a:loading:1026539890382483576> ]'
+        message = await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
 
-        message = await fancy_message(ctx, msg)
-
-        await profile_viewer.draw_badges(user)
+        image = await draw_profile(user,
+                                   filename=loc.l("profile.view.image.name", username=user.id),
+                                   description=loc.l("profile.view.image.title", username=user.username),
+                                   locale=ctx.locale)
         
-        button = Button(
+        components = []
+        if user == ctx.user:
+            components.append(Button(
+                style=ButtonStyle.URL,
+                url=url,
+                label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
+            ))
+
+        await message.edit(files=image, components=components, content='', embeds=[])
+
+    @profile.subcommand(sub_cmd_description='Edit your profile.')
+    async def profile(self, ctx: SlashContext):
+        components = Button(
             style=ButtonStyle.URL,
-            url=f'https://www.theworldmachine.xyz/profile',
-            label='Edit Profile',
+            label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
+            url="https://theworldmachine.xyz/profile"
         )
-
-        img_ = File('bot/images/profile_viewer/result.png', description=f'{user.username}\'s profile.')
-
-        await message.edit(components=button, content='', embed=[], files=img_)
-
-        os.remove('bot/images/profile_viewer/result.png')
-
+        await fancy_message(ctx, message=Localization.sl('profile.edit', locale=ctx.locale), ephemeral=True, components=components)
+        
     choices = [
         SlashCommandChoice(name='Sun Amount', value='suns'),
         SlashCommandChoice(name='Wool Amount', value='wool'),

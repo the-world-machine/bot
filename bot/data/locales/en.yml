@@ -1,4 +1,3 @@
----
 general:
   loading: "[ Waiting... [emoji:loading] ]"
 
@@ -10,11 +9,10 @@ general:
     _continue: "Continue"
     _open_site: "Open Website"
 
-
 # ---------------------------------------------------------------
 
-music: 
-    
+music: ~
+
 # ---------------------------------------------------------------
 
 misc:
@@ -45,18 +43,43 @@ misc:
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
+  roll:
+    rolling: Rolling d[sides]...
+    rolled: "[ Rolled a [text], totaling at **[total]**. ]"
+    one: "[ Rolled a 1 ]"
+
+  wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
+
 # ---------------------------------------------------------------
 
-settings: 
-  profile: "You can view your profile over on the website!"
-  
+profile:
+  view: 
+    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
+    bots: "[ Bots don't have profiles. ]"
+    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+
+    image: 
+      name: "[userid] profile"
+      title: "[username]'s Profile"
+      unlocked:
+        stamps: "Unlocked Stamps:"
+  edit: 
+    text: "You can edit your profile over on the website!" 
+
 # ---------------------------------------------------------------
 
 explode:
     cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
     dialogue:
-        sixtyninefourtweny: nice 👍
+        why: 
+          - Niko wouldn't like that
+          - did you know you're a bad person
+          - why would you do that
+          - hey...
+          - ~ # don't touch this one, the bot inserts a random amount of dots here
+        
+        sixninefourtwo: nice 👍
         nineninenineninenine: That's enough.
     info: "Times you've shattered The Sun: [amount]"
     YouKilledNiko: "[ You killed Niko. ]"
@@ -72,11 +95,12 @@ shop:
   buttons:
     buy: Trade
     buy_all: Trade All
+    too_poor: Cannot Afford
+    too_poor_all: Cannot Afford All
     sell: Trade in
     sell_all: Trade in All
     go_back: Go Back
-    owned: Owned
-    too_poor: Cannot Afford
+    owned: Owned 
 
   main_title: Welcome!
 
@@ -162,17 +186,17 @@ shop:
 
 
       [user_wool]
-    
-    owned: > 
-      Thanks! You can equip this background on your **[Profile Settings](https://theworldmachine.xyz/profile)!**
+
+    newly_owned: > 
+      Thanks! Now you are a proud owner of this background.
 
 
       [user_wool]
-    traded: "> Successfully traded for the **«[name]»** background!"
+    traded: "> Successfully traded for this background!"
 
   treasures:
 
-    buy: 
+    buy:
       title: Treasures
       message: >
         You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
@@ -238,7 +262,7 @@ items:
       description: A large lightbulb. It's the sun. 
 
   pancakes:
-    pancakes:
+    normal:
       name: Pancakes
       description: >
         The bare minimum for feeding a Nikogotchi.
@@ -247,7 +271,7 @@ items:
 
         *+1 ❤️*
     
-    golden_pancakes:
+    golden:
       name: Golden Pancakes
       description: >
         Expensive, but worth it.
@@ -256,7 +280,7 @@ items:
 
         *+25 ❤️*
     
-    glitched_pancakes:
+    glitched:
       name: '???'
       description: I don't even know how this got here.
 
@@ -287,44 +311,54 @@ interact:
   selected: "[ Choose an action to perform on [user]. ]"
   placeholder: Interactions...
 
-  twm_not_being_very_happy: "[ Don't touch me [user]. ]"
+  twm_not_being_very_happy: "[ Don't touch me, [user]. ]"
   twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
   twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
 
   options:
+    boop:
+      name: Boop
+      messages: 
+        - "[user_one] booped [user_two]"
+        - "[user_one] pokes the nose of [user_two]!"
+        - "[user_one] reaches out and boops [user_two]!"
+        - "[user_one] felt silly and booped [user_two]!"
+        - "[user_one] leaves [user_two] in confusion via a boop!"
+        - "[user_one] gives [user_two] an unexpected boop!"
+        - "[user_one] left [user_two] speechless post-boop!"
     slap:
       name: Slap
-      action: "[user_one] slapped [user_two], probably deserved."
+      messages: "[user_one] slapped [user_two], probably deserved."
     punch:
       name: Punch
-      action: "[user_one] punched [user_two], that hurts."
-    headpat:
-      name: Head Pat
-      action: "[user_one] gave [user_two] a headpat!"
+      messages: "[user_one] punched [user_two], that hurts."
     pet:
       name: Pet
-      action: "[user_one] pet [user_two]!"
+      messages: "[user_one] pet [user_two]!"
+    headpat:
+      name: Head Pat
+      messages: "[user_one] gave [user_two] a headpat!"
     hug:
       name: Hug
-      action: "[user_one] hugged [user_two]!"
+      messages: "[user_one] hugged [user_two]!"
     cuddle:
       name: Cuddle
-      action: "[user_one] cuddled with [user_two]!"
+      messages: "[user_one] cuddled with [user_two]!"
     kiss:
       name: Kiss
-      action: "[user_one] kissed [user_two]! ❤️"
+      messages: "[user_one] kissed [user_two]! ❤️"
     molotov:
       name: 🔥
-      action: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
+      messages: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
 
 # ---------------------------------------------------------------
 
 treasure:
   bots: "[ [bot] doesn't have any treasure ]"
-  item: "* **`[amount]`** [icon] [name]"
+  item: "- **`[amount]`** [icon] [name]"
   message: >
     ### [user]'s treasures
-    
+
     [treasures]
 
     -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
@@ -332,11 +366,9 @@ treasure:
 # ---------------------------------------------------------------
 
 nikogotchi:
-
-  age: "**[years]**y. **[months]**mo. **[days]**d."
-
   loading: "[ Loading Nikogotchi... [emoji:loading] ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
+  owned: Owned by [user]
 
   name:
     niko: Niko
@@ -368,19 +400,10 @@ nikogotchi:
       buttons: 
         send_away: Send Away
         rotate: Rotate
-        
+
     send_away:
       description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
       success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"
-
-    view:
-      owned: Owned by [user]
-
-      description: >
-        **Age**: [age]
-
-
-        **Health**: [health] / 50
 
     renaming:
       title: Give your Nikogotchi a new name!
@@ -416,7 +439,6 @@ nikogotchi:
     dirty: "🛀 [name] wants to be cleaned!"
     hungry: "🥞 [name] is feeling hungry..."
     treasure: "🎒 [name] is currently looking for treasures!"
-    treasuring_time: "**[hours]**h."
     danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
 
   components:
@@ -455,7 +477,7 @@ nikogotchi:
     message: > 
       [treasures]
       Total treasures: **[total]**
-      Hours spent looking: **[hours]**h.
+      Time spent looking: [time].
       
     dialogues:
       sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
@@ -595,7 +617,7 @@ nikogotchi:
         - "A little scratch behind the ears is always appreciated."
       cleaned:
         - "Oh, you really didn't have to, but I appreciate the effort."
-        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring."
+        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring"
     prototype:
       fed:
         - "[This is...unexpected. Thank you.]"

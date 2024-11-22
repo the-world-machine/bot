@@ -3,42 +3,31 @@ import aiohttp
 import platform
 import psutil
 import platform
-import subprocess
 from interactions import *
-from data.localization import Localization, fnum, ftime
+from utilities.localization import Localization, fnum, ftime
 from modules.music import get_lavalink_stats
-from utilities.message_decorations import fancy_embed, fancy_message
+from utilities.message_decorations import Colors, fancy_message
 from datetime import datetime
+from utilities.misc import get_git_hash
 
-
-def get_git_hash():
-    try:
-        # Run the command `git rev-parse HEAD` to get the current commit hash
-        result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        result = result.stdout
-        print(f"Found git hash: {result}")
-        return result  # Return the commit hash without leading/trailing whitespace
-    except Exception as e:
-        print(f"Error retrieving git hash: {e}")
-        return "N/A"  # Return a default value in case of an error
-
-# Example usage
-commit_hash = get_git_hash()
-
-class MiscellaneousModule(Extension):
-    ''' For "one off" commands. '''
+try:
+    commit_hash = get_git_hash()
+    print(f"Found git hash: {commit_hash}")
+except Exception as e:
+    print(f"Error retrieving git hash: {e}")
     
+class MiscellaneousModule(Extension):
     @slash_command(description='View various statistics about the bot.')
     async def stats(self, ctx: SlashContext):
         await ctx.defer()
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         
         lavalink_stats = await get_lavalink_stats()
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
         total_servers = sum(len(shard.client.guilds) for shard in self.bot.shards)
 
-        embed = fancy_embed(loc.l("misc.stats.owner", name=self.bot.owner.username))
+        embed = Embed(description=loc.l("misc.stats.owner", name=self.bot.owner.username), color=Colors.DEFAULT)
         
         embed.add_field(loc.l("misc.stats.names.avg_ping"),
                         loc.l("misc.stats.values.time", sec=fnum(self.bot.latency, ctx.locale)), inline=True)
@@ -51,7 +40,7 @@ class MiscellaneousModule(Extension):
         embed.add_field(loc.l("misc.stats.names.server_count"),
                         total_servers, inline=True)
         embed.add_field(loc.l("misc.stats.names.uptime"),
-                        ftime(self.bot.start_time - datetime.now(), ctx.locale), inline=True)
+                        ftime(datetime.now() - self.bot.start_time, ctx.locale), inline=True)
         #embed.add_field(loc.l("misc.stats.names.user_installs"),
         #                len(self.bot.app.users)) # NONEXISTENT
         #embed.add_field(loc.l("misc.stats.names.commit_hash"),
@@ -70,14 +59,15 @@ class MiscellaneousModule(Extension):
         
     @slash_command(description='A random wikipedia article.')
     async def random_wikipedia(self, ctx: SlashContext):
+        loc = Localization(ctx)
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://en.wikipedia.org/api/rest_v1/page/random/summary') as resp:
                 if resp.status == 200:
                     get_search = await resp.json()
 
-                    result = get_search['content_urls']['desktop']['page']
-
-                    await fancy_message(ctx, f'[ [Here]({result}) is your random wikipedia article. It\'s about {get_search["title"]}... I think... ]')
+                    await fancy_message(ctx, loc.l("misc.wikipedia",
+                                                   link=get_search['content_urls']['desktop']['page'],
+                                                   title=get_search["title"]))
 
     @slash_command(description='bogus')
     async def amogus(self, ctx: SlashContext):
@@ -89,38 +79,23 @@ class MiscellaneousModule(Extension):
     @slash_option(description='What sided dice to roll.', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
     @slash_option(description='How many to roll.', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
     async def roll(self, ctx: SlashContext, sides: int, amount: int = 1):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         dice = random.randint(1, sides)
 
         if amount == 1:
-            description = f'[ Rolled a **{dice}**. ]'
+            description = loc.l("misc.roll.one", side=dice)
         else:
-            text = ''
-            previous_total = 0
-            total = 0
+            rolls = [random.randint(1, sides) for _ in range(amount)]
 
-            for num in range(amount):
+            description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls))
 
-                dice = random.randint(1, sides)
-
-                if num == 0:
-                    text = f'**{dice}**'
-
-                    previous_total = dice
-                    continue
-
-                text = f'{text}, **{dice}**'
-
-                total = previous_total + dice
-
-                previous_total = total
-
-            description = f'[ Rolled a {text}, totaling at **{total}**. ]'
-
-        embed = Embed(title=f'Rolling d{sides}...', description=description, color=0x8b00cc)
-        embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=96&quality=lossless')
-
+        embed = Embed(
+            title=loc.l("misc.roll.rolling", sides=sides),
+            description=description,
+            color=Colors.DEFAULT)
+        embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
+        
         await ctx.send(embeds=embed)
         
     @slash_command(description="Get a random picture of a cat.")
@@ -128,7 +103,7 @@ class MiscellaneousModule(Extension):
         loc = Localization(ctx.locale)
         embed = Embed(
             title=loc.l("misc.miaou.title"),
-            color=0x7e00b8
+            color=Colors.DEFAULT
         )
 
         if random.randint(0, 100) == 67:

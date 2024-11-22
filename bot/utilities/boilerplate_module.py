@@ -1,7 +1,7 @@
 from interactions import *
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as badge_manager
-from data.emojis import *
+from utilities.emojis import emojis
 
 
 class _Module(Extension):

@@ -1,11 +1,9 @@
 import random
 
 from interactions import *
-
-from data.emojis import emojis
 from utilities.message_decorations import *
 
-
+# TODO: localiazeeeeeeeeee
 class ShippingModule(Extension):
 
     @slash_command(description="Ship two people together.")
@@ -24,7 +22,7 @@ class ShippingModule(Extension):
 
             whomst = user.display_name
         if who == ctx.author.display_name and who == whomst:
-            return await fancy_message(ctx, "[ Do you need a hug? ]", color=0xff0000, ephemeral=True)
+            return await fancy_message(ctx, "[ Do you need a hug? ]", color=Colors.BAD, ephemeral=True)
 
         seed = len(who) + len(whomst)
         random.seed(seed)
@@ -73,7 +71,7 @@ class ShippingModule(Extension):
         embed = Embed(
             title=name,
             description=f'{name} has a compatibility of: **{love_percentage}%** {emoji}\n{length}',
-            color=0xd72d42
+            color=Colors.PASTEL_RED
         )
 
         embed.set_footer(text=description)

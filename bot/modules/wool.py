@@ -1,15 +1,14 @@
+import random
 import asyncio
 import dataclasses
-from interactions import *
-from utilities.message_decorations import fancy_message
 import database as db
-import utilities.profile.badge_manager as badge_manager
-from data.emojis import emojis
-from data.localization import Localization, fnum
-
+from interactions import *
+from utilities.emojis import emojis
+from utilities.localization import fnum
 from datetime import datetime, timedelta
+from utilities.message_decorations import Colors, fancy_message
 
-import random
+
 
 @dataclasses.dataclass
 class Slot:
@@ -58,7 +57,7 @@ class WoolModule(Extension):
 
         await fancy_message(
             ctx,
-            f"[ **{user.username}** has {emojis['icon_wool']}**{fnum(wool)}**. ]",
+            f"[ **{user.username}** has {emojis['icons']['wool']}**{fnum(wool)}**. ]",
         )
         
     @wool.subcommand(sub_cmd_description='Give someone your wool.')
@@ -67,16 +66,16 @@ class WoolModule(Extension):
     async def give(self, ctx: SlashContext, user: User, amount: int):
         
         if user.id == ctx.author.id:
-            return await fancy_message(ctx, '[ No. ]', color=0xff0000)
+            return await fancy_message(ctx, '[ No. ]', color=Colors.BAD)
         
         if user.bot:
-            return await fancy_message(ctx, '[ Please do not. ]', 0xff0000)
+            return await fancy_message(ctx, '[ Please do not. ]', Colors.BAD)
         
         this_user: db.UserData = await db.UserData(ctx.author.id).fetch()
         target_user: db.UserData = await db.UserData(user.id).fetch()
         
         if this_user.wool < amount:
-            return await fancy_message(ctx, '[ You cannot give this amount of wool because you don\'t have it! ]', color=0xff0000)
+            return await fancy_message(ctx, '[ You cannot give this amount of wool because you don\'t have it! ]', color=Colors.BAD)
             
         await this_user.manage_wool(-amount)
         await target_user.manage_wool(amount)
@@ -84,12 +83,12 @@ class WoolModule(Extension):
         if amount > 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, how generous!",
+                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, how generous!",
             )
         elif amount == 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {emojis['icon_wool']}{fnum(amount)} to {user.mention}, not very generous!",
+                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, not very generous!",
             )
         else:
             await fancy_message(
@@ -114,7 +113,7 @@ class WoolModule(Extension):
 
         if now < last_reset_time:
            time_unix = last_reset_time.timestamp()
-           return await fancy_message(ctx, f"[ You've already prayed in the past 24 hours. You can pray again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=0xFF0000)
+           return await fancy_message(ctx, f"[ You've already prayed in the past 24 hours. You can pray again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
 
         # reset the limit if it is a new day
         if now >= last_reset_time:
@@ -143,10 +142,10 @@ class WoolModule(Extension):
         
         if amount > 0:
             value = f"You got {fnum(amount)} wool!"
-            color = 0x00FF00
+            color = Colors.GREEN
         else:
             value = f"You lost {fnum(abs(amount))} wool..."
-            color = 0xFF0000
+            color = Colors.BAD
 
         await user_data.update(wool=user_data.wool + amount)
 
@@ -217,7 +216,7 @@ class WoolModule(Extension):
         user_data: db.UserData = await db.UserData(ctx.author.id).fetch()
         
         if user_data.wool < amount:
-            return await fancy_message(ctx, f'[ You don\'t have enough wool to gamble that amount. ]', ephemeral=True, color=0xFF0000)
+            return await fancy_message(ctx, f'[ You don\'t have enough wool to gamble that amount. ]', ephemeral=True, color=Colors.BAD)
         
         await user_data.update(wool=user_data.wool - amount)
         
@@ -302,8 +301,8 @@ class WoolModule(Extension):
                         ticker += f'{s} ┋ '
             
             return Embed(
-                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icon_wool']}**{fnum(amount)}**.\n{ticker}",
-                color=0x8B00CC,
+                description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(amount)}**.\n{ticker}",
+                color=Colors.DEFAULT,
             )
             
         msg = await ctx.send(embed=generate_embed(0, -1, slot_images))
@@ -367,17 +366,17 @@ class WoolModule(Extension):
         
         if win_amount > 0:
             if additional_scoring > 1:
-                result_embed.color = 0xFFFF00
+                result_embed.color = Colors.PURE_YELLOW
                 result_embed.set_footer(
                     text=f"JACKPOT! 🎉 {ctx.author.username} won back {fnum(abs(win_amount))} wool!"
                 )
             else:
-                result_embed.color = 0x00FF00
+                result_embed.color = Colors.PURE_GREEN
                 result_embed.set_footer(
                     text=f"{ctx.author.username} won back {fnum(abs(win_amount))} wool!"
                 )
         else:
-            result_embed.color=0xff0000
+            result_embed.color=Colors.PURE_RED
             result_embed.set_footer(text=f'{ctx.author.username} lost it all... better luck next time!')
         
         await msg.edit(embed=result_embed)

@@ -1,18 +1,22 @@
 import io
-import json
 import re
-from interactions import Embed, Message
-from data.emojis import emojis
-from data.localization import Localization, fnum
-from utilities.shop.fetch_shop_data import reset_shop_data
-from data.config import get_config
+import sys
+import time
+import json
 import database
+from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
-import time
-from asyncio import iscoroutinefunction, sleep
+from utilities.emojis import emojis
+from utilities.localization import fnum
+from utilities.config import get_config
+from interactions import Embed, Message
+from asyncio import iscoroutinefunction
+from utilities.message_decorations import Colors
+from utilities.module_loader import reload_modules
 from traceback import _parse_value_tb, TracebackException
-import sys
+from utilities.shop.fetch_shop_data import reset_shop_data
+
 async def get_collection(collection: str, _id: str):
     key_to_collection: dict[str, database.Collection] = {
         'user': database.UserData(_id),
@@ -62,33 +66,44 @@ async def execute_dev_command(message: Message):
     if message.author.bot:
         return
     
-    if not str(message.author.id) in get_config('dev-command-user-list'):
-        return
-    
     if not message.content:
         return
     
-    prefix = get_config('dev-command-prefix').split('.')
+    if str(message.author.id) not in get_config('dev.whitelist'):
+        return
     
-    # This is not a valid command if brackets do not surround the message.
+    prefix = get_config('dev.command-marker').split('.')
+    
     if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
         return
     
-    # Remove the brackets
     command_content = message.content[1:-1].strip()
     
-    # Split the command into parts
     args = command_content.split(" ")
     
     subcommand_name = args[0]
-    
+
     match subcommand_name:
+        case "bot":
+            action = args[1]
+            match action:
+                case "refresh":
+                    msg = await message.reply(f"`[ Reloading modules... `{emojis['icons']['loading']}` ]`")
+                    modules = reload_modules(msg.client)
+                    return await message.reply(f"`[ Reloaded `**`{len(modules)}`**` modules ]`")
         case "eval":
-            method = args[1] if len(args) > 1 else ''
-            _args = command_content.split(f"eval{method} ")
-            if method.startswith("```py\n"):
-                _args = command_content.split(f"eval ")
-            code = _args[1] if len(_args) > 1 else ''
+            code = command_content.split(f"eval ")
+            referenced_message = message.get_referenced_message();
+            reply_content = referenced_message.content if referenced_message and referenced_message.content else None
+
+            if len(code) == 1 and reply_content and reply_content.startswith("```py\n"):
+                code = reply_content
+            elif len(code) > 1:
+                code = command_content.split("eval ")[1]
+            else:
+                code = ""
+
+
             if code.startswith("```py\n") and code.endswith("```"):
                 code = code[5:-3].strip()
                 if "await" in code:
@@ -96,9 +111,7 @@ async def execute_dev_command(message: Message):
                 else:
                     method = "exec"
             else:
-                code = command_content.split(f"eval ")[1] if len(command_content.split(f"eval ")) > 1 else ''
                 method = "eval"
-            
 
             result = None
             runtime = None
@@ -152,121 +165,104 @@ async def execute_dev_command(message: Message):
                 if result == None and method in ("aexec", "exec"):
                     desc+="\n-# Nothing was printed"
                 else:
-                    desc+=f"\n```py\n{str(result).replace('```', '{` ``}')}```"
-                color = None
+                    desc+=f"\n```py\n{str(result).replace('```', '` ``')}```"
+                color = Colors.DEFAULT
                 if raisure:
-                    color = 0xff0000
-                await message.reply(
+                    color = Colors.BAD
+                return await message.reply(
                     embeds=Embed(
                         color=color,
                         description=desc
                     ))
             try:
-                await handle_reply(runtime, result)
+                return await handle_reply(runtime, result)
             except Exception as e:
                 if "Description cannot exceed 4096 characters" in str(e): # TODO: paging
-                    await handle_reply(runtime, result[0:3900], "\n-# Result too long to display, showing first 3900 characters") 
+                    return await handle_reply(runtime, result[0:3900], "\n-# Result too long to display, showing first 3900 characters") 
                 else:
                     result = f"Raised an exception when replying(what did you do): {str(e)}"
                     print("Exception while replying", e)
-                    await handle_reply(runtime, result)
+                    return await handle_reply(runtime, result)
         case "shop":
-        
-            action = args[1]
-            
             items = await database.fetch_items()
             shop = items['shop']
-            
-            if action == 'view':
-                result = '```\n'
-                    
-                for key in shop.keys():
-                    result += f'{key}: {str(shop[key])}\n'
-                    
-                result += '```'
-                
-                await message.reply(result)
-            
-            if action == 'reset':
-                await reset_shop_data('en-US')
-                
-                await message.reply(
-                    f'`[ Successfully reset shop. ]`'
-                )
+
+            match args[1]:
+                case "view":
+                    return await message.reply(f"```yml\n{dump(shop)}```")
+                case "reset":
+                    try:
+                        await reset_shop_data()
+                        return await message.reply('`[ Successfully reset shop. ]`')
+                    except Exception as e:
+                        return await message.reply(f'`[ {e} ]`')
+                case _:
+                    return await message.reply("Available subcommands: `view` / `reset`")
         case "db":
             try:
-                action = args[1]
-                
-                if action == 'set':
-                    
-                    pattern = r'\{(?:[^{}]*|\{[^{}]*\})*\}'
-                    
-                    matches = re.findall(pattern, command_content)
-                    
-                    collection = args[2]
-                    _id = args[3]
-                    str_data = matches[0]
-
-                    data = json.loads(str_data)
-
-                    collection = await database.fetch_from_database(await get_collection(collection, _id))
-                    
-                    await collection.update(**data)
-                    
-                    await message.reply(
-                        f'`[ Successfully updated value(s). ]`'
-                    )
-                    
-                if action == 'view':
-                    collection = args[2]
-                    _id = args[3]
-                    value = args[4]
-                    
-                    if collection == 'shop':
-                        collection = await get_collection(collection, 0)
-                    else:
-                        collection = await database.fetch_from_database(await get_collection(collection, _id))
-                    
-                    await message.reply(
-                        f'`[ The value of {value} is {str(collection.__dict__[value])}. ]`'
-                    )
-                    
-                if action == 'view_all':
-                    collection = args[2]
-                    _id = args[3]
-                    
-                    collection = await database.fetch_from_database(await get_collection(collection, _id))
-                    
-                    data = collection.__dict__
-                    
-                    result = '```\n'
-                    
-                    for key in data.keys():
-                        result += f'{key}: {str(data[key])}\n'
+                match args[1]:
+                    case "set":
                         
-                    result += '```'
-                    
-                    await message.reply(result)
-                    
-                    
-                if action == 'wool':
-                    _id = args[2]
-                    amount = int(args[3])
-                    
-                    collection: database.UserData = await database.fetch_from_database(await get_collection('user', _id))
-                    
-                    await collection.manage_wool(amount)
-                    
-                    await message.reply(
-                        f'`[ Successfully modified wool, updated value is now {collection.wool}. ]`'
-                    )
-                    
+                        pattern = r'\{(?:[^{}]*|\{[^{}]*\})*\}'
+                        
+                        matches = re.findall(pattern, command_content)
+                        
+                        collection = args[2]
+                        _id = args[3]
+                        str_data = matches[0]
+
+                        data = json.loads(str_data)
+
+                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        
+                        await collection.update(**data)
+                        
+                        return await message.reply(
+                            '`[ Successfully updated. ]`'
+                        )
+                    case "view":
+                        collection = args[2]
+                        _id = args[3]
+                        value = args[4]
+                        
+                        if collection == 'shop':
+                            collection = await get_collection(collection, 0)
+                        else:
+                            collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        
+                        return await message.reply(
+                            f'`[ The value of {value} is {str(collection.__dict__[value])}. ]`'
+                        )
+                    case "view_all":
+                        collection = args[2]
+                        _id = args[3]
+                        
+                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        
+                        data = collection.__dict__
+                        
+                        return await message.reply(f"```yml\n{dump(data)}```")
+                    case "wool":
+                        _id = args[2]
+                        amount = int(args[3])
+                        
+                        collection: database.UserData = await database.fetch_from_database(await get_collection('user', _id))
+                        
+                        await collection.manage_wool(amount)
+                        
+                        return await message.reply(
+                            f'`[ Successfully modified wool, updated value is now {collection.wool}. ]`'
+                        )
+                    case _:
+                        return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
             except Exception as e:
                 await message.reply(
                     f'`[ Error with command. ({e}) ]`'
                 )
+        case "locale_override":
+            return
         case _:
-            return await message.reply("Available commands: `eval` / `shop` / `db`. See source code for usage")
+            await message.reply("Available commands: `eval` / `shop` / `db` / `bot`. See source code for usage")
     formatted_command_content = command_content.replace('\n', '\n'+colored('│ ', 'yellow'))
     if subcommand_name == "db":
         subcommand_name += " ─"

@@ -1,14 +1,16 @@
 .idea
-.mypy_cache
 .vscode
 
+.mypy_cache
 __pycache__/
 *.py[cod]
 *$py.class
+blob/
 
-
-blob/*
-
+bot/data/emojis.yml
 bot-config.yml
+
 lavalink/application.yml
-lavalink/{plugins,Lavalink.jar}
+lavalink/plugins/
+lavalink/Lavalink.jar
+Pipfile.lock
