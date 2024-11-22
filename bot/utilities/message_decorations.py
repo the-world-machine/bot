@@ -4,23 +4,23 @@ from interactions import Color, Message, BaseComponent, Modal, Embed
 
 
 class Colors:
-    DEFAULT = TWM_PURPLE = Color.from_hex("6600ff")
+    DEFAULT = TWM_PURPLE = Color.from_hex("#6600FF")
 
-    RED = BAD = Color.from_hex("bf2626")
-    GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("666666")
-    GREEN = AWESOME = Color.from_hex("#26bf26")
-    YELLOW = Color.from_hex("#bfbf26")
+    RED = BAD = Color.from_hex("#BF2626")
+    GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("#666666")
+    GREEN = AWESOME = Color.from_hex("#26BF26")
+    YELLOW = Color.from_hex("#BFBF26")
     TEAL = Color.from_hex("#008080")
-    ORANGE = WARN = WARNING = Color.from_hex("d9732b")
+    ORANGE = WARN = WARNING = Color.from_hex("#D9732B")
 
     BLACK = Color.from_hex("#000000")
     WHITE = Color.from_hex("#000000")
 
-    PURE_RED = Color.from_hex("FF0000")
+    PURE_RED = Color.from_hex("#FF0000")
     PURE_YELLOW = Color.from_hex("#FFFF00")
-    PURE_ORANGE = Color.from_hex("ff6a00")
-    PURE_GREEN = Color.from_hex("00ff00")
-    PASTEL_RED = Color.from_hex("ff6961")
+    PURE_ORANGE = Color.from_hex("#FF6A00")
+    PURE_GREEN = Color.from_hex("#00FF00")
+    PASTEL_RED = Color.from_hex("#FF6961")
     
 async def fancy_message(ctx,
                         message: str = None, 
