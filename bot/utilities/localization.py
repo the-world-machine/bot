@@ -85,11 +85,11 @@ class Localization:
 	def __init__(self, ctx):
 		self.locale = ctx.locale
 	
-	def l(self, localization_path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
-		return self.sl(localization_path=localization_path, locale=self.locale, **variables)
+	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+		return self.sl(path=path, locale=self.locale, **variables)
 	
 	@staticmethod
-	def sl(localization_path: str, locale: str, raise_on_not_found: bool = False, self = None, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+	def sl(path: str, locale: str, raise_on_not_found: bool = False, self = None, **variables: dict[str, any]) -> Union[str, list[str], dict]:
 		""" Static version of .l for single use (where making another Localization() makes it cluttery)"""
 		if locale == None:
 			raise ValueError("No locale provided")
@@ -97,10 +97,10 @@ class Localization:
 		value = get_locale(locale)
 
 		value = rabbit(value, 
-					   localization_path, 
+					   path, 
 					   fallback_value=fallback_locale if fallback_locale else None, 
 					   raise_on_not_found=raise_on_not_found,
-					   _error_message="[path] ([error], debug mode ON)" if debug else "[path]")
+					   _error_message="[path] ([error])" if debug else "[path]")
 		
 		return assign_variables(value, locale, **variables)
 
@@ -137,37 +137,53 @@ def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 	
 	return fmtd
 
-
-def ftime(duration: timedelta | float, locale: str = "en-#", bold: bool = True, format: Literal['narrow', 'short', 'medium', 'long'] ="short", max_units: int = 69, **kwargs) -> str:
+def ftime(
+	duration: timedelta | float,
+	locale: str = "en-#",
+	bold: bool = True,
+	format: Literal['narrow', 'short', 'medium', 'long'] = "short",
+	max_units: int = 69,
+	minimum_unit: Literal["year", "month", "week", "day", "hour", "minute", "second"] = "second",
+	**kwargs
+) -> str:
 	if locale == "en-#":
 		locale = "en"
-		
+			
 	locale = Locale.parse(locale, sep="-")
 
 	if isinstance(duration, (int, float)):
 		duration = timedelta(seconds=duration)
-	
+
 	formatted = format_timespan(duration, max_units=max_units).replace(" and", ",")
+
+	unit_hierarchy = ["year", "month", "week", "day", "hour", "minute", "second"]
+	min_unit_index = unit_hierarchy.index(minimum_unit)
 
 	def translate_unit(component: str) -> str:
 		amount, unit = component.split(" ", 1)
 		
 		if not unit.endswith('s'):
 			unit += "s"
-			
+				
 		amount = float(amount)
 		if unit == "years":
 			unit = "weeks"
 			amount *= 52.1429
-			
+				
 		translated_component = format_timedelta(timedelta(**{unit: amount}), locale=locale, format=format, **kwargs)
 		return translated_component
 
-	translated = ", ".join([translate_unit(part) for part in formatted.split(", ")])
+	filtered_components = [
+		part for part in formatted.split(", ")
+		if unit_hierarchy.index(part.split(" ", 1)[1].rstrip('s')) <= min_unit_index
+	]
+
+	translated = ", ".join([translate_unit(part) for part in filtered_components])
 
 	if bold:
 		translated = re.sub(r'(\d+)', r'**\1**', translated)
 	return translated
+
 
 def english_ordinal_for(n: int | float):
 	if isinstance(n, float):

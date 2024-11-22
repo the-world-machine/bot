@@ -72,7 +72,13 @@ profile:
 explode:
     cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
     dialogue:
-        sixtyninefourtweny: nice 👍
+        why: 
+          - Niko wouldn't like that
+          - did you know you're a bad person
+          - why would you do that
+          - hey...
+          - ~ # don't touch this one, the bot inserts a random amount of dots here
+        sixninefourtwo: nice 👍
         nineninenineninenine: That's enough.
     info: "Times you've shattered The Sun: [amount]"
     YouKilledNiko: "[ You killed Niko. ]"
@@ -358,9 +364,6 @@ treasure:
 # ---------------------------------------------------------------
 
 nikogotchi:
-
-  age: "**[years]**y. **[months]**mo. **[days]**d."
-
   loading: "[ Loading Nikogotchi... [emoji:loading] ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
 
@@ -442,7 +445,6 @@ nikogotchi:
     dirty: "🛀 [name] wants to be cleaned!"
     hungry: "🥞 [name] is feeling hungry..."
     treasure: "🎒 [name] is currently looking for treasures!"
-    treasuring_time: "**[hours]**h."
     danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
 
   components:
@@ -481,7 +483,7 @@ nikogotchi:
     message: > 
       [treasures]
       Total treasures: **[total]**
-      Hours spent looking: **[hours]**h.
+      Time spent looking: [time].
       
     dialogues:
       sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."

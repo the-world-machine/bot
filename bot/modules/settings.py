@@ -2,7 +2,7 @@ import json
 from interactions import *
 
 from database import ServerData
-from utilities.message_decorations import fancy_embed, fancy_message
+from utilities.message_decorations import fancy_message
 
 # TODO: localelelele
 class SettingsModule(Extension):

@@ -195,6 +195,8 @@ async def execute_dev_command(message: Message):
                         return await message.reply('`[ Successfully reset shop. ]`')
                     except Exception as e:
                         return await message.reply(f'`[ {e} ]`')
+                case _:
+                    return await message.reply("Available subcommands: `view` / `reset`")
         case "db":
             try:
                 match args[1]:
@@ -238,14 +240,7 @@ async def execute_dev_command(message: Message):
                         
                         data = collection.__dict__
                         
-                        result = '```\n'
-                        
-                        for key in data.keys():
-                            result += f'{key}: {str(data[key])}\n'
-                            
-                        result += '```'
-                        
-                        return await message.reply(result)
+                        return await message.reply(f"```yml\n{dump(data)}```")
                     case "wool":
                         _id = args[2]
                         amount = int(args[3])
@@ -257,6 +252,8 @@ async def execute_dev_command(message: Message):
                         return await message.reply(
                             f'`[ Successfully modified wool, updated value is now {collection.wool}. ]`'
                         )
+                    case _:
+                        return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
             except Exception as e:
                 await message.reply(
                     f'`[ Error with command. ({e}) ]`'

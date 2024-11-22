@@ -67,7 +67,7 @@ class MusicModule(Extension):
 
         progress_bar_length = 10
 
-        progress_bar = generate_progress_bar(player.position, track.duration, progress_bar_length, 'square')
+        progress_bar = make_progress_bar(player.position, track.duration, progress_bar_length, 'square')
         
         time = lavalink.parse_time(player.position)
         
@@ -94,7 +94,10 @@ class MusicModule(Extension):
         i = (page * 10) - 9
         
         if player.current is None:
-            return fancy_embed('[ There are no tracks in the player! ]')
+            return Embed(
+                description='[ There are no tracks in the player! ]',
+                color=Colors.DEFAULT
+            )
 
         for song in queue:
             title = song.title

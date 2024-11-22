@@ -4,7 +4,7 @@ import random
 import datetime
 import utilities.profile.badge_manager as bm
 from utilities.localization import Localization, fnum
-
+from database import UserData
 
 class ExplodeModule(Extension):
     explosion_image = [
@@ -22,20 +22,14 @@ class ExplodeModule(Extension):
     @slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
     async def explode(self, ctx: SlashContext):
         loc = Localization(ctx)
-        user_id = ctx.user.id
-
-        if user_id in self.last_called:
-            elapsed_time = datetime.datetime.now() - self.last_called[user_id]
+        uid = ctx.user.id
+        explosion_amount = (await UserData(uid).fetch()).times_shattered
+        if uid in self.last_called:
+            elapsed_time = datetime.datetime.now() - self.last_called[uid]
             if elapsed_time.total_seconds() < 20:
-                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds(), ndigits=0)), ephemeral=True, color=0xfc0000)
+                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds())), ephemeral=True, color=0xfc0000)
 
-        self.last_called[user_id] = datetime.datetime.now()
-
-        with open('bot/data/explosions.txt', 'r') as f:
-            try:
-                explosion_amount = int(f.read())
-            except ValueError:
-                explosion_amount = 99999
+        self.last_called[uid] = datetime.datetime.now()
 
         random_number = random.randint(1, len(self.explosion_image)) - 1
         random_sadness = random.randint(1, 100)
@@ -44,33 +38,27 @@ class ExplodeModule(Extension):
 
         if random_sadness == 40:
             sad = True
-        dialogue 
         if not sad:
-            embed = Embed(description=' ')
-            
-            sexy_amounts = [69, 420, 42069, 69420]
-            
-            if explosion_amount in sexy_amounts:
-                dialogue = loc.l("explode.sixtyninefourtweny")
-                
-            if explosion_amount >= 99999:
-                explosion_amount = 99999
-                dialogue = loc.l("explode.nineninenineninenine")
-                           
-            explosion_amount = ctx.author_id # TODO: figure this out
+            embed = Embed(color=Colors.RED)
+        
+            dialogues = loc.l("explode.dialogue.why")
+            dialogue = random.choice(dialogues)
 
+            if "69" in str(explosion_amount) or "42" in str(explosion_amount):
+                dialogue = loc.l("explode.dialogue.sixtyninefourtweny")
+
+            if len(str(explosion_amount)) > 0 and all(char == '9' for char in str(explosion_amount)):
+                dialogue = loc.l("explode.dialogue.nineninenineninenine")
+            if not dialogue:
+                dialogue = "." * random.randint(1, 9)
+            
+            embed.description = "-# "+dialogue
             embed.set_image(url=self.explosion_image[random_number])
             embed.set_footer(loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
         else:
             embed = Embed(title='...')
             embed.set_image(url=self.sad_image)
             embed.set_footer(loc.l("explode.YouKilledNiko"))
-
-        with open('bot/data/explosions.txt', 'w') as f:
-            try:
-                f.write(str(explosion_amount + 1))
-            except ValueError:
-                f.write(explosion_amount)
 
         if not sad:
             await bm.increment_value(ctx, 'times_shattered', 1, ctx.author)

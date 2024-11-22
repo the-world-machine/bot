@@ -7,7 +7,7 @@ from utilities.misc import get_image
 import yaml
 from utilities.emojis import emojis
 from utilities.localization import Localization
-from utilities.message_decorations import fancy_message, fancy_embed
+from utilities.message_decorations import Colors, fancy_message
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
 
@@ -182,7 +182,13 @@ class TextboxModule(Extension):
 
         faces_select = self.make_faces_select_menu(ctx.locale, character_name=char_ctx.values[0])
 
-        await ctx.edit(embed=fancy_embed(f"[ <@{ctx.user.id}>, select a face. ]"), components=faces_select)
+        await ctx.edit(
+            embed=Embed(
+                description=f"[ <@{ctx.user.id}>, select a face. ]",
+                color=Colors.DARKER_WHITE
+            ),
+            components=faces_select
+        )
 
         char_ctx = await self.bot.wait_for_component(components=faces_select)
 
@@ -190,14 +196,31 @@ class TextboxModule(Extension):
 
         value = char_ctx.ctx.values[0]
 
-        await ctx.edit(embeds=fancy_embed(f"[ Generating Image... {emojis['icons']['loading']} ]"))
+        await ctx.edit(
+            embed=Embed(
+                description=f"[ Generating Image... {emojis['icons']['loading']} ]",
+                color=Colors.DARKER_WHITE
+            )
+        )
 
         if value == '964952736460312576':
             icon = ctx.author.avatar.url
         else:
             icon = f'https://cdn.discordapp.com/emojis/{value}.png'
             
-        await ctx.edit(embeds=fancy_embed(f"[ Uploading image... {emojis['icons']['loading']} ]"), components=[])
+        await ctx.edit(
+            embed=Embed(
+                description=f"[ Uploading image... {emojis['icons']['loading']} ]",
+                color=Colors.DARKER_WHITE
+            ),
+            components=[]
+        )
         file = await TextboxModule.generate_dialogue(text, icon, animated)
-        await ctx.channel.send(content=f"-# [ by {ctx.user.mention} ]", files=file, allowed_mentions={'users':[]})
-        await ctx.edit(embeds=fancy_embed(f"[ Done! ]"))
+        await ctx.channel.send(content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={'users':[]})
+        await ctx.edit(
+            embed=Embed(
+                description=f"[ Done! ]",
+                color=Colors.DARKER_WHITE
+            ),
+            components=[]
+        )

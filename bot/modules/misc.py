@@ -6,7 +6,7 @@ import platform
 from interactions import *
 from utilities.localization import Localization, fnum, ftime
 from modules.music import get_lavalink_stats
-from utilities.message_decorations import fancy_embed, fancy_message
+from utilities.message_decorations import Colors, fancy_message
 from datetime import datetime
 from utilities.misc import get_git_hash
 
@@ -26,8 +26,8 @@ class MiscellaneousModule(Extension):
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
         total_servers = sum(len(shard.client.guilds) for shard in self.bot.shards)
-        text = loc.l("misc.stats.owner", name=self.bot.owner.username)
-        embed = fancy_embed(text)
+
+        embed = Embed(description=loc.l("misc.stats.owner", name=self.bot.owner.username), color=Colors.DEFAULT)
         
         embed.add_field(loc.l("misc.stats.names.avg_ping"),
                         loc.l("misc.stats.values.time", sec=fnum(self.bot.latency, ctx.locale)), inline=True)
@@ -86,30 +86,14 @@ class MiscellaneousModule(Extension):
         if amount == 1:
             description = loc.l("misc.roll.one", side=dice)
         else:
-            text = ''
-            previous_total = 0
-            total = 0
+            rolls = [random.randint(1, sides) for _ in range(amount)]
 
-            for num in range(amount):
+            description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls))
 
-                dice = random.randint(1, sides)
-
-                if num == 0:
-                    text = f'**{dice}**'
-
-                    previous_total = dice
-                    continue
-
-                text = f'{text}, **{dice}**'
-
-                total = previous_total + dice
-
-                previous_total = total
-
-            description = loc.l("misc.roll.rolled", text=sides, total=total)
-        title = loc.l("misc.roll.rolling", sides=sides)
-        print(title)
-        embed = Embed(title=title, description=description, color=0x8b00cc)
+        embed = Embed(
+            title=loc.l("misc.roll.rolling", sides=sides),
+            description=description,
+            color=0x8b00cc)
         embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
         
         await ctx.send(embeds=embed)

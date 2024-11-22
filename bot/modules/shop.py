@@ -323,7 +323,7 @@ class ShopModule(Extension):
         item = item['pancakes'][item_id]
         item = Item(**item)
         
-        item_loc: dict = loc.l(f'items.pancakes.{item.id}')
+        item_loc: dict = loc.l(f'items.pancakes.{pancake_id_to_emoji_index_please_rename_them_in_db(item.id)}')
             
         if user_data.wool < item.cost:
             result_text = loc.l('shop.traded_fail')
