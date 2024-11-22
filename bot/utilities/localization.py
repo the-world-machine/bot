@@ -141,7 +141,7 @@ def ftime(
 	duration: timedelta | float,
 	locale: str = "en-#",
 	bold: bool = True,
-	format: Literal['narrow', 'short', 'medium', 'long'] = "short",
+	format: Literal['narrow', 'short', 'medium', 'long'] = "narrow",
 	max_units: int = 69,
 	minimum_unit: Literal["year", "month", "week", "day", "hour", "minute", "second"] = "second",
 	**kwargs
