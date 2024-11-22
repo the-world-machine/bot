@@ -7,13 +7,13 @@ class Colors:
     DEFAULT = TWM_PURPLE = Color.from_hex("#6600FF")
 
     RED = BAD = Color.from_hex("#BF2626")
-    GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("#666666")
-    GREEN = AWESOME = Color.from_hex("#26BF26")
-    YELLOW = Color.from_hex("#BFBF26")
-    TEAL = Color.from_hex("#008080")
     ORANGE = WARN = WARNING = Color.from_hex("#D9732B")
+    YELLOW = Color.from_hex("#BFBF26")
+    GREEN = AWESOME = Color.from_hex("#26BF26")
+    TEAL = Color.from_hex("#008080")
 
     BLACK = Color.from_hex("#000000")
+    GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("#666666")
     WHITE = Color.from_hex("#000000")
 
     PURE_RED = Color.from_hex("#FF0000")
