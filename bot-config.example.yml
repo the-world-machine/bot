@@ -3,8 +3,8 @@ bot:
     main-id: ~ # use the production id, enables prod-specific stuff (Changing pfp, welcome messages) when client ends up logging into it
     avatar-rolling: true # uses unstable.png if client id doesn't match main-id defined above
     statuses: ~ # can also be a list of strs
-    # ^ acts like a localization string
-    # you can use [shard_count] [guild_count] [token]
+    # Status can use the variables: [shard_count] [guild_count] [token]
+    # e.g. In [guild_count] servers.
     roll-interval: 3600 # seconds
 
 dev:
