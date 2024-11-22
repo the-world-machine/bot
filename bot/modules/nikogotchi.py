@@ -68,11 +68,7 @@ class NikogotchiModule(Extension):
     async def save_nikogotchi(self, nikogotchi: Nikogotchi, uid: int):
         nikogotchi_data: Nikogotchi = await Nikogotchi(uid).fetch()
 
-        data = nikogotchi.__dict__
-        
-        del data['_id']
-
-        await nikogotchi_data.update(**data)
+        await nikogotchi_data.update(**nikogotchi.__dict__)
         
     async def delete_nikogotchi(self, uid: int):
         
@@ -368,7 +364,7 @@ class NikogotchiModule(Extension):
         
         await user_data.update(owned_treasures=user_treasures)
         return TreasureSeekResults(treasures_found, amount, time_taken)
-
+#
     r_nikogotchi_interaction = re.compile(r'action_(feed|pet|clean|findtreasure|refresh|callback|exit)_(\d+)$')
     @component_callback(r_nikogotchi_interaction)
     async def nikogotchi_interaction(self, ctx: ComponentContext):
@@ -521,84 +517,73 @@ class NikogotchiModule(Extension):
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
         
         loc = Localization(ctx)
-        
-        options = False
 
         if nikogotchi_data.glitched_pancakes > 0:
             food_options.append(
                 StringSelectOption(
                     label=loc.l('nikogotchi.components.feed.glitched_pancakes', amount=nikogotchi_data.glitched_pancakes),
-                    emoji=PartialEmoji(1152356972423819436),
-                    value=f'pancakeglitched_{ctx.author.id}'
+                    emoji=emojis['pancakes']['glitched'],
+                    value=f'glitched'
                 )
             )
-            
-            options = True
 
         if nikogotchi_data.golden_pancakes > 0:
             food_options.append(
                 StringSelectOption(
                     label=loc.l('nikogotchi.components.feed.golden_pancakes', amount=nikogotchi_data.golden_pancakes),
-                    emoji=PartialEmoji(1152330988022681821),
-                    value=f'goldenpancake_{ctx.author.id}'
+                    emoji=emojis['pancakes']['golden'],
+                    value=f'golden'
                 )
             )
-            
-            options = True
 
         if nikogotchi_data.pancakes > 0:
             food_options.append(
                 StringSelectOption(
                     label=loc.l('nikogotchi.components.feed.pancakes', amount=nikogotchi_data.pancakes),
-                    emoji=PartialEmoji(1147281411854839829),
-                    value=f'pancake_{ctx.author.id}'
+                    emoji=emojis['pancakes']['normal'],
+                    value=f'normal'
                 )
             )
             
-            options = True
-            
         placeholder = loc.l('nikogotchi.components.feed.placeholder', name=nikogotchi.name)
-        cannot_feed = False
-            
-        if not options:
+        disabled = False
+        if len(food_options) == 0:
             food_options.append(
                 StringSelectOption(
                     label=f'no food',
                     value='nofood'
                 )
             )
-            
+            disabled = True
             placeholder = loc.l('nikogotchi.components.feed.no_food')
-            cannot_feed = True
             
         select = StringSelectMenu(
             *food_options,
-            custom_id='feed_food',
+            custom_id=f'feed_food {ctx.user.id}',
             placeholder=placeholder,
-            disabled=cannot_feed
+            disabled=disabled
         )
 
         return select
-    
-    @component_callback('feed_food')
+    ff = re.compile(r'feed_food (\d+)$')
+    @component_callback(ff)
     async def feed_food(self, ctx: ComponentContext):
 
         await ctx.defer(edit_origin=True)
 
-        nikogotchi = await self.get_nikogotchi(ctx.author.id)
-        data = ctx.values[0].split('_')
-        
-        value = data[0]
-        uid = int(data[1])
-        
-        if ctx.author.id != uid:
-            return
+        match = self.ff.match(ctx.custom_id)
+        uid = int(match.group(1))
 
-        nikogotchi_data: Nikogotchi = await Nikogotchi(uid).fetch()
+        if ctx.author.id != uid:
+            return await ctx.edit()
+
+        nikogotchi: Nikogotchi = await self.get_nikogotchi(uid)
+        pancake_type = ctx.values[0]
+
         
-        pancakes = nikogotchi_data.pancakes
-        golden_pancakes = nikogotchi_data.golden_pancakes
-        glitched_pancakes = nikogotchi_data.glitched_pancakes
+        normal_pancakes = nikogotchi.pancakes
+        golden_pancakes = nikogotchi.pancakes
+        glitched_pancakes = nikogotchi.glitched_pancakes
 
         hunger_increase = 0
         health_increase = 0
@@ -606,38 +591,40 @@ class NikogotchiModule(Extension):
         updated_stats = []
         
         loc = Localization(ctx)
+        match pancake_type:
+            case 'golden':
+                if golden_pancakes <= 0:
+                    dialogue = loc.l('nikogotchi.components.feed.invalid')
+                else:
+                    hunger_increase = 50
+                    health_increase = 25
 
-        if value == 'goldenpancake':
-            if golden_pancakes <= 0:
-                dialogue = loc.l('nikogotchi.components.feed.invalid')
-            else:
-                hunger_increase = 50
-                health_increase = 25
-
-                golden_pancakes -= 1
+                    golden_pancakes -= 1
                 dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed'))
-        elif value == 'pancakeglitched':
-            if glitched_pancakes <= 0:
-                dialogue = loc.l('nikogotchi.components.feed.invalid')
-            else:
-                hunger_increase = 9999
-                health_increase = 9999
-                
-                glitched_pancakes -= 1
-                updated_stats = await nikogotchi.level_up(5)
-                dialogue = loc.l('nikogotchi.components.feed.glitched_powerup')
-        else:
-            if pancakes <= 0:
-                dialogue = loc.l('nikogotchi.components.feed.invalid')
-            else:
-                hunger_increase = 25
-                health_increase = 1
-                
-                pancakes -= 1
-                dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed'))
+            case 'glitched':
+                if glitched_pancakes <= 0:
+                    dialogue = loc.l('nikogotchi.components.feed.invalid')
+                else:
+                    hunger_increase = 9999
+                    health_increase = 9999
+                    
+                    glitched_pancakes -= 1
+                    updated_stats = await nikogotchi.level_up(5)
+                    dialogue = loc.l('nikogotchi.components.feed.glitched_powerup')
+            case 'normal':
+                if normal_pancakes <= 0:
+                    dialogue = loc.l('nikogotchi.components.feed.invalid')
+                else:
+                    hunger_increase = 25
+                    health_increase = 1
+                    
+                    normal_pancakes -= 1
+                    dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed'))
+            case _:
+                return await ctx.edit()
                 
         await nikogotchi.update(
-            pancakes = pancakes,
+            pancakes = normal_pancakes,
             golden_pancakes = golden_pancakes,
             glitched_pancakes = glitched_pancakes
         )
@@ -646,7 +633,7 @@ class NikogotchiModule(Extension):
         nikogotchi.health = min(nikogotchi.max_health, nikogotchi.health + health_increase)
 
         await self.save_nikogotchi(nikogotchi, ctx.author.id)
-
+        
         buttons = self.nikogotchi_buttons(ctx, ctx.author.id)
         select = await self.feed_nikogotchi(ctx)
 
@@ -761,7 +748,7 @@ class NikogotchiModule(Extension):
         
         await ctx.send(embed=await self.get_main_embeds(ctx, nikogotchi, preview=True))
 
-    @nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
+    """@nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
     @slash_option('user', description='The user to trade with.', opt_type=OptionType.USER, required=True)
     async def trade(self, ctx: SlashContext, user: User):
         loc = Localization(ctx)
@@ -804,10 +791,12 @@ class NikogotchiModule(Extension):
         custom_id = button_ctx.custom_id
 
         if custom_id == f'trade {ctx.author.id} {uid}':
-            
+            del nikogotchi_two._id
+            del nikogotchi_one._id
             await self.save_nikogotchi(nikogotchi_two, ctx.author.id)
             await self.save_nikogotchi(nikogotchi_one, uid)
-
+            nikogotchi_two._id = str(ctx.author.id)
+            nikogotchi_one._id = str(uid)
             embed_two = Embed(
                 description=loc.l('nikogotchi.other.trade.success', user=user.mention, name=nikogotchi_two.name),
                 color=Colors.GREEN,
@@ -834,7 +823,7 @@ class NikogotchiModule(Extension):
             await asyncio.gather(
                 ctx.edit(embed=sender_embed),
                 button_ctx.edit_origin(embed=receiver_embed, components=[])
-            )
+            )"""
 
     @slash_command(description='View what treasure you or someone else has!')
     @integration_types(guild=True, user=True)

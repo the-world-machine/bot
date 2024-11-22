@@ -449,6 +449,7 @@ nikogotchi:
 
     feed:
       placeholder: "Choose food to feed with..."
+      
       pancakes: Feed Pancake (x[amount])
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
