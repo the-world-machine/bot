@@ -1,11 +1,12 @@
 import json
 import os
 from datetime import datetime, timedelta
+import time
 
 import aiofiles
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
-from utilities.localization import Localization
+from utilities.localization import Localization, fnum, ftime
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
 import database as db
@@ -69,11 +70,12 @@ class ProfileModule(Extension):
 
         message = await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
 
+        start_time = time.perf_counter()
         image = await draw_profile(user,
                                    filename=loc.l("profile.view.image.name", username=user.id),
                                    description=loc.l("profile.view.image.title", username=user.username),
                                    locale=ctx.locale)
-        
+        runtime = (time.perf_counter() - start_time) * 1000
         components = []
         if user == ctx.user:
             components.append(Button(
@@ -81,8 +83,8 @@ class ProfileModule(Extension):
                 url=url,
                 label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
             ))
-
-        await message.edit(files=image, components=components, content='', embeds=[])
+            
+        await message.edit(content="", files=image, components=components, embeds=[])
 
     @profile.subcommand(sub_cmd_description='Edit your profile.')
     async def profile(self, ctx: SlashContext):
