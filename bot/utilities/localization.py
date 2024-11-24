@@ -50,13 +50,13 @@ def get_locale(locale):
 		locale_prefix = locale.split('-')[0]
 		
 		possible_locales = [locale for locale in _locales.keys() if locale.startswith(locale_prefix)]
-		
+		if len(possible_locales) == 0:
+			locale = "en"
+
 		for possible_locale in possible_locales:
 			if possible_locale in _locales.keys():
 				locale = possible_locale
 				break
-	else:
-			locale = "en"
 	return _locales[locale]
 
 
