@@ -5,7 +5,7 @@ import psutil
 import platform
 from interactions import *
 from utilities.localization import Localization, fnum, ftime
-from modules.music import get_lavalink_stats
+from temp.music import get_lavalink_stats
 from utilities.message_decorations import Colors, fancy_message
 from datetime import datetime
 from utilities.misc import get_git_hash

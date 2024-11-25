@@ -13,13 +13,11 @@ from interactions_lavalink.events import TrackStart, TrackException
 
 from utilities.emojis import emojis
 from utilities.localization import Localization
-from utilities.music.music_loaders import CustomSearch
 from utilities.message_decorations import *
 # Utilities
-from utilities.music.spotify_api import Spotify
 from utilities.config import get_config
 spotify_creds = get_config("music.spotify")
-spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
+#spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
 async def get_lavalink_stats():
     return {

@@ -18,7 +18,7 @@ def get_config(path: str, raise_on_not_found: bool | None = True, return_None: b
         return_None = True
     return rabbit(config, path, raise_on_not_found=raise_on_not_found, return_None_on_not_found=return_None, _error_message="Configuration does not have [path]")
 
-what_do_i_call_this: list[tuple[str, bool]] = [
+config_checker: list[tuple[str, bool]] = [
 #   (key,                       required)
     ("bot.token",               True),
     ("database.uri",            True),
@@ -26,7 +26,7 @@ what_do_i_call_this: list[tuple[str, bool]] = [
     ("music.spotify.secret",    False),
     ("music.spotify.id",        False),
 ]
-for key, required in what_do_i_call_this:
+for key, required in config_checker:
     got = get_config(key, return_None=True, raise_on_not_found=False)
     if got != None:
         continue;

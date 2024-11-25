@@ -1,6 +1,6 @@
 from lavalink import DeferredAudioTrack, LoadResult, LoadType, PlaylistInfo, Source
 
-from utilities.music.spotify_api import Spotify
+from music.spotify_api import Spotify
 from utilities.config import get_config
 
 spotify_creds = get_config("music.spotify")
