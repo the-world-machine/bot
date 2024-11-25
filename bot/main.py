@@ -25,6 +25,8 @@ client = AutoShardedClient(
     disable_dm_commands=True,
     send_command_tracebacks=False,
     send_not_ready_messages=True,
+    sync_interactions=False,
+    sync_ext=False
 )
 
 statuses = get_config("bot.status", ignore_None=True)

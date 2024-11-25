@@ -13,9 +13,11 @@ from utilities.config import get_config
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 from utilities.message_decorations import Colors
-from utilities.module_loader import reload_modules
+from utilities.module_loader import load_modules
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
+
+ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 async def get_collection(collection: str, _id: str):
     key_to_collection: dict[str, main.Collection] = {
@@ -87,10 +89,23 @@ async def execute_dev_command(message: Message):
             action = args[1]
             match action:
                 case "refresh":
-                    module = args[2]
-                    msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
-                    msg.client.reload_extension(module)
-                    return await msg.edit(content=f"[ Reloaded {module} ]")
+                    try:
+                        module = args[2]
+                    except IndexError as e:
+                        return await message.reply('[ Specify a module to refresh, or "all" ]')
+                    if module == "all":
+                        message.content = "{eval ```py\nload_modules(message.client, unload=True, print=print)\n```}"
+                        return await execute_dev_command(message)
+                    else:
+                        msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
+                        msg.client.reload_extension(module)
+                        return await msg.edit(content=f"[ Reloaded {module} ]")
+                case "sync_commands":
+                    msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
+                    await msg.client.synchronise_interactions()
+                    return await msg.edit(content=f"[ Synchronized ]")
+                case _:
+                    return await message.reply("Available subcommands: `refresh` / `sync_commands`")
         case "eval":
             code = command_content.split(f"eval ")
             referenced_message = message.get_referenced_message();
@@ -115,9 +130,12 @@ async def execute_dev_command(message: Message):
 
             result = None
             runtime = None
-            raisure = False
-            asnyc_warn = False
             start_time = time.perf_counter()
+            state = {
+                'asnyc_warn': False,
+                'strip_ansi_sequences': True,
+                'raisure': False
+            }
             try:
                 match method:
                     case "exec":
@@ -131,7 +149,7 @@ async def execute_dev_command(message: Message):
                 end_time = time.perf_counter()
             except:
                 end_time = time.perf_counter()
-                raisure = True
+                state['raisure'] = True
                 exc_type, exc_value, exc_tb = sys.exc_info()
 
                 if str(exc_value) in ("py codeblock is required here", "no code provided"):
@@ -152,7 +170,7 @@ async def execute_dev_command(message: Message):
                     result =  ''.join(lines)
                     result_tmp = result.split(" in redir_prints\n    method(code, globals, locals)")
                     if len(result_tmp) != 2: # aexec
-                        asnyc_warn = True
+                        state['asnyc_warn'] = True
                         result_tmp = result.split(" new_local = await coro\n                        ^^^^^^^^^^\n")
                     result = result_tmp[1] if len(result_tmp) > 1 else result
 
@@ -160,14 +178,14 @@ async def execute_dev_command(message: Message):
             
             async def handle_reply(runtime, result, note=""):
                 desc = f"-# Runtime: {fnum(runtime)} ms{note}"
-                if asnyc_warn:
+                if state['asnyc_warn']:
                     desc+="\n-# All line numbers are offset by +1 cuz of await"
                 if result == None and method in ("aexec", "exec"):
                     desc+="\n-# Nothing was printed"
                 else:
                     desc+=f"\n```py\n{str(result).replace('```', '` ``')}```"
                 color = Colors.DEFAULT
-                if raisure:
+                if state['raisure']:
                     color = Colors.BAD
                 return await message.reply(
                     embeds=Embed(
@@ -175,13 +193,22 @@ async def execute_dev_command(message: Message):
                         description=desc
                     ))
             try:
+                if state['strip_ansi_sequences'] and result is not None:
+                    result = ansi_escape_pattern.sub('', result)
                 return await handle_reply(runtime, result)
             except Exception as e:
                 if "Description cannot exceed 4096 characters" in str(e): # TODO: paging
                     return await handle_reply(runtime, result[0:3900], "\n-# Result too long to display, showing first 3900 characters") 
                 else:
-                    result = f"Raised an exception when replying(what did you do): {str(e)}"
-                    print("Exception while replying", e)
+                    result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+                    value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
+                    tb = TracebackException(type(value), value, tb, limit=None, compact=True)
+                    lines = []
+                    for line in tb.format(chain=True):
+                        lines.append(line)
+                    lines.pop(0)
+                    result =  ''.join(lines)
                     return await handle_reply(runtime, result)
         case "shop":
             items = await main.fetch_items()

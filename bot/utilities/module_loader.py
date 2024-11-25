@@ -3,7 +3,7 @@ import interactions
 from utilities.config import debugging, get_config
 loaded_modules = []
 
-def load_modules(client: interactions.Client):
+def load_modules(client: interactions.Client, unload: bool=False, print=print):
 	global loaded_modules
 	loaded_modules = []
 
@@ -14,10 +14,12 @@ def load_modules(client: interactions.Client):
 		modules = [module for module in modules if module != 'music']
 
 	if debugging():
-		print("Loading modules")
+		print("Loading modules" if not unload else "Reloading modules")
 	else:
-		print("Loading modules ... \033[s", flush=True)
+		print(("Loading modules" if not unload else "Reloading modules") + " ... \033[s", flush=True)
 	for module in modules:
+		if unload: 
+			client.unload_extension(f"modules.{module}")
 		if debugging():
 			print("| " + module)
 		client.load_extension(f"modules.{module}")
@@ -28,20 +30,3 @@ def load_modules(client: interactions.Client):
 		print("\033[999B", end="", flush=True)
 	else:
 		print(f"Done ({len(loaded_modules)})")
-
-
-
-def reload_modules(client: interactions.Client):
-	global loaded_modules
-
-	if len(loaded_modules) > 0:
-		_loaded_modules = loaded_modules
-		loaded_modules = []
-		print(f"Reloading modules...")
-		for module in _loaded_modules:
-			print("| "+module)
-			client.reload_extension(f"modules.{module}")
-			loaded_modules.append(module)
-
-	print(f"Done ({len(loaded_modules)})")
-	return loaded_modules
