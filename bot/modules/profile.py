@@ -6,10 +6,10 @@ import time
 import aiofiles
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
-from utilities.localization import Localization, fnum, ftime
+from utilities.localization import Localization, fnum
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
-import database as db
+import utilities.database.main as db
 from utilities.message_decorations import *
 
 
@@ -83,8 +83,8 @@ class ProfileModule(Extension):
                 url=url,
                 label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
             ))
-            
-        await message.edit(content="", files=image, components=components, embeds=[])
+
+        await message.edit(content=f"-# Took {ftime(runtime)}", files=image, components=components, embeds=[])
 
     @profile.subcommand(sub_cmd_description='Edit your profile.')
     async def profile(self, ctx: SlashContext):

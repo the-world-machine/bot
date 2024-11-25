@@ -9,7 +9,7 @@ from utilities.localization import Localization, fnum
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 from utilities.shop.fetch_items import fetch_background, fetch_badge
 
-import database as db
+import utilities.database.main as db
 
 icons = []
 shop_icons = []

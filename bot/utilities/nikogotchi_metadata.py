@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
-from database import get_database
+from utilities.database.main import get_database
 import random
 import json
 import asyncio

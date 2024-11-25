@@ -4,7 +4,7 @@ import random
 import datetime
 import utilities.profile.badge_manager as bm
 from utilities.localization import Localization, fnum
-from database import UserData
+from utilities.database.main import UserData
 
 class ExplodeModule(Extension):
     explosion_image = [

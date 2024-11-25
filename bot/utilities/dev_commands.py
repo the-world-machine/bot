@@ -3,7 +3,7 @@ import re
 import sys
 import time
 import json
-import database
+import utilities.database.main as main
 from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
@@ -18,11 +18,11 @@ from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
 
 async def get_collection(collection: str, _id: str):
-    key_to_collection: dict[str, database.Collection] = {
-        'user': database.UserData(_id),
-        'nikogotchi': database.Nikogotchi(_id),
-        'nikogotchi_old': database.NikogotchiData(_id),
-        'server': database.ServerData(_id)
+    key_to_collection: dict[str, main.Collection] = {
+        'user': main.UserData(_id),
+        'nikogotchi': main.Nikogotchi(_id),
+        'nikogotchi_old': main.NikogotchiData(_id),
+        'server': main.ServerData(_id)
     }
     
     return key_to_collection[collection]
@@ -184,7 +184,7 @@ async def execute_dev_command(message: Message):
                     print("Exception while replying", e)
                     return await handle_reply(runtime, result)
         case "shop":
-            items = await database.fetch_items()
+            items = await main.fetch_items()
             shop = items['shop']
 
             match args[1]:
@@ -213,7 +213,7 @@ async def execute_dev_command(message: Message):
 
                         data = json.loads(str_data)
 
-                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         await collection.update(**data)
                         
@@ -228,7 +228,7 @@ async def execute_dev_command(message: Message):
                         if collection == 'shop':
                             collection = await get_collection(collection, 0)
                         else:
-                            collection = await database.fetch_from_database(await get_collection(collection, _id))
+                            collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         return await message.reply(
                             f'`[ The value of {value} is {str(collection.__dict__[value])}. ]`'
@@ -237,7 +237,7 @@ async def execute_dev_command(message: Message):
                         collection = args[2]
                         _id = args[3]
                         
-                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         data = collection.__dict__
                         
@@ -246,7 +246,7 @@ async def execute_dev_command(message: Message):
                         _id = args[2]
                         amount = int(args[3])
                         
-                        collection: database.UserData = await database.fetch_from_database(await get_collection('user', _id))
+                        collection: main.UserData = await main.fetch_from_database(await get_collection('user', _id))
                         
                         await collection.manage_wool(amount)
                         

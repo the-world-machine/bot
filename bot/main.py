@@ -5,7 +5,7 @@ from utilities.config import get_config # checks prerequisites !!!! it's importa
 from modules.textbox import TextboxModule
 from utilities.profile.main import load_badges
 from utilities.module_loader import load_modules
-from database import ServerData, create_connection
+from utilities.database.main import ServerData, create_connection
 from utilities.loc_commands import execute_loc_command
 from utilities.dev_commands import execute_dev_command
 from utilities.misc import set_random_avatar, set_status
