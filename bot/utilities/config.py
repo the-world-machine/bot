@@ -37,6 +37,8 @@ for key, required in what_do_i_call_this:
     else:
         print(colored("─ config key ")+colored(key, 'cyan')+colored(" is missing", 'yellow'))
 on_prod = get_current_branch() == get_config("bot.prod.branch", ignore_None=True)
+if get_config("bot.prod.override", ignore_None=True):
+    on_prod = True
 if get_config("bot.prod.token", ignore_None=True) is None:
     on_prod = False
 debug = not on_prod # 🔥✍️
