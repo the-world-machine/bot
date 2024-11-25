@@ -202,5 +202,11 @@ async def set_status(client: Client, text: str | list, log=True):
   if log:
     print("Setting status to: "+status)
   return await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
-def get_git_hash() -> str:
-  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
+def exec(command: list) -> str:
+	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
+
+def get_git_hash(long: bool = False) -> str:
+  return exec(x for x in ['git', 'rev-parse', '--short', 'HEAD'] if x is not None).strip()
+
+def get_current_branch() -> str:
+  return exec(['git', 'branch', '--show-current']).strip()

@@ -3,7 +3,7 @@ import textwrap
 from interactions import File, User
 from termcolor import colored
 from utilities.misc import get_image
-from utilities.config import get_config
+from utilities.config import debugging, get_config
 from utilities.message_decorations import Colors
 from utilities.localization import Localization, fnum
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
@@ -17,36 +17,58 @@ shop_icons = []
 wool_icon = None
 sun_icon = None
 badges = {}
-try:
-    font = ImageFont.truetype(get_config("textbox.font"), 25)
-except Exception as e:
-    print(colored("Failed to load textbox font","red"))
-    raise e
+font = None
 
-async def load_badges():
+async def load_profile_assets():
     global wool_icon
     global sun_icon
     global badges
     global icons
+    global font 
+    if debugging():
+        print("Loading profile assets")
+    else:
+        print("Loading profile assets ... \033[s", flush=True)
 
     icons = []
-    
+    assets = 0
+    try:
+        font = ImageFont.truetype(get_config("textbox.font"), 25)
+        if debugging():
+            print(f"| Font: {font.getname()}")
+
+        assets += 1
+    except Exception as e:
+        print(colored("Failed to load textbox font", "red"))
+        raise e
     badges = await fetch_badge()
 
     for _, badge in badges.items():
+        badge
         img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
         img = img.convert('RGBA')
         img = img.resize((35, 35), Image.NEAREST)
+        if debugging():
+            print("| Badge id:",badge["id"])
         icons.append(img)
+        assets += 1
 
     wool_icon = await get_image('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+    if debugging():
+        print(f"| Wool icon")
+    assets += 1
     sun_icon = await get_image('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
-
-    print('Loaded Badges')
-
+    if debugging():
+        print(f"| Sun icon")
+    assets += 1
+    if not debugging():
+        print(f"\033[udone ({assets})", flush=True)
+        print("\033[999B", end="", flush=True)
+    else:
+        print(f"Done ({assets})")
 async def draw_profile(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
     if wool_icon is None:
-        await load_badges()
+        await load_profile_assets()
 
     user_id = user.id
     user_pfp_url = user.display_avatar._url

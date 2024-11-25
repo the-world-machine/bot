@@ -62,11 +62,10 @@ async def redir_prints(method, code, locals=None, globals=None):
         return cp.output_buffer.getvalue()
 
 async def execute_dev_command(message: Message):
-    
-    if message.author.bot:
+    if not message.content:
         return
     
-    if not message.content:
+    if message.author.bot and str(message.author.id) not in get_config('dev.whitelist'):
         return
     
     if str(message.author.id) not in get_config('dev.whitelist'):
@@ -88,9 +87,10 @@ async def execute_dev_command(message: Message):
             action = args[1]
             match action:
                 case "refresh":
-                    msg = await message.reply(f"`[ Reloading modules... `{emojis['icons']['loading']}` ]`")
-                    modules = reload_modules(msg.client)
-                    return await message.reply(f"`[ Reloaded `**`{len(modules)}`**` modules ]`")
+                    module = args[2]
+                    msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
+                    msg.client.reload_extension(module)
+                    return await msg.edit(content=f"[ Reloaded {module} ]")
         case "eval":
             code = command_content.split(f"eval ")
             referenced_message = message.get_referenced_message();
@@ -193,7 +193,7 @@ async def execute_dev_command(message: Message):
                 case "reset":
                     try:
                         await reset_shop_data()
-                        return await message.reply('`[ Successfully reset shop. ]`')
+                        return await message.reply('`[ Successfully reset shop ]`')
                     except Exception as e:
                         return await message.reply(f'`[ {e} ]`')
                 case _:
@@ -218,7 +218,7 @@ async def execute_dev_command(message: Message):
                         await collection.update(**data)
                         
                         return await message.reply(
-                            '`[ Successfully updated. ]`'
+                            '`[ Successfully updated ]`'
                         )
                     case "view":
                         collection = args[2]
@@ -231,7 +231,7 @@ async def execute_dev_command(message: Message):
                             collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         return await message.reply(
-                            f'`[ The value of {value} is {str(collection.__dict__[value])}. ]`'
+                            f'`[ The value of {value} is {str(collection.__dict__[value])} ]`'
                         )
                     case "view_all":
                         collection = args[2]
@@ -251,13 +251,13 @@ async def execute_dev_command(message: Message):
                         await collection.manage_wool(amount)
                         
                         return await message.reply(
-                            f'`[ Successfully modified wool, updated value is now {collection.wool}. ]`'
+                            f'`[ Successfully modified wool, updated value is now {collection.wool} ]`'
                         )
                     case _:
                         return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
             except Exception as e:
                 await message.reply(
-                    f'`[ Error with command. ({e}) ]`'
+                    f'`[ Error with command ({e}) ]`'
                 )
         case "locale_override":
             return

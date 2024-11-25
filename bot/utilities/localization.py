@@ -6,7 +6,7 @@ from yaml import safe_load
 from datetime import timedelta
 from dataclasses import dataclass
 from typing import Literal, Union
-from utilities.config import get_config
+from utilities.config import debugging, get_config
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
@@ -59,17 +59,25 @@ def get_locale(locale):
 				break
 	return _locales[locale]
 
-
-print("Loading locales...")
+if debugging():
+	print("Loading locales")
+else:
+	print("Loading locales ... \033[s", flush=True)
 
 subscribe("locales/", on_file_update)
 loaded = 0
 for file in Path('bot/data/locales').glob('*.yml'):
 	name = file.stem
 	_locales[name] = load_locale(name)
-	print("| "+name)
+	if debugging():
+		print("| "+name)
 	loaded += 1
-print(f"Done ({loaded})")
+if not debugging():
+	print(f"\033[udone ({loaded})", flush=True)
+	print("\033[999B", end="", flush=True)
+else:
+	print(f"Done ({loaded})")
+
 
 if not get_config("localization.debug"):
 	debug = True

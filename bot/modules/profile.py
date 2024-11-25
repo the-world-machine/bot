@@ -6,7 +6,8 @@ import time
 import aiofiles
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
-from utilities.localization import Localization, fnum
+from utilities.config import debugging
+from utilities.localization import Localization, fnum, ftime
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
 import utilities.database.main as db
@@ -84,7 +85,7 @@ class ProfileModule(Extension):
                 label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
             ))
 
-        await message.edit(content=f"-# Took {ftime(runtime)}", files=image, components=components, embeds=[])
+        await message.edit(content=f"-# Took {ftime(runtime)}" if debugging() else None, files=image, components=components, embeds=[])
 
     @profile.subcommand(sub_cmd_description='Edit your profile.')
     async def profile(self, ctx: SlashContext):
