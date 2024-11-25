@@ -1,5 +1,5 @@
 general:
-  loading: "[ Подождите... [emoji:loading] ]"
+  loading: "[ Загрузка... [emoji:loading] ]"
 
   buttons:
     _yes: "Да"
@@ -56,7 +56,7 @@ misc:
 profile:
   view: 
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
-    bots: "[ У ботов нету профилей. ]"
+    bots: "[ У ботов нету профилей! ]"
     loading: "[ Загрузка профиля [user]... [emoji:loading] ]"
 
     image: 
