@@ -1,5 +1,6 @@
 import os
 import copy
+from pathlib import Path
 import random
 import aiohttp
 import datetime
@@ -182,26 +183,6 @@ def rabbit(
 
   return value
 
-async def set_random_avatar(client: Client) -> str:
-  get_avatars = os.listdir('bot/images/profile_pictures')
-  random_avatar = random.choice(get_avatars)
-
-  avatar = File('bot/images/profile_pictures/' + random_avatar)
-
-  await client.user.edit(avatar=avatar)
-  return random_avatar
-
-async def set_status(client: Client, text: str | list, log=True):
-  from utilities.localization import assign_variables
-  status = assign_variables(
-    input=text if isinstance(text, str) else random.choice(text),
-    shard_count=len(client.shards),
-    guild_count=len(client.guilds),
-    token=client.token
-  )
-  if log:
-    print("Setting status to: "+status)
-  return await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
 def exec(command: list) -> str:
 	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
 
@@ -210,3 +191,18 @@ def get_git_hash(long: bool = False) -> str:
 
 def get_current_branch() -> str:
   return exec(['git', 'branch', '--show-current']).strip()
+
+async def set_status(client: Client, text: str | list):
+  from utilities.localization import assign_variables
+  if text is not None:
+    status = assign_variables(
+      input=text,
+      shard_count=len(client.shards),
+      guild_count=len(client.guilds),
+      token=client.token
+    )
+  await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
+  return status
+
+async def set_avatar(client: Client, avatar: File | Path | str):
+  return await client.user.edit(avatar=avatar)

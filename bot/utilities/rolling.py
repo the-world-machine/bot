@@ -1,0 +1,49 @@
+import os
+import random
+from interactions import Client, File
+from utilities.config import debugging, get_config, on_prod
+from utilities.misc import set_avatar, set_status
+
+
+available_avatars = os.listdir('bot/images/profile_pictures')
+async def roll_avatar(client: Client, log=True, print=print) -> None:
+  if log:
+    if debugging():
+      print("Rolling avatar...")
+    else:
+      print("Rolling avatar ... \033[s", flush=True)
+  random_avatar = random.choice(available_avatars)
+  if on_prod:
+    await set_avatar(client, File(f"bot/images/profile_pictures/{random_avatar}"))
+    if log:
+      if not debugging():
+        print(f"\033[uused {random_avatar}", flush=True)
+        print("\033[999B", end="", flush=True)
+      else:
+        print(f"...used {random_avatar}")
+  else:
+    avatar = File("bot/images/unstable.png")
+    try:
+      await set_avatar(client, avatar)
+      if not debugging():
+        print(f"\033[uused unstable", flush=True)
+        print("\033[999B", end="", flush=True)
+      else:
+        print(f"...used unstable")
+    except:
+      if not debugging():
+        print(f"\033[ufailure", flush=True)
+        print("\033[999B", end="", flush=True)
+      else:
+        print(f"...failure")
+
+statuses = get_config("bot.rolling.statuses", ignore_None=True)
+async def roll_status(client: Client, log=True, print=print) -> None:
+  status = statuses if isinstance(statuses, str) else random.choice(statuses if statuses is not None else [None])
+  if log:
+    if not debugging():
+      print(f"Rolled status: {await set_status(client, status)}")
+    else:
+      print("Rolling status...")
+      status = await set_status(client, status)
+      print(f"...attempted to set to: {status}")

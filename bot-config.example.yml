@@ -1,41 +1,54 @@
+config-check-level: 4
+# ~ = disables the check completely
+# 1 = stops the bot on required
+# 2 = stops the bot on missing
+# 3 = doesn't log missing
 bot:
     token: ~
     prod:
         token: ~ # if ~ always uses token above
-        override: ~ # use prod login anyway
+        override: ~
         branch: "origin"
-    debug: ~ # (by default, it's false on prod, this bypasses that)
+        command-marker: ~ # see dev.command-marker
+    debug: ~ # defaults to false on prod
 
-    avatar-rolling: true # uses unstable.png if client id doesn't match main-id defined above
-    status: ~ # can also be a list of strs
-    # Status can use the variables: [shard_count] [guild_count] [token]
-    # e.g. In [guild_count] servers.
-    roll-interval: 3600 # seconds
+    rolling:
+        avatar: true # uses unstable.png if not on prod
+        status: true # has no status at all instead
+        interval: 3600 # seconds
+        statuses: # can also be just a string
+            - "[ ... ]" # Can use the variables: [shard_count] [guild_count] [token]
+            - "[ ... ]" 
+            - "[ ... ]" # e.g. - - - - \/
+            - "[ Monitoring over [guild_count] places at once. ]"
+            - "[ Do I really have to do things for these users? ]"
+            - "[ No thoughts right now. ]"
 
 dev:
-    server: 
+    guild: 
         id: ~ # server id, in ""
 
     command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^
     whitelist:
         - ~
         - ~ # user ids, all in ""
+        - ~
 
 database:
     dns-fix: false # use this if you're on termux and connecting to db doesn't work
-    uri: ~ # should have the login and password in it, example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
+    uri: ~ # example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
 
 localization:
     main-locale: en # make sure the locale is 100% complete
-    debug: true # Whether to show detailed error messages for not found paths
+    debug: ~ # defaults to false on prod, shows detailed error messages for not found paths if true
     whitelist:
         en:
             - ~ 
             - ~ # user ids, all in ""
 
 music:
-    enabled: true # disable if you don't want to setup lavalink
-    spotify: # used for "/music play song: ..." autocomplete
+    enabled: true # disable if you don't want to setup lavalink and spotify credentials
+    spotify:
         secret: ~
         id: ~
     

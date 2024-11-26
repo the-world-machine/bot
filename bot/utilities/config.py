@@ -17,25 +17,35 @@ def get_config(path: str, raise_on_not_found: bool | None = True, return_None: b
         raise_on_not_found = False
         return_None = True
     return rabbit(config, path, raise_on_not_found=raise_on_not_found, return_None_on_not_found=return_None, _error_message="Configuration does not have [path]")
-what_do_i_call_this: list[tuple[str, bool]] = [
-#   (key,                       required)
-    ("bot.token",               True),
-    ("database.uri",            True),
-    ("dev.guild.id",            True),
+cl = get_config("config-check-level", ignore_None=True)
+if cl is not None:
+    to_check: list[tuple[str, bool]] = [
+    #   (key,                       required)
+        ("bot.token",               True),
+        ("database.uri",            True),
+        ("dev.guild.id",            True),
 
-    ("bot.roll-interval",       False),
-    ("music.spotify.secret",    False),
-    ("music.spotify.id",        False),
-]
-for key, required in what_do_i_call_this:
-    got = get_config(key, return_None=True, raise_on_not_found=False)
-    if got != None:
-        continue;
-    if required:
-        print(colored("─ config key ")+colored(key, 'cyan')+colored(" is required", 'red'))
-        exit(1)
-    else:
-        print(colored("─ config key ")+colored(key, 'cyan')+colored(" is missing", 'yellow'))
+        ("bot.prod.token",          True),
+        ("bot.rolling.avatar",      False),
+        ("bot.rolling.status",      False),
+        ("bot.rolling.interval",    False),
+        ("bot.prod.interval",       False),
+        ("music.spotify.secret",    False),
+        ("music.spotify.id",        False),
+    ]
+    for key, required in to_check:
+        got = get_config(key, return_None=True, raise_on_not_found=False)
+        if got != None:
+            continue;
+        if required:
+            print(colored("─ config key ")+colored(key, 'cyan')+colored(" is required", 'red'))
+            if cl <= 1:
+                exit(1)
+        else:
+            if cl <= 3:
+                print(colored("─ config key ")+colored(key, 'cyan')+colored(" is missing", 'yellow'))
+            if cl <= 2:
+                exit(1)
 on_prod = get_current_branch() == get_config("bot.prod.branch", ignore_None=True)
 if get_config("bot.prod.override", ignore_None=True):
     on_prod = True
