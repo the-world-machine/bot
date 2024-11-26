@@ -1,13 +1,15 @@
+print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/4")
-from utilities.config import get_config, get_token  # order matters
+from utilities.config import get_config, get_token, on_prod  # order matters
 
 from interactions import *
 from modules.textbox import TextboxModule
+from utilities.misc import set_status
 from utilities.profile.main import load_profile_assets
 from utilities.module_loader import load_modules
 from utilities.loc_commands import execute_loc_command
 from utilities.dev_commands import execute_dev_command
-from utilities.misc import set_random_avatar, set_status
+from utilities.rolling import roll_status, roll_avatar
 from utilities.database.main import ServerData, connect_to_db
 from interactions.api.events import MemberAdd, Ready, MessageCreate
 
@@ -29,12 +31,14 @@ client = AutoShardedClient(
     sync_ext=False
 )
 
-statuses = get_config("bot.status", ignore_None=True)
-if statuses != None:
 
-    @Task.create(IntervalTrigger(get_config("bot.roll-interval")))
-    async def roll_status(override: str = None):
-        return await set_status(client, statuses)
+if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
+    @Task.create(IntervalTrigger(get_config("bot.rolling.interval")))
+    async def roll():
+        if get_config("bot.rolling.status") == True:
+            await roll_status(client)
+        if get_config("bot.rolling.avatar") == True:
+            await roll_avatar(client)
 
 
 @listen(Ready)
@@ -47,28 +51,17 @@ async def on_ready():
     await connect_to_db()
     await load_profile_assets()
 
-    if statuses != None:
-        await roll_status()
-        roll_status.start()
-    if get_config("bot.avatar-rolling", ignore_None=True):
-        print("Rolling avatar", end=" ... ")
-        if client.user.id == int(get_config("bot.main-id")):
-            used = await set_random_avatar(client)
-            print(f"used {used}")
-        else:
-            try:
-                await client.user.edit(avatar=File("bot/images/unstable.png"))
-                print("used unstable")
-            except:
-                print("failure")
-                pass
-
+    if do_rolling:
+        await roll()
+        roll.start()
+        
+    await client._cache_interactions()
     print("\n\n─ The World Machine is ready! ─ 4/4\n\n")
 
 
 @listen(MemberAdd)
 async def on_guild_join(event: MemberAdd):
-    if str(client.user.id) != str(get_config("bot.main-id")):
+    if not on_prod:
         return
 
     if event.member.bot:

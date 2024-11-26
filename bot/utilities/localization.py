@@ -6,11 +6,11 @@ from yaml import safe_load
 from datetime import timedelta
 from dataclasses import dataclass
 from typing import Literal, Union
-from utilities.config import debugging, get_config
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
 from utilities.misc import FrozenDict, rabbit
+from utilities.config import debugging, get_config, on_prod
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 
 emoji_dict = {}
@@ -22,9 +22,12 @@ edicted(emojis)
 on_emojis_update(edicted)
 
 _locales = {}
-debug: bool = False
-fallback_locale: str = None
+debug: bool = get_config("localization.debug", ignore_None=True)
+if on_prod:
+  debug = False if debug is not True else True
+debug = debug if debug is not None else False
 
+fallback_locale: str = None
 def local_override(locale: str, data: dict):
 	_locales[locale] = FrozenDict(data)
 
@@ -78,9 +81,7 @@ if not debugging():
 else:
 	print(f"Done ({loaded})")
 
-
-if not get_config("localization.debug"):
-	debug = True
+if debug:
 	fallback_locale = get_locale(get_config("localization.main-locale"))
 
 @dataclass

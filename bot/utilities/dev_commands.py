@@ -3,17 +3,17 @@ import re
 import sys
 import time
 import json
-import utilities.database.main as main
 from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
 from utilities.emojis import emojis
+import utilities.database.main as main
 from utilities.localization import fnum
-from utilities.config import get_config
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
+from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.module_loader import load_modules
+from utilities.module_loader import load_modules # used, actually
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
 
@@ -62,7 +62,10 @@ async def redir_prints(method, code, locals=None, globals=None):
             method(code, globals, locals)
     if cp.bogos_printed:
         return cp.output_buffer.getvalue()
-
+command_marker = get_config('dev.command-marker')
+if on_prod:
+    _pm = get_config("bot.prod.command-marker", ignore_None=True)
+    command_marker = _pm if _pm is not None else command_marker
 async def execute_dev_command(message: Message):
     if not message.content:
         return
@@ -73,7 +76,7 @@ async def execute_dev_command(message: Message):
     if str(message.author.id) not in get_config('dev.whitelist'):
         return
     
-    prefix = get_config('dev.command-marker').split('.')
+    prefix = command_marker.split('.')
     
     if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
         return
