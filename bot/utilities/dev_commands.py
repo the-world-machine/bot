@@ -86,7 +86,15 @@ async def execute_dev_command(message: Message):
     args = command_content.split(" ")
     
     subcommand_name = args[0]
-
+    
+    formatted_command_content = command_content.replace('\n', '\n'+colored('│ ', 'yellow'))
+    if subcommand_name == "db":
+        subcommand_name += " ─"
+    print(f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n"+
+          f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n"+
+          f"{colored('│', 'yellow')} {formatted_command_content}\n"+
+          f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")
+    
     match subcommand_name:
         case "bot":
             action = args[1]
@@ -101,7 +109,10 @@ async def execute_dev_command(message: Message):
                         return await execute_dev_command(message)
                     else:
                         msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
-                        msg.client.reload_extension(module)
+                        try:
+                            msg.client.reload_extension(module)
+                        except Exception as e:
+                            await message.reply(f'`[ {e} ]`')
                         return await msg.edit(content=f"[ Reloaded {module} ]")
                 case "sync_commands":
                     msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
@@ -292,12 +303,4 @@ async def execute_dev_command(message: Message):
         case "locale_override":
             return
         case _:
-            await message.reply("Available commands: `eval` / `shop` / `db` / `bot`. See source code for usage")
-    formatted_command_content = command_content.replace('\n', '\n'+colored('│ ', 'yellow'))
-    if subcommand_name == "db":
-        subcommand_name += " ─"
-    
-    print(f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n"+
-          f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n"+
-          f"{colored('│', 'yellow')} {formatted_command_content}\n"+
-          f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")
+            return await message.reply("Available commands: `eval` / `shop` / `db` / `bot`. See source code for usage")
