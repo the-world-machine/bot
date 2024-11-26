@@ -38,7 +38,7 @@ class Collection:
         
 @dataclass
 class UserData(Collection):
-    wool: int = 5000
+    wool: int = 0
     suns: int = 0
     equipped_bg: str = 'Default'
     profile_description: str = 'Hello World!'
