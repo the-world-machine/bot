@@ -1,16 +1,15 @@
-from datetime import datetime
 import io
-from interactions import *
 import os
-from utilities.config import get_config
-from utilities.misc import get_image
 import yaml
-from utilities.emojis import emojis
-from utilities.localization import Localization
-from utilities.message_decorations import Colors, fancy_message
-from PIL import Image, ImageDraw, ImageFont
 import textwrap
-
+from interactions import *
+from datetime import datetime
+from utilities.emojis import emojis
+from utilities.misc import get_image
+from utilities.config import get_config
+from PIL import Image, ImageDraw, ImageFont
+from utilities.localization import Localization, assign_variables
+from utilities.message_decorations import Colors, fancy_message
 
 class Face:
     def __init__(self, name: str, emoji: int):
@@ -54,14 +53,11 @@ class TextboxModule(Extension):
 
     @staticmethod
     async def generate_welcome_message(guild: Guild, user: Member, message: str):
-        #message = Localization.assign_variables(
-        message = message.replace('[user]', user.username)
-        message = message.replace('[server]', guild.name)
+        message = assign_variables(message, user=user.username, server=guild.name)
 
         image = await TextboxModule.generate_dialogue(message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless')
-
-        file = File(file=image, description=message)
-        await guild.system_channel.send(user.mention, files=file)
+        
+        await guild.system_channel.send(user.mention, files=image)
 
     @staticmethod
     async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox"):
