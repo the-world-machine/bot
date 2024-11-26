@@ -196,7 +196,7 @@ async def execute_dev_command(message: Message):
                         description=desc
                     ))
             try:
-                if state['strip_ansi_sequences'] and result is not None:
+                if isinstance(result, str) and state['strip_ansi_sequences']:
                     result = ansi_escape_pattern.sub('', result)
                 return await handle_reply(runtime, result)
             except Exception as e:
