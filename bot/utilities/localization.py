@@ -45,6 +45,7 @@ def on_file_update(filename):
 		fallback_locale = _locales[locale]
 	print("done")
 
+class UnknownLanguageError(Exception): ...
 
 def get_locale(locale):
 	if locale in _locales.keys():
@@ -60,6 +61,8 @@ def get_locale(locale):
 			if possible_locale in _locales.keys():
 				locale = possible_locale
 				break
+	elif locale not in _locales.keys():
+		raise UnknownLanguageError(f"Language {locale} not found in {_locales.keys()}")
 	return _locales[locale]
 
 if debugging():
@@ -92,7 +95,11 @@ class Localization:
 
 	locale: str
 	def __init__(self, ctx):
+		if ctx.locale not in _locales.keys():
+			self.locale = get_config("localization.main-locale")
+			return
 		self.locale = ctx.locale
+  		
 	
 	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
 		return self.sl(path=path, locale=self.locale, **variables)
@@ -102,9 +109,7 @@ class Localization:
 		""" Static version of .l for single use (where making another Localization() makes it cluttery)"""
 		if locale == None:
 			raise ValueError("No locale provided")
-		
 		value = get_locale(locale)
-
 		value = rabbit(value, 
 					   path, 
 					   fallback_value=fallback_locale if fallback_locale else None, 
