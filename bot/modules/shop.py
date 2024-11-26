@@ -6,7 +6,7 @@ from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treas
 from utilities.message_decorations import *
 from utilities.shop.fetch_shop_data import DictItem, Item, ShopData, fetch_shop_data, reset_shop_data
 from datetime import datetime, timedelta
-from database import Nikogotchi, UserData
+from utilities.database.main import Nikogotchi, UserData
 from utilities.emojis import emojis
 from utilities.localization import Localization, fnum
 import re

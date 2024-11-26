@@ -1,7 +1,7 @@
 import yaml
 from pathlib import Path
 from termcolor import colored
-from utilities.misc import rabbit
+from utilities.misc import get_current_branch, rabbit
 
 bcpath = Path("bot-config.yml")
 try:
@@ -17,12 +17,13 @@ def get_config(path: str, raise_on_not_found: bool | None = True, return_None: b
         raise_on_not_found = False
         return_None = True
     return rabbit(config, path, raise_on_not_found=raise_on_not_found, return_None_on_not_found=return_None, _error_message="Configuration does not have [path]")
-
 what_do_i_call_this: list[tuple[str, bool]] = [
 #   (key,                       required)
     ("bot.token",               True),
     ("database.uri",            True),
-    ("bot.main-id",             False),
+    ("dev.guild.id",            True),
+
+    ("bot.roll-interval",       False),
     ("music.spotify.secret",    False),
     ("music.spotify.id",        False),
 ]
@@ -31,7 +32,21 @@ for key, required in what_do_i_call_this:
     if got != None:
         continue;
     if required:
-        print(colored(f"─ config key '{colored(key, 'cyan')}' is required", 'red'))
+        print(colored("─ config key ")+colored(key, 'cyan')+colored(" is required", 'red'))
         exit(1)
     else:
-        print(colored(f"─ config key '{colored(key, 'cyan')}' is missing", 'yellow'))
+        print(colored("─ config key ")+colored(key, 'cyan')+colored(" is missing", 'yellow'))
+on_prod = get_current_branch() == get_config("bot.prod.branch", ignore_None=True)
+if get_config("bot.prod.override", ignore_None=True):
+    on_prod = True
+if get_config("bot.prod.token", ignore_None=True) is None:
+    on_prod = False
+debug = not on_prod # 🔥✍️
+debug_override = get_config("bot.debug", ignore_None=True)
+def debugging():
+    return debug_override if debug_override is not None else debug
+def setd(value: bool):
+    global debug
+    debug = value
+def get_token():
+    return get_config("bot.prod.token") if on_prod else get_config("bot.token")

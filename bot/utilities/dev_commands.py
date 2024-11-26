@@ -3,7 +3,7 @@ import re
 import sys
 import time
 import json
-import database
+import utilities.database.main as main
 from yaml import dump
 from aioconsole import aexec
 from termcolor import colored
@@ -13,16 +13,18 @@ from utilities.config import get_config
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 from utilities.message_decorations import Colors
-from utilities.module_loader import reload_modules
+from utilities.module_loader import load_modules
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
 
+ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
+
 async def get_collection(collection: str, _id: str):
-    key_to_collection: dict[str, database.Collection] = {
-        'user': database.UserData(_id),
-        'nikogotchi': database.Nikogotchi(_id),
-        'nikogotchi_old': database.NikogotchiData(_id),
-        'server': database.ServerData(_id)
+    key_to_collection: dict[str, main.Collection] = {
+        'user': main.UserData(_id),
+        'nikogotchi': main.Nikogotchi(_id),
+        'nikogotchi_old': main.NikogotchiData(_id),
+        'server': main.ServerData(_id)
     }
     
     return key_to_collection[collection]
@@ -62,11 +64,10 @@ async def redir_prints(method, code, locals=None, globals=None):
         return cp.output_buffer.getvalue()
 
 async def execute_dev_command(message: Message):
-    
-    if message.author.bot:
+    if not message.content:
         return
     
-    if not message.content:
+    if message.author.bot and str(message.author.id) not in get_config('dev.whitelist'):
         return
     
     if str(message.author.id) not in get_config('dev.whitelist'):
@@ -88,9 +89,23 @@ async def execute_dev_command(message: Message):
             action = args[1]
             match action:
                 case "refresh":
-                    msg = await message.reply(f"`[ Reloading modules... `{emojis['icons']['loading']}` ]`")
-                    modules = reload_modules(msg.client)
-                    return await message.reply(f"`[ Reloaded `**`{len(modules)}`**` modules ]`")
+                    try:
+                        module = args[2]
+                    except IndexError as e:
+                        return await message.reply('[ Specify a module to refresh, or "all" ]')
+                    if module == "all":
+                        message.content = "{eval ```py\nload_modules(message.client, unload=True, print=print)\n```}"
+                        return await execute_dev_command(message)
+                    else:
+                        msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
+                        msg.client.reload_extension(module)
+                        return await msg.edit(content=f"[ Reloaded {module} ]")
+                case "sync_commands":
+                    msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
+                    await msg.client.synchronise_interactions()
+                    return await msg.edit(content=f"[ Synchronized ]")
+                case _:
+                    return await message.reply("Available subcommands: `refresh` / `sync_commands`")
         case "eval":
             code = command_content.split(f"eval ")
             referenced_message = message.get_referenced_message();
@@ -115,9 +130,12 @@ async def execute_dev_command(message: Message):
 
             result = None
             runtime = None
-            raisure = False
-            asnyc_warn = False
             start_time = time.perf_counter()
+            state = {
+                'asnyc_warn': False,
+                'strip_ansi_sequences': True,
+                'raisure': False
+            }
             try:
                 match method:
                     case "exec":
@@ -131,7 +149,7 @@ async def execute_dev_command(message: Message):
                 end_time = time.perf_counter()
             except:
                 end_time = time.perf_counter()
-                raisure = True
+                state['raisure'] = True
                 exc_type, exc_value, exc_tb = sys.exc_info()
 
                 if str(exc_value) in ("py codeblock is required here", "no code provided"):
@@ -152,7 +170,7 @@ async def execute_dev_command(message: Message):
                     result =  ''.join(lines)
                     result_tmp = result.split(" in redir_prints\n    method(code, globals, locals)")
                     if len(result_tmp) != 2: # aexec
-                        asnyc_warn = True
+                        state['asnyc_warn'] = True
                         result_tmp = result.split(" new_local = await coro\n                        ^^^^^^^^^^\n")
                     result = result_tmp[1] if len(result_tmp) > 1 else result
 
@@ -160,14 +178,14 @@ async def execute_dev_command(message: Message):
             
             async def handle_reply(runtime, result, note=""):
                 desc = f"-# Runtime: {fnum(runtime)} ms{note}"
-                if asnyc_warn:
+                if state['asnyc_warn']:
                     desc+="\n-# All line numbers are offset by +1 cuz of await"
                 if result == None and method in ("aexec", "exec"):
                     desc+="\n-# Nothing was printed"
                 else:
                     desc+=f"\n```py\n{str(result).replace('```', '` ``')}```"
                 color = Colors.DEFAULT
-                if raisure:
+                if state['raisure']:
                     color = Colors.BAD
                 return await message.reply(
                     embeds=Embed(
@@ -175,16 +193,25 @@ async def execute_dev_command(message: Message):
                         description=desc
                     ))
             try:
+                if state['strip_ansi_sequences'] and result is not None:
+                    result = ansi_escape_pattern.sub('', result)
                 return await handle_reply(runtime, result)
             except Exception as e:
                 if "Description cannot exceed 4096 characters" in str(e): # TODO: paging
                     return await handle_reply(runtime, result[0:3900], "\n-# Result too long to display, showing first 3900 characters") 
                 else:
-                    result = f"Raised an exception when replying(what did you do): {str(e)}"
-                    print("Exception while replying", e)
+                    result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+                    value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
+                    tb = TracebackException(type(value), value, tb, limit=None, compact=True)
+                    lines = []
+                    for line in tb.format(chain=True):
+                        lines.append(line)
+                    lines.pop(0)
+                    result =  ''.join(lines)
                     return await handle_reply(runtime, result)
         case "shop":
-            items = await database.fetch_items()
+            items = await main.fetch_items()
             shop = items['shop']
 
             match args[1]:
@@ -193,7 +220,7 @@ async def execute_dev_command(message: Message):
                 case "reset":
                     try:
                         await reset_shop_data()
-                        return await message.reply('`[ Successfully reset shop. ]`')
+                        return await message.reply('`[ Successfully reset shop ]`')
                     except Exception as e:
                         return await message.reply(f'`[ {e} ]`')
                 case _:
@@ -213,12 +240,12 @@ async def execute_dev_command(message: Message):
 
                         data = json.loads(str_data)
 
-                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         await collection.update(**data)
                         
                         return await message.reply(
-                            '`[ Successfully updated. ]`'
+                            '`[ Successfully updated ]`'
                         )
                     case "view":
                         collection = args[2]
@@ -228,16 +255,16 @@ async def execute_dev_command(message: Message):
                         if collection == 'shop':
                             collection = await get_collection(collection, 0)
                         else:
-                            collection = await database.fetch_from_database(await get_collection(collection, _id))
+                            collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         return await message.reply(
-                            f'`[ The value of {value} is {str(collection.__dict__[value])}. ]`'
+                            f'`[ The value of {value} is {str(collection.__dict__[value])} ]`'
                         )
                     case "view_all":
                         collection = args[2]
                         _id = args[3]
                         
-                        collection = await database.fetch_from_database(await get_collection(collection, _id))
+                        collection = await main.fetch_from_database(await get_collection(collection, _id))
                         
                         data = collection.__dict__
                         
@@ -246,18 +273,18 @@ async def execute_dev_command(message: Message):
                         _id = args[2]
                         amount = int(args[3])
                         
-                        collection: database.UserData = await database.fetch_from_database(await get_collection('user', _id))
+                        collection: main.UserData = await main.fetch_from_database(await get_collection('user', _id))
                         
                         await collection.manage_wool(amount)
                         
                         return await message.reply(
-                            f'`[ Successfully modified wool, updated value is now {collection.wool}. ]`'
+                            f'`[ Successfully modified wool, updated value is now {collection.wool} ]`'
                         )
                     case _:
                         return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
             except Exception as e:
                 await message.reply(
-                    f'`[ Error with command. ({e}) ]`'
+                    f'`[ Error with command ({e}) ]`'
                 )
         case "locale_override":
             return

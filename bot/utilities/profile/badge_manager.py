@@ -1,4 +1,4 @@
-import database as db
+import utilities.database.main as db
 from interactions import *
 from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge

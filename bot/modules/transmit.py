@@ -5,7 +5,7 @@ from interactions.api.events import MessageCreate, Component
 from utilities.profile.badge_manager import increment_value
 from utilities.message_decorations import *
 from utilities.localization import ftime
-from database import ServerData
+from utilities.database.main import ServerData
 
 from utilities.transmission_connection_manager import *
 

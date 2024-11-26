@@ -1,14 +1,15 @@
 import io
 import textwrap
 from interactions import File, User
+from termcolor import colored
 from utilities.misc import get_image
-from utilities.config import get_config
+from utilities.config import debugging, get_config
 from utilities.message_decorations import Colors
 from utilities.localization import Localization, fnum
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 from utilities.shop.fetch_items import fetch_background, fetch_badge
 
-import database as db
+import utilities.database.main as db
 
 icons = []
 shop_icons = []
@@ -16,53 +17,83 @@ shop_icons = []
 wool_icon = None
 sun_icon = None
 badges = {}
+font = None
 
-async def load_badges():
+async def load_profile_assets():
     global wool_icon
     global sun_icon
     global badges
     global icons
+    global font 
+    if debugging():
+        print("Loading profile assets")
+    else:
+        print("Loading profile assets ... \033[s", flush=True)
 
     icons = []
-    
+    assets = 0
+    try:
+        font = ImageFont.truetype(get_config("textbox.font"), 25)
+        if debugging():
+            print(f"| Font: {font.getname()}")
+
+        assets += 1
+    except Exception as e:
+        print(colored("Failed to load textbox font", "red"))
+        raise e
     badges = await fetch_badge()
 
     for _, badge in badges.items():
+        badge
         img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
         img = img.convert('RGBA')
         img = img.resize((35, 35), Image.NEAREST)
+        if debugging():
+            print("| Badge id:",badge["id"])
         icons.append(img)
+        assets += 1
 
     wool_icon = await get_image('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+    if debugging():
+        print(f"| Wool icon")
+    assets += 1
     sun_icon = await get_image('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
-
-    print('Loaded Badges')
-
+    if debugging():
+        print(f"| Sun icon")
+    assets += 1
+    if not debugging():
+        print(f"\033[udone ({assets})", flush=True)
+        print("\033[999B", end="", flush=True)
+    else:
+        print(f"Done ({assets})")
 async def draw_profile(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
     if wool_icon is None:
-        await load_badges()
+        await load_profile_assets()
 
     user_id = user.id
-    user_pfp = user.display_avatar.url
+    user_pfp_url = user.display_avatar._url
+    animated = user.display_avatar.animated
+    if animated:
+        user_pfp_url += ".gif"
+    else:
+        user_pfp_url += ".png"
+
+    user_pfp_url += "?size=160&quality=lossless"
 
     user_data: db.UserData = await db.UserData(user_id).fetch()
+
+    title = Localization.sl("profile.view.image.title", locale, username=user.username)
+    description = f"{textwrap.fill(user_data.profile_description, 35)}"
 
     backgrounds = await fetch_background()
     image = await get_image(backgrounds[user_data.equipped_bg]['image'])
 
-    font = ImageFont.truetype(get_config("textbox.font"), 25)
 
     base_profile = ImageDraw.Draw(image, "RGBA")
 
-    base_profile.text((42, 32), Localization.sl("profile.view.image.title", locale, username=user.username), font=font, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
+    base_profile.text((42, 32), title, font=font, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
 
-    base_profile.text((210, 140), f"{textwrap.fill(user_data.profile_description, 35)}", font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK, align='center')
-
-    pfp = await get_image(user_pfp)
-
-    pfp = pfp.resize((148, 148))
-
-    image.paste(pfp, (42, 80), pfp.convert('RGBA'))
+    base_profile.text((210, 140), description, font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex, align='center')
 
     init_x = 60  # Start with the first column (adjust as needed)
     init_y = 310  # Start with the first row (adjust as needed)
@@ -109,17 +140,34 @@ async def draw_profile(user: User, filename: str, description: str, locale: str 
 
     wool = user_data.wool
     sun = user_data.suns
-    base_profile.text((648, 70), f'{fnum(wool)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
-           stroke_fill=Colors.BLACK)
+    base_profile.text((648, 70), f'{fnum(wool, locale=locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
+           stroke_fill=Colors.BLACK.hex)
     image.paste(wool_icon, (659, 63), wool_icon.convert('RGBA'))
 
-    base_profile.text((648, 32), f'{fnum(sun)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
-           stroke_fill=Colors.BLACK)
+    base_profile.text((648, 32), f'{fnum(sun, locale=locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2,
+           stroke_fill=Colors.BLACK.hex)
     image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK)
+    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex)
+
+    # Handle the user's avatar (animated or static)
+    pfp = await get_image(user_pfp_url)
+    frames = []
+    if animated:
+        for pfp_frame in ImageSequence.Iterator(pfp):
+            temp_image = image.copy()
+            pfp_frame = pfp_frame.resize((148, 148))
+            temp_image.paste(pfp_frame, (42, 80), pfp_frame.convert('RGBA'))
+            frames.append(temp_image)
+    else:
+        pfp = pfp.resize((148, 148))
+        image.paste(pfp, (42, 80), pfp.convert('RGBA'))
+        frames.append(image)
 
     img_buffer = io.BytesIO()
-    image.save(img_buffer, format="PNG")
+    if animated:
+        frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames[1:], loop=0, duration=100)
+    else:
+        image.save(img_buffer, format="PNG")
     img_buffer.seek(0)
-    return File(file=img_buffer, file_name=f"{filename}.png", description=description)
+    return File(file=img_buffer, file_name=filename + (".gif" if animated else ".png"), description=description)

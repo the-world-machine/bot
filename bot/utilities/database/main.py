@@ -180,19 +180,22 @@ class Nikogotchi(Collection):
 
 connection = None
 
-def create_connection():
-    
+async def connect_to_db():
     global connection
-    
     if connection is not None:
         return
     
     connection = AsyncIOMotorClient(connection_uri, server_api=ServerApi('1'))
+    try:
+        await connection.admin.command('ping')
+        print('Database Connected')
+    except Exception as e:
+        print(f'Failed to connect to database: {e}')
 
 def get_database():
     
     if connection is None:
-        create_connection()
+        connect_to_db()
         
     return connection.get_database('TheWorldMachine')
 

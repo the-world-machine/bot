@@ -11,7 +11,7 @@ from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
 from utilities.localization import Localization, fnum, ftime
-from database import NikogotchiData, StatUpdate, UserData, Nikogotchi
+from utilities.database.main import NikogotchiData, StatUpdate, UserData, Nikogotchi
 from utilities.message_decorations import Colors, fancy_message, make_progress_bar
 
 

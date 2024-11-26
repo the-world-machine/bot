@@ -56,7 +56,7 @@ misc:
 profile:
   view: 
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редагувати Свій Профіль"
-    bots: "[ У ботів немає профілів. ]"
+    bots: "[ Боти не мають профілів! ]"
     loading: "[ Завантаження профіля [user]... [emoji:loading] ]"
 
     image: 
@@ -336,6 +336,13 @@ interact:
     headpat:
       name: Погладити по голові
       action: "[user_one] погладили [user_two] по голові!"
+    tickle:
+      name: Лоскотати
+      messages:
+        - "[user_one] несподівано почали лоскотати [user_two]!"
+        - "[user_one] несподівано полоскотали [user_two]!"
+        - "[user_one] полоскотали [user_two] і розпочалась лоскотлива боротьба!"
+        - "[user_one] атакував [user_two] лоскотом!"
     hug:
       name: Обіймати
       action: "[user_one] обіймали [user_two]!"

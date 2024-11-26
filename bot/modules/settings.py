@@ -1,7 +1,7 @@
 import json
 from interactions import *
 
-from database import ServerData
+from utilities.database.main import ServerData
 from utilities.message_decorations import fancy_message
 
 # TODO: localelelele

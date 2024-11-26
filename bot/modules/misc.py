@@ -25,24 +25,24 @@ class MiscellaneousModule(Extension):
         lavalink_stats = await get_lavalink_stats()
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
-        total_servers = sum(len(shard.client.guilds) for shard in self.bot.shards)
+        total_servers = sum(len(shard.client.guilds) for shard in ctx.client.shards)
 
-        embed = Embed(description=loc.l("misc.stats.owner", name=self.bot.owner.username), color=Colors.DEFAULT)
+        embed = Embed(description=loc.l("misc.stats.owner", name=ctx.client.owner.username), color=Colors.DEFAULT)
         
         embed.add_field(loc.l("misc.stats.names.avg_ping"),
-                        loc.l("misc.stats.values.time", sec=fnum(self.bot.latency, ctx.locale)), inline=True)
+                        loc.l("misc.stats.values.time", sec=fnum(ctx.client.latency, ctx.locale)), inline=True)
         embed.add_field(loc.l("misc.stats.names.cpu_usg"),
                         loc.l("misc.stats.values.percent", num=round(psutil.cpu_percent())), inline=True)
         embed.add_field(loc.l("misc.stats.names.mem_usg"),
                         loc.l("misc.stats.values.percent", num=round(psutil.virtual_memory().percent)), inline=True)
         embed.add_field(loc.l("misc.stats.names.shards"),
-                        len(self.bot.shards), inline=True)
+                        ctx.client.total_shards, inline=True)
         embed.add_field(loc.l("misc.stats.names.server_count"),
                         total_servers, inline=True)
         embed.add_field(loc.l("misc.stats.names.uptime"),
-                        ftime(datetime.now() - self.bot.start_time, ctx.locale), inline=True)
+                        ftime(datetime.now() - ctx.client.start_time, ctx.locale), inline=True)
         #embed.add_field(loc.l("misc.stats.names.user_installs"),
-        #                len(self.bot.app.users)) # NONEXISTENT
+        #                len(ctx.client.app.users)) # NONEXISTENT
         #embed.add_field(loc.l("misc.stats.names.commit_hash"),
         #                commit_hash if commit_hash else loc.l("misc.status.values.failed_commit_hash"), inline=True)
         #embed.add_field(loc.l("misc.stats.names.host"),

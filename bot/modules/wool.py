@@ -1,10 +1,10 @@
 import random
 import asyncio
 import dataclasses
-import database as db
+import utilities.database.main as db
 from interactions import *
 from utilities.emojis import emojis
-from utilities.localization import fnum
+from utilities.localization import Localization, fnum
 from datetime import datetime, timedelta
 from utilities.message_decorations import Colors, fancy_message
 
@@ -17,8 +17,6 @@ class Slot:
 
 
 class WoolModule(Extension):
-
-
     current_limit = 0
 
     wool_finds = [
@@ -44,61 +42,128 @@ class WoolModule(Extension):
     async def wool(self, ctx: SlashContext):
         pass
 
-    @wool.subcommand(sub_cmd_description='Check your balance.')
-    @slash_option(description='Check someone else\'s balance...', name='user', required=True, opt_type=OptionType.USER)
-    async def balance(self, ctx: SlashContext, user: User = None):
+    @slash_command(description='All things to do with gambling wool.')
+    async def gamble(self, ctx: SlashContext):
+        pass
 
-        if user is None:
-            user = ctx.user
-            
-        user_data: db.UserData = await db.UserData(user.id).fetch()
+    @wool.subcommand(sub_cmd_description='View your balance.')
+    @slash_option(description='The person you want to view balance of instead', name='who', required=True, opt_type=OptionType.USER)
+    async def balance(self, ctx: SlashContext, who: User = None):
+        if who is None:
+            who = ctx.user
 
+        user_data: db.UserData = await db.UserData(who.id).fetch()
         wool: int = user_data.wool
-
-        await fancy_message(
-            ctx,
-            f"[ **{user.username}** has {emojis['icons']['wool']}**{fnum(wool)}**. ]",
-        )
-        
-    @wool.subcommand(sub_cmd_description='Give someone your wool.')
-    @slash_option(description='Who to give your wool to...', name='user', required=True, opt_type=OptionType.USER)
-    @slash_option(description='The amount to give, as long as you can afford it.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1)
-    async def give(self, ctx: SlashContext, user: User, amount: int):
-        
-        if user.id == ctx.author.id:
-            return await fancy_message(ctx, '[ No. ]', color=Colors.BAD)
-        
-        if user.bot:
-            return await fancy_message(ctx, '[ Please do not. ]', Colors.BAD)
-        
-        this_user: db.UserData = await db.UserData(ctx.author.id).fetch()
-        target_user: db.UserData = await db.UserData(user.id).fetch()
-        
-        if this_user.wool < amount:
-            return await fancy_message(ctx, '[ You cannot give this amount of wool because you don\'t have it! ]', color=Colors.BAD)
-            
-        await this_user.manage_wool(-amount)
-        await target_user.manage_wool(amount)
-
-        if amount > 0:
+        if who.bot:
+            if who == ctx.client.user:
+                if wool != 0:
+                    return await fancy_message(ctx,
+                        f"[ I try not to influence the economy, so i have **no{emojis['icons']['wool']}Wool** ]"
+                    )
+                else:
+                    return await fancy_message(ctx,
+                        f"[ I try not to influence the economy, but i was given {emojis['icons']['wool']}**{fnum(wool)}** ]"
+                    )
+            if wool == 0:
+                return await fancy_message(ctx,
+                    f"[ Bots usually don't interact with The World Machine, not that they even can...\n"+
+                    f"So {who.mention} has no {emojis['icons']['wool']}**Wool** ]"
+                )
+            else:
+                return await fancy_message(ctx,
+                    f"[ Bots usually don't interact with The World Machine, not that they even can...\n"+
+                    f"But, {who.mention} was given {emojis['icons']['wool']}**{fnum(wool)}** ]"
+                )
+        if wool == 0:
             await fancy_message(
                 ctx,
-                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, how generous!",
-            )
-        elif amount == 0:
-            await fancy_message(
-                ctx,
-                f"{ctx.author.mention} gave away {emojis['icons']['wool']}{fnum(amount)} to {user.mention}, not very generous!",
+                f"[ **{who.mention}** has no **Wool**{emojis['icons']['wool']}. ]",
             )
         else:
             await fancy_message(
                 ctx,
+                f"[ **{who.mention}** has {emojis['icons']['wool']}**{fnum(wool)}**. ]",
+            )
+        
+    @wool.subcommand(sub_cmd_description='Give away some of your wool.')
+    @slash_option(description='User you want to give wool to...', name='who', required=True, opt_type=OptionType.USER)
+    @slash_option(description='The amount to give, as long as you can afford it.', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1)
+    async def give(self, ctx: SlashContext, user: User, amount: int):
+        loc = Localization(ctx)
+        if user.id == ctx.author.id:
+            return await fancy_message(ctx, '[ What... ]', ephemeral=True, color=Colors.BAD)
+        
+        if user.bot:
+            buttons = [
+                Button(style=ButtonStyle.RED, label=loc.l('general.buttons._yes'), custom_id=f'yes'),
+                Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._no'), custom_id=f'no')
+            ]
+
+
+            confirmation_m = await fancy_message(ctx, 
+                message="[ Are you sure you want to give wool... to a bot? You won't be able get it back, you know... ]",
+                color=Colors.WARN,
+                components=buttons,
+                ephemeral=True
+            )
+            try:
+                button = await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0*1000)
+            except asyncio.TimeoutError:
+                print("explosion")
+                await confirmation_m.edit(content="[ You took too long to respond ]", components=[])
+                await ctx.delete()
+                await asyncio.sleep(15)
+                await confirmation_m.delete()
+
+            if button.ctx.custom_id == "no":
+                return await ctx.delete()
+
+        await fancy_message(ctx, loc.l('general.loading'))
+        this_user: db.UserData = await db.UserData(ctx.author.id).fetch()
+        target_user: db.UserData = await db.UserData(user.id).fetch()
+        
+        if this_user.wool < amount:
+            return await fancy_message(ctx, f"[ You don't have that much wool! (you have only {this_user.wool}) ]", edit=True, ephemeral=True, color=Colors.BAD)
+        
+        await this_user.manage_wool(-amount)
+        await target_user.manage_wool(amount)
+
+        if amount > 0:
+            if ctx.user.bot:
+                await fancy_message(
+                    ctx,
+                    f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {user.mention}, how generous...",
+                    edit=True
+                )
+            else:
+                await fancy_message(
+                    ctx,
+                    f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {user.mention}, how generous!",
+                    edit=True
+                )
+        elif amount == 0:
+            if ctx.user.bot:
+                await fancy_message(
+                    ctx,
+                    f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {user.mention}, not very generous!",
+                    edit=True
+                )
+            else:
+                await fancy_message(
+                    ctx,
+                    f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {user.mention}, not very generous after all...",
+                    edit=True
+                )
+        else:
+            await fancy_message(
+                ctx,
                 f"{ctx.author.mention} stole a single piece of wool from {user.mention}, why!?",
+                edit=True
             )
 
     @wool.subcommand()
     async def daily(self, ctx: SlashContext):
-        '''Command has been renamed to /pray.'''
+        '''This command has been renamed to /pray'''
         
         await self.pray(ctx)
 
@@ -177,8 +242,8 @@ class WoolModule(Extension):
 
     slot_value = 10
     
-    @wool.subcommand()
-    async def gamble_help(self, ctx: SlashContext):
+    @gamble.subcommand()
+    async def help(self, ctx: SlashContext):
         '''Read how the gamble command works.'''
         
         await ctx.defer()
