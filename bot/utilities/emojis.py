@@ -1,4 +1,5 @@
 import re
+from typing import Literal, TypedDict
 from yaml import safe_load
 from termcolor import colored
 from utilities.data_watcher import subscribe
@@ -30,12 +31,22 @@ def minify_emoji_names(data):
         return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
     return data
 
-def load_emojis():
+class ProgressBar(TypedDict):
+    empty: dict[Literal["start", "middle", "end"], str]
+    filled: dict[Literal["start", "middle", "end"], str]
+
+
+class Emojis(TypedDict):
+    icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh"], str]
+    pancakes: dict[Literal["normal", "golden", "glitched"], str]
+    treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
+    progress_bars: dict[Literal["square", "round"], ProgressBar]
+
+def load_emojis() -> Emojis:
     with open("bot/data/emojis.yml", "r") as f:
         emojis_data = safe_load(f)
         return minify_emoji_names(emojis_data)
-
-emojis = load_emojis()
+emojis: Emojis = load_emojis()
 emoji_subs = []
 def on_emojis_update(callback):
     emoji_subs.append(callback)
