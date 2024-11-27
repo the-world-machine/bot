@@ -59,6 +59,40 @@ wool: ~
 
 # ---------------------------------------------------------------
 
+settings:
+  errors:
+    missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
+    channel_not_messageable: "[ I cannot send messages in that channel ]"
+    invalid_server_id: "[ Invalid server ID. ]"
+    uncached_server: "-# couldn't find the server's name (i am not in it)"
+    get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
+  
+  server:
+    welcome:
+      editor:
+        title: "[ You are editing the welcome message... ]"
+        input: "Welcome Message"
+        placeholder: "Leave blank to disable
+        - You can use the variables: [user_name] [server_name]"
+        done: |
+          [ Successfully updated welcome message ]
+        # new message shows up right after this
+  transmissions:
+    channel:
+      auto: "[ Transmission channel has been reset ]"
+      Changed: "[ Transmission channel has been set to [channel] ]"
+    images:
+      enabled: "[ Enabled transmission images ]"
+      disabled: "[ Disabled transmission images ]"
+    anonymous:
+      enabled: "[ Successfully enabled anonymous mode ]"
+      disabled: "[ Successfully disabled anonymous mode ]"
+    blocked:
+      yeh: "[ Successfully blocked `[server_name]` ]"
+      nah: "[ Successfully unblocked that server ]" # you can use server_name here also if you wish
+
+# ---------------------------------------------------------------
+
 profile:
   view: 
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"

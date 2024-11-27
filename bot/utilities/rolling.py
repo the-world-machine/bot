@@ -1,9 +1,10 @@
 import os
 import random
 from interactions import Client, File
+from termcolor import colored
 from utilities.config import debugging, get_config, on_prod
 from utilities.misc import set_avatar, set_status
-
+from interactions.client.errors import TooManyChanges
 
 available_avatars = os.listdir('bot/images/profile_pictures')
 async def roll_avatar(client: Client, log=True, print=print) -> None:
@@ -14,7 +15,15 @@ async def roll_avatar(client: Client, log=True, print=print) -> None:
       print("Rolling avatar ... \033[s", flush=True)
   random_avatar = random.choice(available_avatars)
   if on_prod:
-    await set_avatar(client, File(f"bot/images/profile_pictures/{random_avatar}"))
+    try:
+      await set_avatar(client, File(f"bot/images/profile_pictures/{random_avatar}"))
+    except TooManyChanges:
+      e = " It's recommended you disable avatar rolling, or set the interval to a slower pace."
+      if not debugging():
+        print(f"\033[u"+colored("failed."+e, "red"), flush=True)
+        return print("\033[999B", end="", flush=True)
+      else:
+        return print("..."+colored("failed."+e, "red"))
     if log:
       if not debugging():
         print(f"\033[uused {random_avatar}", flush=True)

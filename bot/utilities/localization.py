@@ -153,16 +153,13 @@ def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 
 def ftime(
 	duration: timedelta | float,
-	locale: str = "en-#",
+	locale: str = "en",
 	bold: bool = True,
 	format: Literal['narrow', 'short', 'medium', 'long'] = "narrow",
 	max_units: int = 69,
 	minimum_unit: Literal["year", "month", "week", "day", "hour", "minute", "second"] = "second",
 	**kwargs
-) -> str:
-	if locale == "en-#":
-		locale = "en"
-			
+) -> str:			
 	locale = Locale.parse(locale, sep="-")
 
 	if isinstance(duration, (int, float)):

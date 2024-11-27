@@ -37,7 +37,7 @@ class ProgressBar(TypedDict):
 
 
 class Emojis(TypedDict):
-    icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh"], str]
+    icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"], str]
     pancakes: dict[Literal["normal", "golden", "glitched"], str]
     treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
     progress_bars: dict[Literal["square", "round"], ProgressBar]

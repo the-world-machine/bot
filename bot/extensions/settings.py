@@ -1,10 +1,8 @@
-import json
 from interactions import *
-
 from utilities.database.main import ServerData
-from utilities.message_decorations import fancy_message
+from utilities.localization import Localization
+from utilities.message_decorations import Colors, fancy_message
 
-# TODO: localelelele
 class SettingsModule(Extension):
     
     @slash_command(description="Settings.")
@@ -13,40 +11,39 @@ class SettingsModule(Extension):
 
     server = settings.group(name="server")
     transmissions = settings.group(name="transmissions")
-
+    
     async def check(self, ctx: SlashContext):
-
         if Permissions.MANAGE_GUILD not in ctx.member.guild_permissions:
-            await ctx.send("[ You do not have the permissions to use this command. ]", ephemeral=True)
+            await fancy_message(ctx, Localization(ctx).l("settings.missing_permissions"), color=Colors.BAD, ephemeral=True)
             return False
 
         return True
 
     @transmissions.subcommand(
-        sub_cmd_description="The transmission channel to use to allow other servers to call. Leave blank to disable."
+        sub_cmd_description="The specific channel to use for calling"
     )
     @slash_option(
-        description="DEFAULT: NO CHANNEL SET",
+        description="default: AUTO",
         name="channel",
         opt_type=OptionType.CHANNEL,
     )
-    async def transmit_channel(self, ctx: SlashContext, channel: GuildText):
-        
+    async def channel(self, ctx: SlashContext, channel: GuildText = None):
+        loc = Localization(ctx)
         if not await self.check(ctx):
             return
-
         server_data = await ServerData(ctx.guild_id).fetch()
-
+        if isinstance(channel, MessageableMixin):
+            return await fancy_message(ctx, loc.l("settings.channel_not_manageable"), color=Colors.BAD, ephemeral=True)
         if channel is None:
             await server_data.update(transmit_channel=None)
             return await fancy_message(
-                ctx, "[ Successfully disabled transmission calls. ]", ephemeral=True
+                ctx, loc.l("settings.transmissions.channel.reset"), ephemeral=True
             )
 
         await server_data.update(transmit_channel=str(channel.id))
         return await fancy_message(
             ctx,
-            f"[ Successfully allowed other servers to call to {channel.mention}. ]",
+            loc.l("settings.transmissions.channel.reset", channel=channel.mention),
             ephemeral=True,
         )
 
@@ -54,40 +51,35 @@ class SettingsModule(Extension):
         sub_cmd_description="Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE]."
     )
     @slash_option(
-        description="DEFAULT: TRUE",
+        description="default: TRUE",
         name="value",
         opt_type=OptionType.BOOLEAN,
         required=True,
     )
-    async def transmit_images(self, ctx: SlashContext, value):
-        
+    async def images(self, ctx: SlashContext, value: bool):
+        loc = Localization(ctx)
         if not await self.check(ctx):
             return
 
         server_data = await ServerData(ctx.guild_id).fetch()
 
         await server_data.update(transmit_images=value)
-
-        if value:
-            return await fancy_message(
-                ctx, "[ Successfully enabled transmission images. ]", ephemeral=True
-            )
-        else:
-            return await fancy_message(
-                ctx, "[ Successfully disabled transmission images. ]", ephemeral=True
-            )
+        return await fancy_message(ctx, 
+            loc.l(f"settings.transmissions.images.{'enabled' if value else 'disabled'}"), 
+            ephemeral=True
+        )
 
     @transmissions.subcommand(
-        sub_cmd_description="Disable/Enable whether transmission receivers are shown Oneshot characters instead of users."
+        sub_cmd_description="Whether transmission receivers are shown Oneshot characters instead of actual people from the server"
     )
     @slash_option(
-        description="DEFAULT: FALSE",
+        description="default: TRUE",
         name="value",
         opt_type=OptionType.BOOLEAN,
         required=True,
     )
-    async def transmit_anonymous(self, ctx: SlashContext, value):
-        
+    async def anonymous(self, ctx: SlashContext, value):
+        loc = Localization(ctx)
         if not await self.check(ctx):
             return
 
@@ -95,30 +87,24 @@ class SettingsModule(Extension):
 
         await server_data.update(transmit_anonymous=value)
 
-        if value:
-            return await fancy_message(
-                ctx, "[ Successfully enabled anonymous mode. ]", ephemeral=True
-            )
-        else:
-            return await fancy_message(
-                ctx, "[ Successfully disabled anonymous mode. ]", ephemeral=True
-            )
+        return await fancy_message(
+            ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
+        )
 
     @transmissions.subcommand(
-        sub_cmd_description="Block a server from being able to call."
+        sub_cmd_description="Toggle blocking a server from being able to call."
     )
     @slash_option(
-        description="Server to block.",
+        description="The server's ID",
         name="server",
         opt_type=OptionType.STRING,
         required=True,
         autocomplete=True,
     )
-    async def block_server(self, ctx: SlashContext, server: str):
-        
+    async def block(self, ctx: SlashContext, server: str = None):
         if not await self.check(ctx):
             return
-
+        loc = Localization(ctx)
         server_data: ServerData = await ServerData(ctx.guild_id).fetch()
 
         block_list = server_data.blocked_servers
@@ -126,25 +112,25 @@ class SettingsModule(Extension):
         try:
             server_id = int(server)
         except ValueError:
-            return await fancy_message(ctx, "[ Invalid server ID. ]", ephemeral=True)
-
+            return await ctx.reply(
+                embed=Embed(
+                    description=loc.l("settings.errors.invalid_server_id"),
+                    footer=loc.l("settings.errors.get_server_id"),
+                    color=Colors.BAD,
+                )
+            )
+        server_name = ctx.client.get_guild(server_id).name
         if server_id in block_list:
             block_list.remove(server_id)
-
             await server_data.update(blocked_servers=block_list)
-
-            return await fancy_message(
-                ctx, f"[ Successfully unblocked server `{server}`. ]", ephemeral=True
-            )
-
-        block_list.append(server_id)
-
-        await server_data.update(blocked_servers=block_list)
+        else:
+            block_list.append(server_id)
+            await server_data.update(blocked_servers=block_list)
         return await fancy_message(
-            ctx, f"[ Successfully blocked server `{server}`. ]", ephemeral=True
+            ctx, loc.l(f"settings.transmissions.blocked.{'yah' if server_id in block_list else 'nah'}"), ephemeral=True
         )
 
-    @block_server.autocomplete("server")
+    @server.autocomplete("server")
     async def block_server_autocomplete(self, ctx: AutocompleteContext):
 
         server_data: ServerData = await ServerData(ctx.guild_id).fetch()
@@ -169,28 +155,27 @@ class SettingsModule(Extension):
     @server.subcommand()
     async def welcome_message(self, ctx: SlashContext):
         "Edit this server's welcome message."
-
-        modal = Modal(
+        loc = Localization(ctx)
+        return await ctx.send_modal(Modal(
             InputText(
-                label="Edit Welcome Message",
+                label=loc.l("settings.server.welcome.editor.input"),
                 style=TextStyles.PARAGRAPH,
                 custom_id="message",
-                placeholder="- [user] for the member's username.\n- [server] for the server's name.\n\nLeave blank to disable.",
-                max_length=150,
+                placeholder=loc.l("settings.server.welcome.editor.placeholder"),
+                max_length=200,
                 required=False,
             ),
-            title="Welcome Message Editor",
+            title=loc.l("settings.server.welcome.editor.title"),
             custom_id="welcome_message_editor",
-        )
-
-        await ctx.send_modal(modal)
+        ))
 
     @modal_callback("welcome_message_editor")
     async def welcome_message_editor(self, ctx: ModalContext, message: str):
 
         server_data: ServerData = await ServerData(ctx.guild_id).fetch()
         await server_data.update(welcome_message=message)
-
+        message = f"```\n{message.replace('```', '` ``')}```"
+        
         await ctx.send(
-            f"Successfully updated welcome message to: ```{message}```", ephemeral=True
+            Localization(ctx).l("settings.server.welcome.editor.done") + message, ephemeral=True
         )
