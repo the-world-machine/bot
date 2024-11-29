@@ -108,7 +108,7 @@ class TextboxModule(Extension):
 
 		characters_select = self.make_characters_select_menu(ctx.locale)
 
-		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select))
+		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select)
 		char = await ctx.client.wait_for_component(components=characters_select)
 		ctx = char.ctx
 		await ctx.defer(edit_origin=True)
