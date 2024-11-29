@@ -108,15 +108,15 @@ class TextboxModule(Extension):
 
 		characters_select = self.make_characters_select_menu(ctx.locale)
 
-		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select)
-
-		char = await self.bot.wait_for_component(components=characters_select)
-
-		char_ctx = char.ctx
-
-		await char_ctx.defer(edit_origin=True)
-
-		faces_select = self.make_faces_select_menu(ctx.locale, character_name=char_ctx.values[0])
+		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select))
+		char = await ctx.client.wait_for_component(components=characters_select)
+		ctx = char.ctx
+		await ctx.defer(edit_origin=True)
+		
+		char = await ctx.client.wait_for_component(components=characters_select)
+		ctx = char.ctx
+		await ctx.defer(edit_origin=True)
+		faces_select = self.make_faces_select_menu(ctx.locale, character_name=ctx.values[0])
 
 		await ctx.edit(
 			embed=Embed(
@@ -125,12 +125,10 @@ class TextboxModule(Extension):
 			),
 			components=faces_select
 		)
-
-		char_ctx = await self.bot.wait_for_component(components=faces_select)
-
-		await char_ctx.ctx.defer(edit_origin=True)
-
-		value = char_ctx.ctx.values[0]
+		faces = await ctx.client.wait_for_component(components=faces_select)
+		ctx = faces.ctx
+		await ctx.defer(edit_origin=True)
+		value = ctx.values[0]
 
 		await ctx.edit(
 			embed=Embed(
