@@ -9,7 +9,7 @@ def load_extensions(client: interactions.Client, unload: bool=False, print=print
 
 	files = [f for f in os.listdir('bot/extensions') if f != '__pycache__']
 	extensions = [f.replace('.py', '') for f in files]
-	extensions = [None if len(f) < 0 else f for f in extensions]
+	extensions = [None if len(f) < 0 or f.startswith(".") else f for f in extensions]
 	
 	if not get_config("music.enabled") and 'music' in extensions:
 		extensions.remove("music")
