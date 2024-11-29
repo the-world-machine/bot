@@ -100,7 +100,7 @@ class MiscellaneousModule(Extension):
         
     @slash_command(description="Get a random picture of a cat.")
     async def cat(self, ctx: SlashContext):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
         embed = Embed(
             title=loc.l("misc.miaou.title"),
             color=Colors.DEFAULT
