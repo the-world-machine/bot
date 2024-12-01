@@ -2,7 +2,7 @@
 bot = "python bot/main.py"
 
 [requires]
-python_version = "3.11"
+python_version = "3.13"
 
 [packages]
 "interactions.py" = "*"
@@ -18,6 +18,9 @@ aioconsole = "*"
 aiofiles = "*"
 pillow = "*"
 psutil = "*"
+audioop-lts = "*"
+yt-dlp = "*"
+"discord.py-interactions[voice]" = "*"
 
 [dev-packages]
 

@@ -10,17 +10,14 @@ from utilities.loc_commands import execute_loc_command
 from utilities.dev_commands import execute_dev_command
 from utilities.misc import set_random_avatar, set_status
 from interactions.api.events import MemberAdd, Ready, MessageCreate
-from music.music import init
 
-intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
-
-
+intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS | Intents.GUILD_VOICE_STATES
 
 client = AutoShardedClient(
     intents=intents,
     disable_dm_commands=True,
     send_command_tracebacks=False,
-    send_not_ready_messages=True,
+    send_not_ready_messages=True
 )
 
 statuses = get_config("bot.status", ignore_None=True)
@@ -39,7 +36,6 @@ create_connection()
 print('Database Connected')
 @listen(Ready)
 async def on_ready():
-    await init()
     
     print(f"─ Logged in as {client.user.tag} ({client.user.id})")
     await load_badges()

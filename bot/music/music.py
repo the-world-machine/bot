@@ -1,4 +1,7 @@
+import os
+from typing import List, Union
 import music.youtube_manager as ytdl
+from interactions.api.voice.audio import AudioVolume
 
 from utilities.config import get_config
 from music.spotify_api import Spotify, SpotifyTrack
@@ -7,7 +10,7 @@ spotify = Spotify(get_config('music.spotify.id'), get_config('music.spotify.secr
 
 from enum import Enum
 from dataclasses import dataclass
-from interactions import User
+from interactions import ComponentContext, Extension, SlashContext, User
 
 class TrackError(Enum):
     NONE = -1
@@ -17,6 +20,7 @@ class TrackError(Enum):
 @dataclass
 class Track:
     url: str = ''
+    isrc: str = ''
     thumbnail: str = ''
     title: str = ''
     author: str = ''
@@ -26,37 +30,109 @@ class Track:
         
     def set_duration(self, seconds: float):
         self.duration = seconds * 1000
+        
+global_queue = {}
 
-async def add_search(url: str, requester: User):
+def get_queue(ctx:Union[SlashContext, ComponentContext]) -> List[Track]:
+    if ctx.guild_id not in global_queue:
+        global_queue[ctx.guild_id] = []
+        
+    return global_queue[ctx.guild_id]
+
+async def add_search(url: str, ctx: Union[SlashContext, ComponentContext]):
+        
+    queue = get_queue(ctx)
     
     if 'open.spotify.com' in url:
         if 'playlist' in url or 'album' in url:
-            return await process_spotify_playlist(url, requester)
+            tracks = await process_spotify_playlist(url, ctx.author)
+            queue += tracks
+            return tracks
+        
+        tracks = await process_spotify_track(url, ctx.author)
+        queue.append(tracks)
+        return [tracks]
     
     if '/sets/' in url:
-        return Track(error=TrackError.SOUNDCLOUD_PLAYLIST)
+        return [Track(error=TrackError.SOUNDCLOUD_PLAYLIST)]
     
     if url[0:8] != 'https://':
         url = 'ytsearch:' + url
-        return [await process_yt_track(url, requester)]
+        tracks = await process_yt_track(url, ctx.author)
+        queue.append(tracks)
+        return [tracks]
     
     if 'youtube.com/playlist' in url:
-        return await process_yt_playlist(url, requester)
+        tracks = await process_yt_playlist(url, ctx.author)
+        queue += tracks
+        return tracks
     
-    return [await process_yt_track(url, requester)]
+    tracks = await process_yt_track(url, True, ctx.author)
+    queue.append(tracks)
+    return [tracks]
+
+async def play_track(module: Extension, ctx: Union[SlashContext, ComponentContext], track_id: int = 0):
+    
+    q = get_queue(ctx)
+    
+    if len(q) == 0:
+        return 'empty_queue'
+    
+    target_track = q[track_id]
+    
+    del global_queue[ctx.guild_id][track_id]
+    
+    directory = f'bot/music/output/{str(ctx.guild_id)}'
+    file_directory = os.path.join(directory + '/output')
+    
+    if not ctx.voice_state:
+        return 'not_in_vc'
+        
+    # Get the audio using YTDL
+    audio = await AudioVolume(file_directory)
+    await ctx.send(f"Now Playing: **{target_track.title}**\n{target_track.thumbnail}")
+    # Play the audio
+    await ctx.voice_state.play(audio)
 
 async def process_spotify_playlist(url: str, requester: User):
-    data = await spotify.get_playlist(url)
+    data: list[SpotifyTrack] = await spotify.get_playlist(url)
+    
+    tracks = []
     
     for d in data:
-        d: SpotifyTrack
         
-        i = await ytdl.quick_search(f'ytsearch:{d.isrc}')
-    
-    pass
+        if d is None:
+            continue
+        
+        i = Track()
+        i.title = d.name
+        i.thumbnail = d.album['images'][0]['url']
+        i.author = d.artist
+        i.requester = requester
+        i.duration = d.duration
+        i.isrc = d.isrc
+        i.url = d.url
+        
+        tracks.append(i)
+        
+    return tracks
 
 async def process_spotify_track(url: str, requester: User):
-    pass
+    d: SpotifyTrack = await spotify.get_track(url)
+
+    if d is None:
+        return Track(error=TrackError.PROCESSING)
+    
+    i = Track()
+    i.title = d.name
+    i.thumbnail = d.album['images'][0]['url']
+    i.author = d.artist
+    i.requester = requester
+    i.duration = d.duration
+    i.isrc = d.isrc
+    i.url = d.url
+        
+    return i
 
 async def process_yt_playlist(url: str, requester: User):
     try:
@@ -85,16 +161,17 @@ async def process_yt_playlist(url: str, requester: User):
     
     return tracks
     
-async def process_yt_track(url: str, requester: User):
+async def process_yt_track(url: str, download: bool, requester: User):
     i = Track()
     
     try:
         if 'ytsearch:' in url:
-            d = ytdl.get_track_info(url)['data']['entries'][0]
+            d = ytdl.get_track_info(url, download)['data']['entries'][0]
             url = d['url']
         else:
-            d = ytdl.get_track_info(url)['data']
-    except:
+            d = ytdl.get_track_info(url, download)['data']
+    except Exception as e:
+        print(e)
         i.error = TrackError.PROCESSING
         return i
     
@@ -107,6 +184,3 @@ async def process_yt_track(url: str, requester: User):
     i.set_duration(d['duration'])
     
     return i
-
-async def init():    
-    await add_search('https://www.youtube.com/playlist?list=PL_JhyGGuvnSTVg5T9JNLWenLYKPO4A8hS', None)
