@@ -20,13 +20,13 @@ class ProfileModule(Extension):
 
 	@sun.subcommand(sub_cmd_description='Give someone a sun!')
 	@slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
-	async def give(self, ctx: SlashContext, user: User):
-		user_data: db.UserData = await db.UserData(user.id).fetch()
+	async def give(self, ctx: SlashContext, who: User):
+		user_data: db.UserData = await db.UserData(who.id).fetch()
 
-		if user.bot:
+		if who.bot:
 			return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=Colors.BAD, ephemeral=True)
 
-		if user.id == ctx.author.id:
+		if who.id == ctx.author.id:
 			return await fancy_message(ctx, "[ Nuh uh! ]", color=Colors.BAD, ephemeral=True)
 				
 		now = datetime.now()
@@ -43,9 +43,9 @@ class ProfileModule(Extension):
 			await user_data.update(daily_sun_timestamp=reset_time)
 
 		await bm.increment_value(ctx, 'suns', target=ctx.author)
-		await bm.increment_value(ctx, 'suns', target=user)
+		await bm.increment_value(ctx, 'suns', target=who)
 
-		await ctx.send(f"[ {ctx.author.mention} gave {user.mention} a sun! {emojis['icons']['sun']} ]")
+		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
 		
 	@profile.subcommand(sub_cmd_description='View a profile.')
 	@slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
@@ -76,7 +76,7 @@ class ProfileModule(Extension):
 		await message.edit(content=f"-# Took {ftime(runtime)}" if debugging() else None, files=image, components=components, embeds=[])
 
 	@profile.subcommand(sub_cmd_description='Edit your profile.')
-	async def profile(self, ctx: SlashContext):
+	async def edit(self, ctx: SlashContext):
 		components = Button(
 			style=ButtonStyle.URL,
 			label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
