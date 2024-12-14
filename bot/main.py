@@ -23,7 +23,7 @@ intents = (
 	| Intents.GUILDS
 )
 
-client = AutoShardedClient(
+client = Client(
 	intents=intents,
 	disable_dm_commands=True,
 	send_command_tracebacks=False,

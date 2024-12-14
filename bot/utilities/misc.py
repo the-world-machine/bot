@@ -187,7 +187,7 @@ def exec(command: list) -> str:
 	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
 
 def get_git_hash(long: bool = False) -> str:
-  return exec(x for x in ['git', 'rev-parse', '--short', 'HEAD'] if x is not None).strip()
+  return exec(x for x in ['git', 'rev-parse', '--short' if not long else None, 'HEAD'] if x is not None).strip()
 
 def get_current_branch() -> str:
   return exec(['git', 'branch', '--show-current']).strip()
@@ -197,7 +197,7 @@ async def set_status(client: Client, text: str | list):
   if text is not None:
     status = assign_variables(
       input=text,
-      shard_count=len(client.shards),
+      shard_count=1 if not hasattr(client, "shards") else len(client.shards),
       guild_count=len(client.guilds),
       token=client.token
     )
