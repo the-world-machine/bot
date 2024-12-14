@@ -25,12 +25,9 @@ class NotMusic(Extension):
             return await ctx.send('you fucked up man im sorry')
         
         await ctx.send(f'found **{wtf_is_going_on.title}**')
-
-        try:
-            if not ctx.voice_state:
-                await ctx.author.voice.channel.connect()
-        except:
-            pass
+        
+        if not ctx.voice_state:
+            await ctx.author.voice.channel.connect()
         
         await play_track(self, ctx)
         

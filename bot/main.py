@@ -13,7 +13,7 @@ from interactions.api.events import MemberAdd, Ready, MessageCreate
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS | Intents.GUILD_VOICE_STATES
 
-client = AutoShardedClient(
+client = Client(
     intents=intents,
     disable_dm_commands=True,
     send_command_tracebacks=False,

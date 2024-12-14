@@ -86,10 +86,10 @@ async def play_track(module: Extension, ctx: Union[SlashContext, ComponentContex
     file_directory = os.path.join(directory + '/output')
     
     if not ctx.voice_state:
-        return 'not_in_vc'
+        raise ValueError("Not in voice channel to play audio")
         
     # Get the audio using YTDL
-    audio = await AudioVolume(file_directory)
+    audio = AudioVolume(file_directory)
     await ctx.send(f"Now Playing: **{target_track.title}**\n{target_track.thumbnail}")
     # Play the audio
     await ctx.voice_state.play(audio)

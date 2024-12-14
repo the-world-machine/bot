@@ -25,7 +25,7 @@ class MiscellaneousModule(Extension):
         lavalink_stats = await get_lavalink_stats()
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
-        total_servers = sum(len(shard.client.guilds) for shard in self.bot.shards)
+        total_servers = len(self.bot.guilds)
 
         embed = Embed(description=loc.l("misc.stats.owner", name=self.bot.owner.username), color=Colors.DEFAULT)
         
@@ -35,16 +35,16 @@ class MiscellaneousModule(Extension):
                         loc.l("misc.stats.values.percent", num=round(psutil.cpu_percent())), inline=True)
         embed.add_field(loc.l("misc.stats.names.mem_usg"),
                         loc.l("misc.stats.values.percent", num=round(psutil.virtual_memory().percent)), inline=True)
-        embed.add_field(loc.l("misc.stats.names.shards"),
-                        len(self.bot.shards), inline=True)
+        # embed.add_field(loc.l("misc.stats.names.shards"),
+        #                 len(self.bot.shards), inline=True)
+        embed.add_field(loc.l("misc.stats.names.commit_hash"),
+                       commit_hash if commit_hash else loc.l("misc.status.values.failed_commit_hash"), inline=True)
         embed.add_field(loc.l("misc.stats.names.server_count"),
                         total_servers, inline=True)
         embed.add_field(loc.l("misc.stats.names.uptime"),
                         ftime(datetime.now() - self.bot.start_time, ctx.locale), inline=True)
         #embed.add_field(loc.l("misc.stats.names.user_installs"),
         #                len(self.bot.app.users)) # NONEXISTENT
-        #embed.add_field(loc.l("misc.stats.names.commit_hash"),
-        #                commit_hash if commit_hash else loc.l("misc.status.values.failed_commit_hash"), inline=True)
         #embed.add_field(loc.l("misc.stats.names.host"),
         #                host, inline=True)
         #embed.add_field(loc.l("misc.stats.names.music_listeners"),
