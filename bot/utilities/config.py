@@ -56,7 +56,7 @@ debug_override = get_config("bot.debug", ignore_None=True)
 def debugging():
     return debug_override if debug_override is not None else debug
 def setd(value: bool):
-    global debug
-    debug = value
+    global debug_override
+    debug_override = value
 def get_token():
     return get_config("bot.prod.token") if on_prod else get_config("bot.token")
