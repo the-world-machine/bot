@@ -52,8 +52,8 @@ async def on_startup():
 	load_extensions(client)
 	await connect_to_db()
 	await load_profile_assets()
-	await client._cache_interactions()
 	await client.wait_until_ready()
+	await client._cache_interactions()
 	if do_rolling:
 		await roll()
 		roll.start()
