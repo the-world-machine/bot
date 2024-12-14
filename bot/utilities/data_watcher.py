@@ -28,17 +28,8 @@ def watch():
 	observer.start()
 
 	try:
-		a = False
-		def fnum(a):
-			return a
 		while True:
 			time.sleep(60*60*24)
-			if a == False:
-				print("[ Hello. ]")
-				a = 1
-			else:
-				print(f"[ Hello for the {fnum(a)} time ]")
-				a += 1
 	except KeyboardInterrupt:
 		observer.stop()
 	observer.join()

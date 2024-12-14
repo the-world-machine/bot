@@ -13,7 +13,7 @@ from interactions import Activity, ActivityType, Client, File
 class FrozenDict(dict):
     def __init__(self, data):
         if not isinstance(data, (dict, list, tuple)):
-           raise ValueError("Value must be a dict, list or a tuple. Received "+type(data))
+           raise ValueError(f"Value must be a dict, list or a tuple. Received {type(data)}")
         frozen_data = {k: self._freeze(v) for k, v in data.items()}
         super().__init__(frozen_data)
 

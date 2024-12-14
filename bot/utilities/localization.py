@@ -1,9 +1,10 @@
+from collections import defaultdict
 import re
 from babel import Locale
 from pathlib import Path
 from termcolor import colored
 from yaml import safe_load
-from datetime import timedelta
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 from typing import Literal, Union
 from babel.dates import format_timedelta
@@ -34,13 +35,21 @@ def local_override(locale: str, data: dict):
 def load_locale(locale: str):
 	with open(Path('bot/data/locales', locale+'.yml'), 'r', encoding='utf-8') as f:
 			return safe_load(f)
-	
+
+last_update_timestamps = {}
+debounce_interval = 1 # seconds
+
 def on_file_update(filename):
 	global fallback_locale
+	current_time = datetime.now()
 	locale = Path(filename).stem
+	if filename in last_update_timestamps and (current_time - last_update_timestamps[filename]).seconds < debounce_interval:
+			return print(".", end="")
+	last_update_timestamps[filename] = current_time
 	text = f'─ Reloading locale {locale}'
 	print(f"{colored(text, 'yellow')}", end=" ─ ─ ─ ")
 	_locales[locale] = FrozenDict(load_locale(locale))
+	
 	if locale == get_config("localization.main-locale"):
 		fallback_locale = _locales[locale]
 	print("done")

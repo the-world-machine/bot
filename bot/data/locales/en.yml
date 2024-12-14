@@ -30,7 +30,7 @@ misc:
     owner: "👑 @[name]"
     names: 
       shards: "Shards"
-      avg_ping: "Average Ping"
+      avg_ping: "Average ping"
       commit_hash: "Commit hash"     #
       server_count: "Server count"
       user_installs: "User installs" #
