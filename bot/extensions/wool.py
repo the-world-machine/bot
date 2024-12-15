@@ -175,8 +175,8 @@ class WoolModule(Extension):
 		now = datetime.now()
 
 		if now < last_reset_time:
-		   time_unix = last_reset_time.timestamp()
-		   return await fancy_message(ctx, f"[ You've already prayed in the past 24 hours. You can pray again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
+			time_unix = last_reset_time.timestamp()
+			return await fancy_message(ctx, f"[ You've already prayed in the past 24 hours. You can pray again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
 
 		# reset the limit if it is a new day
 		if now >= last_reset_time:

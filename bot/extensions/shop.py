@@ -20,21 +20,21 @@ def pancake_id_to_emoji_index_please_rename_them_in_db(pancake_id):
 	elif pancake_id == 'glitched_pancakes':
 		return 'glitched'
 	
+daily_shop: ShopData = None
 class ShopModule(Extension):
-	
-	daily_shop: ShopData = None
-	
+	global daily_shop
 	max_buy_sell_limit = 1000000000000000000000000
  
 	@listen(Ready)
-	async def load_shop(self):
+	async def load_shop():
+		global daily_shop
 		data = await fetch_shop_data()
 		if datetime.now() > data.last_updated + timedelta(days=1):
-			print("Resetting shop")
-			self.daily_shop = await reset_shop_data()
-		elif self.daily_shop is None:
-			print("Setting shop")
-			self.daily_shop = data
+			print("Resetting daily shop")
+			daily_shop = await reset_shop_data()
+		elif daily_shop is None:
+			print("Setting daily shop")
+			daily_shop = data
 
 	@component_callback('select_treasure_sell')
 	async def select_treasure_sell_callback(self, ctx: ComponentContext):
@@ -76,6 +76,7 @@ class ShopModule(Extension):
 	r_treasure_sell = re.compile(r'treasure_sell_(.*)_(.*)')
 	@component_callback(r_treasure_sell)
 	async def treasure_sell_action_callback(self, ctx: ComponentContext):
+		global daily_shop
 		
 		await ctx.defer(edit_origin=True)
 		
@@ -91,7 +92,7 @@ class ShopModule(Extension):
 		treasure_id = match.group(1)
 		amount_to_sell = match.group(2)
 		
-		stock_price = self.daily_shop.stock_price
+		stock_price = daily_shop.stock_price
 		
 		user_data: UserData = await UserData(ctx.author.id).fetch()
 		
@@ -148,6 +149,7 @@ class ShopModule(Extension):
 	r_treasure_buy = re.compile(r'treasure_buy_(.*)_(.*)')
 	@component_callback(r_treasure_buy)
 	async def buy_treasure_callback(self, ctx: ComponentContext):
+		global daily_shop
 		
 		await ctx.defer(edit_origin=True)
 		
@@ -171,7 +173,7 @@ class ShopModule(Extension):
 		
 		result_text = ''
 		
-		treasure_price = int(treasure['price'] * self.daily_shop.stock_price)
+		treasure_price = int(treasure['price'] * daily_shop.stock_price)
 		
 		async def update(text: str):
 			embed, components = await self.embed_manager(ctx, 'Treasures', selected_treasure=treasure_id)
@@ -362,7 +364,7 @@ class ShopModule(Extension):
 		action = match.group(1)
 		bg_page = int(match.group(2))
 		
-		bgs = self.daily_shop.background_stock
+		bgs = daily_shop.background_stock
 		
 		if action == 'prev':
 			if bg_page > 0:
@@ -385,6 +387,7 @@ class ShopModule(Extension):
 	## EMBED MANAGER ---------------------------------------------------------------
 	
 	async def embed_manager(self, ctx: SlashContext, category: str, **kwargs):
+		global daily_shop
 
 		await self.load_shop()
 		
@@ -394,7 +397,7 @@ class ShopModule(Extension):
 		
 		wool: int = user_data.wool
 		
-		stock: str = loc.l('shop.stocks', value=self.daily_shop.stock_value, price=self.daily_shop.stock_price)
+		stock: str = loc.l('shop.stocks', value=daily_shop.stock_value, price=daily_shop.stock_price)
 		
 		user_wool = loc.l('shop.user_wool', wool=user_data.wool)
 		magpie = EmbedAttachment('https://cdn.discordapp.com/attachments/1025158352549982299/1176956900928131143/Magpie.webp')
@@ -414,7 +417,7 @@ class ShopModule(Extension):
 			
 			motds = loc.l('shop.motds')
 			
-			motd = motds[self.daily_shop.motd]
+			motd = motds[daily_shop.motd]
 				
 			title = loc.l('shop.main_title')
 			description = loc.l('shop.main', motd=motd, user_wool=user_wool)
@@ -557,7 +560,7 @@ class ShopModule(Extension):
 			
 			bg_page = kwargs['page']
 			
-			background = self.daily_shop.background_stock[bg_page]
+			background = daily_shop.background_stock[bg_page]
 			all_bgs = await fetch_background()
 			fetched_background = all_bgs[background]
 			
@@ -632,7 +635,7 @@ class ShopModule(Extension):
 				
 				amount_selected = owned.get(selected_treasure, 0)
 				
-				buy_price_one = int(get_selected_treasure['price'] * self.daily_shop.stock_price)
+				buy_price_one = int(get_selected_treasure['price'] * daily_shop.stock_price)
 				
 				current_balance = user_data.wool
 				
@@ -656,7 +659,7 @@ class ShopModule(Extension):
 					amount = amount
 				)
 			
-			treasure_stock: list[str] = self.daily_shop.treasure_stock
+			treasure_stock: list[str] = daily_shop.treasure_stock
 
 			buttons: list[Button] = []
 			bottom_buttons: list[Button] = []
@@ -775,8 +778,8 @@ class ShopModule(Extension):
 				get_selected_treasure = all_treasures[selected_treasure]
 				selected_treasure_loc: dict = loc.l(f'items.treasures.{selected_treasure}')
 				
-				sell_price_one = int(get_selected_treasure['price'] * self.daily_shop.stock_price)
-				sell_price_all = int(get_selected_treasure['price'] * self.daily_shop.stock_price * owned[selected_treasure])
+				sell_price_one = int(get_selected_treasure['price'] * daily_shop.stock_price)
+				sell_price_all = int(get_selected_treasure['price'] * daily_shop.stock_price * owned[selected_treasure])
 				
 				amount_selected = int(owned.get(selected_treasure, 0))
 				
