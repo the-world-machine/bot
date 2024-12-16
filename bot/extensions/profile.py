@@ -82,7 +82,7 @@ class ProfileModule(Extension):
 			label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
 			url="https://theworldmachine.xyz/profile"
 		)
-		await fancy_message(ctx, message=Localization.sl('profile.edit', locale=ctx.locale), ephemeral=True, components=components)
+		await fancy_message(ctx, message=Localization.sl('profile.edit.text', locale=ctx.locale), ephemeral=True, components=components)
 		
 	choices = [
 		SlashCommandChoice(name='Sun Amount', value='suns'),
