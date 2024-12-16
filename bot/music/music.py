@@ -83,7 +83,7 @@ async def play_track(module: Extension, ctx: Union[SlashContext, ComponentContex
     del global_queue[ctx.guild_id][track_id]
     
     directory = f'bot/music/output/{str(ctx.guild_id)}'
-    file_directory = os.path.join(directory + '/output')
+    file_directory = os.path.join(directory + '/output.m4a')
     
     if not ctx.voice_state:
         raise ValueError("Not in voice channel to play audio")
