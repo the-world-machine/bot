@@ -6,7 +6,7 @@ from utilities.misc import get_image
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
 
-async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox"):
+async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox") -> File:
   img = Image.open("bot/images/textbox/niko-background.png")
   icon = await get_image(url=icon_url)
   icon = icon.resize((96, 96))

@@ -37,7 +37,7 @@ class InteractModule(Extension):
     
     async def start_interaction(self, ctx: SlashContext, who: User):
         
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         if ctx.author.id == who.id:
             return await fancy_message(ctx, loc.l('interact.twm_is_fed_up_with_you', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
@@ -55,7 +55,7 @@ class InteractModule(Extension):
     
     @component_callback('interaction_selected')
     async def menu_callback(self, ctx: ComponentContext):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         await ctx.defer(edit_origin=True)
         
         args = ctx.values[0].split('_')

@@ -101,13 +101,11 @@ class Localization:
 	global debug
 	global fallback_locale
 	global _locales
-
+	locale: str 
+ 
 	locale: str
-	def __init__(self, ctx):
-		if ctx.locale not in _locales.keys():
-			self.locale = get_config("localization.main-locale")
-			return
-		self.locale = ctx.locale
+	def __init__(self, locale: str = None):
+		self.locale = locale if not None and locale in _locales.keys() else get_config("localization.main-locale")
   		
 	
 	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
@@ -144,16 +142,11 @@ class Localization:
 	
 def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 	if isinstance(num, float):
-		num = round(num, 3)
-		if locale in ("ru", "uk"):
-			fmtd = '{: ,}'.format(num)
-		else:
-			fmtd = '{:,.3f}'.format(num)
+		fmtd = '{:,.3f}'.format(num)
 	else:
-		if locale in ("ru", "uk"):
-			fmtd = '{: }'.format(num)
-		else:
-			fmtd = '{:,}'.format(num)
+		fmtd = '{:,}'.format(num)
+	if locale in ("ru", "uk", "be", "kk", "ro", "sr", "bg"):
+		fmtd = fmtd.replace(",", " ")
 	
 	if ordinal and isinstance(num, int) and locale not in ("ru", "uk"):
 		fmtd += english_ordinal_for(num)

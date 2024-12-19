@@ -55,17 +55,22 @@ misc:
 
 profile:
   view: 
+    message: "Переглядуємо профіль [usermention]"
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редагувати Свій Профіль"
     bots: "[ Боти не мають профілів! ]"
     loading: "[ Завантаження профіля [user]... [emoji:loading] ]"
 
     image: 
+      alt_nodescription: "На зображенні профіль користувача [username] у системі Мирової Машини. У них є [suns] шт Сонець та [wool] шт Вовни"
+
+      # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
+      alt_cont: "[alt_nodescription]. Їхній опис: [description]"
       name: "профіль [userid]"
       title: "Профіль [username]"
       unlocked:
         stamps: "Розблоковані Бейджи:"
   edit: 
-    text: "You can view your profile over on the website!" 
+    text: "Ви можете редагувати свій профіль на нашому сайті!"
 
 # ---------------------------------------------------------------
 

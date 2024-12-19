@@ -198,7 +198,7 @@ class MusicModule(Extension):
         autocomplete=True,
     )
     async def play(self, ctx: SlashContext, song: str):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         # Getting user's voice state
         voice_state = ctx.member.voice
         if not voice_state or not voice_state.channel:
@@ -285,7 +285,7 @@ class MusicModule(Extension):
         required=True,
     )
     async def file(self, ctx: SlashContext, file: Attachment):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         # Getting user's voice state
         voice_state = ctx.member.voice
 

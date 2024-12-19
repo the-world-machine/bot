@@ -80,7 +80,7 @@ class ShopModule(Extension):
 		
 		await ctx.defer(edit_origin=True)
 		
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		
 		await self.load_shop()
 		
@@ -153,7 +153,7 @@ class ShopModule(Extension):
 		
 		await ctx.defer(edit_origin=True)
 		
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		
 		await self.load_shop()
 		
@@ -216,6 +216,7 @@ class ShopModule(Extension):
 	r_buy_bg = re.compile(r'buy_bg_(.*)_(\d+)')
 	@component_callback(r_buy_bg)
 	async def buy_bg_callback(self, ctx: ComponentContext):
+		loc = Localization(ctx.locale)
 		await ctx.defer(edit_origin=True)
 		
 		user: UserData = await UserData(ctx.author.id).fetch()
@@ -235,19 +236,20 @@ class ShopModule(Extension):
 				
 		embed, components = await self.embed_manager(ctx, 'Backgrounds', page=page)
 		if bg_id in owned_backgrounds:
-			embed.set_footer(Localization.sl('shop.buttons.owned', locale=ctx.locale))
+			embed.set_footer(loc.l('shop.buttons.owned'))
 		elif user.wool < get_background['price']:
-			embed.set_footer(Localization.sl('shop.buttons.too_poor', locale=ctx.locale))
+			embed.set_footer(loc.l('shop.buttons.too_poor'))
 		else:
-			
 			owned_backgrounds.append(bg_id)
 
 			await user.update(
 				owned_backgrounds=owned_backgrounds,
 			)
-			embed.description = Localization.sl('shop.backgrounds.newly_owned', locale=ctx.locale, user_wool=Localization.sl('shop.user_wool', wool=user.wool, locale=ctx.locale))
+			embed.description = loc.l('shop.backgrounds.newly_owned',
+				user_wool=loc.l('shop.user_wool', wool=user.wool)
+			)
 			await user.manage_wool(-get_background['price'])
-			embed.set_footer(Localization.sl('shop.backgrounds.traded', locale=ctx.locale))
+			embed.set_footer(loc.l('shop.backgrounds.traded'))
 		await ctx.send(embed=embed, components=components, ephemeral=True)
 
 	@component_callback('nikogotchi_buy')
@@ -255,7 +257,7 @@ class ShopModule(Extension):
 		
 		await ctx.defer(edit_origin=True)
 		
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		
 		user_data: UserData = await UserData(ctx.author.id).fetch()
 		nikogotchi: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
@@ -291,7 +293,7 @@ class ShopModule(Extension):
 		
 		await ctx.defer(edit_origin=True)
 		
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		
 		user_data: UserData = await UserData(ctx.author.id).fetch()
 		nikogotchi_data: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
@@ -391,7 +393,7 @@ class ShopModule(Extension):
 
 		await self.load_shop()
 		
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		
 		user_data: UserData = await UserData(ctx.author.id).fetch()
 		
@@ -804,7 +806,7 @@ class ShopModule(Extension):
 				treasure = all_treasures[treasure_nid]
 				
 				treasure_loc = loc.l(f'items.treasures.{treasure_nid}')
-							   
+
 				treasure_selection.append(
 					StringSelectOption(
 						label=f'{treasure_loc["name"]} (x{amount})',
@@ -844,7 +846,7 @@ class ShopModule(Extension):
 					'shop.treasures.sell.message',
 					stock_market=stock,
 					selected_treasure=treasure_details,
-				   
+					 
 					user_wool=user_wool
 				),
 				thumbnail=magpie,

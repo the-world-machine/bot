@@ -90,7 +90,7 @@ class WoolModule(Extension):
 	@slash_option(description='Who would you like to give?', name='to', required=True, opt_type=OptionType.USER)
 	@slash_option(description='How much wool would you like to give them?', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1)
 	async def give(self, ctx: SlashContext, to: User, amount: int):
-		loc = Localization(ctx)
+		loc = Localization(ctx.locale)
 		if to.id == ctx.author.id:
 			return await fancy_message(ctx, '[ What... ]', ephemeral=True, color=Colors.BAD)
 		

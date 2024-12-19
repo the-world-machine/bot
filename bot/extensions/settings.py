@@ -14,7 +14,7 @@ class SettingsModule(Extension):
     
     async def check(self, ctx: SlashContext):
         if Permissions.MANAGE_GUILD not in ctx.member.guild_permissions:
-            await fancy_message(ctx, Localization(ctx).l("settings.missing_permissions"), color=Colors.BAD, ephemeral=True)
+            await fancy_message(ctx, Localization(ctx.locale).l("settings.missing_permissions"), color=Colors.BAD, ephemeral=True)
             return False
 
         return True
@@ -28,7 +28,7 @@ class SettingsModule(Extension):
         opt_type=OptionType.CHANNEL,
     )
     async def channel(self, ctx: SlashContext, channel: GuildText = None):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         if not await self.check(ctx):
             return
         server_data = await ServerData(ctx.guild_id).fetch()
@@ -57,7 +57,7 @@ class SettingsModule(Extension):
         required=True,
     )
     async def images(self, ctx: SlashContext, value: bool):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         if not await self.check(ctx):
             return
 
@@ -79,7 +79,7 @@ class SettingsModule(Extension):
         required=True,
     )
     async def anonymous(self, ctx: SlashContext, value):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         if not await self.check(ctx):
             return
 
@@ -104,7 +104,7 @@ class SettingsModule(Extension):
     async def block(self, ctx: SlashContext, server: str = None):
         if not await self.check(ctx):
             return
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         server_data: ServerData = await ServerData(ctx.guild_id).fetch()
 
         block_list = server_data.blocked_servers
@@ -155,7 +155,7 @@ class SettingsModule(Extension):
     @server.subcommand()
     async def welcome_message(self, ctx: SlashContext):
         "Edit this server's welcome message."
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         return await ctx.send_modal(Modal(
             InputText(
                 label=loc.l("settings.server.welcome.editor.input"),
@@ -177,5 +177,5 @@ class SettingsModule(Extension):
         message = f"```\n{message.replace('```', '` ``')}```"
         
         await ctx.send(
-            Localization(ctx).l("settings.server.welcome.editor.done") + message, ephemeral=True
+            Localization(ctx.locale).l("settings.server.welcome.editor.done") + message, ephemeral=True
         )

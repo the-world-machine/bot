@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
-from utilities.localization import Localization, ftime
+from utilities.localization import Localization, fnum, ftime
 from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
 
 
@@ -50,20 +50,22 @@ class ProfileModule(Extension):
 	@profile.subcommand(sub_cmd_description='View a profile.')
 	@slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
 	async def view(self, ctx: SlashContext, user: User = None):
-		loc = Localization(ctx)
+		url = "https://theworldmachine.xyz/profile"
+
+		loc = Localization(ctx.locale)
 		if user is None:
 			user = ctx.user
-		url = "https://theworldmachine.xyz/profile"
 		if user.bot and ctx.client.user != user:
 			return await ctx.send(loc.l("profile.view.bots"), ephemeral=True)
 
-		message = await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
-
+		await fancy_message(ctx, loc.l("profile.view.loading", user=user.mention))
+  
 		start_time = time.perf_counter()
-		image = await draw_profile(user,
-								   filename=loc.l("profile.view.image.name", username=user.id),
-								   description=loc.l("profile.view.image.title", username=user.username),
-								   loc=loc)
+		image = await draw_profile(
+			user,
+			filename=loc.l("profile.view.image.name", username=user.id),
+			loc=loc
+		)
 		runtime = (time.perf_counter() - start_time) * 1000
 		components = []
 		if user == ctx.user:
@@ -72,17 +74,23 @@ class ProfileModule(Extension):
 				url=url,
 				label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
 			))
-
-		await message.edit(content=f"-# Took {ftime(runtime)}" if debugging() else None, files=image, components=components, embeds=[])
+		content = loc.l("profile.view.message", usermention=user.mention)
+		await ctx.edit(
+			content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
+			files=image,
+			components=components,
+			allowed_mentions={'users':[]},
+			embeds=[]
+		)
 
 	@profile.subcommand(sub_cmd_description='Edit your profile.')
 	async def edit(self, ctx: SlashContext):
 		components = Button(
 			style=ButtonStyle.URL,
-			label=Localization.sl('general.buttons._open_site', locale=ctx.locale),
+			label=Localization(ctx.locale).l('general.buttons._open_site'),
 			url="https://theworldmachine.xyz/profile"
 		)
-		await fancy_message(ctx, message=Localization.sl('profile.edit.text', locale=ctx.locale), ephemeral=True, components=components)
+		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)
 		
 	choices = [
 		SlashCommandChoice(name='Sun Amount', value='suns'),

@@ -80,7 +80,7 @@ class NikogotchiModule(Extension):
         prefix = 'action_'
         suffix = f'_{owner_id}'
         
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         return [
             Button(
@@ -127,7 +127,7 @@ class NikogotchiModule(Extension):
 
         metadata = await fetch_nikogotchi_metadata(n.nid)
         owner = await ctx.client.fetch_user(n._id)
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         pb_length = 5
         
@@ -239,7 +239,7 @@ class NikogotchiModule(Extension):
     async def check(self, ctx: SlashContext):
 
         uid = ctx.author.id
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         old_nikogotchi: NikogotchiData = await NikogotchiData(uid).fetch()
         nikogotchi: Nikogotchi
@@ -389,7 +389,7 @@ class NikogotchiModule(Extension):
         if custom_id == 'exit':
             await ctx.delete()
             
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
             
         nikogotchi = await self.get_nikogotchi(uid)
 
@@ -516,7 +516,7 @@ class NikogotchiModule(Extension):
         
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
         
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         if nikogotchi_data.glitched_pancakes > 0:
             food_options.append(
@@ -590,7 +590,7 @@ class NikogotchiModule(Extension):
         
         updated_stats = []
         
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         match pancake_type:
             case 'golden':
                 if golden_pancakes <= 0:
@@ -644,7 +644,7 @@ class NikogotchiModule(Extension):
     @nikogotchi.subcommand(sub_cmd_description='Send away your Nikogotchi.')
     async def send_away(self, ctx: SlashContext):
         
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
         
@@ -686,7 +686,7 @@ class NikogotchiModule(Extension):
             await ctx.delete() 
 
     async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str, cont: bool = False):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         modal = Modal(
             ShortText(
                 custom_id='name',
@@ -704,7 +704,7 @@ class NikogotchiModule(Extension):
 
     @modal_callback(re.compile(r'rename_nikogotchi?.+'))
     async def on_rename_answer(self, ctx: ModalContext, name: str):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         if ctx.custom_id.endswith("continue"):
             await ctx.defer(edit_origin=True)
@@ -729,14 +729,14 @@ class NikogotchiModule(Extension):
         nikogotchi = await self.get_nikogotchi(ctx.author.id)
 
         if nikogotchi is None:
-            return await fancy_message(ctx, Localization.sl('nikogotchi.other.you_invalid', locale=ctx.locale), ephemeral=True, color=Colors.BAD)
+            return await fancy_message(ctx, Localization(ctx.locale).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD)
 
         return await self.init_rename_flow(ctx, nikogotchi.name)
 
     @nikogotchi.subcommand(sub_cmd_description="Show your nikogotchi in chat!")
     @slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
     async def show(self, ctx: SlashContext, user: User = None):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         if user is None:
             user = ctx.user
         
@@ -751,7 +751,7 @@ class NikogotchiModule(Extension):
     """@nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
     @slash_option('user', description='The user to trade with.', opt_type=OptionType.USER, required=True)
     async def trade(self, ctx: SlashContext, user: User):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         nikogotchi_one = await self.get_nikogotchi(ctx.author.id)
         nikogotchi_two = await self.get_nikogotchi(user.id)
@@ -829,7 +829,7 @@ class NikogotchiModule(Extension):
     @integration_types(guild=True, user=True)
     @slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
     async def treasures(self, ctx: SlashContext, user: User = None):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         if user is None:
             user = ctx.user

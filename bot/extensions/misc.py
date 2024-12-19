@@ -20,7 +20,7 @@ class MiscellaneousModule(Extension):
     @slash_command(description='View various statistics about the bot.')
     async def stats(self, ctx: SlashContext):
         await ctx.defer()
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         
         lavalink_stats = await get_lavalink_stats()
 
@@ -57,7 +57,7 @@ class MiscellaneousModule(Extension):
         
     @slash_command(description='A random wikipedia article.')
     async def random_wikipedia(self, ctx: SlashContext):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://en.wikipedia.org/api/rest_v1/page/random/summary') as resp:
                 if resp.status == 200:
@@ -77,7 +77,7 @@ class MiscellaneousModule(Extension):
     @slash_option(description='What sided dice to roll.', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
     @slash_option(description='How many to roll.', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
     async def roll(self, ctx: SlashContext, sides: int, amount: int = 1):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
 
         dice = random.randint(1, sides)
 
@@ -98,7 +98,7 @@ class MiscellaneousModule(Extension):
         
     @slash_command(description="Get a random picture of a cat.")
     async def cat(self, ctx: SlashContext):
-        loc = Localization(ctx)
+        loc = Localization(ctx.locale)
         embed = Embed(
             title=loc.l("misc.miaou.title"),
             color=Colors.DEFAULT
