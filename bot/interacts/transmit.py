@@ -454,7 +454,7 @@ def make_cancel_embed(cancel_reason: Literal['manual', 'server', 'timeout', 'cas
 				)
 			case 'casual':
 				return Embed(
-					description="-# the transmission with {server.name} has ended"
+					description=f"-# the transmission with {server_name} has ended"
 				)
 			case _:
 				raise ValueError("cancel_reason argument must be one of 'manual', 'server' or 'timeout'")
