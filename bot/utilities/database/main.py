@@ -21,11 +21,7 @@ class Collection:
         '''
         Update the current collection with the given kwargs.
         '''
-        
-        updated_data = await update_in_database(self, **kwargs)
-        for k, v in asdict(updated_data).items():
-            setattr(self, k, v)
-        return updated_data
+        return await update_in_database(self, **kwargs)
         
     async def fetch(self):
         '''
@@ -229,17 +225,16 @@ async def update_in_database(collection: Collection, **kwargs):
     existing_data = asdict(collection)
 
     # Update only the specified fields in the existing document
-    updated_data = {**existing_data, **kwargs}
+    updated_data = {**kwargs, **existing_data}
     # Update the document in the database
-    await db.get_collection(collection.__class__.__name__).update_one(
+    res = await db.get_collection(collection.__class__.__name__).update_one(
         {'_id': collection._id}, 
         {'$set': updated_data}, 
         upsert=True
     )
-
+    print(res)
     # Create and return an updated instance of the collection
-    updated_instance = collection.__class__(**updated_data)
-    return updated_instance
+    return collection.__class__(**updated_data)
 
 async def fetch_items():
     db = get_database()

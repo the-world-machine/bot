@@ -19,23 +19,19 @@ class TransmissionModule(Extension):
 	@transmit.subcommand(sub_cmd_description='Connect to a server you already know.')
 	async def call(self, ctx: SlashContext):
 
-		server_data: ServerData = await ServerData(ctx.guild_id).fetch()
+		server_data: ServerData = await ServerData(ctx.guild.id).fetch()
 		
-		can_transmit = server_data.transmit_channel
 		server_ids = server_data.transmittable_servers
 		
 		if attempting_to_connect(ctx.guild.id):
-
 			return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
 
-		if not can_transmit:
-
+		if not server_data.allow_ask:
 			return await fancy_message(ctx,
 									   '[ This server has opted to disable call transmissions or has simply not set a channel. ]',
 									   ephemeral=True)
 
 		if not server_ids:
-
 			return await fancy_message(ctx,
 									   '[ This server doesn\'t know any other servers! Connect using ``/transmit connect``! ]',
 									   ephemeral=True)
@@ -66,21 +62,18 @@ class TransmissionModule(Extension):
 		other_server_data: ServerData = await ServerData(other_server).fetch()
 		
 		if other_server in server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Color.BAD, ephemeral=True)
+			return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Colors.BAD, ephemeral=True)
 		
 		if ctx.guild_id in other_server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Color.BAD, ephemeral=True)
+			return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
 
-		get_channel: ServerData = await ServerData(other_server).fetch()
-		get_channel = get_channel.transmit_channel
-
-		if not get_channel:
-
+		if not other_server_data.transmit_channel:
+			print("OTHER", other_server, other_server_data)
 			return await fancy_message(select_results.ctx,
-									   '[ Sorry, but the server you selected has opted to disable call transmissions, or simply has not set a channel. ]',
-									   color=Color.BAD, ephemeral=True)
+									   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
+									   color=Colors.BAD, ephemeral=True)
 
-		other_server_channel: GuildText = await self.bot.fetch_channel(get_channel, force=True)
+		other_server_channel: GuildText = await self.bot.fetch_channel(other_server_data.transmit_channel)
 
 		server_name = other_server_channel.guild.name.replace("`", "'")
 
@@ -175,16 +168,7 @@ class TransmissionModule(Extension):
 
 			msg = await ctx.send(embeds=embed, components=cancel)
 
-			async def check_(component: Component):
-				if ctx.user.id == component.ctx.user.id:
-					return True
-				else:
-					await component.ctx.send(
-						f'[ Only the initiator of this transmission ({ctx.user.mention}) can cancel it! ]',
-						ephemeral=True)
-					return False
-
-			task = asyncio.create_task(self.bot.wait_for_component(components=cancel, check=check_))
+			task = asyncio.create_task(self.bot.wait_for_component(components=cancel))
 
 			while not connection_alive(ctx.guild_id):
 				done, _ = await asyncio.wait({task}, timeout=1)
