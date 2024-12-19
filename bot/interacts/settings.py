@@ -32,8 +32,8 @@ class SettingsModule(Extension):
         if not await self.check(ctx):
             return
         server_data = await ServerData(ctx.guild_id).fetch()
-        if isinstance(channel, MessageableMixin):
-            return await fancy_message(ctx, loc.l("settings.channel_not_manageable"), color=Colors.BAD, ephemeral=True)
+        if not isinstance(channel, MessageableMixin):
+            return await fancy_message(ctx, loc.l("settings.channel_not_messageable"), color=Colors.BAD, ephemeral=True)
         if channel is None:
             await server_data.update(transmit_channel=None)
             return await fancy_message(
