@@ -37,13 +37,13 @@ class SettingsModule(Extension):
         if channel is None:
             await server_data.update(transmit_channel=None)
             return await fancy_message(
-                ctx, loc.l("settings.transmissions.channel.reset"), ephemeral=True
+                ctx, loc.l("settings.transmissions.channel.auto"), ephemeral=True
             )
 
         await server_data.update(transmit_channel=str(channel.id))
         return await fancy_message(
             ctx,
-            loc.l("settings.transmissions.channel.reset", channel=channel.mention),
+            loc.l("settings.transmissions.channel.Changed", channel=channel.mention),
             ephemeral=True,
         )
 

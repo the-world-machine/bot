@@ -116,19 +116,19 @@ profile:
 # ---------------------------------------------------------------
 
 explode:
-    cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
-    dialogue:
-        why: 
-          - Niko wouldn't like that
-          - did you know you're a bad person
-          - why would you do that
-          - hey...
-          - ~ # don't touch this one, the bot inserts a random amount of dots here
+  cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
+  dialogue:
+    why: 
+      - "Niko wouldn't like that"
+      - "did you know you're a bad person"
+      - why would you do that
+      - hey...
+      - ~ # don't touch this one, the bot inserts a random amount of dots here
 
-        sixninefourtwo: nice 👍
-        nineninenineninenine: That's enough.
-    info: "Times you've shattered The Sun: [amount]"
-    YouKilledNiko: "[ You killed Niko. ]"
+    sixninefourtwo: nice 👍
+    nineninenineninenine: "That's enough."
+  info: "Times you've shattered The Sun: [amount]"
+  YouKilledNiko: "[ You killed Niko. ]"
 
 # ---------------------------------------------------------------
 
