@@ -66,10 +66,9 @@ async def load_profile_assets():
         print("\033[999B", end="", flush=True)
     else:
         print(f"Done ({assets})")
-async def draw_profile(user: User, filename: str, description: str, locale: str = "en-#") -> io.BytesIO:
+async def draw_profile(user: User, filename: str, description: str, loc: Localization) -> io.BytesIO:
     if wool_icon is None:
         await load_profile_assets()
-
     user_id = user.id
     user_pfp_url = user.display_avatar._url
     animated = user.display_avatar.animated
@@ -82,7 +81,7 @@ async def draw_profile(user: User, filename: str, description: str, locale: str 
 
     user_data: db.UserData = await db.UserData(user_id).fetch()
 
-    title = Localization.sl("profile.view.image.title", locale, username=user.username)
+    title = loc.l("profile.view.image.title", username=user.username)
     description = f"{textwrap.fill(user_data.profile_description, 35)}"
 
     backgrounds = await fetch_background()
@@ -148,7 +147,7 @@ async def draw_profile(user: User, filename: str, description: str, locale: str 
            stroke_fill=Colors.BLACK.hex)
     image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-    base_profile.text((42, 251), Localization.sl("profile.view.image.unlocked.stamps", locale, username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex)
+    base_profile.text((42, 251), loc.l("profile.view.image.unlocked.stamps", username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex)
 
     # Handle the user's avatar (animated or static)
     pfp = await get_image(user_pfp_url)

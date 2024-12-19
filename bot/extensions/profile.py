@@ -63,7 +63,7 @@ class ProfileModule(Extension):
 		image = await draw_profile(user,
 								   filename=loc.l("profile.view.image.name", username=user.id),
 								   description=loc.l("profile.view.image.title", username=user.username),
-								   locale=ctx.locale)
+								   loc=loc)
 		runtime = (time.perf_counter() - start_time) * 1000
 		components = []
 		if user == ctx.user:
