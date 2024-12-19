@@ -34,7 +34,7 @@ def local_override(locale: str, data: dict):
 
 def load_locale(locale: str):
 	with open(Path('bot/data/locales', locale+'.yml'), 'r', encoding='utf-8') as f:
-			return safe_load(f)
+		return safe_load(f)
 
 last_update_timestamps = {}
 debounce_interval = 1 # seconds

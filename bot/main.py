@@ -7,12 +7,12 @@ print("\n─ Starting The World Machine... 1/3")
 from utilities.config import get_config, get_token # import config first (for prerequisites) 
 
 from interactions import *
-from utilities.misc import set_status
-from utilities.extension_loader import load_extensions
+# from utilities.misc import set_status
+from utilities.extensions import load_interacts, assign_events
 from utilities.database.main import connect_to_db
 from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_status, roll_avatar
-from interactions.api.events import Ready
+from interactions.api.events import Startup
 
 
 intents = (
@@ -41,15 +41,12 @@ if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.sta
 		if get_config("bot.rolling.avatar") == True:
 			await roll_avatar(client)
 
+assign_events(client)
 
-@listen(Ready)
-async def on_ready():
-	print(f"─ Started Discord as {client.user.tag} ({client.user.id})")
-
-@listen()
-async def on_startup():
+@listen(Startup)
+async def on_startup(event: Startup):
 	# await set_status(client, "[ Loading... ]")
-	load_extensions(client)
+	load_interacts(client)
 	await connect_to_db()
 	await load_profile_assets()
 	await client.wait_until_ready()

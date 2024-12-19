@@ -5,7 +5,6 @@ import psutil
 import platform
 from interactions import *
 from utilities.localization import Localization, fnum, ftime
-from extensions.music import get_lavalink_stats
 from utilities.message_decorations import Colors, fancy_message
 from datetime import datetime
 from utilities.misc import get_git_hash
@@ -21,8 +20,6 @@ class MiscellaneousModule(Extension):
     async def stats(self, ctx: SlashContext):
         await ctx.defer()
         loc = Localization(ctx.locale)
-        
-        lavalink_stats = await get_lavalink_stats()
 
         host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
         total_servers = len(ctx.client.guilds)

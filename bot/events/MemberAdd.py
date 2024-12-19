@@ -4,9 +4,11 @@ from interactions.api.events import MemberAdd
 from utilities.database.main import ServerData
 from utilities.localization import assign_variables
 
-class WelcomeMessagesModule(Extension):
-	@listen(MemberAdd)
-	async def on_guild_join(self, event: MemberAdd):
+class MemberAddEvent(Extension):
+	@listen(MemberAdd, delay_until_ready=True)
+	async def handler(self, event: MemberAdd):
+		client = event.client
+
 		if event.member.bot:
 			return
 		server_data: ServerData = await ServerData(event.guild_id).fetch()
@@ -14,7 +16,7 @@ class WelcomeMessagesModule(Extension):
 		if not event.guild.system_channel or not server_data.welcome_message:
 			return
 		message = assign_variables(server_data.welcome_message, user_name=event.member.display_name, server_name=event.guild.name)
-
+		print(f"Trying to send welcome message for server {event.guild.id} in channel <#f{event.guild.system_channel.id}>")
 		await event.guild.system_channel.send(
 			content=event.member.mention,
 			files=await generate_dialogue(
