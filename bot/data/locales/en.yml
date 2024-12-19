@@ -73,6 +73,7 @@ settings:
         title: "[ You are editing the welcome message... ]"
         input: "Welcome Message"
         placeholder: "Leave blank to disable
+
         - You can use the variables: [user_name] [server_name]"
         done: |
           [ Successfully updated welcome message ]
@@ -123,7 +124,7 @@ explode:
           - why would you do that
           - hey...
           - ~ # don't touch this one, the bot inserts a random amount of dots here
-        
+
         sixninefourtwo: nice 👍
         nineninenineninenine: That's enough.
     info: "Times you've shattered The Sun: [amount]"
