@@ -417,7 +417,7 @@ interact:
 
 treasure:
   bots: "[ [bot] doesn't have any treasure ]"
-  item: "- **`[amount]`** [icon] [name]"
+  item: "**`[amount]`** [icon] [name]"
   message: >
     ### [user]'s treasures
 

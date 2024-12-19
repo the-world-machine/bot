@@ -840,6 +840,7 @@ class NikogotchiModule(Extension):
         
         user_data: UserData = await UserData(user.id).fetch()
         owned_treasures = user_data.owned_treasures
+        max_amount_length = len(fnum(max(owned_treasures.values(), default=0), locale=loc.locale))
 
         for treasure_nid, item in all_treasures.items():
             
@@ -847,7 +848,7 @@ class NikogotchiModule(Extension):
             
             name = treasure_loc[treasure_nid]['name']
 
-            treasure_string += loc.l('treasure.item', amount=owned_treasures.get(treasure_nid, 0), icon=emojis['treasures'][treasure_nid], name=name)+"\n"
+            treasure_string += loc.l('treasure.item', amount=fnum(owned_treasures.get(treasure_nid, 0), locale=loc.locale).rjust(max_amount_length), icon=emojis['treasures'][treasure_nid], name=name)+"\n"
         
         await ctx.send(embed=Embed(
             description=str(loc.l('treasure.message', user=user.mention, treasures=treasure_string)),

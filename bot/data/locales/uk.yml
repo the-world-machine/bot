@@ -419,8 +419,8 @@ interact:
 
 treasure:
   bots: "[ У [bot] нема скарбів ]"
-  item: "* **`[amount]`** [icon] [name]"
-  show: >
+  item: "**`[amount]`** [icon] [name]"
+  message: >
     ### Скарби [user]
 
     [treasures]
