@@ -61,7 +61,7 @@ wool: ~
 
 settings:
   errors:
-    missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
+    missing_permissions: "[ Вы должны иметь право \"Управлять сервером\" для изменения настроек ]"
     channel_not_messageable: "[ Я не могу отправлять сообщения в данный канал ]"
     invalid_server_id: "[ Неверный ID сервера. ]"
     uncached_server: "-# не найдено имя сервера (меня в нём нет)"
