@@ -336,6 +336,13 @@ interact:
     headpat:
       name: Потрепать
       messages: "[user_one] потрепал [user_two] по голове!"
+    tickle:
+      name: Пощекотать
+      messages:
+        - "[user_one] неожиданно для [user_two] защекотал!"
+        - "[user_one] неожиданно защекотал [user_two]!"
+        - "[user_one] защекотал [user_two], чем разжёг щекоточную войну!"
+        - "[user_one] атаковал щекоткой [user_two]!"
     hug:
       name: Обнять
       messages: "[user_one] обнял [user_two]!"
