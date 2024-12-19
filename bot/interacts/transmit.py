@@ -16,133 +16,133 @@ class TransmissionModule(Extension):
 	async def transmit(self, ctx: SlashContext):
 		pass
 
-	@transmit.subcommand(sub_cmd_description='Connect to a server you already know.')
-	async def call(self, ctx: SlashContext):
+	# @transmit.subcommand(sub_cmd_description='Connect to a server you already know.')
+	# async def call(self, ctx: SlashContext):
 
-		server_data: ServerData = await ServerData(ctx.guild.id).fetch()
+	# 	server_data: ServerData = await ServerData(ctx.guild.id).fetch()
 		
-		server_ids = server_data.transmittable_servers
+	# 	server_ids = server_data.transmittable_servers
 		
-		if attempting_to_connect(ctx.guild.id):
-			return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
+	# 	if attempting_to_connect(ctx.guild.id):
+	# 		return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
 
-		if not server_data.allow_ask:
-			return await fancy_message(ctx,
-									   '[ This server has opted to disable call transmissions or has simply not set a channel. ]',
-									   ephemeral=True)
+	# 	if not server_data.allow_ask:
+	# 		return await fancy_message(ctx,
+	# 								   '[ This server has opted to disable call transmissions or has simply not set a channel. ]',
+	# 								   ephemeral=True)
 
-		if not server_ids:
-			return await fancy_message(ctx,
-									   '[ This server doesn\'t know any other servers! Connect using ``/transmit connect``! ]',
-									   ephemeral=True)
+	# 	if not server_ids:
+	# 		return await fancy_message(ctx,
+	# 								   '[ This server doesn\'t know any other servers! Connect using ``/transmit connect``! ]',
+	# 								   ephemeral=True)
 
-		options = []
+	# 	options = []
 
-		server_name = ''
+	# 	server_name = ''
 
-		for server_id, name in server_ids.items():
-			options.append(
-				StringSelectOption(
-					label=name,
-					value=server_id
-				)
-			)
+	# 	for server_id, name in server_ids.items():
+	# 		options.append(
+	# 			StringSelectOption(
+	# 				label=name,
+	# 				value=server_id
+	# 			)
+	# 		)
 
-		server_list = StringSelectMenu(
-			options,
-			custom_id=str(ctx.guild.id),
-			placeholder='Connect to...',
-		)
+	# 	server_list = StringSelectMenu(
+	# 		options,
+	# 		custom_id=str(ctx.guild.id),
+	# 		placeholder='Connect to...',
+	# 	)
 
-		await ctx.send(components=server_list, ephemeral=True)
+	# 	await ctx.send(components=server_list, ephemeral=True)
 
-		select_results = await self.bot.wait_for_component(components=server_list)
+	# 	select_results = await self.bot.wait_for_component(components=server_list)
 
-		other_server = int(select_results.ctx.values[0])
-		other_server_data: ServerData = await ServerData(other_server).fetch()
+	# 	other_server = int(select_results.ctx.values[0])
+	# 	other_server_data: ServerData = await ServerData(other_server).fetch()
 		
-		if other_server in server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Colors.BAD, ephemeral=True)
+	# 	if other_server in server_data.blocked_servers:
+	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Colors.BAD, ephemeral=True)
 		
-		if ctx.guild_id in other_server_data.blocked_servers:
-			return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
+	# 	if ctx.guild_id in other_server_data.blocked_servers:
+	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
 
-		if not other_server_data.transmit_channel:
-			print("OTHER", other_server, other_server_data)
-			return await fancy_message(select_results.ctx,
-									   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
-									   color=Colors.BAD, ephemeral=True)
+	# 	if not other_server_data.transmit_channel:
+	# 		print("OTHER", other_server, other_server_data)
+	# 		return await fancy_message(select_results.ctx,
+	# 								   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
+	# 								   color=Colors.BAD, ephemeral=True)
 
-		other_server_channel: GuildText = await self.bot.fetch_channel(other_server_data.transmit_channel)
+	# 	other_server_channel: GuildText = await self.bot.fetch_channel(other_server_data.transmit_channel)
 
-		server_name = other_server_channel.guild.name.replace("`", "'")
+	# 	server_name = other_server_channel.guild.name.replace("`", "'")
 
-		connect_button = Button(
-			style=ButtonStyle.PRIMARY,
-			label='Answer',
-			custom_id='answer_phone'
-		)
+	# 	connect_button = Button(
+	# 		style=ButtonStyle.PRIMARY,
+	# 		label='Answer',
+	# 		custom_id='answer_phone'
+	# 	)
 
-		disconnect_button = Button(
-			style=ButtonStyle.DANGER,
-			label='Decline',
-			custom_id='decline_phone'
-		)
+	# 	disconnect_button = Button(
+	# 		style=ButtonStyle.DANGER,
+	# 		label='Decline',
+	# 		custom_id='decline_phone'
+	# 	)
 
-		embed_one = Embed(
-			description=f"``[ Calling **{server_name}**... ``{emojis['icons']['loading']}` ]`",
-			color=Colors.DARKER_WHITE
-		)
+	# 	embed_one = Embed(
+	# 		description=f"``[ Calling **{server_name}**... ``{emojis['icons']['loading']}` ]`",
+	# 		color=Colors.DARKER_WHITE
+	# 	)
 
-		embed_timeout_one = Embed(
-			description='``[ Sorry! You took too long to respond! ]``',
-			color=Colors.RED
-		)
-		embed_timeout_two = Embed(
-			description='``[ Sorry! The other server took too long to respond! ]``',
-			color=Colors.RED
-		)
+	# 	embed_timeout_one = Embed(
+	# 		description='``[ Sorry! You took too long to respond! ]``',
+	# 		color=Colors.RED
+	# 	)
+	# 	embed_timeout_two = Embed(
+	# 		description='``[ Sorry! The other server took too long to respond! ]``',
+	# 		color=Colors.RED
+	# 	)
 
-		embed_cancel_one = Embed(
-			description='``[ Successfully Declined. ]``',
-			color=Colors.WARN
-		)
-		embed_cancel_two = Embed(
-			description='``[ Sorry! The other server declined the call! ]``',
-			color=Colors.RED
-		)
+	# 	embed_cancel_one = Embed(
+	# 		description='``[ Successfully Declined. ]``',
+	# 		color=Colors.WARN
+	# 	)
+	# 	embed_cancel_two = Embed(
+	# 		description='``[ Sorry! The other server declined the call! ]``',
+	# 		color=Colors.RED
+	# 	)
 
-		message = await select_results.ctx.send(embed=embed_one)
+	# 	message = await select_results.ctx.send(embed=embed_one)
 
-		other_server_message = await fancy_message(other_server_channel, f'[ **{ctx.guild.name}** is calling you! ]', components=[connect_button, disconnect_button])
+	# 	other_server_message = await fancy_message(other_server_channel, f'[ **{ctx.guild.name}** is calling you! ]', components=[connect_button, disconnect_button])
 
-		try:
-			other_server_component: Component = await self.bot.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
-		except:
+	# 	try:
+	# 		other_server_component: Component = await self.bot.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
+	# 	except:
 
-			await other_server_message.edit(embed=embed_timeout_one, components=[])
-			await message.edit(embed=embed_timeout_two)
-			return
+	# 		await other_server_message.edit(embed=embed_timeout_one, components=[])
+	# 		await message.edit(embed=embed_timeout_two)
+	# 		return
 		
-		other_server_ctx = other_server_component.ctx
+	# 	other_server_ctx = other_server_component.ctx
 
-		await other_server_ctx.defer(edit_origin=True)
+	# 	await other_server_ctx.defer(edit_origin=True)
 
-		button_id = other_server_ctx.custom_id
+	# 	button_id = other_server_ctx.custom_id
 
-		if button_id == 'decline_phone':
+	# 	if button_id == 'decline_phone':
 
-			await other_server_message.edit(embed=embed_cancel_one, components=[])
-			await message.edit(embed=embed_cancel_two)
-		else:
+	# 		await other_server_message.edit(embed=embed_cancel_one, components=[])
+	# 		await message.edit(embed=embed_cancel_two)
+	# 	else:
 
-			create_connection(ctx.guild_id, ctx.channel_id)
-			connect_to_transmission(other_server, other_server_channel.id)
+	# 		create_connection(ctx.guild_id, ctx.channel_id)
+	# 		connect_to_transmission(other_server, other_server_channel.id)
 
-			await asyncio.gather(
-				self.on_transmission(ctx.user, message, ctx.guild_id),
-				self.on_transmission(other_server_ctx.user, other_server_message, other_server)
-			) # type: ignore
+	# 		await asyncio.gather(
+	# 			self.on_transmission(ctx.user, message, ctx.guild_id),
+	# 			self.on_transmission(other_server_ctx.user, other_server_message, other_server)
+	# 		) # type: ignore
 
 	@transmit.subcommand(sub_cmd_description='Transmit to another server.')
 	async def connect(self, ctx: SlashContext):
