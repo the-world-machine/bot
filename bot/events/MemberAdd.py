@@ -16,7 +16,7 @@ class MemberAddEvent(Extension):
 		if not event.guild.system_channel or not server_data.welcome_message:
 			return
 		message = assign_variables(server_data.welcome_message, user_name=event.member.display_name, server_name=event.guild.name)
-		print(f"Trying to send welcome message for server {event.guild.id} in channel <#f{event.guild.system_channel.id}>")
+		print(f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>")
 		await event.guild.system_channel.send(
 			content=event.member.mention,
 			files=await generate_dialogue(
