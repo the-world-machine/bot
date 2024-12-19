@@ -127,7 +127,7 @@ class SettingsModule(Extension):
             block_list.append(server_id)
             await server_data.update(blocked_servers=block_list)
         return await fancy_message(
-            ctx, loc.l(f"settings.transmissions.blocked.{'yah' if server_id in block_list else 'nah'}"), ephemeral=True
+            ctx, loc.l(f"settings.transmissions.blocked.{'yah' if server_id in block_list else 'nah'}", server_name=server_name), ephemeral=True
         )
 
     @server.autocomplete("server")

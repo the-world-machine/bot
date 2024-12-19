@@ -89,7 +89,7 @@ settings:
       enabled: "[ Successfully enabled anonymous mode ]"
       disabled: "[ Successfully disabled anonymous mode ]"
     blocked:
-      yeh: "[ Successfully blocked `[server_name]` ]"
+      yah: "[ Successfully blocked `[server_name]` ]"
       nah: "[ Successfully unblocked that server ]" # you can use server_name here also if you wish
 
 # ---------------------------------------------------------------
