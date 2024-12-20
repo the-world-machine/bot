@@ -40,7 +40,6 @@ class SettingsModule(Extension):
         if not isinstance(channel, MessageableMixin):
             return await fancy_message(ctx, loc.l("settings.transmissions.channel_not_messageable"), color=Colors.BAD, ephemeral=True)
         await server_data.update(transmit_channel=str(channel.id))
-        print(server_data)
         return await fancy_message(
             ctx,
             loc.l("settings.transmissions.channel.Changed", channel=channel.mention),

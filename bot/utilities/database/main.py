@@ -225,14 +225,13 @@ async def update_in_database(collection: Collection, **kwargs):
     existing_data = asdict(collection)
 
     # Update only the specified fields in the existing document
-    updated_data = {**kwargs, **existing_data}
+    updated_data = {**existing_data, **kwargs}
     # Update the document in the database
     res = await db.get_collection(collection.__class__.__name__).update_one(
         {'_id': collection._id}, 
         {'$set': updated_data}, 
         upsert=True
     )
-    print(res)
     # Create and return an updated instance of the collection
     return collection.__class__(**updated_data)
 
