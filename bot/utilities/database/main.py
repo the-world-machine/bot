@@ -21,7 +21,11 @@ class Collection:
         '''
         Update the current collection with the given kwargs.
         '''
-        return await update_in_database(self, **kwargs)
+        
+        updated_data = await update_in_database(self, **kwargs)
+        for k, v in asdict(updated_data).items():
+            setattr(self, k, v)
+        return updated_data
         
     async def fetch(self):
         '''
@@ -232,6 +236,7 @@ async def update_in_database(collection: Collection, **kwargs):
         {'$set': updated_data}, 
         upsert=True
     )
+
     # Create and return an updated instance of the collection
     return collection.__class__(**updated_data)
 
