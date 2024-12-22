@@ -289,10 +289,10 @@ items:
       name: '"Настоящая" Библиотечная Карточка'
       description: Приклеена фотография Нико.
     clover:
-      name: Светящийся клевер
+      name: Светящийся Клевер
       description: Светящийся клевер.
     die:
-      name: Светящийся кубик
+      name: Светящийся Кубик
       description: Кубик со светящимися точками.
     journal:
       name: Таинственный Журнал
@@ -417,7 +417,7 @@ treasure:
   bots: "[ [bot] не имеет никаких сокровищ. ]"
   item: "- **`[amount]`** [icon] [name]"
   message: >
-    ### сокровища [user]
+    ### Сокровища [user]
     
     [treasures]
 
