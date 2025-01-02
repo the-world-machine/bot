@@ -30,6 +30,6 @@ class NotMusic(Extension):
             await ctx.author.voice.channel.connect()
         
         # ???
-        await play_track(self, ctx)
+        await play_track(ctx)
         
         await ctx.send('Finished downloading track :)')

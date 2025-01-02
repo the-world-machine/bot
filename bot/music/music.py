@@ -1,8 +1,8 @@
 import os
 from typing import List, Union
-import music.youtube_manager as ytdl
-from interactions.api.voice.audio import AudioVolume
-
+import music.music_api as music_api
+from interactions.api.voice.audio import AudioVolume, RawInputAudio
+import asyncio
 from utilities.config import get_config
 from music.spotify_api import Spotify, SpotifyTrack
 
@@ -20,12 +20,12 @@ class TrackError(Enum):
 @dataclass
 class Track:
     url: str = ''
-    isrc: str = ''
     thumbnail: str = ''
     title: str = ''
     author: str = ''
     requester: User = None
     duration: int = 0
+    query: str = ''
     error: TrackError = TrackError.NONE
         
     def set_duration(self, seconds: float):
@@ -67,29 +67,33 @@ async def add_search(url: str, ctx: Union[SlashContext, ComponentContext]):
         queue += tracks
         return tracks
     
-    tracks = await process_yt_track(url, True, ctx.author)
+    tracks = await process_yt_track(url, ctx.author)
     queue.append(tracks)
     return [tracks]
 
-async def play_track(module: Extension, ctx: Union[SlashContext, ComponentContext], track_id: int = 0):
+async def play_track(ctx: Union[SlashContext, ComponentContext], track_id: int = 0):
     
     q = get_queue(ctx)
+    
+    target_track = q[track_id]
+    
+    track_api_id = await music_api.get_track(str(ctx.author.id), target_track.query)
+    
+    if track_api_id is None:
+        return 'api_error'
     
     if len(q) == 0:
         return 'empty_queue'
     
-    target_track = q[track_id]
-    
     del global_queue[ctx.guild_id][track_id]
-    
-    directory = f'bot/music/output/{str(ctx.guild_id)}'
-    file_directory = os.path.join(directory + '/output.m4a')
     
     if not ctx.voice_state:
         raise ValueError("Not in voice channel to play audio")
-        
-    # Get the audio using YTDL
-    audio = AudioVolume(file_directory)
+    
+    audio_data: bytearray = await music_api.download_track(str(ctx.author.id), track_api_id)
+    
+    audio = RawInputAudio(None, audio_data)
+    
     await ctx.send(f"Now Playing: **{target_track.title}**\n{target_track.thumbnail}")
     # Play the audio
     await ctx.voice_state.play(audio)
@@ -129,14 +133,14 @@ async def process_spotify_track(url: str, requester: User):
     i.author = d.artist
     i.requester = requester
     i.duration = d.duration
-    i.isrc = d.isrc
     i.url = d.url
+    i.query = f'ytsearch:{d.isrc}'
         
     return i
 
 async def process_yt_playlist(url: str, requester: User):
     try:
-        data = ytdl.get_playlist_info(url)['entries']
+        data = await music_api.get_playlist_info(url)['entries']
     except:
         i.error = TrackError.PROCESSING
         return i
@@ -154,6 +158,7 @@ async def process_yt_playlist(url: str, requester: User):
         i.author = d['uploader']
         i.thumbnail = d['thumbnails'][-1]['url']
         i.requester = requester
+        i.query = d['url']
         
         i.set_duration(d['duration'])
         
@@ -161,15 +166,18 @@ async def process_yt_playlist(url: str, requester: User):
     
     return tracks
     
-async def process_yt_track(url: str, download: bool, requester: User):
+async def process_yt_track(url: str, requester: User):
     i = Track()
     
     try:
+        
+        track_info = await music_api.get_track_info(url)
+        
         if 'ytsearch:' in url:
-            d = ytdl.get_track_info(url, download)['data']['entries'][0]
+            d = track_info['data']['entries'][0]
             url = d['url']
         else:
-            d = ytdl.get_track_info(url, download)['data']
+            d = track_info['data']
     except Exception as e:
         print(e)
         i.error = TrackError.PROCESSING
@@ -180,6 +188,7 @@ async def process_yt_track(url: str, download: bool, requester: User):
     i.author = d['uploader']
     i.thumbnail = d['thumbnails'][-1]['url']
     i.requester = requester
+    i.query = url
     
     i.set_duration(d['duration'])
     
