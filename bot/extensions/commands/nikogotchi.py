@@ -2,17 +2,17 @@ import math
 import re
 import random
 from interactions import *
-from datetime import datetime, timedelta
+from asyncio import TimeoutError
 from dataclasses import dataclass
-from dateutil import relativedelta
 from utilities.emojis import emojis
 from typing import Dict, List, Union
+from datetime import datetime, timedelta
 from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
 from utilities.localization import Localization, fnum, ftime
-from utilities.database.main import NikogotchiData, StatUpdate, UserData, Nikogotchi
 from utilities.message_decorations import Colors, fancy_message, make_progress_bar
+from utilities.database.main import NikogotchiData, StatUpdate, UserData, Nikogotchi
 
 
 @dataclass
@@ -281,7 +281,7 @@ class NikogotchiCommands(Extension):
 				button: Component = await ctx.client.wait_for_component(components=buttons, timeout=15.0)
 				if button.ctx.custom_id == f'rename {ctx.id}':
 					await self.init_rename_flow(button.ctx, nikogotchi.name, True)
-			except asyncio.TimeoutError:
+			except TimeoutError:
 				return await self.check(ctx)
 		await self.nikogotchi_interaction(ctx)
 
