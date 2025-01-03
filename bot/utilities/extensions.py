@@ -28,34 +28,34 @@ def assign_events(client: interactions.Client):
 	else:
 		print(f"Done ({amount})")
 
-loaded_interacts = []
-def load_interacts(client: interactions.Client, unload: bool=False, print=print):
-	global loaded_interacts
-	loaded_interacts = []
+loaded_modules = []
+def load_modules(client: interactions.Client, unload: bool=False, print=print):
+	global loaded_modules
+	loaded_modules = []
 
-	files = [f for f in os.listdir('bot/interacts') if f != '__pycache__']
-	interacts = [f.replace('.py', '') for f in files]
-	interacts = [None if len(f) < 0 or f.startswith(".") else f for f in interacts]
+	files = [f for f in os.listdir('bot/modules') if f != '__pycache__']
+	modules = [f.replace('.py', '') for f in files]
+	modules = [None if len(f) < 0 or f.startswith(".") else f for f in modules]
 	
-	if not get_config("music.enabled") and 'music' in interacts:
-		interacts.remove("music")
+	if not get_config("music.enabled") and 'music' in modules:
+		modules.remove("music")
   
 	if debugging():
-		print("Loading interacts" if not unload else "Reloading interacts")
+		print("Loading modules" if not unload else "Reloading modules")
 	else:
-		print(("Loading interacts" if not unload else "Reloading interacts") + " ... \033[s", flush=True)
-	for intr in interacts:
+		print(("Loading modules" if not unload else "Reloading modules") + " ... \033[s", flush=True)
+	for intr in modules:
 		if not intr:
 			continue
 		if unload: 
-			client.unload_extension(f"interacts.{intr}")
+			client.unload_extension(f"modules.{intr}")
 		if debugging():
 			print("| " + intr)
-		client.load_extension(f"interacts.{intr}")
-		loaded_interacts.append(intr)
+		client.load_extension(f"modules.{intr}")
+		loaded_modules.append(intr)
 
 	if not debugging():
-		print(f"\033[udone ({len(loaded_interacts)})", flush=True)
+		print(f"\033[udone ({len(loaded_modules)})", flush=True)
 		print("\033[999B", end="", flush=True)
 	else:
-		print(f"Done ({len(loaded_interacts)})")
+		print(f"Done ({len(loaded_modules)})")

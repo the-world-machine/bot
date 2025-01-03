@@ -8,7 +8,7 @@ from utilities.config import get_config, get_token # import config first (for pr
 
 from interactions import *
 # from utilities.misc import set_status
-from utilities.extensions import load_interacts, assign_events
+from utilities.extensions import load_modules, assign_events
 from utilities.database.main import connect_to_db
 from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_status, roll_avatar
@@ -46,7 +46,7 @@ assign_events(client)
 @listen(Startup)
 async def on_startup(event: Startup):
 	# await set_status(client, "[ Loading... ]")
-	load_interacts(client)
+	load_modules(client)
 	await connect_to_db()
 	await load_profile_assets()
 	await client.wait_until_ready()

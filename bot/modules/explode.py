@@ -25,11 +25,10 @@ class ExplodeModule(Extension):
         uid = ctx.user.id
         explosion_amount = (await UserData(uid).fetch()).times_shattered
         if uid in self.last_called:
-            elapsed_time = datetime.datetime.now() - self.last_called[uid]
-            if elapsed_time.total_seconds() < 20:
-                return await fancy_message(ctx, loc.l("explode.cooldown", seconds=round(20 - elapsed_time.total_seconds())), ephemeral=True, color=Colors.RED)
+            if datetime.datetime.now() < self.last_called[uid]:
+                return await fancy_message(ctx, loc.l("general.command_cooldown", seconds=timestamp_relative(self.last_called[uid])), ephemeral=True, color=Colors.RED)
 
-        self.last_called[uid] = datetime.datetime.now()
+        self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(seconds=20)
 
         random_number = random.randint(1, len(self.explosion_image)) - 1
         random_sadness = random.randint(1, 100)
@@ -50,7 +49,7 @@ class ExplodeModule(Extension):
             if len(str(explosion_amount)) > 0 and all(char == '9' for char in str(explosion_amount)):
                 dialogue = loc.l("explode.dialogue.nineninenineninenine")
             if not dialogue:
-                dialogue = "." * random.randint(1, 9)
+                dialogue = "." * random.randint(3, 9)
             
             embed.description = "-# "+dialogue
             embed.set_image(url=self.explosion_image[random_number])

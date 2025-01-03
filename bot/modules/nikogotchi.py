@@ -159,9 +159,12 @@ class NikogotchiModule(Extension):
         if treasure_seek_results != None:
             treasures = ''
             total = 0
+            
+            max_amount_length = len(fnum(max(treasure_seek_results.found_treasure.values(), default=0), locale=loc.locale))
+
             for (tid, amount) in treasure_seek_results.found_treasure.items():
                 total+=amount
-                treasures += loc.l('treasure.item', amount=amount, icon=emojis['treasures'][tid], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
+                treasures += loc.l('treasure.item', amount=fnum(amount, loc.locale).rjust(max_amount_length), icon=emojis['treasures'][tid], name=loc.l(f"items.treasures.{tid}.name"))+"\n"
 
             treasure_found = loc.l('nikogotchi.treasured.message', treasures=treasures, total=total, time=ftime(treasure_seek_results.time_spent))
         
@@ -315,19 +318,19 @@ class NikogotchiModule(Extension):
 
             hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
 
-            buttons = [
-                Button(style=ButtonStyle.GREEN, label=loc.l('nikogotchi.other.renaming.button'), custom_id=f'rename {ctx.author.id}'),
-                Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'continue {ctx.author.id}')
-            ]
-            await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True, edit_origin=True)
-            button: Component = await self.bot.wait_for_component(components=buttons)
-            button_ctx = button.ctx
-
-            custom_id = button_ctx.custom_id
-            if custom_id == f'rename {ctx.author.id}':
-                await self.init_rename_flow(button_ctx, nikogotchi.name, True)
-            else:
-                await button_ctx.defer(edit_origin=True)
+            button = Button(
+                style=ButtonStyle.GREEN,
+                label=loc.l('general.buttons._continue'),
+                custom_id='too lazy to fix the rename bug'
+            )
+            
+            await ctx.send(embed=hatched_embed, components=button, ephemeral=True, edit_origin=True)
+            
+            component: Component = await self.bot.wait_for_component(components=button)
+            
+            button_ctx = component.ctx
+            
+            await button_ctx.defer(edit_origin=True)
                 
             await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
@@ -396,8 +399,8 @@ class NikogotchiModule(Extension):
         if nikogotchi is None:
             return await ctx.edit_origin(
             embed=Embed(
-                title=loc.l('nikogotchi.error_title'),
-                description=loc.l('nikogotchi.error_desc')
+                title=loc.l('nikogotchi.error.title'),
+                description=loc.l('nikogotchi.error.description')
             ),
             
             components=[

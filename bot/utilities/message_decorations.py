@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 from utilities.emojis import emojis
 from interactions import Color, Message, BaseComponent, Modal, Embed
@@ -21,6 +22,9 @@ class Colors:
     PURE_ORANGE = Color.from_hex("#FF6A00")
     PURE_GREEN = Color.from_hex("#00FF00")
     PASTEL_RED = Color.from_hex("#FF6961")
+    
+def timestamp_relative(datetime: datetime):
+    return f'<t:{round(datetime.timestamp())}:R>'
     
 async def fancy_message(ctx,
                         message: str = None, 

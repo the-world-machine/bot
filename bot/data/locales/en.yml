@@ -1,6 +1,8 @@
 general:
   loading: "[ Loading... [emoji:loading] ]"
 
+  command_cooldown: "[ Please do not spam this command. You can use it again **[seconds]**. ]"
+
   buttons:
     _yes: "Yes"
     _no: "No"
@@ -116,18 +118,17 @@ profile:
 # ---------------------------------------------------------------
 
 explode:
-  cooldown: "[ Please do not spam this command. You can use it in **[seconds]** s. ]"
   dialogue:
     why: 
-      - "Niko wouldn't like that"
-      - "did you know you're a bad person"
-      - why would you do that
-      - hey...
+      - "[ Why? ]"
+      - "[ I have to clean up everytime someone does this. ]"
+      - "[ Wow... really? ]"
+      - "[  ]"
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "That's enough."
-  info: "Times you've shattered The Sun: [amount]"
+    nineninenineninenine: "[ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? Utterly despicable. ]"
+  info: "Global shatter count: [amount]"
   YouKilledNiko: "[ You killed Niko. ]"
 
 # ---------------------------------------------------------------
@@ -432,6 +433,10 @@ nikogotchi:
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
 
+  error:
+    title: Error loading this Nikogotchi!
+    description: "This Nikogotchi might not exist... 😔"
+
   name:
     niko: Niko
     nikonlanger: Nikonlanger
@@ -490,7 +495,7 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: Wanna give them a name? You can always do this later using `/nikogotchi rename`
+    description: You can give them a custom name later with `/nikogotchi rename`!
 
   status:
     template: "-# [status]"
@@ -536,11 +541,13 @@ nikogotchi:
 
       R.I.P....
   treasured: 
-    title: 🎉 they found some treasures!
+    title: 🎉 Your Nikogotchi found some treasures!
     message: > 
       [treasures]
-      Total treasures: **[total]**
-      Time spent looking: [time].
+
+      Total Treasures: **[total]**
+
+      Time Spent Looking: [time].
       
     dialogues:
       sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."

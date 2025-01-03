@@ -13,7 +13,7 @@ from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.extensions import load_interacts # used, actually
+from utilities.extensions import load_modules # used, actually
 from traceback import _parse_value_tb, TracebackException
 from utilities.shop.fetch_shop_data import reset_shop_data
 
@@ -105,7 +105,7 @@ async def execute_dev_command(message: Message):
 					except IndexError as e:
 						return await message.reply('[ Specify a module to refresh, or "all" ]')
 					if module == "all":
-						message.content = "{eval ```py\nload_interacts(message.client, unload=True, print=print)\n```}"
+						message.content = "{eval ```py\nload_modules(message.client, unload=True, print=print)\n```}"
 						return await execute_dev_command(message)
 					else:
 						msg = await message.reply(f"[ Reloading module... {emojis['icons']['loading']} ]")
