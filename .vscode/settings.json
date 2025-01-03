@@ -1,5 +1,18 @@
 {
-  "python.analysis.extraPaths": [
-    "./bot"
-  ]
+	"python.analysis.extraPaths": [
+		"./bot"
+	],
+	"editor.tabSize": 2,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+	"[python]": {
+		"editor.formatOnSaveMode": "file",
+		"editor.formatOnSave": true,
+		"editor.formatOnType": false,
+		"editor.defaultFormatter": "eeyore.yapf",
+	},
+	"yapf.args": [
+		"--style",
+		"~/.yapf.ini"
+	],
 }

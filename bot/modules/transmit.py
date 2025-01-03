@@ -20,9 +20,9 @@ class TransmissionModule(Extension):
 	# async def call(self, ctx: SlashContext):
 
 	# 	server_data: ServerData = await ServerData(ctx.guild.id).fetch()
-		
+
 	# 	server_ids = server_data.transmittable_servers
-		
+
 	# 	if attempting_to_connect(ctx.guild.id):
 	# 		return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
 
@@ -60,10 +60,10 @@ class TransmissionModule(Extension):
 
 	# 	other_server = int(select_results.ctx.values[0])
 	# 	other_server_data: ServerData = await ServerData(other_server).fetch()
-		
+
 	# 	if other_server in server_data.blocked_servers:
 	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Colors.BAD, ephemeral=True)
-		
+
 	# 	if ctx.guild_id in other_server_data.blocked_servers:
 	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
 
@@ -123,7 +123,7 @@ class TransmissionModule(Extension):
 	# 		await other_server_message.edit(embed=embed_timeout_one, components=[])
 	# 		await message.edit(embed=embed_timeout_two)
 	# 		return
-		
+
 	# 	other_server_ctx = other_server_component.ctx
 
 	# 	await other_server_ctx.defer(edit_origin=True)
@@ -146,29 +146,31 @@ class TransmissionModule(Extension):
 
 	@transmit.subcommand(sub_cmd_description='Transmit to another server.')
 	async def connect(self, ctx: SlashContext):
-		
+
 		await ctx.defer()
 		server_data: ServerData = await ServerData(ctx.guild_id).fetch()
 
 		if available_initial_connections(server_data.blocked_servers):
-			
+
 			if attempting_to_connect(ctx.guild_id):
 
-				return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
-			
+				return await fancy_message(
+				    ctx,
+				    '[ This server is already transmitting! ]',
+				    ephemeral=True)
+
 			create_connection(ctx.guild_id, ctx.channel_id)
 
 			embed = await self.embed_manager('initial_connection')
 
-			cancel = Button(
-				style=ButtonStyle.DANGER,
-				label='Cancel',
-				custom_id='haha cancel go brrr'
-			)
+			cancel = Button(style=ButtonStyle.DANGER,
+			                label='Cancel',
+			                custom_id='haha cancel go brrr')
 
 			msg = await ctx.send(embeds=embed, components=cancel)
 
-			task = asyncio.create_task(self.bot.wait_for_component(components=cancel))
+			task = asyncio.create_task(
+			    self.bot.wait_for_component(components=cancel))
 
 			while not connection_alive(ctx.guild_id):
 				done, _ = await asyncio.wait({task}, timeout=1)
@@ -179,10 +181,11 @@ class TransmissionModule(Extension):
 				remove_connection(ctx.guild_id)
 
 				button_ctx: Component = task.result()
-				
+
 				await button_ctx.ctx.defer(edit_origin=True)
 
-				embed = make_cancel_embed('manual', ctx.guild_id, button_ctx.ctx)
+				embed = make_cancel_embed('manual', ctx.guild_id,
+				                          button_ctx.ctx)
 
 				await msg.edit(embeds=embed, components=[])
 				return
@@ -214,39 +217,42 @@ class TransmissionModule(Extension):
 
 		other_server: Guild
 		if server_id == transmission.connection_a.server_id:
-			other_server = await self.bot.fetch_guild(transmission.connection_b.server_id)
+			other_server = await self.bot.fetch_guild(
+			    transmission.connection_b.server_id)
 		else:
-			other_server = await self.bot.fetch_guild(transmission.connection_a.server_id)
+			other_server = await self.bot.fetch_guild(
+			    transmission.connection_a.server_id)
 
 		server_data: ServerData = await ServerData(server_id).fetch()
 		transmittable_servers = server_data.transmittable_servers
 		transmittable_servers[str(other_server.id)] = other_server.name
-		
-		await server_data.update(transmittable_servers = transmittable_servers)
+
+		await server_data.update(transmittable_servers=transmittable_servers)
 
 		btn_id = uuid.uuid4()
 
-		disconnect = Button(
-			style=ButtonStyle.DANGER,
-			label='Disconnect',
-			custom_id=str(btn_id)
-		)
+		disconnect = Button(style=ButtonStyle.DANGER,
+		                    label='Disconnect',
+		                    custom_id=str(btn_id))
 
 		async def check_button(component: Component):
 			if user.id == component.ctx.user.id:
 				return True
 			else:
-				await component.ctx.send(f'[ Only the initiator of this transmission ({User.mention}) can cancel it! ]',
-								ephemeral=True)
+				await component.ctx.send(
+				    f'[ Only the initiator of this transmission ({User.mention}) can cancel it! ]',
+				    ephemeral=True)
 				return False
 
-		task = asyncio.create_task(self.bot.wait_for_component(components=disconnect, check=check_button))
+		task = asyncio.create_task(
+		    self.bot.wait_for_component(components=disconnect,
+		                                check=check_button))
 
 		disconnect_timer = 600
 
 		embed = await self.embed_manager('connected')
 		embed.description = f'[ Currently connected to **{other_server.name}**! ]'
-		
+
 		while connection_alive(server_id):
 			done, _ = await asyncio.wait({task}, timeout=1)
 
@@ -265,7 +271,8 @@ class TransmissionModule(Extension):
 					await msg.reply('[ Transmission will end in 30 seconds. ]')
 
 				if disconnect_timer == 0:
-					embed = make_cancel_embed('timeout', server_name=other_server.name)
+					embed = make_cancel_embed('timeout',
+					                          server_name=other_server.name)
 
 					remove_connection(server_id)
 
@@ -273,17 +280,21 @@ class TransmissionModule(Extension):
 					await msg.reply(embeds=embed)
 					return
 
-				continue  # * Important
+				continue    # * Important
 
-			await msg.edit(embeds=make_cancel_embed('casual', other_server.name, task.result().ctx), components=[])
-			await msg.reply(embeds=make_cancel_embed('manual',  other_server.name, task.result().ctx))
+			await msg.edit(embeds=make_cancel_embed('casual', other_server.name,
+			                                        task.result().ctx),
+			               components=[])
+			await msg.reply(
+			    embeds=make_cancel_embed('manual', other_server.name,
+			                             task.result().ctx))
 
 			remove_connection(server_id)
 
 			return
 
 		embed = make_cancel_embed('server', other_server.name)
-		
+
 		remove_connection(server_id)
 
 		await msg.edit(embeds=embed, components=[])
@@ -301,29 +312,36 @@ class TransmissionModule(Extension):
 			self.id = u_id
 			self.image = image
 
-	async def check_anonymous(self, guild_id: int, d_user: User, connection: Connection, server_data: ServerData):
+	async def check_anonymous(self, guild_id: int, d_user: User,
+	                          connection: Connection, server_data: ServerData):
 
 		user: TransmissionModule.TransmitUser
 
 		if server_data.anonymous:
-			
+
 			i = 0
-			
+
 			selected_character = {}
 
 			for i, character in enumerate(connection.characters):
 				if character['id'] == 0 or character['id'] == d_user.id:
-					user = TransmissionModule.TransmitUser(character['Name'], d_user.id, f'https://cdn.discordapp.com/emojis/{character["Image"]}.png')
+					user = TransmissionModule.TransmitUser(
+					    character['Name'], d_user.id,
+					    f'https://cdn.discordapp.com/emojis/{character["Image"]}.png'
+					)
 
 					connection.characters[i].update({'id': d_user.id})
-					
+
 					selected_character = character
 
 					return user
 
-			user = TransmissionModule.TransmitUser(selected_character['name'], d_user.id, selected_character['image'])
+			user = TransmissionModule.TransmitUser(selected_character['name'],
+			                                       d_user.id,
+			                                       selected_character['image'])
 		else:
-			user = TransmissionModule.TransmitUser(d_user.username, d_user.id, d_user.display_avatar.url)
+			user = TransmissionModule.TransmitUser(d_user.username, d_user.id,
+			                                       d_user.display_avatar.url)
 
 		return user
 
@@ -339,17 +357,17 @@ class TransmissionModule(Extension):
 
 		if message.author.id == 1015629604536463421 or message.author.id == 1028058097383641118:
 			return
-		
+
 		if guild is None:
 			return
 
 		if connection_alive(guild.id):
-			
+
 			if message.author.id == self.bot.user.id:
 				return
-			
+
 			server_data: ServerData = await ServerData(guild.id).fetch()
-			
+
 			transmission = get_transmission(guild.id)
 
 			first_server = transmission.connection_a
@@ -361,14 +379,18 @@ class TransmissionModule(Extension):
 
 			if first_server.channel_id == channel.id:
 				can_pass = True
-				user = await self.check_anonymous(guild.id, message.author, first_server, server_data)
-				other_connection = await self.bot.fetch_channel(second_server.channel_id)
+				user = await self.check_anonymous(guild.id, message.author,
+				                                  first_server, server_data)
+				other_connection = await self.bot.fetch_channel(
+				    second_server.channel_id)
 				allow_images = server_data.transmit_images
 
 			if second_server.channel_id == channel.id:
 				can_pass = True
-				user = await self.check_anonymous(guild.id, message.author, second_server, server_data)
-				other_connection = await self.bot.fetch_channel(first_server.channel_id)
+				user = await self.check_anonymous(guild.id, message.author,
+				                                  second_server, server_data)
+				other_connection = await self.bot.fetch_channel(
+				    first_server.channel_id)
 				allow_images = server_data.transmit_images
 
 			if can_pass:
@@ -376,21 +398,21 @@ class TransmissionModule(Extension):
 
 				await other_connection.send(embeds=embed)
 
-	async def message_manager(self, message: Message, user: TransmitUser, allow_images: bool):
+	async def message_manager(self, message: Message, user: TransmitUser,
+	                          allow_images: bool):
 
 		final_text = message.content
 
-		embed = Embed(
-			color=Colors.DARKER_WHITE,
-			description=final_text
-		)
+		embed = Embed(color=Colors.DARKER_WHITE, description=final_text)
 
 		if len(message.attachments) > 0:
 			image = message.attachments[0].url
 
 			if '.mp4' in image or '.mov' in image:
 				embed.video = EmbedAttachment(url=image)
-				embed.set_footer('User sent a video, but discord does not allow bots to send videos in embeds.')
+				embed.set_footer(
+				    'User sent a video, but discord does not allow bots to send videos in embeds.'
+				)
 			elif allow_images:
 				embed.image = EmbedAttachment(url=image)
 			else:
@@ -401,47 +423,47 @@ class TransmissionModule(Extension):
 		embed.description = final_text
 
 		return embed
-				
+
 	async def embed_manager(self, embed_type: str):
 		if embed_type == 'initial_connection':
 			return Embed(
-				title='Transmission Starting!',
-				description=f"Waiting for a connection... {emojis['icons']['loading']}",
-				color=Colors.DEFAULT
-			)
+			    title='Transmission Starting!',
+			    description=
+			    f"Waiting for a connection... {emojis['icons']['loading']}",
+			    color=Colors.DEFAULT)
 
 		if embed_type == 'connected':
+			return Embed(title='Connected!', color=Colors.GREEN)
+
+
+def make_cancel_embed(cancel_reason: Literal['manual', 'server', 'timeout',
+                                             'casual'],
+                      server_name: str,
+                      button_ctx=None):
+	match cancel_reason:
+		case "manual":
 			return Embed(
-				title='Connected!',
-				color=Colors.GREEN
+			    title='Transmission Cancelled.',
+			    description=
+			    f'{button_ctx.author.mention} cancelled the transmission.',
+			    color=Colors.WARN)
+		case 'server':
+			return Embed(
+			    title='Transmission Cancelled.',
+			    description='The other server cancelled the transmission.',
+			    color=Colors.RED)
+		case 'timeout':
+			return Embed(title='Transmission Ended.',
+			             description='You ran out of transmission time.',
+			             color=Colors.DEFAULT)
+		case 'casual':
+			return Embed(
+			    description=f"-# the transmission with {server_name} has ended")
+		case _:
+			raise ValueError(
+			    "cancel_reason argument must be one of 'manual', 'server' or 'timeout'"
 			)
 
-def make_cancel_embed(cancel_reason: Literal['manual', 'server', 'timeout', 'casual'], server_name: str, button_ctx=None):
-		match cancel_reason:
-			case "manual":
-				return Embed(
-					title='Transmission Cancelled.',
-					description=f'{button_ctx.author.mention} cancelled the transmission.',
-					color=Colors.WARN
-				)
-			case 'server':
-				return Embed(
-					title='Transmission Cancelled.',
-					description='The other server cancelled the transmission.',
-					color=Colors.RED
-				)
-			case 'timeout':
-				return Embed(
-					title='Transmission Ended.',
-					description='You ran out of transmission time.',
-					color=Colors.DEFAULT
-				)
-			case 'casual':
-				return Embed(
-					description=f"-# the transmission with {server_name} has ended"
-				)
-			case _:
-				raise ValueError("cancel_reason argument must be one of 'manual', 'server' or 'timeout'")
 
 def setup(bot):
 	TransmissionModule(bot)
