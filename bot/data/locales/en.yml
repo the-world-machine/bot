@@ -128,7 +128,7 @@ explode:
 
     sixninefourtwo: nice 👍
     nineninenineninenine: "[ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? Utterly despicable. ]"
-  info: "Global shatter count: [amount]"
+  info: "Shatter count: [amount]"
   YouKilledNiko: "[ You killed Niko. ]"
 
 # ---------------------------------------------------------------
