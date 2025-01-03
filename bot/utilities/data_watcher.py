@@ -29,10 +29,7 @@ def subscribe(path: str, cb: Callback):
 
 def watch():
 	observer = Observer()
-	observer.schedule(FileWatcher(),
-	                  path="bot/data/",
-	                  recursive=True,
-	                  event_filter=[FileModifiedEvent])
+	observer.schedule(FileWatcher(), path="bot/data/", recursive=True, event_filter=[FileModifiedEvent])
 	observer.start()
 
 	try:

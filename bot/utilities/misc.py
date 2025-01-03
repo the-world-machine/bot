@@ -1,7 +1,5 @@
-import os
 import copy
 from pathlib import Path
-import random
 import aiohttp
 import datetime
 import subprocess
@@ -15,9 +13,8 @@ class FrozenDict(dict):
 
 	def __init__(self, data):
 		if not isinstance(data, (dict, list, tuple)):
-			raise ValueError(
-			    f"Value must be a dict, list or a tuple. Received {type(data)}")
-		frozen_data = {k: self._freeze(v) for k, v in data.items()}
+			raise ValueError(f"Value must be a dict, list or a tuple. Received {type(data)}")
+		frozen_data = { k: self._freeze(v) for k, v in data.items() }
 		super().__init__(frozen_data)
 
 	def _freeze(self, value):
@@ -88,8 +85,7 @@ def rabbit(
     _error_message: str | None = None,
     simple_error: bool = False,
     deepcopy: bool = False,
-) -> Union[str, list, dict, int, bool, float, None, datetime.date,
-           datetime.datetime]:
+) -> Union[str, list, dict, int, bool, float, None, datetime.date, datetime.datetime]:
 	"""
   Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
 
@@ -152,9 +148,7 @@ def rabbit(
 			if value == None:
 				raise KeyError(f"{key} not found")
 			if len(parsed_path) > len(went_through) + 1:
-				if not isinstance(value, (dict, list)) and not (
-				    fallback_value and isinstance(fallback_value,
-				                                  (dict, list))):
+				if not isinstance(value, (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
 					error_msg = f"expected nested structure, found {type(value).__name__}"
 					if not fallback_value and not simple_error:
 						error_msg += f", no fallback passed"
@@ -181,9 +175,7 @@ def rabbit(
 				if after_failed:
 					full_error_path += f"`.{after_failed}`"
 
-				error_message = _error_message.replace("[path]",
-				                                       full_error_path).replace(
-				                                           "[error]", str(e))
+				error_message = _error_message.replace("[path]", full_error_path).replace("[error]", str(e))
 
 			if raise_on_not_found:
 				raise ValueError(error_message)
@@ -198,34 +190,26 @@ def rabbit(
 
 
 def exec(command: list) -> str:
-	return subprocess.run(command,
-	                      stdout=subprocess.PIPE,
-	                      stderr=subprocess.PIPE,
-	                      text=True).stdout
+	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout # TODO: eror handling
+
+
+def shell(command: str) -> str:
+	return exec([ "sh", "-c", command ])
 
 
 def get_git_hash(long: bool = False) -> str:
-	return exec(
-	    x
-	    for x in ['git', 'rev-parse', '--short' if not long else None, 'HEAD']
-	    if x is not None).strip()
+	return exec(x for x in [ 'git', 'rev-parse', '--short' if not long else None, 'HEAD'] if x is not None).strip()
 
 
 def get_current_branch() -> str:
-	return exec(['git', 'branch', '--show-current']).strip()
+	return exec([ 'git', 'branch', '--show-current']).strip()
 
 
 async def set_status(client: Client, text: str | list):
 	from utilities.localization import assign_variables
 	if text is not None:
-		status = assign_variables(
-		    input=text,
-		    shard_count=1
-		    if not hasattr(client, "shards") else len(client.shards),
-		    guild_count=len(client.guilds),
-		    token=client.token)
-	await client.change_presence(
-	    activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
+		status = assign_variables(input=text, shard_count=1 if not hasattr(client, "shards") else len(client.shards), guild_count=len(client.guilds), token=client.token)
+	await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
 	return status
 
 

@@ -33,7 +33,7 @@ class Collection:
         Fetch the current collection using id.
         '''
 
-		self._id = str(self._id)    # Make sure _id is string.
+		self._id = str(self._id) # Make sure _id is string.
 
 		return await fetch_from_database(self)
 
@@ -45,19 +45,13 @@ class UserData(Collection):
 	equipped_bg: str = 'Default'
 	profile_description: str = 'Hello World!'
 	badge_notifications: bool = True
-	owned_treasures: Dict[str,
-	                      int] = field(default_factory=lambda: {'journal': 5})
-	owned_backgrounds: List[str] = field(
-	    default_factory=lambda:
-	    ['Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink'])
+	owned_treasures: Dict[str, int] = field(default_factory=lambda: { 'journal': 5})
+	owned_backgrounds: List[str] = field(default_factory=lambda: [ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink'])
 	owned_badges: List[str] = field(default_factory=list)
 	ask_limit: int = 14
-	last_asked: datetime = field(
-	    default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	daily_wool_timestamp: datetime = field(
-	    default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	daily_sun_timestamp: datetime = field(
-	    default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	last_asked: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	daily_wool_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	daily_sun_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
 	times_asked: int = 0
 	times_transmitted: int = 0
 	times_shattered: int = 0
@@ -70,7 +64,7 @@ class UserData(Collection):
 		if type(value) == float:
 			int(value)
 
-		return await self.update(**{key: value + amount})
+		return await self.update(**{ key: value + amount})
 
 	async def manage_wool(self, amount: int):
 
@@ -99,10 +93,8 @@ class ServerData(Collection):
 
 @dataclass
 class NikogotchiData(Collection):
-	last_interacted: datetime = field(
-	    default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	hatched: datetime = field(
-	    default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
 	data: Dict[str, int] = field(default_factory=dict)
 	nikogotchi_available: bool = False
 	rarity: int = 0
@@ -123,8 +115,7 @@ class Nikogotchi(Collection):
 	available: bool = False
 	hatched: datetime = field(default_factory=lambda: datetime.now())
 	last_interacted: datetime = field(default_factory=lambda: datetime.now())
-	started_finding_treasure_at: datetime = field(
-	    default_factory=lambda: datetime.now())
+	started_finding_treasure_at: datetime = field(default_factory=lambda: datetime.now())
 	status: int = -1
 
 	rarity: int = 0
@@ -157,42 +148,31 @@ class Nikogotchi(Collection):
 		stats: List[StatUpdate] = []
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate("❤️", int(self.max_health),
-		               int(self.max_health) + int(algorithm)))
+		stats.append(StatUpdate("❤️", int(self.max_health), int(self.max_health) + int(algorithm)))
 		self.max_health += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate("🍴", int(self.max_hunger),
-		               int(self.max_hunger) + int(algorithm)))
+		stats.append(StatUpdate("🍴", int(self.max_hunger), int(self.max_hunger) + int(algorithm)))
 		self.max_hunger += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate(
-		        "🫂",
-		        int(self.max_happiness),
-		        int(self.max_happiness) + int(algorithm),
-		    ))
+		stats.append(StatUpdate(
+		    "🫂",
+		    int(self.max_happiness),
+		    int(self.max_happiness) + int(algorithm),
+		))
 		self.max_happiness += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate("🧽", int(self.max_cleanliness),
-		               int(self.max_cleanliness) + int(algorithm)))
+		stats.append(StatUpdate("🧽", int(self.max_cleanliness), int(self.max_cleanliness) + int(algorithm)))
 		self.max_cleanliness += algorithm
 
 		algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate("🗡️", int(self.attack),
-		               int(self.attack) + int(algorithm)))
+		stats.append(StatUpdate("🗡️", int(self.attack), int(self.attack) + int(algorithm)))
 		self.attack += algorithm
 
 		algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-		stats.append(
-		    StatUpdate("🛡️", int(self.defense),
-		               int(self.defense) + int(algorithm)))
+		stats.append(StatUpdate("🛡️", int(self.defense), int(self.defense) + int(algorithm)))
 		self.defense += algorithm
 
 		self.level = level
@@ -237,8 +217,7 @@ async def fetch_from_database(collection: Collection) -> Collection:
 
 	db = get_database()
 
-	result = await db.get_collection(collection.__class__.__name__
-	                                ).find_one({'_id': collection._id})
+	result = await db.get_collection(collection.__class__.__name__).find_one({ '_id': collection._id})
 
 	if result is None:
 		await new_entry(collection)
@@ -256,10 +235,7 @@ async def new_entry(collection: Collection):
 
 	db = get_database()
 
-	await db.get_collection(collection.__class__.__name__
-	                       ).update_one({'_id': collection._id},
-	                                    {'$set': asdict(collection)},
-	                                    upsert=True)    # meow
+	await db.get_collection(collection.__class__.__name__).update_one({ '_id': collection._id}, { '$set': asdict(collection)}, upsert=True) # meow
 
 
 async def update_in_database(collection: Collection, **kwargs):
@@ -269,12 +245,9 @@ async def update_in_database(collection: Collection, **kwargs):
 	existing_data = asdict(collection)
 
 	# Update only the specified fields in the existing document
-	updated_data = {**existing_data, **kwargs}
+	updated_data = { **existing_data, **kwargs }
 	# Update the document in the database
-	res = await db.get_collection(collection.__class__.__name__
-	                             ).update_one({'_id': collection._id},
-	                                          {'$set': updated_data},
-	                                          upsert=True)
+	res = await db.get_collection(collection.__class__.__name__).update_one({ '_id': collection._id}, { '$set': updated_data}, upsert=True)
 	# Create and return an updated instance of the collection
 	return collection.__class__(**updated_data)
 
@@ -282,7 +255,7 @@ async def update_in_database(collection: Collection, **kwargs):
 async def fetch_items():
 	db = get_database()
 
-	data = await db.get_collection('ItemData').find_one({"access": 'ItemData'})
+	data = await db.get_collection('ItemData').find_one({ "access": 'ItemData'})
 
 	return data
 
@@ -290,7 +263,4 @@ async def fetch_items():
 async def update_shop(data: dict):
 	db = get_database()
 
-	await db.get_collection('ItemData').update_one({"access": 'ItemData'},
-	                                               {"$set": {
-	                                                   "shop": data
-	                                               }})
+	await db.get_collection('ItemData').update_one({ "access": 'ItemData'}, { "$set": { "shop": data}})

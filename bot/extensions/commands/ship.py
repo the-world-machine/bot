@@ -5,18 +5,11 @@ from utilities.message_decorations import *
 
 
 # TODO: localiazeeeeeeeeee
-class ShippingModule(Extension):
+class ShippingCommands(Extension):
 
 	@slash_command(description="Ship two people together.")
-	@slash_option(name="who",
-	              description="First person. Can be a user.",
-	              opt_type=OptionType.STRING,
-	              required=True)
-	@slash_option(argument_name="whomst",
-	              name="with",
-	              description="Second person. Can be a user.",
-	              opt_type=OptionType.STRING,
-	              required=True)
+	@slash_option(name="who", description="First person. Can be a user.", opt_type=OptionType.STRING, required=True)
+	@slash_option(argument_name="whomst", name="with", description="Second person. Can be a user.", opt_type=OptionType.STRING, required=True)
 	async def ship(self, ctx: SlashContext, who: str, whomst: str):
 
 		if '<' in who:
@@ -30,22 +23,17 @@ class ShippingModule(Extension):
 
 			whomst = user.display_name
 		if who == ctx.author.display_name and who == whomst:
-			return await fancy_message(ctx,
-			                           "[ Do you need a hug? ]",
-			                           color=Colors.BAD,
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ Do you need a hug? ]", color=Colors.BAD, ephemeral=True)
 
 		seed = len(who) + len(whomst)
 		random.seed(seed)
 
 		love_percentage = random.randint(0, 100)
 
-		name_a_part = who[0:len(who) //
-		                  2]    # Get the first half of the first name.
-		name_b_part = whomst[-len(whomst) //
-		                     2:]    # Get the last half of the second name.
+		name_a_part = who[0:len(who) // 2]       # Get the first half of the first name.
+		name_b_part = whomst[-len(whomst) // 2:] # Get the last half of the second name.
 
-		name = name_a_part + name_b_part    # Combine the names together.
+		name = name_a_part + name_b_part # Combine the names together.
 
 		emoji = '💖'
 		description = ''
@@ -81,11 +69,7 @@ class ShippingModule(Extension):
 
 		length = "".join(l_length)
 
-		embed = Embed(
-		    title=name,
-		    description=
-		    f'{name} has a compatibility of: **{love_percentage}%** {emoji}\n{length}',
-		    color=Colors.PASTEL_RED)
+		embed = Embed(title=name, description=f'{name} has a compatibility of: **{love_percentage}%** {emoji}\n{length}', color=Colors.PASTEL_RED)
 
 		embed.set_footer(text=description)
 

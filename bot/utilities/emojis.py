@@ -29,7 +29,7 @@ def unflatten_emojis(flat_data: dict) -> dict:
 
 def minify_emoji_names(data):
 	if isinstance(data, dict):
-		return {key: minify_emoji_names(value) for key, value in data.items()}
+		return { key: minify_emoji_names(value) for key, value in data.items() }
 	elif isinstance(data, str):
 		# replaces all names with "i" for more embed space
 		return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
@@ -42,11 +42,9 @@ class ProgressBar(TypedDict):
 
 
 class Emojis(TypedDict):
-	icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule",
-	                    "vibe", "sleep", "refresh", "penguin"], str]
+	icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"], str]
 	pancakes: dict[Literal["normal", "golden", "glitched"], str]
-	treasures: dict[Literal["amber", "bottle", "card", "clover", "die",
-	                        "journal", "pen", "shirt", "sun"], str]
+	treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
 	progress_bars: dict[Literal["square", "round"], ProgressBar]
 
 
@@ -95,18 +93,15 @@ def on_file_update(path):
 	old_flat = flatten_emojis(old_emojis)
 	new_flat = flatten_emojis(new_emojis)
 	changes = []
-	for key in [key for key in old_flat if key not in new_flat]:
+	for key in [ key for key in old_flat if key not in new_flat ]:
 		# removed
 		changes.append(f"-{key}")
 		update_emojis(key, remove=True)
-	for key in [key for key in new_flat if key not in old_flat]:
+	for key in [ key for key in new_flat if key not in old_flat ]:
 		# added
 		changes.append(f"+{key}")
 		update_emojis(key, emoji_value=new_flat[key])
-	for key in [
-	    key for key in new_flat
-	    if key in old_flat and new_flat[key] != old_flat[key]
-	]:
+	for key in [ key for key in new_flat if key in old_flat and new_flat[key] != old_flat[key] ]:
 		# modified
 		changes.append(f"*{key}")
 		update_emojis(key, emoji_value=new_flat[key])

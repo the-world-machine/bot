@@ -7,7 +7,7 @@ from utilities.localization import Localization, fnum
 from utilities.database.main import UserData
 
 
-class ExplodeModule(Extension):
+class ExplodeCommands(Extension):
 	explosion_image = [
 	    'https://st.depositphotos.com/1001877/4912/i/600/depositphotos_49123283-stock-photo-light-bulb-exploding-concept-of.jpg',
 	    'https://st4.depositphotos.com/6588418/39209/i/600/depositphotos_392090278-stock-photo-exploding-light-bulb-dark-blue.jpg',
@@ -27,15 +27,9 @@ class ExplodeModule(Extension):
 		explosion_amount = (await UserData(uid).fetch()).times_shattered
 		if uid in self.last_called:
 			if datetime.datetime.now() < self.last_called[uid]:
-				return await fancy_message(ctx,
-				                           loc.l("general.command_cooldown",
-				                                 seconds=timestamp_relative(
-				                                     self.last_called[uid])),
-				                           ephemeral=True,
-				                           color=Colors.RED)
+				return await fancy_message(ctx, loc.l("general.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])), ephemeral=True, color=Colors.RED)
 
-		self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(
-		    seconds=20)
+		self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(seconds=20)
 
 		random_number = random.randint(1, len(self.explosion_image)) - 1
 		random_sadness = random.randint(1, 100)
@@ -53,17 +47,14 @@ class ExplodeModule(Extension):
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
 				dialogue = loc.l("explode.dialogue.sixtyninefourtweny")
 
-			if len(str(explosion_amount)) > 0 and all(
-			    char == '9' for char in str(explosion_amount)):
+			if len(str(explosion_amount)) > 0 and all(char == '9' for char in str(explosion_amount)):
 				dialogue = loc.l("explode.dialogue.nineninenineninenine")
 			if not dialogue:
 				dialogue = "." * random.randint(3, 9)
 
 			embed.description = "-# " + dialogue
 			embed.set_image(url=self.explosion_image[random_number])
-			embed.set_footer(
-			    loc.l("explode.info", amount=fnum(explosion_amount,
-			                                      ctx.locale)))
+			embed.set_footer(loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
 		else:
 			embed = Embed(title='...')
 			embed.set_image(url=self.sad_image)

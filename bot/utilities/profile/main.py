@@ -46,9 +46,7 @@ async def load_profile_assets():
 
 	for _, badge in badges.items():
 		badge
-		img = await get_image(
-		    f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless'
-		)    # TODO: move to emojis.py
+		img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
 		img = img.convert('RGBA')
 		img = img.resize((35, 35), Image.NEAREST)
 		if debugging():
@@ -56,13 +54,11 @@ async def load_profile_assets():
 		icons.append(img)
 		assets += 1
 
-	wool_icon = await get_image(
-	    'https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+	wool_icon = await get_image('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
 	if debugging():
 		print(f"| Wool icon")
 	assets += 1
-	sun_icon = await get_image(
-	    'https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
+	sun_icon = await get_image('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
 	if debugging():
 		print(f"| Sun icon")
 	assets += 1
@@ -73,11 +69,7 @@ async def load_profile_assets():
 		print(f"Done ({assets})")
 
 
-async def draw_profile(
-    user: User,
-    filename: str,
-    alt: str = None,
-    loc: Localization = Localization()) -> File:
+async def draw_profile(user: User, filename: str, alt: str = None, loc: Localization = Localization()) -> File:
 	if wool_icon is None:
 		await load_profile_assets()
 	user_id = user.id
@@ -99,33 +91,24 @@ async def draw_profile(
 
 	base_profile = ImageDraw.Draw(image, "RGBA")
 
-	base_profile.text((42, 32),
-	                  title,
-	                  font=font,
-	                  fill=(252, 186, 86),
-	                  stroke_width=2,
-	                  stroke_fill=(0, 0, 0))
+	base_profile.text((42, 32), title, font=font, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
 	if len(user_data.profile_description) > 0:
 		# textwrap.fill makes it so the text doesn't overflow out of the image
-		base_profile.text((210, 140),
-		                  textwrap.fill(user_data.profile_description, 35),
-		                  font=font,
-		                  fill=(255, 255, 255),
-		                  stroke_width=2,
-		                  stroke_fill=Colors.BLACK.hex,
-		                  align='center')
+		base_profile.text(
+		    (210, 140), textwrap.fill(user_data.profile_description, 35), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex, align='center'
+		)
 
-	init_x = 60    # Start with the first column (adjust as needed)
-	init_y = 310    # Start with the first row (adjust as needed)
+	init_x = 60       # Start with the first column (adjust as needed)
+	init_y = 310      # Start with the first row (adjust as needed)
 
-	x = init_x    # x position of Stamp
-	y = init_y    # y position of Stamp
+	x = init_x   # x position of Stamp
+	y = init_y   # y position of Stamp
 
-	x_increment = 45    # How much to move to the next column
-	y_increment = 50    # How much to move down to the next row
+	x_increment = 45  # How much to move to the next column
+	y_increment = 50  # How much to move down to the next row
 
 	current_row = 0    # Keep track of the current row
-	current_column = 1    # Keep track of the current column
+	current_column = 1 # Keep track of the current column
 
 	badge_keys = list(badges.keys())
 
@@ -140,12 +123,12 @@ async def draw_profile(
 
 		image.paste(icon, (x, y), icon)
 
-		x += x_increment    # Move to the next column
+		x += x_increment # Move to the next column
 
 		# If we have reached the end of a row
 		if (i + 1) % 5 == 0:
-			x = init_x    # Reset to the first column
-			y += y_increment    # Move to the next row
+			x = init_x       # Reset to the first column
+			y += y_increment # Move to the next row
 			current_row += 1
 
 		# If we have displayed all the rows, start the next one.
@@ -158,33 +141,17 @@ async def draw_profile(
 			current_column += 1
 			current_row = 0
 
-	base_profile.text((648, 70),
-	                  f'{fnum(user_data.wool, locale=loc.locale)} x',
-	                  font=font,
-	                  fill=(255, 255, 255),
-	                  anchor='rt',
-	                  align='right',
-	                  stroke_width=2,
-	                  stroke_fill=Colors.BLACK.hex)
+	base_profile.text(
+	    (648, 70), f'{fnum(user_data.wool, locale=loc.locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2, stroke_fill=Colors.BLACK.hex
+	)
 	image.paste(wool_icon, (659, 63), wool_icon.convert('RGBA'))
 
-	base_profile.text((648, 32),
-	                  f'{fnum(user_data.suns, locale=loc.locale)} x',
-	                  font=font,
-	                  fill=(255, 255, 255),
-	                  anchor='rt',
-	                  align='right',
-	                  stroke_width=2,
-	                  stroke_fill=Colors.BLACK.hex)
+	base_profile.text(
+	    (648, 32), f'{fnum(user_data.suns, locale=loc.locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2, stroke_fill=Colors.BLACK.hex
+	)
 	image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-	base_profile.text((42, 251),
-	                  loc.l("profile.view.image.unlocked.stamps",
-	                        username=user.username),
-	                  font=font,
-	                  fill=(255, 255, 255),
-	                  stroke_width=2,
-	                  stroke_fill=Colors.BLACK.hex)
+	base_profile.text((42, 251), loc.l("profile.view.image.unlocked.stamps", username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex)
 
 	pfp = await get_image(user_pfp_url)
 	frames = []
@@ -201,12 +168,7 @@ async def draw_profile(
 
 	img_buffer = io.BytesIO()
 	if animated:
-		frames[0].save(img_buffer,
-		               format="GIF",
-		               save_all=True,
-		               append_images=frames[1:],
-		               loop=0,
-		               duration=100)
+		frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames[1:], loop=0, duration=100)
 	else:
 		image.save(img_buffer, format="PNG")
 	img_buffer.seek(0)
@@ -229,6 +191,4 @@ async def draw_profile(
 		    suns=user_data.suns,
 		    wool=user_data.wool,
 		)
-	return File(file=img_buffer,
-	            file_name=filename + (".gif" if animated else ".png"),
-	            description=alt)
+	return File(file=img_buffer, file_name=filename + (".gif" if animated else ".png"), description=alt)

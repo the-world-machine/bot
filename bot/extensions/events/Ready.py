@@ -7,5 +7,5 @@ class ReadyEvent(Extension):
 
 	@listen(Ready)
 	async def handler(self, event: Ready):
-		client = event.client    # <- this is always defined on `event`
+		client = event.client # <- this is always defined on `event`
 		print(f"─ Started Discord as {client.user.tag} ({client.user.id})")

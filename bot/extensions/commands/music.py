@@ -32,7 +32,7 @@ async def get_lavalink_stats():
 	}
 
 
-class MusicModule(Extension):
+class MusicCommands(Extension):
 	# Base Command
 	@slash_command(description="Listen to music using The World Machine!")
 	async def music(self, ctx: SlashContext):
@@ -60,8 +60,7 @@ class MusicModule(Extension):
 			print(f'Lavalink node "{node.name}" inititalized')
 		self.lavalink.client.register_source(CustomSearch())
 
-	async def get_playing_embed(self, player_status: str, player: Player,
-	                            allowed_control: bool):
+	async def get_playing_embed(self, player_status: str, player: Player, allowed_control: bool):
 
 		track: lavalink.AudioTrack = player.current
 
@@ -70,8 +69,7 @@ class MusicModule(Extension):
 
 		progress_bar_length = 10
 
-		progress_bar = make_progress_bar(player.position, track.duration,
-		                                 progress_bar_length, "square")
+		progress_bar = make_progress_bar(player.position, track.duration, progress_bar_length, "square")
 
 		time = lavalink.parse_time(player.position)
 
@@ -91,8 +89,7 @@ class MusicModule(Extension):
 
 		requester = await self.client.fetch_user(track.requester)
 
-		control_text = ("Everyone can control"
-		                if allowed_control else "Currently has control")
+		control_text = ("Everyone can control" if allowed_control else "Currently has control")
 		embed.set_footer(
 		    text=f"Requested by {requester.username}  ●  {control_text}",
 		    icon_url=requester.avatar_url,
@@ -119,12 +116,11 @@ class MusicModule(Extension):
 
 			user = await self.bot.fetch_user(requester)
 
-			queue_list.append(
-			    EmbedField(
-			        name=f"{i}. {title}",
-			        value=f"*by {author}* - Requested by {user.mention}",
-			        inline=False,
-			    ))
+			queue_list.append(EmbedField(
+			    name=f"{i}. {title}",
+			    value=f"*by {author}* - Requested by {user.mention}",
+			    inline=False,
+			))
 
 			i += 1
 
@@ -143,22 +139,16 @@ class MusicModule(Extension):
 
 		queue_embed = Embed(description=description, color=Colors.DEFAULT)
 
-		queue_embed.set_author(name=f"Queue for {guild.name}",
-		                       icon_url=guild.icon.url)
+		queue_embed.set_author(name=f"Queue for {guild.name}", icon_url=guild.icon.url)
 		queue_embed.set_thumbnail(url=self.get_cover_image(track.identifier))
-		queue_embed.set_footer(
-		    text=
-		    "Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track."
-		)
+		queue_embed.set_footer(text="Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track.")
 		queue_embed.fields = queue_list
 
 		return queue_embed
 
-	async def can_modify(self, track_author: int, author: Member,
-	                     guild_id: Snowflake):
+	async def can_modify(self, track_author: int, author: Member, guild_id: Snowflake):
 
-		track_author_member: Member = await self.bot.fetch_member(
-		    track_author, guild_id)
+		track_author_member: Member = await self.bot.fetch_member(track_author, guild_id)
 
 		if Permissions.MANAGE_CHANNELS in author.guild_permissions:
 			return True
@@ -213,8 +203,7 @@ class MusicModule(Extension):
 		# Connecting to voice channel and getting player instance
 		while player is None:
 			try:
-				player = await self.lavalink.connect(voice_state.guild.id,
-				                                     voice_state.channel.id)
+				player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 			except:
 
 				if tries > 2:
@@ -233,10 +222,7 @@ class MusicModule(Extension):
 		tracks = result.tracks
 
 		if len(tracks) == 0:
-			return await fancy_message(message,
-			                           "[ No results found. ]",
-			                           edit=True,
-			                           color=Colors.BAD)
+			return await fancy_message(message, "[ No results found. ]", edit=True, color=Colors.BAD)
 
 		player.store("Channel", ctx.channel)
 		player.store("Message", message)
@@ -244,8 +230,7 @@ class MusicModule(Extension):
 		[player.add(track, requester=int(ctx.author.id)) for track in tracks]
 
 		if player.is_playing:
-			add_to_queue_embed = self.added_to_playlist_embed(
-			    ctx, player, tracks[0])
+			add_to_queue_embed = self.added_to_playlist_embed(ctx, player, tracks[0])
 			return await message.edit(embeds=add_to_queue_embed)
 		else:
 
@@ -255,8 +240,7 @@ class MusicModule(Extension):
 				self.assign_node()
 				await player.play()
 
-	def added_to_playlist_embed(self, ctx: SlashContext, player: Player,
-	                            track: lavalink.AudioTrack):
+	def added_to_playlist_embed(self, ctx: SlashContext, player: Player, track: lavalink.AudioTrack):
 		add_to_queue_embed = Embed(
 		    title=track.title,
 		    url=track.uri,
@@ -264,15 +248,10 @@ class MusicModule(Extension):
 		    color=Colors.GREEN,
 		)
 
-		add_to_queue_embed.set_author(
-		    name=f"Requested by {ctx.member.username}",
-		    icon_url=ctx.member.avatar.url)
+		add_to_queue_embed.set_author(name=f"Requested by {ctx.member.username}", icon_url=ctx.member.avatar.url)
 
 		add_to_queue_embed.set_thumbnail(self.get_cover_image(track.identifier))
-		add_to_queue_embed.set_footer(
-		    text=
-		    "Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song."
-		)
+		add_to_queue_embed.set_footer(text="Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song.")
 
 		return add_to_queue_embed
 
@@ -298,11 +277,9 @@ class MusicModule(Extension):
 
 		message = await fancy_message(ctx, loc.l("music.loading.file"))
 
-		player = await self.lavalink.connect(voice_state.guild.id,
-		                                     voice_state.channel.id)
+		player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 
-		fetched_tracks: list[lavalink.AudioTrack] = await player.get_tracks(
-		    file.url)
+		fetched_tracks: list[lavalink.AudioTrack] = await player.get_tracks(file.url)
 
 		if len(fetched_tracks) == 0:
 			return await fancy_message(
@@ -327,8 +304,7 @@ class MusicModule(Extension):
 		await message.delete()
 
 		if player.is_playing:
-			add_to_queue_embed = self.added_to_playlist_embed(
-			    ctx, player, track)
+			add_to_queue_embed = self.added_to_playlist_embed(ctx, player, track)
 
 			return await ctx.channel.send(embeds=add_to_queue_embed)
 
@@ -362,10 +338,7 @@ class MusicModule(Extension):
 	async def jump(self, ctx: SlashContext, position: int):
 
 		if await self.on_cooldown(ctx.author):
-			return await fancy_message(ctx,
-			                           "[ You are on cooldown! ]",
-			                           color=Colors.BAD,
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
 
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
@@ -387,16 +360,10 @@ class MusicModule(Extension):
 			)
 
 		if len(player.queue) == 0:
-			return await fancy_message(ctx,
-			                           "[ Queue is empty! ]",
-			                           color=Colors.BAD,
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ Queue is empty! ]", color=Colors.BAD, ephemeral=True)
 
 		if position > len(player.queue) or position < 0:
-			return await fancy_message(ctx,
-			                           "[ Invalid position! ]",
-			                           color=Colors.BAD,
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ Invalid position! ]", color=Colors.BAD, ephemeral=True)
 
 		song = player.queue[position]
 
@@ -422,10 +389,7 @@ class MusicModule(Extension):
 	    opt_type=OptionType.BOOLEAN,
 	    argument_name="own",
 	)
-	async def remove(self,
-	                 ctx: SlashContext,
-	                 position: int = -1,
-	                 own: bool = False):
+	async def remove(self, ctx: SlashContext, position: int = -1, own: bool = False):
 
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
@@ -447,10 +411,7 @@ class MusicModule(Extension):
 			)
 		queue = player.queue
 		if len(queue) == 0:
-			return await fancy_message(ctx,
-			                           "[ The queue is empty! ]",
-			                           color=Colors.WARN,
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ The queue is empty! ]", color=Colors.WARN, ephemeral=True)
 		if own and any(track.requester == int(ctx.user.id) for track in queue):
 			return await fancy_message(
 			    ctx,
@@ -460,7 +421,7 @@ class MusicModule(Extension):
 			)
 		if position < 0:
 			position = -position
-			queue = queue[::-1]    # reverses the queue
+			queue = queue[::-1] # reverses the queue
 		if position == 0:
 			position = 1
 		for index, track in enumerate(queue):
@@ -468,8 +429,7 @@ class MusicModule(Extension):
 				continue
 
 			if position == index + 1:
-				if not self.can_modify(track.requester, ctx.author,
-				                       ctx.guild_id):
+				if not self.can_modify(track.requester, ctx.author, ctx.guild_id):
 					return await fancy_message(
 					    ctx,
 					    "[ You can't remove this song. ]",
@@ -479,9 +439,7 @@ class MusicModule(Extension):
 
 			song = track
 			del queue[index]
-			return await ctx.send(
-			    f"[ {ctx.user.mention} removed **{song.title}** from the queue. ]"
-			)
+			return await ctx.send(f"[ {ctx.user.mention} removed **{song.title}** from the queue. ]")
 
 		return await fancy_message(
 		    ctx,
@@ -490,9 +448,7 @@ class MusicModule(Extension):
 		    ephemeral=True,
 		)
 
-	@music.subcommand(
-	    sub_cmd_description=
-	    "Remove the most recent song from the queue added by you.")
+	@music.subcommand(sub_cmd_description="Remove the most recent song from the queue added by you.")
 	async def remove_last(self, ctx: SlashContext):
 		player = self.lavalink.get_player(ctx.guild_id)
 
@@ -509,9 +465,7 @@ class MusicModule(Extension):
 		for track in queue:
 			if track.requester == int(ctx.user.id):
 				player.queue.remove(track)
-				return await ctx.send(
-				    f"[ {ctx.user.mention} removed **{track.title}** from the queue. ]"
-				)
+				return await ctx.send(f"[ {ctx.user.mention} removed **{track.title}** from the queue. ]")
 
 	@remove.autocomplete("position")
 	async def autocomplete_remove(self, ctx: AutocompleteContext):
@@ -536,10 +490,10 @@ class MusicModule(Extension):
 
 		for i, item in enumerate(queue):
 			if show_first_results:
-				choices.append({"name": item, "value": i})
+				choices.append({ "name": item, "value": i})
 			else:
 				if input_text.lower() in item.lower():
-					choices.append({"name": item, "value": i})
+					choices.append({ "name": item, "value": i})
 
 		if len(choices) > 24:
 			choices = choices[:24]
@@ -569,10 +523,10 @@ class MusicModule(Extension):
 
 		for i, item in enumerate(queue):
 			if show_first_results:
-				choices.append({"name": item, "value": i})
+				choices.append({ "name": item, "value": i})
 			else:
 				if input_text.lower() in item.lower():
-					choices.append({"name": item, "value": i})
+					choices.append({ "name": item, "value": i})
 
 		if len(choices) > 24:
 			choices = choices[:24]
@@ -620,18 +574,14 @@ class MusicModule(Extension):
 
 		items = await self.load_spotify_search(text)
 
-		if ("https://youtu.be" in text or "https://www.youtube.com" in text
-		    or "https://m.youtube.com" in text):
-			choices = [{"name": "🔗 Youtube URL", "value": raw_text}]
+		if ("https://youtu.be" in text or "https://www.youtube.com" in text or "https://m.youtube.com" in text):
+			choices = [{ "name": "🔗 Youtube URL", "value": raw_text}]
 		elif "http://open.spotify.com/" in text or "https://open.spotify.com/" in text:
-			choices = [{"name": "🔗 Spotify URL", "value": raw_text}]
+			choices = [{ "name": "🔗 Spotify URL", "value": raw_text}]
 		elif "https://soundcloud.com" in text:
-			choices = [{"name": "🔗 Soundcloud URL", "value": raw_text}]
+			choices = [{ "name": "🔗 Soundcloud URL", "value": raw_text}]
 		else:
-			choices = [{
-			    "name": item["Text"],
-			    "value": item["URL"]
-			} for item in items]
+			choices = [{ "name": item["Text"], "value": item["URL"]} for item in items]
 
 		try:
 			await ctx.send(choices)
@@ -663,9 +613,7 @@ class MusicModule(Extension):
 
 		print(f'Error occurred when playing a track. "{event.message}"')
 
-		await message.edit(content=emojis["icons"]["sleep"],
-		                   embed=embed,
-		                   components=[])
+		await message.edit(content=emojis["icons"]["sleep"], embed=embed, components=[])
 
 	@listen()
 	async def voice_state_update(self, event: VoiceUserLeave):
@@ -758,9 +706,7 @@ class MusicModule(Extension):
 		player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None or player.current is None:
-			return await fancy_message(ctx,
-			                           "[ No tracks are currently playing! ]",
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ No tracks are currently playing! ]", ephemeral=True)
 
 		track = player.current
 
@@ -782,16 +728,16 @@ class MusicModule(Extension):
 		lyrics = lyric_data["lyrics"]
 
 		if len(lyrics) > 4080:
-			song = (
-			    f"{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})"
-			)
+			song = (f"{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})")
 
-		return await ctx.send(embed=Embed(
-		    title=f"{track.title} Lyrics",
-		    description=f"```{lyrics}```",
-		    color=Colors.DEFAULT,
-		    footer=EmbedFooter(text=f"Lyrics provided by Some Random API"),
-		))
+		return await ctx.send(
+		    embed=Embed(
+		        title=f"{track.title} Lyrics",
+		        description=f"```{lyrics}```",
+		        color=Colors.DEFAULT,
+		        footer=EmbedFooter(text=f"Lyrics provided by Some Random API"),
+		    )
+		)
 
 	@music.subcommand()
 	async def fetch_player(self, ctx: SlashContext):
@@ -800,13 +746,9 @@ class MusicModule(Extension):
 		player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None or player.current is None:
-			return await fancy_message(ctx,
-			                           "[ No tracks are currently playing! ]",
-			                           ephemeral=True)
+			return await fancy_message(ctx, "[ No tracks are currently playing! ]", ephemeral=True)
 
-		await fancy_message(ctx,
-		                    "[ Player should open momentarily. ]",
-		                    ephemeral=True)
+		await fancy_message(ctx, "[ Player should open momentarily. ]", ephemeral=True)
 
 		await self.on_player(player, ctx.channel)
 
@@ -826,9 +768,7 @@ class MusicModule(Extension):
 		player_state = "Now Playing..."
 		embed = await self.get_playing_embed(player_state, player, True)
 
-		message = await message.edit(content=niko,
-		                             embed=embed,
-		                             components=main_buttons)
+		message = await message.edit(content=niko, embed=embed, components=main_buttons)
 
 		stopped_track = player.current
 
@@ -853,8 +793,7 @@ class MusicModule(Extension):
 				main_buttons[1].label = "Loop Track"
 				main_buttons[1].style = ButtonStyle.RED
 
-			user = await self.bot.fetch_member(player.current.requester,
-			                                   player.guild_id)
+			user = await self.bot.fetch_member(player.current.requester, player.guild_id)
 
 			can_control: bool = False
 
@@ -862,12 +801,9 @@ class MusicModule(Extension):
 			if not voice_state or not voice_state.channel:
 				can_control = True
 
-			embed = await self.get_playing_embed(player_state, player,
-			                                     can_control)
+			embed = await self.get_playing_embed(player_state, player, can_control)
 
-			message = await message.edit(content=niko,
-			                             embed=embed,
-			                             components=main_buttons)
+			message = await message.edit(content=niko, embed=embed, components=main_buttons)
 
 			await asyncio.sleep(1)
 
@@ -896,13 +832,9 @@ class MusicModule(Extension):
 			embed.set_thumbnail(self.get_cover_image(stopped_track.identifier))
 
 			requester = await self.bot.fetch_user(stopped_track.requester)
-			embed.set_footer(text="Requested by " + requester.username,
-			                 icon_url=requester.avatar_url)
+			embed.set_footer(text="Requested by " + requester.username, icon_url=requester.avatar_url)
 
-		message = await message.edit(
-		    content="<:nikosleepy:1027492467337080872>",
-		    embed=embed,
-		    components=[])
+		message = await message.edit(content="<:nikosleepy:1027492467337080872>", embed=embed, components=[])
 
 	@component_callback("queue", "loop", "playpause", "skip", "lyrics")
 	async def buttons(self, ctx: ComponentContext):
@@ -927,18 +859,14 @@ class MusicModule(Extension):
 			embed = await self.get_queue_embed(player, 1)
 
 			components = await self.get_queue_buttons()
-			return await ctx.send(embed=embed,
-			                      components=components,
-			                      ephemeral=True)
+			return await ctx.send(embed=embed, components=components, ephemeral=True)
 
 		if ctx.custom_id == "lyrics":
-			message = await fancy_message(
-			    ctx, f"[ Searching Lyrics for this track... ]", ephemeral=True)
+			message = await fancy_message(ctx, f"[ Searching Lyrics for this track... ]", ephemeral=True)
 			embed = await self.get_lyrics(player.current)
 			return await ctx.edit(message, embed=embed)
 
-		if not await self.can_modify(player.current.requester, ctx.author,
-		                             ctx.guild.id):
+		if not await self.can_modify(player.current.requester, ctx.author, ctx.guild.id):
 			return await fancy_message(
 			    ctx,
 			    "[ You cannot modify the player. ]",
@@ -949,28 +877,24 @@ class MusicModule(Extension):
 		await ctx.defer(edit_origin=True)
 
 		async def send_update(str):
-			return await ctx.channel.send(str, allowed_mentions={"users": []})
+			return await ctx.channel.send(str, allowed_mentions={ "users": []})
 
 		match ctx.custom_id:
 			case "loop":
 				if not player.loop:
 					player.set_loop(1)
-					return await send_update(
-					    f"[ {ctx.author.mention} Started Looping. ]")
+					return await send_update(f"[ {ctx.author.mention} Started Looping. ]")
 				else:
 					player.set_loop(0)
-					return await send_update(
-					    f"[ {ctx.author.mention} Stopped Looping. ]")
+					return await send_update(f"[ {ctx.author.mention} Stopped Looping. ]")
 
 			case "playpause":
 				await player.set_pause(not player.paused)
 
 				if player.paused:
-					return await send_update(f"[ {ctx.author.mention} Paused. ]"
-					                        )
+					return await send_update(f"[ {ctx.author.mention} Paused. ]")
 				else:
-					return await send_update(
-					    f"[ {ctx.author.mention} Resumed. ]")
+					return await send_update(f"[ {ctx.author.mention} Resumed. ]")
 
 			case "skip":
 
@@ -996,9 +920,7 @@ class MusicModule(Extension):
 		max_pages = (len(player.queue) + 9) // 10
 
 		if ctx.custom_id == "right":
-			if (
-			    page < max_pages
-			):    # Only allow moving to the right if there are more pages to display
+			if (page < max_pages): # Only allow moving to the right if there are more pages to display
 				page += 1
 
 		player.store("current_page", page)
@@ -1008,24 +930,18 @@ class MusicModule(Extension):
 		if ctx.custom_id == "shuffle":
 
 			if await self.on_cooldown(ctx.author):
-				return await fancy_message(ctx,
-				                           "[ You are on cooldown! ]",
-				                           color=Colors.BAD,
-				                           ephemeral=True)
+				return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
 
 			random.shuffle(player.queue)
-			message = await ctx.channel.send(
-			    f"[ {ctx.author.mention} Shuffled the Queue. ]")
+			message = await ctx.channel.send(f"[ {ctx.author.mention} Shuffled the Queue. ]")
 
 		if ctx.custom_id == "loopqueue":
 			if player.loop == 2:
 				player.set_loop(0)
-				message = await ctx.channel.send(
-				    f"[ {ctx.author.mention} Stopped Looping the Queue. ]")
+				message = await ctx.channel.send(f"[ {ctx.author.mention} Stopped Looping the Queue. ]")
 			else:
 				player.set_loop(2)
-				message = await ctx.channel.send(
-				    f"[ {ctx.author.mention} is Looping the Queue. ]")
+				message = await ctx.channel.send(f"[ {ctx.author.mention} is Looping the Queue. ]")
 
 		embed = await self.get_queue_embed(player, page)
 
