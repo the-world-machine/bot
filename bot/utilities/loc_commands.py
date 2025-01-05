@@ -15,14 +15,12 @@ async def execute_loc_command(message: Message):
 	if not message.content:
 		return
 
-	if str(message.author.id) not in list(
-	    chain(*get_config("localization.whitelist").values())):
+	if str(message.author.id) not in list(chain(*get_config("localization.whitelist").values())):
 		return
 
 	prefix = get_config('dev.command-marker').split('.')
 
-	if not (message.content[0] == prefix[0]
-	        and message.content[-1] == prefix[1]):
+	if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
 		return
 
 	command_content = message.content[1:-1].strip()
@@ -40,17 +38,13 @@ async def execute_loc_command(message: Message):
 			locale = attachment.filename.split(".yml")[0]
 			if not locale or not attachment.filename.endswith(".yml"):
 				return await message.reply("`[ Invalid filename ]`")
-			if str(message.author.id) not in get_config(
-			    f"localizations.whitelist.{locale.strip('.[]')}"):
-				return await message.reply(
-				    "`[ You are not whitelisted for this locale ]`")
+			if str(message.author.id) not in get_config(f"localizations.whitelist.{locale.strip('.[]')}"):
+				return await message.reply("`[ You are not whitelisted for this locale ]`")
 			try:
 				async with aiohttp.ClientSession() as session:
 					async with session.get(attachment.url) as response:
 						if response.status != 200:
-							return await message.reply(
-							    f"`[ Failed to download the file: HTTP {response.status} ]`"
-							)
+							return await message.reply(f"`[ Failed to download the file: HTTP {response.status} ]`")
 
 						content = await response.text()
 
@@ -60,21 +54,17 @@ async def execute_loc_command(message: Message):
 
 				return await message.reply(f"`[ Updated {locale} locale ]`")
 			except yaml.YAMLError as e:
-				return await message.reply(f"`[ YAML parsing error: {str(e)} ]`"
-				                          )
+				return await message.reply(f"`[ YAML parsing error: {str(e)} ]`")
 			except Exception as e:
 				return await message.reply(f"`[ Unknown exception: {str(e)} ]`")
 
 		case _:
 			return await message.reply("Available command: `locale_override`")
-	formatted_command_content = command_content.replace(
-	    '\n', '\n' + colored('│ ', 'yellow'))
+	formatted_command_content = command_content.replace('\n', '\n' + colored('│ ', 'yellow'))
 	if subcommand_name == "db":
 		subcommand_name += " ─"
 
 	print(
-	    f"{colored('┌ loc_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n"
-	    +
-	    f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n"
-	    + f"{colored('│', 'yellow')} {formatted_command_content}\n" +
-	    f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")
+	    f"{colored('┌ loc_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" + f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
+	    f"{colored('│', 'yellow')} {formatted_command_content}\n" + f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
+	)

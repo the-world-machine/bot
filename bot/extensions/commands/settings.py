@@ -4,7 +4,7 @@ from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 
 
-class SettingsModule(Extension):
+class SettingsCommands(Extension):
 
 	@slash_command(description="Settings.")
 	async def settings(self, ctx: SlashContext):
@@ -15,17 +15,12 @@ class SettingsModule(Extension):
 
 	async def check(self, ctx: SlashContext):
 		if Permissions.MANAGE_GUILD not in ctx.member.guild_permissions:
-			await fancy_message(
-			    ctx,
-			    Localization(ctx.locale).l("settings.missing_permissions"),
-			    color=Colors.BAD,
-			    ephemeral=True)
+			await fancy_message(ctx, Localization(ctx.locale).l("settings.missing_permissions"), color=Colors.BAD, ephemeral=True)
 			return False
 
 		return True
 
-	@transmissions.subcommand(
-	    sub_cmd_description="The specific channel to use for calling")
+	@transmissions.subcommand(sub_cmd_description="The specific channel to use for calling")
 	@slash_option(
 	    description="default: AUTO",
 	    name="channel",
@@ -38,28 +33,17 @@ class SettingsModule(Extension):
 		server_data = await ServerData(ctx.guild_id).fetch()
 		if channel is None:
 			await server_data.update(transmit_channel=None)
-			return await fancy_message(
-			    ctx,
-			    loc.l("settings.transmissions.channel.auto"),
-			    ephemeral=True)
+			return await fancy_message(ctx, loc.l("settings.transmissions.channel.auto"), ephemeral=True)
 		if not isinstance(channel, MessageableMixin):
-			return await fancy_message(
-			    ctx,
-			    loc.l("settings.transmissions.channel_not_messageable"),
-			    color=Colors.BAD,
-			    ephemeral=True)
+			return await fancy_message(ctx, loc.l("settings.transmissions.channel_not_messageable"), color=Colors.BAD, ephemeral=True)
 		await server_data.update(transmit_channel=str(channel.id))
 		return await fancy_message(
 		    ctx,
-		    loc.l("settings.transmissions.channel.Changed",
-		          channel=channel.mention),
+		    loc.l("settings.transmissions.channel.Changed", channel=channel.mention),
 		    ephemeral=True,
 		)
 
-	@transmissions.subcommand(
-	    sub_cmd_description=
-	    "Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE]."
-	)
+	@transmissions.subcommand(sub_cmd_description="Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE].")
 	@slash_option(
 	    description="default: TRUE",
 	    name="value",
@@ -74,17 +58,9 @@ class SettingsModule(Extension):
 		server_data = await ServerData(ctx.guild_id).fetch()
 
 		await server_data.update(transmit_images=value)
-		return await fancy_message(
-		    ctx,
-		    loc.
-		    l(f"settings.transmissions.images.{'enabled' if value else 'disabled'}"
-		     ),
-		    ephemeral=True)
+		return await fancy_message(ctx, loc.l(f"settings.transmissions.images.{'enabled' if value else 'disabled'}"), ephemeral=True)
 
-	@transmissions.subcommand(
-	    sub_cmd_description=
-	    "Whether transmission receivers are shown Oneshot characters instead of actual people from the server"
-	)
+	@transmissions.subcommand(sub_cmd_description="Whether transmission receivers are shown Oneshot characters instead of actual people from the server")
 	@slash_option(
 	    description="default: TRUE",
 	    name="value",
@@ -100,15 +76,9 @@ class SettingsModule(Extension):
 
 		await server_data.update(transmit_anonymous=value)
 
-		return await fancy_message(
-		    ctx,
-		    loc.
-		    l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"
-		     ),
-		    ephemeral=True)
+		return await fancy_message(ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True)
 
-	@transmissions.subcommand(
-	    sub_cmd_description="Toggle blocking a server from being able to call.")
+	@transmissions.subcommand(sub_cmd_description="Toggle blocking a server from being able to call.")
 	@slash_option(
 	    description="The server's ID",
 	    name="server",
@@ -139,12 +109,7 @@ class SettingsModule(Extension):
 		else:
 			block_list.append(server_id)
 			await server_data.update(blocked_servers=block_list)
-		return await fancy_message(
-		    ctx,
-		    loc.
-		    l(f"settings.transmissions.blocked.{'yah' if server_id in block_list else 'nah'}",
-		      server_name=server_name),
-		    ephemeral=True)
+		return await fancy_message(ctx, loc.l(f"settings.transmissions.blocked.{'yah' if server_id in block_list else 'nah'}", server_name=server_name), ephemeral=True)
 
 	@server.autocomplete("server")
 	async def block_server_autocomplete(self, ctx: AutocompleteContext):
@@ -160,11 +125,11 @@ class SettingsModule(Extension):
 		for server_id, server_name in transmitted_servers.items():
 
 			if not server:
-				servers.append({"name": server_name, "value": server_id})
+				servers.append({ "name": server_name, "value": server_id})
 				continue
 
 			if server.lower() in server_name.lower():
-				servers.append({"name": server_name, "value": server_id})
+				servers.append({ "name": server_name, "value": server_id})
 
 		await ctx.send(servers)
 
@@ -178,14 +143,14 @@ class SettingsModule(Extension):
 		            label=loc.l("settings.server.welcome.editor.input"),
 		            style=TextStyles.PARAGRAPH,
 		            custom_id="message",
-		            placeholder=loc.l(
-		                "settings.server.welcome.editor.placeholder"),
+		            placeholder=loc.l("settings.server.welcome.editor.placeholder"),
 		            max_length=200,
 		            required=False,
 		        ),
 		        title=loc.l("settings.server.welcome.editor.title"),
 		        custom_id="welcome_message_editor",
-		    ))
+		    )
+		)
 
 	@modal_callback("welcome_message_editor")
 	async def welcome_message_editor(self, ctx: ModalContext, message: str):
@@ -194,7 +159,4 @@ class SettingsModule(Extension):
 		await server_data.update(welcome_message=message)
 		message = f"```\n{message.replace('```', '` ``')}```"
 
-		await ctx.send(
-		    Localization(ctx.locale).l("settings.server.welcome.editor.done") +
-		    message,
-		    ephemeral=True)
+		await ctx.send(Localization(ctx.locale).l("settings.server.welcome.editor.done") + message, ephemeral=True)

@@ -1,7 +1,6 @@
 general:
   loading: "[ Loading... [emoji:loading] ]"
-
-  command_cooldown: "[ Please do not spam this command. You can use it again **[seconds]**. ]"
+  command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
     _yes: "Yes"
@@ -171,9 +170,9 @@ shop:
     - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
     - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
-  traded: '> Successfully traded for [amount] "[item_name]"!'
+  traded: '> Successfully traded for [amount] of "[item_name]"!' # [price] is also available here
   traded_sell: '> Sucessfully traded in [amount] "[item_name]" for [price] Wool!'
-  traded_fail: "> You cannot trade this. Please refresh the shop!"
+  traded_fail: "> You cannot trade for this."
 
   stocks: >
     ```Stock Value: [value]
@@ -433,8 +432,6 @@ nikogotchi:
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
 
-
-
   name:
     niko: Niko
     nikonlanger: Nikonlanger
@@ -456,8 +453,9 @@ nikogotchi:
   other:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
+    rename_you_invalid: "[ You don't have a Nikogotchi. What are you doing...? ]"
     error:
-      description: > 
+      description: > # Kelvin was a nikogotchi before
         [ Your Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
         
 
@@ -493,7 +491,10 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: You can give them a custom name later with `/nikogotchi rename`!
+    description: | 
+      Want to give them a different a name?
+      
+      -# note: you can always do this later using `/nikogotchi rename`
 
   status:
     template: "-# [status]"
@@ -522,7 +523,7 @@ nikogotchi:
       glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
       no_food: "No Food... you can get some at the shop!"
-      invalid: You can't feed your Nikogotchi this! Please refresh!
+      invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
 
 
   died:

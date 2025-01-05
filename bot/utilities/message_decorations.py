@@ -28,15 +28,17 @@ def timestamp_relative(datetime: datetime):
 	return f'<t:{round(datetime.timestamp())}:R>'
 
 
-async def fancy_message(ctx,
-                        message: str = None,
-                        edit: bool = False,
-                        content: str = None,
-                        ephemeral=False,
-                        components: list[BaseComponent] = [],
-                        color: Color = Colors.DEFAULT,
-                        embed: Embed = None,
-                        embeds: list[Embed] = None):
+async def fancy_message(
+    ctx,
+    message: str = None,
+    edit: bool = False,
+    content: str = None,
+    ephemeral=False,
+    components: list[BaseComponent] = [],
+    color: Color = Colors.DEFAULT,
+    embed: Embed = None,
+    embeds: list[Embed] = None
+):
 	if embeds is None:
 		embeds = []
 	if message:
@@ -45,30 +47,16 @@ async def fancy_message(ctx,
 		embeds.append(embed)
 
 	if edit and ctx:
-		return await ctx.edit(content=content,
-		                      embeds=embeds if embeds else [],
-		                      components=components if components else [])
+		return await ctx.edit(content=content, embeds=embeds if embeds else [], components=components if components else [])
 	if type(ctx) == Message:
-		return await ctx.reply(content=content,
-		                       embeds=embeds,
-		                       components=components,
-		                       ephemeral=ephemeral)
+		return await ctx.reply(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 	elif type(ctx) == Modal:
-		return await ctx.respond(content=content,
-		                         embeds=embeds,
-		                         components=components,
-		                         ephemeral=ephemeral)
+		return await ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 
-	return await ctx.send(content=content,
-	                      embeds=embeds,
-	                      ephemeral=ephemeral,
-	                      components=components)
+	return await ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)
 
 
-def make_progress_bar(position: int,
-                      total: int,
-                      length: int,
-                      shape: Literal["square", "round"] = "square"):
+def make_progress_bar(position: int, total: int, length: int, shape: Literal["square", "round"] = "square"):
 	position = max(0, min(position, total))
 
 	filled_length = int((position / total) * length)
@@ -83,7 +71,6 @@ def make_progress_bar(position: int,
 		elif i == length - 1:
 			bar_section = 'end'
 
-		out += emojis['progress_bars'][shape][
-		    'filled' if i < filled_length else 'empty'][bar_section]
+		out += emojis['progress_bars'][shape]['filled' if i < filled_length else 'empty'][bar_section]
 
 	return out

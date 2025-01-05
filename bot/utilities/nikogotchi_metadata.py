@@ -2,8 +2,6 @@ from enum import Enum
 from dataclasses import dataclass
 from utilities.database.main import get_database
 import random
-import json
-import asyncio
 
 
 class Rarity(Enum):
@@ -28,8 +26,7 @@ def convert_to_class(data: dict, nid: str):
 async def fetch_nikogotchi_metadata(nid: str):
 	db = get_database()
 
-	result = await db.get_collection('NikogotchiFeatures').find_one(
-	    {'key': 'NikogotchiFeatures'})
+	result = await db.get_collection('NikogotchiFeatures').find_one({ 'key': 'NikogotchiFeatures'})
 
 	nikogotchi_info = result['nikogotchi'].get(nid, None)
 
@@ -42,8 +39,7 @@ async def fetch_nikogotchi_metadata(nid: str):
 async def pick_random_nikogotchi(rarity: int):
 	db = get_database()
 
-	result = await db.get_collection('NikogotchiFeatures').find_one(
-	    {'key': 'NikogotchiFeatures'})
+	result = await db.get_collection('NikogotchiFeatures').find_one({ 'key': 'NikogotchiFeatures'})
 
 	nikogotchi_info = result['nikogotchi']
 

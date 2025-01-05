@@ -37,11 +37,10 @@ async def fetch_shop_data():
 
 	items = await fetch_items()
 
-	shop_data = ShopData(items['shop']['last_updated'],
-	                     items['shop']['backgrounds'],
-	                     items['shop']['treasures'],
-	                     items['shop']['stock']['price'],
-	                     items['shop']['stock']['value'], items['shop']['motd'])
+	shop_data = ShopData(
+	    items['shop']['last_updated'], items['shop']['backgrounds'], items['shop']['treasures'], items['shop']['stock']['price'], items['shop']['stock']['value'],
+	    items['shop']['motd']
+	)
 
 	return shop_data
 
@@ -73,14 +72,9 @@ async def reset_shop_data():
 
 	now = datetime.now()
 
-	data['last_updated'] = datetime(now.year,
-	                                now.month,
-	                                now.day,
-	                                hour=0,
-	                                minute=0,
-	                                second=0)
+	data['last_updated'] = datetime(now.year, now.month, now.day, hour=0, minute=0, second=0)
 
-	is_positive = random.choice([True, False])
+	is_positive = random.choice([ True, False ])
 
 	if data['stock']['price'] < 0.5:
 		is_positive = True

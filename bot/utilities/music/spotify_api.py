@@ -27,7 +27,8 @@ def create_track(data: dict):
 		        "name": data["name"],
 		        "album": data["album"],
 		        "id": data["id"],
-		    })
+		    }
+		)
 	except:
 		pass
 
@@ -58,15 +59,14 @@ class Spotify:
 		}
 
 		async with aiohttp.ClientSession() as session:
-			async with session.post(auth_url, headers=headers,
-			                        data=data) as resp:
+			async with session.post(auth_url, headers=headers, data=data) as resp:
 				response_data = await resp.json()
 				# The access token is in response_data['access_token']
 				return response_data['access_token']
 
 	async def get_track(self, query):
 		access_token = await self.get_access_token()
-		headers = {'Authorization': f'Bearer {access_token}'}
+		headers = { 'Authorization': f'Bearer {access_token}'}
 
 		if 'open.spotify.com/track/' in query:
 
@@ -74,23 +74,19 @@ class Spotify:
 			query = query.replace('http://open.spotify.com/track/', '')
 
 			async with aiohttp.ClientSession() as session:
-				async with session.get(
-				    f"https://api.spotify.com/v1/tracks/{query}/",
-				    headers=headers) as resp:
+				async with session.get(f"https://api.spotify.com/v1/tracks/{query}/", headers=headers) as resp:
 					data = await resp.json()
 					return create_track(data)
 		else:
 			async with aiohttp.ClientSession() as session:
-				async with session.get(
-				    f"https://api.spotify.com/v1/search?q={query}&type=track&limit=1",
-				    headers=headers) as resp:
+				async with session.get(f"https://api.spotify.com/v1/search?q={query}&type=track&limit=1", headers=headers) as resp:
 					data = await resp.json()
 					track = data['tracks']['items'][0]
 					return create_track(track)
 
 	async def get_playlist(self, url):
 		access_token = await self.get_access_token()
-		headers = {'Authorization': f'Bearer {access_token}'}
+		headers = { 'Authorization': f'Bearer {access_token}'}
 
 		if 'open.spotify.com/playlist/' in url:
 			url = url.replace('https://open.spotify.com/playlist/', '')
@@ -129,17 +125,14 @@ class Spotify:
 			async with aiohttp.ClientSession() as session:
 				url = url.replace('https://open.spotify.com/album/', '')
 				url = url.replace('http://open.spotify.com/album/', '')
-				async with session.get(
-				    f"https://api.spotify.com/v1/albums/{url}",
-				    headers=headers) as resp:
+				async with session.get(f"https://api.spotify.com/v1/albums/{url}", headers=headers) as resp:
 					data = await resp.json()
 
 					tracks = []
 
 					for item in data['tracks']['items']:
 
-						track = await self.get_track(
-						    f'https://open.spotify.com/track/{item["id"]}')
+						track = await self.get_track(f'https://open.spotify.com/track/{item["id"]}')
 
 						tracks.append(track)
 
@@ -147,12 +140,10 @@ class Spotify:
 
 	async def search(self, query, limit=25, type='track'):
 		access_token = await self.get_access_token()
-		headers = {'Authorization': f'Bearer {access_token}'}
+		headers = { 'Authorization': f'Bearer {access_token}'}
 
 		async with aiohttp.ClientSession() as session:
-			async with session.get(
-			    f"https://api.spotify.com/v1/search?q={query}&type={type}&limit={limit}",
-			    headers=headers) as resp:
+			async with session.get(f"https://api.spotify.com/v1/search?q={query}&type={type}&limit={limit}", headers=headers) as resp:
 
 				try:
 					data = await resp.json()

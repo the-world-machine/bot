@@ -6,7 +6,7 @@ from utilities.config import debugging, get_config, on_prod
 from utilities.misc import set_avatar, set_status
 from interactions.client.errors import TooManyChanges
 
-available_avatars = os.listdir("bot/images/profile_pictures")
+available_avatars = os.listdir("bot/data/images/profile_pictures")
 
 
 async def roll_avatar(client: Client, log=True, print=print) -> None:
@@ -18,8 +18,7 @@ async def roll_avatar(client: Client, log=True, print=print) -> None:
 	random_avatar = random.choice(available_avatars)
 	if on_prod:
 		try:
-			await set_avatar(
-			    client, File(f"bot/images/profile_pictures/{random_avatar}"))
+			await set_avatar(client, File(f"bot/data/images/profile_pictures/{random_avatar}"))
 		except TooManyChanges:
 			e = " It's recommended you disable avatar rolling, or set the interval to a slower pace."
 			if not debugging():
@@ -34,7 +33,7 @@ async def roll_avatar(client: Client, log=True, print=print) -> None:
 			else:
 				print(f"...used {random_avatar}")
 	else:
-		avatar = File("bot/images/unstable.png")
+		avatar = File("bot/data/images/unstable.png")
 		try:
 			await set_avatar(client, avatar)
 			if not debugging():
@@ -54,8 +53,7 @@ statuses = get_config("bot.rolling.statuses", ignore_None=True)
 
 
 async def roll_status(client: Client, log=True, print=print) -> None:
-	status = (statuses if isinstance(statuses, str) else
-	          random.choice(statuses if statuses is not None else [None]))
+	status = (statuses if isinstance(statuses, str) else random.choice(statuses if statuses is not None else [None]))
 	if log:
 		if not debugging():
 			print(f"Rolled status: {await set_status(client, status)}")

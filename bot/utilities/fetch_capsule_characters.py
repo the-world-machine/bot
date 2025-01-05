@@ -37,8 +37,7 @@ nikogotchi_list = [
     NikogotchiInformation("Rue", '1147182674964906077', Rarity.YELLOW),
     NikogotchiInformation("Prototype", '1147182673673076828', Rarity.YELLOW),
     NikogotchiInformation("Cedric", '1147182656191205396', Rarity.YELLOW),
-    NikogotchiInformation("The World Machine", '1147182676021878887',
-                          Rarity.YELLOW),
+    NikogotchiInformation("The World Machine", '1147182676021878887', Rarity.YELLOW),
     NikogotchiInformation("Niko", '1147176553655058492', Rarity.YELLOW)
 ]
 
@@ -47,9 +46,7 @@ def serialize_data(obj):
 	return obj.name
 
 
-json_data = json.dumps([obj.__dict__ for obj in nikogotchi_list],
-                       default=serialize_data,
-                       indent=4)
+json_data = json.dumps([obj.__dict__ for obj in nikogotchi_list], default=serialize_data, indent=4)
 
 with open('nikogotchi.json', 'w') as f:
 	f.write(json_data)
