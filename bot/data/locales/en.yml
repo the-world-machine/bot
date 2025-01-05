@@ -433,9 +433,7 @@ nikogotchi:
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
 
-  error:
-    title: Error loading this Nikogotchi!
-    description: "This Nikogotchi might not exist... 😔"
+
 
   name:
     niko: Niko
