@@ -50,7 +50,8 @@ misc:
   roll:
     rolling: Rolling d[sides]...
     rolled: "[ Rolled a [text], totaling at **[total]**. ]"
-    one: "[ Rolled a 1 ]"
+    one: "[ Rolled 1 time and got **[total]**. ]"
+
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     

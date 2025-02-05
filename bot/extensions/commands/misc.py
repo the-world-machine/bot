@@ -70,7 +70,7 @@ class MiscellaneousCommands(Extension):
 		dice = random.randint(1, sides)
 
 		if amount == 1:
-			description = loc.l("misc.roll.one", side=dice)
+			description = loc.l("misc.roll.one", total=dice)
 		else:
 			rolls = [random.randint(1, sides) for _ in range(amount)]
 
