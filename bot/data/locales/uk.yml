@@ -49,7 +49,7 @@ misc:
       failed_commit_hash: "N/A"
   roll:
     rolling: Кидаємо d[sides]...
-    rolled: "[ Викинуто [text], у сумі: **[total]**. ]"
+    rolled: "[ Викинуто [text]x[amt], у сумі: **[total]**. ]"
     one: "[ Викинуто 1 ]"
 
   wikipedia: "[ [Ось]([link]) що я знайшов... Це о «[title]» ]"

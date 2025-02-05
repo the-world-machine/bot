@@ -30,7 +30,7 @@ class MiscellaneousCommands(Extension):
 
 		embed.add_field(loc.l("misc.stats.names.avg_ping"), loc.l("misc.stats.values.time", sec=fnum(ctx.client.latency, ctx.locale)), inline=True)
 		embed.add_field(loc.l("misc.stats.names.cpu_usg"), loc.l("misc.stats.values.percent", num=round(psutil.cpu_percent())), inline=True)
-		embed.add_field(loc.l("misc.stats.names.mem_usg"), ctx.client.total_shards, inline=True)
+		embed.add_field(loc.l("misc.stats.names.mem_usg"), loc.l("misc.stats.values.percent", num=round(psutil.virtual_memory().percent)), inline=True)
 		embed.add_field(loc.l("misc.stats.names.commit_hash"), commit_hash if commit_hash else loc.l("misc.status.values.failed_commit_hash"), inline=True)
 		embed.add_field(loc.l("misc.stats.names.server_count"), total_servers, inline=True)
 		embed.add_field(loc.l("misc.stats.names.uptime"), ftime(datetime.now() - ctx.client.start_time, ctx.locale), inline=True)
@@ -70,11 +70,11 @@ class MiscellaneousCommands(Extension):
 		dice = random.randint(1, sides)
 
 		if amount == 1:
-			description = loc.l("misc.roll.one", side=dice)
+			description = loc.l("misc.roll.one", total=dice)
 		else:
 			rolls = [random.randint(1, sides) for _ in range(amount)]
 
-			description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls))
+			description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls), amt=amount)
 
 		embed = Embed(title=loc.l("misc.roll.rolling", sides=sides), description=description, color=Colors.DEFAULT)
 		embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
