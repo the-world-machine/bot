@@ -48,7 +48,7 @@ misc:
       failed_commit_hash: "N/A"
   roll:
     rolling: Бросаем к[sides]... # d -> к, gonna need some feedback
-    rolled: "[ Выпало [text], всего **[total]**. ]"
+    rolled: "[ Выпало [text]x[amt], всего **[total]**. ]"
     one: "[ Выпал один. ]"
 
   wikipedia: "[ [Вот]([link]) случайная статья из Википедии. Кажется, она о [title]... ]"
