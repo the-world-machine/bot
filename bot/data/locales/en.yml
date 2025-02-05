@@ -49,7 +49,7 @@ misc:
       failed_commit_hash: "N/A"
   roll:
     rolling: Rolling d[sides]...
-    rolled: "[ Rolled a [text], totaling at **[total]**. ]"
+    rolled: "[ Rolled a [text] [amount] times, totaling at **[total]**. ]"
     one: "[ Rolled 1 time and got **[total]**. ]"
 
 
