@@ -74,7 +74,7 @@ class MiscellaneousCommands(Extension):
 		else:
 			rolls = [random.randint(1, sides) for _ in range(amount)]
 
-			description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls))
+			description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls), amt=amount)
 
 		embed = Embed(title=loc.l("misc.roll.rolling", sides=sides), description=description, color=Colors.DEFAULT)
 		embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
