@@ -47,9 +47,10 @@ misc:
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
   roll:
-    rolling: Бросаем к[sides]... # d -> к, gonna need some feedback
-    rolled: "[ Выпало [text]x[amt], всего **[total]**. ]"
-    one: "[ Выпал один. ]"
+    title: Бросаем [amount]d[sides]... # d -> к, gonna need some feedback
+    desc: "...выпало [result]."
+    # adds on when more than 1 dice
+    multi: "Суммарно **[total]**."
 
   wikipedia: "[ [Вот]([link]) случайная статья из Википедии. Кажется, она о [title]... ]"
      
