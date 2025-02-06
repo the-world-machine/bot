@@ -48,6 +48,15 @@ class Emojis(TypedDict):
 	progress_bars: dict[Literal["square", "round"], ProgressBar]
 
 
+def make_url(emoji: str) -> str:
+	match = re.match(r'<(a?):([a-zA-Z0-9_]+):([0-9]+)>', emoji)
+	if not match:
+		raise ValueError("Invalid emoji")
+
+	animated, name, emoji_id = match.groups()
+	base_url = "https://cdn.discordapp.com/emojis/"
+	return f"{base_url}{emoji_id}.{'gif' if animated else 'png'}"
+
 def load_emojis() -> Emojis:
 	with open("bot/data/emojis.yml", "r") as f:
 		emojis_data = safe_load(f)

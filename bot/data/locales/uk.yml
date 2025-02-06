@@ -48,9 +48,10 @@ misc:
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
   roll:
-    rolling: Кидаємо d[sides]...
-    rolled: "[ Викинуто [text]x[amt], у сумі: **[total]**. ]"
-    one: "[ Викинуто 1 ]"
+    title: Кидаємо [amount]d[sides]...
+    desc: "... отримали [result]."
+    # adds on when more than 1 dice
+    multi: "У сумі: **[total]**."
 
   wikipedia: "[ [Ось]([link]) що я знайшов... Це о «[title]» ]"
     

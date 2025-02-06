@@ -43,14 +43,14 @@ misc:
       mem_usg: "Memory usage"
       uptime: "Uptime"
     values:
-
       time: "**[sec]** s."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
   roll:
-    rolling: Rolling d[sides]...
-    rolled: "[ Rolled [text]x[amt], totaling at **[total]**. ]"
-    one: "[ Rolled 1 time and got **[total]**. ]"
+    title: Rolling [amount]d[sides]...
+    desc: "...got [result]."
+    # adds on when more than 1 dice
+    multi: "Totaling at **[total]**."
 
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"

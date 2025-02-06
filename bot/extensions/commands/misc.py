@@ -4,6 +4,7 @@ import platform
 import psutil
 import platform
 from interactions import *
+from utilities.emojis import emojis, make_url
 from utilities.localization import Localization, fnum, ftime
 from utilities.message_decorations import Colors, fancy_message
 from datetime import datetime
@@ -67,19 +68,17 @@ class MiscellaneousCommands(Extension):
 	async def roll(self, ctx: SlashContext, sides: int, amount: int = 1):
 		loc = Localization(ctx.locale)
 
-		dice = random.randint(1, sides)
+		rolls = [random.randint(1, sides) for _ in range(amount)]
 
-		if amount == 1:
-			description = loc.l("misc.roll.one", total=dice)
-		else:
-			rolls = [random.randint(1, sides) for _ in range(amount)]
+		result = ", ".join(map(str, rolls)) if len(rolls) > 1 else rolls[0] # TODO: replace .join with a function(to be written) from localisation module
+		description = loc.l("misc.roll.desc", result=result)
 
-			description = loc.l("misc.roll.rolled", text=sides, total=sum(rolls), amt=amount)
+		if len(rolls) > 1:
+			description += "\n\n" + loc.l("misc.roll.multi", total=sum(rolls))
 
-		embed = Embed(title=loc.l("misc.roll.rolling", sides=sides), description=description, color=Colors.DEFAULT)
-		embed.set_thumbnail('https://cdn.discordapp.com/emojis/1026181557230256128.png?size=4096&quality=lossless')
-
-		await ctx.send(embeds=embed)
+		await ctx.send(
+		    embeds=Embed(color=Colors.DEFAULT, thumbnail=make_url(emojis["treasures"]["die"]), title=loc.l("misc.roll.title", amount=amount, sides=sides), description=description)
+		)
 
 	@slash_command(description="Get a random picture of a cat.")
 	async def cat(self, ctx: SlashContext):
