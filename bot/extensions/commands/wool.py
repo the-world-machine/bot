@@ -199,5 +199,5 @@ class WoolCommands(Extension):
 	@slash_option(description='How much wool would you like to bet?', name='bet', required=True, opt_type=OptionType.INTEGER, min_value=100)
 	async def gamble(self, ctx: SlashContext, bet: int):
 		"""Moved to /gamble wool"""
-		from interacts.gamble import GambleCommands
+		from extensions.commands.gamble import GambleCommands
 		return await GambleCommands.wool(ctx, ctx, bet)
