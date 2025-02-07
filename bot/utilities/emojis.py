@@ -49,11 +49,11 @@ class Emojis(TypedDict):
 
 
 def make_url(emoji: str, size: int = 4096, quality: str = "lossless") -> str:
-	match = re.match(r'<(a?):([a-zA-Z0-9_]+):([0-9]+)>', emoji)
+	match = re.match(r'<(a?):[a-zA-Z0-9_]+:([0-9]+)>', emoji)
 	if not match:
 		raise ValueError("Invalid emoji")
 
-	animated, name, emoji_id = match.groups()
+	animated, emoji_id = match.groups()
 	base_url = "https://cdn.discordapp.com/emojis/"
 	return f"{base_url}{emoji_id}.{'gif' if animated else 'png'}?size={size}&quality={quality}"
 
