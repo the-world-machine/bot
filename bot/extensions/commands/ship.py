@@ -14,12 +14,12 @@ class ShippingCommands(Extension):
 
 		if '<' in who:
 			parsed_id = who.strip('<@>')
-			user = await self.bot.fetch_user(int(parsed_id))
+			user = await ctx.client.fetch_user(int(parsed_id))
 
 			who = user.display_name
 		if '<' in whomst:
 			parsed_id = whomst.strip('<@>')
-			user = await self.bot.fetch_user(int(parsed_id))
+			user = await ctx.client.fetch_user(int(parsed_id))
 
 			whomst = user.display_name
 		if who == ctx.author.display_name and who == whomst:

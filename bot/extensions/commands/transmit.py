@@ -56,7 +56,7 @@ class TransmissionCommands(Extension):
 
 	# 	await ctx.send(components=server_list, ephemeral=True)
 
-	# 	select_results = await self.bot.wait_for_component(components=server_list)
+	# 	select_results = await ctx.client.wait_for_component(components=server_list)
 
 	# 	other_server = int(select_results.ctx.values[0])
 	# 	other_server_data: ServerData = await ServerData(other_server).fetch()
@@ -73,7 +73,7 @@ class TransmissionCommands(Extension):
 	# 								   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
 	# 								   color=Colors.BAD, ephemeral=True)
 
-	# 	other_server_channel: GuildText = await self.bot.fetch_channel(other_server_data.transmit_channel)
+	# 	other_server_channel: GuildText = await ctx.client.fetch_channel(other_server_data.transmit_channel)
 
 	# 	server_name = other_server_channel.guild.name.replace("`", "'")
 
@@ -117,7 +117,7 @@ class TransmissionCommands(Extension):
 	# 	other_server_message = await fancy_message(other_server_channel, f'[ **{ctx.guild.name}** is calling you! ]', components=[connect_button, disconnect_button])
 
 	# 	try:
-	# 		other_server_component: Component = await self.bot.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
+	# 		other_server_component: Component = await ctx.client.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
 	# 	except:
 
 	# 		await other_server_message.edit(embed=embed_timeout_one, components=[])
@@ -164,7 +164,7 @@ class TransmissionCommands(Extension):
 
 			msg = await ctx.send(embeds=embed, components=cancel)
 
-			task = asyncio.create_task(self.bot.wait_for_component(components=cancel))
+			task = asyncio.create_task(ctx.client.wait_for_component(components=cancel))
 
 			while not connection_alive(ctx.guild_id):
 				done, _ = await asyncio.wait({task}, timeout=1)
@@ -210,9 +210,9 @@ class TransmissionCommands(Extension):
 
 		other_server: Guild
 		if server_id == transmission.connection_a.server_id:
-			other_server = await self.bot.fetch_guild(transmission.connection_b.server_id)
+			other_server = await self.client.fetch_guild(transmission.connection_b.server_id)
 		else:
-			other_server = await self.bot.fetch_guild(transmission.connection_a.server_id)
+			other_server = await self.client.fetch_guild(transmission.connection_a.server_id)
 
 		server_data: ServerData = await ServerData(server_id).fetch()
 		transmittable_servers = server_data.transmittable_servers
@@ -231,7 +231,7 @@ class TransmissionCommands(Extension):
 				await component.ctx.send(f'[ Only the initiator of this transmission ({User.mention}) can cancel it! ]', ephemeral=True)
 				return False
 
-		task = asyncio.create_task(self.bot.wait_for_component(components=disconnect, check=check_button))
+		task = asyncio.create_task(self.client.wait_for_component(components=disconnect, check=check_button))
 
 		disconnect_timer = 600
 
@@ -336,7 +336,7 @@ class TransmissionCommands(Extension):
 
 		if connection_alive(guild.id):
 
-			if message.author.id == self.bot.user.id:
+			if message.author.id == self.client.user.id:
 				return
 
 			server_data: ServerData = await ServerData(guild.id).fetch()
@@ -353,13 +353,13 @@ class TransmissionCommands(Extension):
 			if first_server.channel_id == channel.id:
 				can_pass = True
 				user = await self.check_anonymous(guild.id, message.author, first_server, server_data)
-				other_connection = await self.bot.fetch_channel(second_server.channel_id)
+				other_connection = await self.client.fetch_channel(second_server.channel_id)
 				allow_images = server_data.transmit_images
 
 			if second_server.channel_id == channel.id:
 				can_pass = True
 				user = await self.check_anonymous(guild.id, message.author, second_server, server_data)
-				other_connection = await self.bot.fetch_channel(first_server.channel_id)
+				other_connection = await self.client.fetch_channel(first_server.channel_id)
 				allow_images = server_data.transmit_images
 
 			if can_pass:

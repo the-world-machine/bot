@@ -167,15 +167,15 @@ class NikogotchiCommands(Extension):
 		age = f"  •  ⏰  {age}" if len(age) != 0 else ""
 
 		info = \
-                                                f"❤️  {health_progress_bar} ({n.health} / {n.max_health})\n"+\
-                                                f'⚡  {energy_progress_bar} ({n.energy} / 5)\n'+\
-                                                '\n'+\
-                                                f'🍴  {hunger_progress_bar} ({n.hunger} / {n.max_hunger})\n'+\
-                                                f'🫂  {happiness_progress_bar} ({n.happiness} / {n.max_happiness})\n'+\
-                                                f'🧽  {cleanliness_progress_bar} ({n.cleanliness} / {n.max_cleanliness})\n'+\
-                                                '\n'+\
-                                                f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-                                                f'{treasure_looking}{age}\n'
+                                                            f"❤️  {health_progress_bar} ({n.health} / {n.max_health})\n"+\
+                                                            f'⚡  {energy_progress_bar} ({n.energy} / 5)\n'+\
+                                                            '\n'+\
+                                                            f'🍴  {hunger_progress_bar} ({n.hunger} / {n.max_hunger})\n'+\
+                                                            f'🫂  {happiness_progress_bar} ({n.happiness} / {n.max_happiness})\n'+\
+                                                            f'🧽  {cleanliness_progress_bar} ({n.cleanliness} / {n.max_cleanliness})\n'+\
+                                                            '\n'+\
+                                                            f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+                                                            f'{treasure_looking}{age}\n'
 
 		if dialogue and not preview:
 			info += f'\n{loc.l("nikogotchi.status.template", status=nikogotchi_status)}'
@@ -233,7 +233,7 @@ class NikogotchiCommands(Extension):
 				]
 
 				await fancy_message(ctx, loc.l('nikogotchi.other.error.description', id=nikogotchi.nid), color=Colors.BAD, ephemeral=True, components=buttons)
-				button_ctx = (await self.bot.wait_for_component(components=buttons)).ctx
+				button_ctx = (await ctx.client.wait_for_component(components=buttons)).ctx
 
 				custom_id = button_ctx.custom_id
 
@@ -583,7 +583,7 @@ class NikogotchiCommands(Extension):
 
 		await ctx.send(embed=Embed(description=loc.l('nikogotchi.other.send_away.description', name=name), color=Colors.WARN), ephemeral=True, components=buttons)
 
-		button = await self.bot.wait_for_component(components=buttons)
+		button = await ctx.client.wait_for_component(components=buttons)
 		button_ctx = button.ctx
 
 		custom_id = button_ctx.custom_id
@@ -689,7 +689,7 @@ class NikogotchiCommands(Extension):
             components=buttons
         )
 
-        button = await self.bot.wait_for_component(components=buttons)
+        button = await ctx.client.wait_for_component(components=buttons)
         button_ctx = button.ctx
 
         await button_ctx.defer(edit_origin=True)

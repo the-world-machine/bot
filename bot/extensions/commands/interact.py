@@ -36,7 +36,7 @@ class InteractCommands(Extension):
 		if ctx.author.id == who.id:
 			return await fancy_message(ctx, loc.l('interact.twm_is_fed_up_with_you', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
 
-		if who.id == self.bot.user.id:
+		if who.id == ctx.client.user.id:
 			return await fancy_message(ctx, loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
 		"""if who.bot:
             await fancy_message(ctx, loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
