@@ -15,7 +15,7 @@ class SettingsCommands(Extension):
 
 	async def check(self, ctx: SlashContext):
 		if Permissions.MANAGE_GUILD not in ctx.member.guild_permissions:
-			await fancy_message(ctx, Localization(ctx.locale).l("settings.missing_permissions"), color=Colors.BAD, ephemeral=True)
+			await fancy_message(ctx, Localization(ctx.locale).l("settings.errors.missing_permissions"), color=Colors.BAD, ephemeral=True)
 			return False
 
 		return True
