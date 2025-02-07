@@ -167,22 +167,21 @@ class NikogotchiCommands(Extension):
 		age = f"  •  ⏰  {age}" if len(age) != 0 else ""
 
 		info = \
-                                                            f"❤️  {health_progress_bar} ({n.health} / {n.max_health})\n"+\
-                                                            f'⚡  {energy_progress_bar} ({n.energy} / 5)\n'+\
-                                                            '\n'+\
-                                                            f'🍴  {hunger_progress_bar} ({n.hunger} / {n.max_hunger})\n'+\
-                                                            f'🫂  {happiness_progress_bar} ({n.happiness} / {n.max_happiness})\n'+\
-                                                            f'🧽  {cleanliness_progress_bar} ({n.cleanliness} / {n.max_cleanliness})\n'+\
-                                                            '\n'+\
-                                                            f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-                                                            f'{treasure_looking}{age}\n'
-
-		if dialogue and not preview:
-			info += f'\n{loc.l("nikogotchi.status.template", status=nikogotchi_status)}'
-
-		N_embed = Embed(                                                          # nikogotchi embed
-		    title=n.name, description=info, footer=dialogue, color=Colors.DEFAULT
-		)
+           f"❤️  {health_progress_bar} ({n.health} / {n.max_health})\n"+\
+           f'⚡  {energy_progress_bar} ({n.energy} / 5)\n'+\
+           '\n'+\
+           f'🍴  {hunger_progress_bar} ({n.hunger} / {n.max_hunger})\n'+\
+           f'🫂  {happiness_progress_bar} ({n.happiness} / {n.max_happiness})\n'+\
+           f'🧽  {cleanliness_progress_bar} ({n.cleanliness} / {n.max_cleanliness})\n'+\
+           '\n'+\
+           f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+           f'{treasure_looking}{age}'
+		if not preview:
+			if dialogue:
+				info += f'\n-# 💬 {dialogue}'
+			else:
+				info += f'\n-# 💭 {loc.l("nikogotchi.status.template", status=nikogotchi_status)}'
+		N_embed = Embed(title=n.name, description=info, color=Colors.DEFAULT)
 		N_embed.set_thumbnail(metadata.image_url)
 
 		if preview:
@@ -190,15 +189,13 @@ class NikogotchiCommands(Extension):
 			return N_embed
 
 		if levelled_up_stats:
-			L_embed = Embed(                                                                                                                                               # level up embed
+			L_embed = Embed(
 			    title=loc.l("nikogotchi.levelupped.title", level=n.level), description=loc.l("nikogotchi.levelupped.message", stats=levelled_up_stats), color=Colors.GREEN
 			)
 			embeds.append(L_embed)
 
 		if treasure_found:
-			T_embed = Embed(                                                                              # treasures embed
-			    title=loc.l("nikogotchi.treasured.title"), description=treasure_found, color=Colors.GREEN
-			)
+			T_embed = Embed(title=loc.l("nikogotchi.treasured.title"), description=treasure_found, color=Colors.GREEN)
 			embeds.append(T_embed)
 		embeds.append(N_embed)
 		return embeds
@@ -400,7 +397,7 @@ class NikogotchiCommands(Extension):
 				await ctx.edit(embed=embed, components=[])
 			return
 
-		dialogue = '...'
+		dialogue = ''
 		treasures_found = None
 		buttons = self.nikogotchi_buttons(ctx, uid)
 		select = await self.feed_nikogotchi(ctx)

@@ -498,10 +498,10 @@ nikogotchi:
       -# note: you can always do this later using `/nikogotchi rename`
 
   status:
-    template: "-# [status]"
+    template: "*[status]*"
 
-    normal: "Currently doing fine."
-    normal-rare: "Waiting for something to happen?"
+    normal: "👍 Currently doing fine."
+    normal-rare: "🙂 Waiting for something to happen?"
     pet: "🥺 [name] wants attention!"
     dirty: "🛀 [name] wants to be cleaned!"
     hungry: "🥞 [name] is feeling hungry..."
