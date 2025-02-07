@@ -74,7 +74,7 @@ settings:
       editor:
         title: "[ Du verändert die Willkommen Nachricht ... ]"
         input: "Willkommen Nachricht"
-        placeholder: "Lass leer zum deaktivieren"
+        placeholder: "Lass leer zum deaktivieren
 
         - Du kannst die Variablen benutzen: [user_name] [server_name]"
         done: |
@@ -103,8 +103,8 @@ profile:
     bots: "[ Bots haben keine profilen! ]"
     loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
 
-    image: Sie besitzen
-      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Woolen [wool]"
+    image:
+      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Wollen [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
       alt_cont: "[alt_nodescription]. Dieser Beschreibung sagt: [description]"
@@ -164,11 +164,11 @@ shop:
     [user_wool]
 
   motds:
-    - Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?
-    - ich habe vielleicht den wool markt gebrochen einmal or zwei.. aber bitte sag es Niemanden.
-    - Wörter der Weisheit als ein Freund: wenn du kaufst hoch und Verkaufst niedrig, Glück erwartet..! überprüfe das nicht.. bitte?
-    -  Meine schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?
-    - Du willst wissen was ist passiert über der Handler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen* # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
+    - "Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?"
+    - "ich habe vielleicht den wool markt gebrochen einmal or zwei.. aber bitte sag es Niemanden."
+    - "Wörter der Weisheit als ein Freund: wenn du kaufst hoch und Verkaufst niedrig, Glück erwartet..! überprüfe das nicht.. bitte?"
+    - "Meine schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?"
+    - "Du willst wissen was ist passiert über der Handler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen*" # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
     - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
   traded: '> Successfully traded for [amount] of "[item_name]"!' # [price] is also available here
@@ -498,10 +498,10 @@ nikogotchi:
       -# note: you can always do this later using `/nikogotchi rename`
 
   status:
-    template: "-# [status]"
+    template: "*[status]*"
 
-    normal: "Currently doing fine."
-    normal-rare: "Waiting for something to happen?"
+    normal: "👍 Currently doing fine."
+    normal-rare: "🙂 Waiting for something to happen?"
     pet: "🥺 [name] wants attention!"
     dirty: "🛀 [name] wants to be cleaned!"
     hungry: "🥞 [name] is feeling hungry..."
@@ -521,7 +521,7 @@ nikogotchi:
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
 
-      glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
+      glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
       no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
@@ -550,8 +550,8 @@ nikogotchi:
       Time Spent Looking: [time].
       
     dialogues:
-      sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
-      none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+      sent: "Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
+      none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
   levelupped:
     title: 🏆 they levelled up to level [level]!
