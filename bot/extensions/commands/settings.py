@@ -6,7 +6,7 @@ from utilities.message_decorations import Colors, fancy_message
 
 class SettingsCommands(Extension):
 
-	@slash_command(description="Settings.")
+	@slash_command(description="Configure the behavior of The World Machine for this server")
 	async def settings(self, ctx: SlashContext):
 		pass
 
@@ -43,7 +43,7 @@ class SettingsCommands(Extension):
 		    ephemeral=True,
 		)
 
-	@transmissions.subcommand(sub_cmd_description="Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE].")
+	@transmissions.subcommand(sub_cmd_description="Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE]")
 	@slash_option(
 	    description="default: TRUE",
 	    name="value",
@@ -78,7 +78,7 @@ class SettingsCommands(Extension):
 
 		return await fancy_message(ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True)
 
-	@transmissions.subcommand(sub_cmd_description="Toggle blocking a server from being able to call.")
+	@transmissions.subcommand(sub_cmd_description="Toggle blocking a server from being able to call")
 	@slash_option(
 	    description="The server's ID",
 	    name="server",
@@ -135,8 +135,9 @@ class SettingsCommands(Extension):
 
 	@server.subcommand()
 	async def welcome_message(self, ctx: SlashContext):
-		"Edit this server's welcome message."
+		"Edit this server's welcome message"
 		loc = Localization(ctx.locale)
+		# TODO: a!!!!!
 		return await ctx.send_modal(
 		    Modal(
 		        InputText(
