@@ -31,7 +31,6 @@ if cl is not None:
 	    ("bot.rolling.avatar", False),
 	    ("bot.rolling.status", False),
 	    ("bot.rolling.interval", False),
-	    ("bot.prod.interval", False),
 	    ("music.spotify.secret", False),
 	    ("music.spotify.id", False),
 	]
