@@ -46,8 +46,8 @@ localization:
             - ~ 
             - ~ # user ids, all in ""
 
-music:
-    enabled: true # disable if you don't want to setup lavalink and spotify credentials
+music: # deprecated
+    enabled: true
     spotify:
         secret: ~
         id: ~
