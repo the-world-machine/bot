@@ -109,14 +109,6 @@ class NikogotchiCommands(Extension):
 		owner = await ctx.client.fetch_user(n._id)
 		loc = Localization(ctx.locale)
 
-		pb_length = 5
-
-		health_progress_bar = make_progress_bar(n.health, n.max_health, pb_length, "round")
-		hunger_progress_bar = make_progress_bar(n.hunger, n.max_hunger, pb_length, "round")
-		happiness_progress_bar = make_progress_bar(n.happiness, n.max_happiness, pb_length, "round")
-		cleanliness_progress_bar = make_progress_bar(n.cleanliness, n.max_cleanliness, pb_length, "round")
-		energy_progress_bar = make_progress_bar(n.energy, 5, pb_length, "round")
-
 		nikogotchi_status = loc.l('nikogotchi.status.normal')
 
 		if random.randint(0, 100) == 20:
@@ -166,16 +158,20 @@ class NikogotchiCommands(Extension):
 		age = ftime(await self.get_nikogotchi_age(n._id), minimum_unit="minute")
 		age = f"  •  ⏰  {age}" if len(age) != 0 else ""
 
+
+		def make_pb(current, maximum) -> str:
+			return f"{make_progress_bar(current, maximum, 5, "round")} ({current} / {maximum})"
+		
 		info = \
-           f"❤️  {health_progress_bar} ({n.health} / {n.max_health})\n"+\
-           f'⚡  {energy_progress_bar} ({n.energy} / 5)\n'+\
-           '\n'+\
-           f'🍴  {hunger_progress_bar} ({n.hunger} / {n.max_hunger})\n'+\
-           f'🫂  {happiness_progress_bar} ({n.happiness} / {n.max_happiness})\n'+\
-           f'🧽  {cleanliness_progress_bar} ({n.cleanliness} / {n.max_cleanliness})\n'+\
-           '\n'+\
-           f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-           f'{treasure_looking}{age}'
+						f"❤️  {make_pb(n.health, n.max_health)}\n"+\
+						f'⚡  {make_pb(n.energy, 5)}\n'+\
+						'\n'+\
+						f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
+						f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
+						f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
+						'\n'+\
+						f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+						f'{treasure_looking}{age}'
 		if not preview:
 			if dialogue:
 				info += f'\n-# 💬 {dialogue}'

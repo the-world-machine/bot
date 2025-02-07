@@ -521,7 +521,7 @@ nikogotchi:
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
 
-      glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
+      glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
       no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
@@ -550,8 +550,8 @@ nikogotchi:
       Time Spent Looking: [time].
       
     dialogues:
-      sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
-      none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+      sent: "Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
+      none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
   levelupped:
     title: 🏆 they levelled up to level [level]!
