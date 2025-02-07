@@ -67,7 +67,7 @@ settings:
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
-    get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, then look at the bottom of the server menu)"
+    get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der )"
   
   server:
     welcome:
@@ -77,37 +77,37 @@ settings:
         placeholder: "Lass leer zum deaktivieren"
 
         - Du kannst die Variablen benutzen: [user_name] [server_name]"
-        Fertig: |
+        done: |
           [ Erfolgreich Verändert die Willkommen Nachricht]
         # new message shows up right after this
   transmissions:
     channel:
-      auto: "[ Übertragung kanal ]"
-      Changed: "[ Transmission channel has been set to [channel] ]"
+      auto: "[ Übertragungs kanal zurücksetzet]"
+      Changed: "[Übertragungs Kanal wurde eingestellt auf [channel] ]"
     images:
-      enabled: "[ Enabled transmission images ]"
-      disabled: "[ Disabled transmission images ]"
+      enabled: "[ aktiviert Übertragungs Bilder ]"
+      disabled: "[ deaktiviert Übertragungs Bilder ]"
     anonymous:
-      enabled: "[ Successfully enabled anonymous mode ]"
-      disabled: "[ Successfully disabled anonymous mode ]"
+      enabled: "[ Erfolgreich aktiviert anonymer modus ]"
+      disabled: "[ Erfolgreich deaktiviert anonymer modus ]"
     blocked:
-      yah: "[ Successfully blocked `[server_name]` ]"
+      yah: "[ Erfolgreich blocked `[server_name]` ]"
       nah: "[ Successfully unblocked that server ]" # you can use server_name here also if you wish
 
 # ---------------------------------------------------------------
 
 profile:
   view: 
-    message: Viewing [usermention]'s profile
+    message: v Anzeige [usermention]'s profil
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
     bots: "[ Bots don't have profiles! ]"
-    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+    loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
 
     image: 
       alt_nodescription: "On the image is profile of user [username] in The World Machine's system. They own: Suns [suns], Wool [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
-      alt_cont: "[alt_nodescription]. Their description says: [description]"
+      alt_cont: "[alt_nodescription]. Dieser Beschreibung sagt: [description]"
       name: "[userid] profile"
       title: "[username]'s Profile"
       unlocked:
