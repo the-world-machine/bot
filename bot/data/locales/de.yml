@@ -104,7 +104,7 @@ profile:
     loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
 
     image: Sie besitzen
-      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Wollen [wool]"
+      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Woolen [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
       alt_cont: "[alt_nodescription]. Dieser Beschreibung sagt: [description]"
