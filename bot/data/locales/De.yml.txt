@@ -1,80 +1,80 @@
 general:
-  loading: "[ Loading... [emoji:loading] ]"
+  loading: "[ Laden... [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Yes"
-    _no: "No"
-    _cancel: "Cancel"
-    _back: "Back"
-    _continue: "Continue"
-    _open_site: "Open Website"
+    _yes: "Ja"
+    _no: "Nein"
+    _cancel: "stornieren"
+    _back: "wieder"
+    _continue: "weiter"
+    _open_site: "Seite offenen"
 
 # ---------------------------------------------------------------
 
 music: 
   loading: 
-    search: "[ Searching... [emoji:loading] ]"
-    file: "[ Loading your file... [emoji:loading] ]"
+    search: "[ Suchen... [emoji:loading] ]"
+    file: "[ Lade deine Daten... [emoji:loading] ]"
 
 # ---------------------------------------------------------------
 
 misc:
   miaou:
-    title: "You found..."
+    title: "Du hast gefunden..."
     finding:
       noik: Niko!
-      footer: A 1 in 100 chance! Lucky!
-      cat: a cat!
+      footer: 1 in 100 chance! Glückwunsch!
+      cat: eine Katze!
 
   stats:
     owner: "👑 @[name]"
     names: 
       shards: "Shards"
-      avg_ping: "Average ping"
+      avg_ping: "Durchschnittlich ping"
       commit_hash: "Commit hash"     #
-      server_count: "Server count"
-      user_installs: "User installs" #
-      host: "Host"                   #
-      music_listeners: "Music Listeners"
-      played_time: "Played for"
-      played_songs: "Played songs"
-      cpu_usg: "CPU usage"
-      mem_usg: "Memory usage"
-      uptime: "Uptime"
+      server_count: "Server zahl"
+      user_installs: "User installiert" #
+      host: "Gastgeber"                   #
+      music_listeners: "Musik Mithörer"
+      played_time: "Gespielt für"
+      played_songs: "Gespielte songs"
+      cpu_usg: "CPU Verwendung"
+      mem_usg: "Memory Verwendung"
+      uptime: "Betriebzeit"
     values:
-      time: "**[sec]** s."
+      time: "**[sec]** sek."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
   roll:
-    title: Rolling [amount]d[sides]...
-    desc: "...got [result]."
+    title: Rollen [amount]d[sides]...
+    desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
     multi: "Totaling at **[total]**."
 
 
-  wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
+  wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
     
 # ---------------------------------------------------------------
 
-wool: ~
+wolle: ~
 
 # ---------------------------------------------------------------
 
 settings:
   errors:
-    missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
-    channel_not_messageable: "[ I cannot send messages in that channel ]"
-    invalid_server_id: "[ Invalid server ID. ]"
-    uncached_server: "-# couldn't find the server's name (i am not in it)"
-    get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
+    missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
+    channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
+    invalid_server_id: "[ Invaliden server ID. ]"
+    uncached_server: "-# Ich konnte nicht den server namen finden (ich bon nicht drin)"
+    get_server_id: "(Discord Einstellungen -> Erweitert-> enable 'Developer Options', then look at the bottom of the server menu)"
   
   server:
     welcome:
       editor:
-        title: "[ You are editing the welcome message... ]"
-        input: "Welcome Message"
-        placeholder: "Leave blank to disable
+        title: "[ Du verändert die Willkommen Nachricht ... ]"
+        input: "Willkommen Nachricht"
+        placeholder: "Lass leer zum deaktivieren"
 
         - You can use the variables: [user_name] [server_name]"
         done: |
