@@ -66,8 +66,8 @@ settings:
     missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
-    uncached_server: "-# Ich konnte nicht den server namen finden (ich bon nicht drin)"
-    get_server_id: "(Discord Einstellungen -> Erweitert-> enable 'Developer Options', then look at the bottom of the server menu)"
+    uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
+    get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, then look at the bottom of the server menu)"
   
   server:
     welcome:
@@ -76,13 +76,13 @@ settings:
         input: "Willkommen Nachricht"
         placeholder: "Lass leer zum deaktivieren"
 
-        - You can use the variables: [user_name] [server_name]"
-        done: |
-          [ Successfully updated welcome message ]
+        - Du kannst die Variablen benutzen: [user_name] [server_name]"
+        Fertig: |
+          [ Erfolgreich Verändert die Willkommen Nachricht]
         # new message shows up right after this
   transmissions:
     channel:
-      auto: "[ Transmission channel has been reset ]"
+      auto: "[ Übertragung kanal ]"
       Changed: "[ Transmission channel has been set to [channel] ]"
     images:
       enabled: "[ Enabled transmission images ]"
