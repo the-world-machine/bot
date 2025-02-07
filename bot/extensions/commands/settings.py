@@ -27,9 +27,9 @@ class SettingsCommands(Extension):
 	    opt_type=OptionType.CHANNEL,
 	)
 	async def channel(self, ctx: SlashContext, channel: GuildText = None):
-		loc = Localization(ctx.locale)
 		if not await self.check(ctx):
 			return
+		loc = Localization(ctx.locale)
 		server_data = await ServerData(ctx.guild_id).fetch()
 		if channel is None:
 			await server_data.update(transmit_channel=None)
@@ -51,9 +51,9 @@ class SettingsCommands(Extension):
 	    required=True,
 	)
 	async def images(self, ctx: SlashContext, value: bool):
-		loc = Localization(ctx.locale)
 		if not await self.check(ctx):
 			return
+		loc = Localization(ctx.locale)
 
 		server_data = await ServerData(ctx.guild_id).fetch()
 
@@ -68,9 +68,9 @@ class SettingsCommands(Extension):
 	    required=True,
 	)
 	async def anonymous(self, ctx: SlashContext, value):
-		loc = Localization(ctx.locale)
 		if not await self.check(ctx):
 			return
+		loc = Localization(ctx.locale)
 
 		server_data = await ServerData(ctx.guild_id).fetch()
 
@@ -133,11 +133,11 @@ class SettingsCommands(Extension):
 
 		await ctx.send(servers)
 
-	@server.subcommand()
+	@server.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def welcome_message(self, ctx: SlashContext):
-		"Edit this server's welcome message"
+		if not await self.check(ctx):
+			return
 		loc = Localization(ctx.locale)
-		# TODO: a!!!!!
 		return await ctx.send_modal(
 		    Modal(
 		        InputText(
