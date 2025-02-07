@@ -67,7 +67,7 @@ settings:
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
-    get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der )"
+    get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
   
   server:
     welcome:
@@ -91,71 +91,71 @@ settings:
       enabled: "[ Erfolgreich aktiviert anonymer modus ]"
       disabled: "[ Erfolgreich deaktiviert anonymer modus ]"
     blocked:
-      yah: "[ Erfolgreich blocked `[server_name]` ]"
-      nah: "[ Successfully unblocked that server ]" # you can use server_name here also if you wish
+      yah: "[ Erfolgreich `[server_name]` blockiert ]"
+      nah: "[ Erfolgreich `[server_name]` Blockierung aufgehebt]" # you can use server_name here also if you wish
 
 # ---------------------------------------------------------------
 
 profile:
   view: 
     message: v Anzeige [usermention]'s profil
-    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
-    bots: "[ Bots don't have profiles! ]"
+    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Verändere deine Profil"
+    bots: "[ Bots haben keine profilen! ]"
     loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
 
-    image: 
-      alt_nodescription: "On the image is profile of user [username] in The World Machine's system. They own: Suns [suns], Wool [wool]"
+    image: Sie besitzen
+      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Wollen [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
       alt_cont: "[alt_nodescription]. Dieser Beschreibung sagt: [description]"
-      name: "[userid] profile"
-      title: "[username]'s Profile"
+      name: "[userid] profil"
+      title: "[username]'s Profil"
       unlocked:
-        stamps: "Unlocked Stamps:"
+        stamps: "Entsperrte Stempeln:"
   edit: 
-    text: "You can edit your profile over on the website!" 
+    text: "Du kannst dein Profil verändern über diese Website!" 
 
 # ---------------------------------------------------------------
 
 explode:
   dialogue:
     why: 
-      - "[ Why? ]"
-      - "[ I have to clean up everytime someone does this. ]"
-      - "[ Wow... really? ]"
+      - "[ Warum? ]"
+      - "[ Ich muss wieder waschen wenn jemand macht dass.]"
+      - "[ Wow... Echt? ]"
       - "[  ]"
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? Utterly despicable. ]"
-  info: "Shatter count: [amount]"
-  YouKilledNiko: "[ You killed Niko. ]"
+    nineninenineninenine: "[ das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! verstehst du wie viele Welten hast du zerstört?! Unglaublich von dir. ]"
+  info: "Shatter zahl: [amount]"
+  YouKilledNiko: "[ Du hast Niko getötet. ]"
 
 # ---------------------------------------------------------------
 
 shop:
-  loading: "[ Loading Shop... [emoji:loading] ]"
+  loading: "[ Laden Laden?... [emoji:loading] ]"
 
-  user_wool: "**Your Balance: [emoji:wool][wool]**"
-  owned: "you have **[amount]**"
+  user_wool: "**Ihr Guthaben: [emoji:wool][wool]**"
+  owned: "Du hast **[amount]**"
 
   buttons:
-    buy: Trade
-    buy_all: Trade All
-    too_poor: Cannot Afford
-    too_poor_all: Cannot Afford All
-    sell: Trade in
-    sell_all: Trade in All
-    go_back: Go Back
-    owned: Owned 
+    buy: Handeln
+    buy_all: Alles handeln
+    too_poor: kann es nicht leisten
+    too_poor_all: kann es nicht alles leisten
+    sell: verkaufen in
+    sell_all: verkaufen alles 
+    go_back: Wieder gehen
+    owned: Schon Besitzt
 
-  main_title: Welcome!
+  main_title: Willkommen!
 
   main: >
-    Hey, Hey! Welcome to my emporium. I'm willing to trade many shiny and colorful treasures, backgrounds, capsules and more in exchange for your [emoji:wool]**Wool**... think of it as a currency eh?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu Handeln sehr viel glänzen und färbliche Schätze,Hintergründe ,Capseulen und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
 
 
-    To get started, simply open one of the categories shown below and then trade away! Keep in mind that there are some items that change **daily**, so keep an eye out on those!
+    um zu starten, offene mal die Kategorien unten und dann handle! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
 
 
     [motd]
@@ -164,11 +164,11 @@ shop:
     [user_wool]
 
   motds:
-    - The wool market changes everyday. Honestly, we bird people have a good intuition about it, and by intuition I mean I randomly increase it or decrease it to whatever I feel like.
-    - I may have *broken* the wool market once or twice. Let's keep that between us.
-    - "Words of wisdom as a friend: If you buy high and sell low, good fortune awaits..! Don't fact check that!"
-    - My poor trinket and treasures were washed away... perhaps you could find more for me?
-    - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
+    - Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?
+    - ich habe vielleicht den wool markt gebrochen einmal or zwei.. aber bitte sag es Niemanden.
+    - Wörter der Weisheit als ein Freund: wenn du kaufst hoch und Verkaufst niedrig, Glück erwartet..! überprüfe das nicht.. bitte?
+    -  Meine schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?
+    - Du willst wissen was ist passiert über der Handler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen* # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
     - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
   traded: '> Successfully traded for [amount] of "[item_name]"!' # [price] is also available here
