@@ -342,25 +342,25 @@ items:
     Barrens: Barrens
     Glens: Glens
     Refuge: Refuge
-    Pancakes: Pancakes
+    Pancakes: Pfannkuchen
     Magpie: Magpie
-    Catwalk: Catwalk
-    Ruins: Ruins
-    Factory: Factory
-    Lamplighter: Lamplighter
-    Library: Library
-    The World Machine: The World Machine
-    The Author: The Author
+    Catwalk: Laufsteg
+    Ruins: Ruinen 
+    Factory: Kraftwerk
+    Lamplighter: Laternenanzünder
+    Library: Bibliotheke
+    The World Machine: Die Welt Maschine
+    The Author: Der Autor
 
 # ---------------------------------------------------------------
 
 interact:
-  selected: "[ Choose an action to perform on [user]. ]"
-  placeholder: Interactions...
+  selected: "[ Wahl eine Action zum durchführen an [user]. ]"
+  placeholder: Interaktion...
 
-  twm_not_being_very_happy: "[ Don't touch me, [user]. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
-  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
+  twm_not_being_very_happy: "[ Fass mich nicht an, [user]. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ [user], Du kannst nicht interaktiveren mit Bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* Du kannst nicht mir dir selbst interaktiven, [user]. ]"
 
   options:
     boop:
@@ -369,29 +369,29 @@ interact:
         # lotta booping, you can remove some of these lines if you're too lazy to translate
         # (it'll just not include them in the message)
         - "[user_one] booped [user_two]"
-        - "[user_one] pokes the nose of [user_two]!"
-        - "[user_one] reaches out and boops [user_two]!"
-        - "[user_one] felt silly and booped [user_two]!"
-        - "[user_one] leaves [user_two] in confusion via a boop!"
-        - "[user_one] gives [user_two] an unexpected boop!"
-        - "[user_one] left [user_two] speechless post-boop!"
-        - "[user_one] delicately boops and brushes the nose of [user_two]"
-        - "[user_one] felt the need to give [user_two] a boop!"
-        - "[user_one] just wanted to give [user_two] a boop!"
-        - "[user_one] couldn't resist booping [user_two]"
-        - "[user_two] aggressively booped [user_two]"
+        - "[user_one] sticht in die Nase von[user_two]!"
+        - "[user_one] reicht und boops [user_two]!"
+        - "[user_one] Gefühlt silly und booped [user_two]!"
+        - "[user_one] hatte [user_two] in Verwirrung gelassen über ein boop!"
+        - "[user_one] gibt [user_two] ein unerwarteter boop!"
+        - "[user_one] lasst [user_two] sprachlos mit einen post-boop!"
+        - "[user_one] zart boops und streichelt die nase von [user_two]"
+        - "[user_one] fühlte das Bedürfnis zu geben [user_two] ein boop!"
+        - "[user_one] Wollte nur [user_two] ein boop geben!"
+        - "[user_one] konnte nicht widerstehen booping [user_two]"
+        - "[user_one] aggressiv booped [user_two]"
     slap:
-      name: Slap
-      messages: "[user_one] slapped [user_two], probably deserved."
+      name: Schlagen
+      messages: "[user_one] hat [user_two] geschlagen, wahrscheinlich verdient."
     punch:
-      name: Punch
-      messages: "[user_one] punched [user_two], that hurts."
+      name: Schlagen?.. 
+      messages: "[user_one] Schlägte [user_two], das würd ein blaues fleck lassen."
     pet:
-      name: Pet
-      messages: "[user_one] pet [user_two]!"
+      name: Streichlen
+      messages: "[user_one] streichelt [user_two]!"
     headpat:
-      name: Head Pat
-      messages: "[user_one] gave [user_two] a headpat!"
+      name: Kopf streichel
+      messages: "[user_one] gibt [user_two] ein Kopf streicheln!"
     tickle:
       name: Tickle
       messages:
