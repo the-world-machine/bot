@@ -380,7 +380,7 @@ interact:
         - "[user_one] ніжно тикнули та погладили ніса [user_two]"
         - "[user_one] просто хотіли тикнути [user_two]!"
         - "[user_one] не втримались від тикання [user_two]"
-        - "[user_two] агресивно тикнули [user_two]"
+        - "[user_one] агресивно тикнули [user_two]"
     slap:
       name: Дати ляща
       messages: "[user_one] дали ляща [user_two], напевно заслужив."

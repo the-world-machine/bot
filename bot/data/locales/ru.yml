@@ -377,7 +377,7 @@ interact:
         - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
         - "[user_one] просто захотел тыкнуть [user_two]!"
         - "[user_one] не смог удержаться и тыкнул [user_two]!"
-        - "[user_two] агрессивно тыкнул [user_two]"
+        - "[user_one] агрессивно тыкнул [user_two]"
     slap:
       name: Дать пощёчину
       messages: "[user_one] дали пощёчину [user_two], вероятно заслужили."

@@ -379,7 +379,7 @@ interact:
         - "[user_one] felt the need to give [user_two] a boop!"
         - "[user_one] just wanted to give [user_two] a boop!"
         - "[user_one] couldn't resist booping [user_two]"
-        - "[user_two] aggressively booped [user_two]"
+        - "[user_one] aggressively booped [user_two]"
     slap:
       name: Slap
       messages: "[user_one] slapped [user_two], probably deserved."
