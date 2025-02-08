@@ -1,4 +1,4 @@
-general:
+ongeneral:
   loading: "[ Laden... [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
@@ -8,7 +8,7 @@ general:
     _cancel: "stornieren"
     _back: "wieder"
     _continue: "weiter"
-    _open_site: "Seite offenen"
+    _open_site: "Seite öffenen"
 
 # ---------------------------------------------------------------
 
@@ -25,7 +25,7 @@ misc:
     finding:
       noik: Niko!
       footer: 1 in 100 chance! Glückwunsch!
-      cat: eine Katze!
+      cat: Eine Katze!
 
   stats:
     owner: "👑 @[name]"
@@ -140,11 +140,11 @@ shop:
   owned: "Du hast **[amount]**"
 
   buttons:
-    buy: Handeln
-    buy_all: Alles handeln
+    buy: Kaufen
+    buy_all: Alles kaufen
     too_poor: kann es nicht leisten
     too_poor_all: kann es nicht alles leisten
-    sell: verkaufen in
+    sell: verkaufen
     sell_all: verkaufen alles 
     go_back: Wieder gehen
     owned: Schon Besitzt
@@ -152,10 +152,10 @@ shop:
   main_title: Willkommen!
 
   main: >
-    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu Handeln sehr viel glänzen und färbliche Schätze,Hintergründe ,Capseulen und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schätze,Hintergründe , Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
 
 
-    um zu starten, offene mal die Kategorien unten und dann handle! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
+    um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
 
 
     [motd]
@@ -167,56 +167,56 @@ shop:
     - "Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?"
     - "ich habe vielleicht den wool markt gebrochen einmal or zwei.. aber bitte sag es Niemanden."
     - "Wörter der Weisheit als ein Freund: wenn du kaufst hoch und Verkaufst niedrig, Glück erwartet..! überprüfe das nicht.. bitte?"
-    - "Meine schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?"
-    - "Du willst wissen was ist passiert über der Handler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen*" # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
-    - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
+    - "Meine Schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?"
+    - "Du willst wissen was ist passiert über der Händler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen*" # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
+    - gefällt dir meine flasche Kollektion? ich mag meine Flasche Kollektion. was meinst du es ist alles \"Hard Liquor\"? Ist das was es sagt?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
-  traded: '> Successfully traded for [amount] of "[item_name]"!' # [price] is also available here
-  traded_sell: '> Sucessfully traded in [amount] "[item_name]" for [price] Wool!'
-  traded_fail: "> You cannot trade for this."
+  traded: '> Erfolgreich gekauft "[item_name]" für [amount]' # [price] is also available here
+  traded_sell: '> Erfolgreich "[item_name]" Verkauft für [price] Wool!'
+  traded_fail: ">Du kannst nicht das kaufen."
 
   stocks: >
-    ```Stock Value: [value]
+    ```Stock Wert: [value]
 
-    Stock Price: [price]```
+    Stock Preis: [price]```
 
   nikogotchi:
 
-    title: Capsules
+    title: Kapseln
 
     main: >
-      I see you're interested in this weird capsule thingamajig!
-      If I recall correctly, this is used to unlock **Nikogotchis!**
-      What are *Nikogotchis* you might ask? Well my dear customer, they are simple pets you can take care off, based of me, or any other...
+      Ich sehe das du bist interessiert in diesem seltsamen kapseln Dingen!..
+      Wenn ich nicht dumm bin, diese kapseln sind zu **Nikogotchis!** entsperren!
+      Was sind *Nikogotchis* fragst du? *Nikogotchis* sind irgendwie einfache Tiere (nicht wilde Tiere), das du kannst kümmern um.
 
 
       ...
 
 
-      *AHEM* existential dread aside, feeding them with pancakes and taking good care of them will allow you to gather treasures! Which you can trade to me! Pretty cool right?
+      *AHEM* existenziell Furcht beiseite, füttern sie mit Plankuchen und gut um sie kümmern, erlaubt dir um zu Schätzen zu suchen! und dann kannst du dir mir verkaufen! cool ober?
 
 
-      So why not trade for a capsule today? Only [emoji:wool]**[cost]**!
+      So warum nicht jetzt eine Kapsel kaufen? nur für [emoji:wool]**[cost]**!
 
 
-      *Do keep in mind that you can only have **one capsule** per Nikogotchi.*
+      * Denken Sie daran das du kannst nur **eine Kapsel** per Nikogotchi.*
     
 
       [user_wool]
 
     result: >
-      > You gave Magpie [amount] Wool, then he turns the gatchapon machine and...
+      > Du gibst Magpie [amount] Woole, dann er dreht sich um zum die gatchapon Maschine und...
 
-      > He gives you a [capsule_name]! 
+      > Er gibt dir eine [capsule_name]! 
 
-    result_footer: Use [ /nikogotchi check ] to see your new Nikogotchi!
+    result_footer: Benutz [ /nikogotchi check ]  um dein neuen Nikogotchi zu sehen
 
   pancakes:
 
-    title: Pancakes
+    title: Pfannkuchen 
 
     main: >
-      Nikogotchis absolutely adore pancakes, and thankfully, you can trade some with me!
+      Nikogotchis absolut mögen Pfannkuchen , und dank gottes Wille für dich weil ich sie hier verkaufe!
 
 
       [items]
@@ -226,91 +226,91 @@ shop:
 
   backgrounds:
 
-    title: Backgrounds
+    title: Hintergründe 
 
     main: >
-      Do you want to trade [emoji:wool]**[amount]** for this background?
+      Willst du diese Hintergrund für [emoji:wool]**[amount]**?
 
 
       [user_wool]
 
     newly_owned: > 
-      Thanks! Now you are a proud owner of this background.
+      Danke! Jetzt bist du der Stolz Besitzer von dieser Hintergrund.
 
 
       [user_wool]
-    traded: "> Successfully traded for this background!"
+    traded: "> Erfolgreich diese Hintergrund gekauft!"
 
   treasures:
 
     buy:
       title: Treasures
       message: >
-        You want to trade your [emoji:wool]**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
+        Du willst deine [emoji:wool]**Wool** verkaufen für Schätzen? dann bist du hier richtig! Ich habe sehr viele Schätze das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
         [stock_market]
         [selected_treasure]
         [user_wool]
-      placeholder: Choose a treasure to trade...
+      placeholder: wählen eine Schatz zu verkaufen...
       option: '"[name]" - [price] Wool'
 
     sell:
-      title: Trade in Treasures
+      title: Schätze verkaufen 
       message: >
-        Ah... You're intrerested in trading in your treasures! That's great!
-        Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
+        Ah... du bist interessiert zum deine Schätze zu verkaufen!  das ist gut!
+        Immer wann du verkaufst deine Schätze, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
         [stock_market]
         [selected_treasure]
         [user_wool]
-      #not_selected: "*You haven't selected any treasures to trade in...*"
-      placeholder: Choose a treasure to trade in...
-      no_treasures: You have no treasures to trade in.
+      #not_selected: "*Du hast nicht gewählt welche Schätze zu verkaufen...*"
+      placeholder:  Wähl ein Schatz zu verkaufen...
+      no_treasures: Du hast keine Schätze zu verkaufen.
       option: '"[name]" (x[amount])'
 
     selection: >
-      **Currently Selected:**
+      **aktuell ausgewählt:**
 
       - [treasure_icon] "**[treasure_name]**" - [owned]
 
 
-      **Trade One**: [emoji:wool]**[price_one]**
+      **Verkauf ein**: [emoji:wool]**[price_one]**
 
-      **Trade All**: [emoji:wool]**[price_all]** (x[amount])
+      **Verkauf alles**: [emoji:wool]**[price_all]** (x[amount])
 
 # ---------------------------------------------------------------
 
 items:
   treasures:
     amber:
-      name: Glowing Amber
-      description: It has a three-leaf clover pattern.
+      name: Leuchtende Amber
+      description:  es hat ein drei blätter Klee Muster.
     bottle:
-      name: Bottle of Alcohol
-      description: A bottle of alcohol. Perfect for making molotov cocktails.
+      name: Flasce Alkohol
+      description: Eine Flasche Alkohol. Perfekt für molotov cocktails.
     card:
-      name: '"Real" Library Card'
-      description: Niko's own photo is glued on.
+      name: '"Echtes" Bibliothekausweis'
+      description: Niko's eigenes foto ist geklebt.
     clover:
-      name: Glowing Clover
-      description: A glowing clover.
+      name: Leuchtende Klee
+      description: Ein Leuchtenden Klee.
     die:
-      name: Glowing Die
-      description: A die with glowing dots.
+      name: Leuchtendes Würfel
+      description: Ein Würfel mit leuchtenden Punkten.
     journal:
-      name: Mysterious Journal
-      description: It's written in an unknown language.
+      name: Mysteriöse Journal 
+      description: Es ist geschreiben in eine unbekannte Sprache.
     pen:
-      name: Glowing Feather
-      description: A long and slender feather with glowing edges. 
+      name: Leuchtendes Feder 
+      description: Ein langes Feder mit Leuchtenden Kanten. 
     shirt:
       name: Novelty Shirt
-      description: '"I herded rams and all I got was this lousy T-shirt!"'
+      description: '" Ich have widder gehüttet und alles was ich kriege ist diese lousy T-shirt?"'
     sun:
-      name: The Sun
+      name: Die Sonne 
       description: A large lightbulb. It's the sun. 
 
   pancakes:
     normal:
-      name: Pancakes
+      name: Pfannkuchen 
       description: >
         The bare minimum for feeding a Nikogotchi.
 
