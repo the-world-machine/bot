@@ -19,7 +19,7 @@ except Exception as e:
 
 class MiscellaneousCommands(Extension):
 
-	@slash_command(description='View various statistics about the bot.')
+	@slash_command(description='View various statistics about the bot')
 	async def stats(self, ctx: SlashContext):
 		await ctx.defer()
 		loc = Localization(ctx.locale)
@@ -39,16 +39,10 @@ class MiscellaneousCommands(Extension):
 		#                len(ctx.client.app.users)) # NONEXISTENT
 		#embed.add_field(loc.l("misc.stats.names.host"),
 		#                host, inline=True)
-		#embed.add_field(loc.l("misc.stats.names.music_listeners"),
-		#                lavalink_stats["playing_players"], inline=True)
-		#embed.add_field(loc.l("misc.stats.names.played_time"),
-		#                lavalink_stats["played_time"], inline=True)
-		#embed.add_field(loc.l("misc.stats.names.played_songs"),
-		#                lavalink_stats["played_songs"], inline=True)
 
 		return await ctx.edit(embeds=[embed])
 
-	@slash_command(description='A random wikipedia article.')
+	@slash_command(description='A random wikipedia article')
 	async def random_wikipedia(self, ctx: SlashContext):
 		loc = Localization(ctx.locale)
 		async with aiohttp.ClientSession() as session:
@@ -62,9 +56,9 @@ class MiscellaneousCommands(Extension):
 	async def amogus(self, ctx: SlashContext):
 		await ctx.send('https://media.discordapp.net/attachments/868336598067056690/958829667513667584/1c708022-7898-4121-9968-0f0d24b8f986-1.gif')
 
-	@slash_command(description='Roll a dice.')
-	@slash_option(description='What sided dice to roll.', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
-	@slash_option(description='How many to roll.', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
+	@slash_command(description='Roll an imaginary dice')
+	@slash_option(description='What sided dice to roll', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
+	@slash_option(description='How many times to roll it', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
 	async def roll(self, ctx: SlashContext, sides: int, amount: int = 1):
 		loc = Localization(ctx.locale)
 
@@ -80,12 +74,12 @@ class MiscellaneousCommands(Extension):
 		    embeds=Embed(color=Colors.DEFAULT, thumbnail=make_url(emojis["treasures"]["die"]), title=loc.l("misc.roll.title", amount=amount, sides=sides), description=description)
 		)
 
-	@slash_command(description="Get a random picture of a cat.")
+	@slash_command(description="Show a picture of a kitty or a cat or a Catto")
 	async def cat(self, ctx: SlashContext):
 		loc = Localization(ctx.locale)
 		embed = Embed(title=loc.l("misc.miaou.title"), color=Colors.DEFAULT)
 
-		if random.randint(0, 100) == 67:
+		if random.randint(0, 100) == 30 + 6 + 14:
 			embed.description = loc.l("misc.miaou.finding.noik")
 			embed.set_image('https://cdn.discordapp.com/attachments/1028022857877422120/1075445796113219694/ezgif.com-gif-maker_1.gif')
 			embed.set_footer(loc.l("misc.miaou.finding.footer"))

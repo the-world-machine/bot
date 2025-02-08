@@ -51,10 +51,9 @@ class GambleCommands(Extension):
 	async def gamble(self, ctx: SlashContext):
 		pass
 
-	@gamble.subcommand()
+	@gamble.subcommand(sub_cmd_description="Waste your wool away with slots. Totally not a scheme by Magpie")
 	@slash_option(description='How much wool would you like to bet?', name='bet', required=True, opt_type=OptionType.INTEGER, min_value=100)
 	async def wool(self, ctx: SlashContext, bet: int):
-		'''Waste your wool away with slots. Totally not a scheme by Magpie.'''
 		await ctx.defer()
 
 		user_data: UserData = await UserData(ctx.author.id).fetch()
@@ -178,13 +177,9 @@ class GambleCommands(Extension):
 
 		await msg.edit(embed=result_embed)
 
-	@gamble.subcommand()
+	@gamble.subcommand(sub_cmd_description="Read up on how the gamble command works")
 	async def help(self, ctx: SlashContext):
-		'''Read up on how the gamble command works'''
-
-		await ctx.defer()
-
-		text = f'''## Slot Machine
+		text = '''## Slot Machine
     Gamble any amount of wool as long as you can afford it.
     Here are the slots you can roll and their values:
     '''
@@ -200,6 +195,6 @@ class GambleCommands(Extension):
 			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
 
 		text += "\n".join(point_rows)+'\n\n'+\
-                                  'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
+      'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
 
 		await fancy_message(ctx, text)

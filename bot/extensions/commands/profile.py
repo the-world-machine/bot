@@ -11,11 +11,11 @@ from interactions import Extension, SlashContext, User, OptionType, slash_comman
 
 class ProfileCommands(Extension):
 
-	@slash_command(description='All things to do with profiles.')
+	@slash_command(description='All things to do with profiles')
 	async def profile(self, ctx):
 		pass
 
-	@slash_command(description='All things to do with Suns.')
+	@slash_command(description='All things to do with Suns')
 	async def sun(self, ctx):
 		pass
 
@@ -48,8 +48,8 @@ class ProfileCommands(Extension):
 
 		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
 
-	@profile.subcommand(sub_cmd_description='View a profile.')
-	@slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
+	@profile.subcommand(sub_cmd_description='View a profile')
+	@slash_option(description="Person you want to see the profile of", name='user', opt_type=OptionType.USER)
 	async def view(self, ctx: SlashContext, user: User = None):
 		url = "https://theworldmachine.xyz/profile"
 
@@ -80,7 +80,7 @@ class ProfileCommands(Extension):
 		    embeds=[]
 		)
 
-	@profile.subcommand(sub_cmd_description='Edit your profile.')
+	@profile.subcommand(sub_cmd_description='Edit your profile')
 	async def edit(self, ctx: SlashContext):
 		components = Button(style=ButtonStyle.URL, label=Localization(ctx.locale).l('general.buttons._open_site'), url="https://theworldmachine.xyz/profile")
 		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)

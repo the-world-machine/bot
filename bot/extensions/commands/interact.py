@@ -17,10 +17,9 @@ def make_interactions_select_menu(loc: Localization, uid: User) -> StringSelectM
 
 class InteractCommands(Extension):
 
-	@slash_command()
+	@slash_command(sub_cmd_description="Interact with others in various ways (sends a message in chat)")
 	@slash_option(name='with', description='The person you want to interact with', opt_type=OptionType.USER, required=True, argument_name="user")
 	async def interaction(self, ctx: SlashContext, user: User):
-		'''Interact with others in various ways (sends a message in chat).'''
 
 		await self.start_interaction(ctx, user)
 

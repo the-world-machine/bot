@@ -163,15 +163,15 @@ class NikogotchiCommands(Extension):
 			return f"{make_progress_bar(current, maximum, 5, 'round')} ({current} / {maximum})"
 
 		info = \
-            f"❤️  {make_pb(n.health, n.max_health)}\n"+\
-            f'⚡  {make_pb(n.energy, 5)}\n'+\
-            '\n'+\
-            f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
-            f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
-            f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
-            '\n'+\
-            f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-            f'{treasure_looking}{age}'
+             f"❤️  {make_pb(n.health, n.max_health)}\n"+\
+             f'⚡  {make_pb(n.energy, 5)}\n'+\
+             '\n'+\
+             f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
+             f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
+             f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
+             '\n'+\
+             f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+             f'{treasure_looking}{age}'
 		if not preview:
 			if dialogue:
 				info += f'\n-# 💬 {dialogue}'
@@ -417,7 +417,7 @@ class NikogotchiCommands(Extension):
 		if custom_id == 'callback' and nikogotchi.status == 3:
 			treasures_found = await self.calculate_treasure_seek(uid, datetime.now() - nikogotchi.started_finding_treasure_at)
 			nikogotchi.status = 2
-
+			print(datetime.now(), ctx.author_id, treasures_found)
 			if treasures_found == None:
 				dialogue = loc.l('nikogotchi.treasured.dialogues.none_found')
 
@@ -557,7 +557,7 @@ class NikogotchiCommands(Extension):
 
 		await ctx.edit_origin(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
 
-	@nikogotchi.subcommand(sub_cmd_description='Send away your Nikogotchi.')
+	@nikogotchi.subcommand(sub_cmd_description='Part ways with your Nikogotchi')
 	async def send_away(self, ctx: SlashContext):
 
 		loc = Localization(ctx.locale)
@@ -624,7 +624,7 @@ class NikogotchiCommands(Extension):
 			components.append(Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'action_refresh_{ctx.author_id}'))
 		await fancy_message(ctx, loc.l('nikogotchi.other.renaming.response', new_name=name, old_name=old_name), ephemeral=True, components=components)
 
-	@nikogotchi.subcommand(sub_cmd_description='Rename your Nikogotchi.')
+	@nikogotchi.subcommand(sub_cmd_description='Rename your Nikogotchi')
 	async def rename(self, ctx: SlashContext):
 		nikogotchi = await self.get_nikogotchi(ctx.author.id)
 
@@ -633,7 +633,7 @@ class NikogotchiCommands(Extension):
 
 		return await self.init_rename_flow(ctx, nikogotchi.name)
 
-	@nikogotchi.subcommand(sub_cmd_description="Show your nikogotchi in chat!")
+	@nikogotchi.subcommand(sub_cmd_description="Show off a nikogotchi in chat")
 	@slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
 	async def show(self, ctx: SlashContext, user: User = None):
 		loc = Localization(ctx.locale)
@@ -724,7 +724,7 @@ class NikogotchiCommands(Extension):
                 button_ctx.edit_origin(embed=receiver_embed, components=[])
             )"""
 
-	@slash_command(description='View what treasure you or someone else has!')
+	@slash_command(description="View what treasure someone has")
 	@integration_types(guild=True, user=True)
 	@slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
 	async def treasures(self, ctx: SlashContext, user: User = None):

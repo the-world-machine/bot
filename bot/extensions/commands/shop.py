@@ -762,7 +762,7 @@ class ShopCommands(Extension):
 
 			return embed, components
 
-	@slash_command(description="Open the Shop!")
+	@slash_command(description="Open the Shop")
 	async def shop(self, ctx: SlashContext):
 
 		await ctx.defer(ephemeral=True)

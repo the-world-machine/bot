@@ -76,9 +76,9 @@ class TextboxCommands(Extension):
 
 		return StringSelectMenu(*options, custom_id='textbox_select_face', disabled=False, placeholder='Select a face!')
 
-	@slash_command(description='Generate a OneShot textbox!')
+	@slash_command(description='Generate a OneShot textbox')
 	@slash_option(description='What you want the character to say?', max_length=180, name='text', opt_type=OptionType.STRING, required=True)
-	@slash_option(description='Do you want the text to appear slowly? (will take more time)', name='animated', opt_type=OptionType.BOOLEAN, required=True)
+	@slash_option(description='Do you want the text to appear slowly? (will take longer to generate)', name='animated', opt_type=OptionType.BOOLEAN, required=True)
 	async def textbox(self, ctx: SlashContext, text: str, animated: bool):
 		await ctx.defer(ephemeral=True)
 
