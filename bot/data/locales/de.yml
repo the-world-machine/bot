@@ -306,22 +306,22 @@ items:
       description: '" Ich have widder gehüttet und alles was ich kriege ist diese lousy T-shirt?"'
     sun:
       name: Die Sonne 
-      description: A large lightbulb. It's the sun. 
+      description: Eine große Glühbirne, Es ist die Sonne. 
 
   pancakes:
     normal:
       name: Pfannkuchen 
       description: >
-        The bare minimum for feeding a Nikogotchi.
+        das absolute Minimum zum Füttern a Nikogotchi.
 
         *+25 🥞*
 
         *+1 ❤️*
     
     golden:
-      name: Golden Pancakes
+      name: Goldene Pfannkuchen 
       description: >
-        Expensive, but worth it.
+        Teuer, aber Wert es.
 
         *MAX 🥞*
 
@@ -329,13 +329,13 @@ items:
     
     glitched:
       name: '???'
-      description: I don't even know how this got here.
+      description: Ich weiß nicht was das ist und wie es ist gekommen.
 
   capsules:
-    blue: Barrens Capsule
-    green: Glens Capsule
-    red: Refuge Capsule
-    yellow: Solstice Capsule
+    blue: Barrens Kapseln 
+    green: Glens Kapseln 
+    red: Refuge Kapseln 
+    yellow: Solstice Kapseln 
 
   backgrounds:
     Alula and Calamus: Alula and Calamus
