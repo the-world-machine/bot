@@ -700,19 +700,19 @@ nikogotchi:
     cedric:
       fed:
         - "Ah, ein köstliches Angebot! Mein danke, lieblings freund ober freundin."
-        - "Diese pfannkuchen sind ein köstliches Genuss. You have my gratitude."
+        - "Diese pfannkuchen sind ein köstliches Genuss. Du hast mein Dankbarkeit"
       pet:
-        - "Your kindness warms my heart. A gentle touch in trying times."
-        - "A moment of respite, I appreciate your companionship."
+        - "dein Nettigkeite wärmt mein herz. Ein sanftes berühren in schwierigen Zeiten."
+        - "Ein moment der Ruhe, Ich schätze unsere freundschaft."
       cleaned:
-        - "A spot of maintenance, much appreciated! A well-tended flying machine is a reliable one."
-        - "You honor me with your diligence. A clean apparatus functions optimally."
+        - "Ein fleck von sorgung, sehr geschätz! ein gepflegt flüg-machine ist zuverlässige eine."
+        - "Du ehrst mich mit deinem Fleiß. Ein saubers Apparatus funktioniert optimal."
     the_world_machine:
       fed:
-        - "[Ah... Thank you.]"
-        - "[Oh, pancakes? I never thought I'd get to taste something like this.]"
+        - "[Ah... Dankeschön.]"
+        - "[Oh, Pfannkuchen? Ich habe niemals gedacht dass ich wurde etwas essen wie das.]"
       pet:
-        - "[I can't feel it in the same way you do, but I sense your kindness. It's comforting in its own unique way.]"
+        - "[Ich kann es nicht fühlen in der gleichen weg wie du, aber ich spüre deine FreundlichkeitI . es ist bequem in eine einzigartige Weise.]"
       cleaned:
-        - "[Cleaning me up? That's unexpected, but it feels... refreshing.]"
-        - "[I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"
+        - "[Mich Putzen? das ist überraschend, aber es fühlt sich... erfrischend.]"
+        - "[Ich vermute auch digitale Entitäten brauchen ein bisschen sorge. Du hast mein dankbarkeit.]"
