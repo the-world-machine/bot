@@ -1,6 +1,6 @@
 ongeneral:
   loading: "[ Laden... [emoji:loading] ]"
-  command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
+  command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in[timestamp_relative]. ]"
 
   buttons:
     _yes: "Ja"
@@ -400,38 +400,38 @@ interact:
         - "[user_one] tickled [user_two] and sparked a tickle fight!"
         - "[user_one] went for a tickle attack towards [user_two]!"
     hug:
-      name: Hug
-      messages: "[user_one] hugged [user_two]!"
+      name: Umarmung 
+      messages: "[user_one] Umarmte [user_two]!"
     cuddle:
-      name: Cuddle
-      messages: "[user_one] cuddled with [user_two]!"
+      name: kuscheln
+      messages: "[user_one] kuschelte mit [user_two]!"
     kiss:
-      name: Kiss
+      name: Küssen
       messages: 
-        - "[user_one] kissed [user_two]! ❤️"
-        - "[user_one] gave [user_two] a warm kiss ❤️"
+        - "[user_one] hat [user_two] geküsst! ❤️"
+        - "[user_one] gibt [user_two] ein warmes küssen ❤️"
     molotov:
       name: 🔥
-      messages: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
+      messages: "[user_one] wirft eine Molotov Cocktail in Richtung [user_two] ‼️"
 
 # ---------------------------------------------------------------
 
 treasure:
-  bots: "[ [bot] doesn't have any treasure ]"
+  bots: "[ [bot] hat keine Schätze ]"
   item: "**`[amount]`** [icon] [name]"
   message: >
-    ### [user]'s treasures
+    ### [user]'s Schätze
 
     [treasures]
 
-    -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
+    -# note: Du kannst mehr Schätze bekommen  in den Laden ober mit Nikogotchis!
 
 # ---------------------------------------------------------------
 
 nikogotchi:
-  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
-  invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
-  owned: Owned by [user]
+  loading: "[ Laden Nikogotchi... [emoji:loading] ]"
+  invalid: "[ Du hast kein Nikogotchi! du kannst eine Kapsel kaufen von den laden un entsperrt eine! ]"
+  owned: Besitzt von[user]
 
   name:
     niko: Niko
@@ -452,31 +452,31 @@ nikogotchi:
     the_world_machine: The World Machine
 
   other:
-    you_invalid: "[ You don't have a Nikogotchi. ]"
-    other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
-    rename_you_invalid: "[ You don't have a Nikogotchi. What are you doing...? ]"
+    you_invalid: "[ Du hast kein Nikogotchi. ]"
+    other_invalid: "[ Dieser person hat kein Nikogotchi. ]"
+    rename_you_invalid: "[ Du hast kein Nikogotchi. Was machst du...? ]"
     error:
       description: > # Kelvin was a nikogotchi before
-        [ Your Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
+        [ Dein Nikogotchi (`[id]`) nicht mehr existiert. Du kannst eine neues haben Sie können ein neues mit den gleichen seltenheit bekommen ober schick es weg. ]
         
 
         [ What do you want to do? ]
       buttons: 
-        send_away: Send Away
-        rotate: Rotate
+        send_away: Schick ew weg
+        rotate: drehen
 
     send_away:
-      description: "[ Are you sure you want to send away [name] so that you can adopt a new Nikogotchi? ]"
-      success: "[ Successfully sent away [name]. Enjoy your future Nikogotchi! ]"
+      description: "[ Bist du sicher das du willst [name] weg schicken so dass du kannst ein neues Nikogotchi adoptierten? ]"
+      success: "[ Erfolgreich weg geschickt [name]. genieße deine Zukunft Nikogotchi! ]"
 
     renaming:
-      title: Give your Nikogotchi a new name!
+      title: Gibt dein Nikogotchi eine neue name!
       input: 
         label: Name
         placeholder: Enter the new name for your Nikogotchi...
       button: Rename # used when you use a nikogotchi capsule
       response: > 
-        Successfully renamed your Nikogotchi!
+        Erfolgreich umbenannt dein Nikogotchi!
         "[old_name]" → "[new_name]"
 
     trade:
