@@ -144,7 +144,7 @@ class TransmissionCommands(Extension):
 	# 			self.on_transmission(other_server_ctx.user, other_server_message, other_server)
 	# 		) # type: ignore
 
-	@transmit.subcommand(sub_cmd_description='Transmit to another server.')
+	@transmit.subcommand(sub_cmd_description='Transmit messages to another server')
 	async def connect(self, ctx: SlashContext):
 
 		await ctx.defer()
@@ -228,7 +228,7 @@ class TransmissionCommands(Extension):
 			if user.id == component.ctx.user.id:
 				return True
 			else:
-				await component.ctx.send(f'[ Only the initiator of this transmission ({User.mention}) can cancel it! ]', ephemeral=True)
+				await component.ctx.send(f'[ Only the initiator of this transmission ({user.mention}) can cancel it! ]', ephemeral=True)
 				return False
 
 		task = asyncio.create_task(self.client.wait_for_component(components=disconnect, check=check_button))
@@ -328,17 +328,13 @@ class TransmissionCommands(Extension):
 		if channel.type == ChannelType.DM:
 			return
 
-		if message.author.id == 1015629604536463421 or message.author.id == 1028058097383641118:
+		if message.author.id == self.client.user.id:
 			return
 
 		if guild is None:
 			return
 
 		if connection_alive(guild.id):
-
-			if message.author.id == self.client.user.id:
-				return
-
 			server_data: ServerData = await ServerData(guild.id).fetch()
 
 			transmission = get_transmission(guild.id)
@@ -371,20 +367,27 @@ class TransmissionCommands(Extension):
 
 		final_text = message.content
 
-		embed = Embed(color=Colors.DARKER_WHITE, description=final_text)
-
-		if len(message.attachments) > 0:
-			image = message.attachments[0].url
-
-			if '.mp4' in image or '.mov' in image:
-				embed.video = EmbedAttachment(url=image)
-				embed.set_footer('User sent a video, but discord does not allow bots to send videos in embeds.')
-			elif allow_images:
-				embed.image = EmbedAttachment(url=image)
-			else:
-				final_text += '\n\n[IMAGE]'
-
+		embed = Embed(color=Colors.DARKER_WHITE, url="https://theworldmachine.xyz") # url used for putting more than 1 image into the embed, see Embed.add_image method description
 		embed.set_author(name=user.name, icon_url=user.image)
+
+		overflow = True
+
+		def overflow():
+			if overflow:
+				overflow = False
+				final_text += '\n\n'
+
+		for attachment in message.attachments:
+			if allow_images and attachment.content_type and attachment.content_type.startswith("image/"):
+				if len(embed.images) < 3:
+					embed.add_image(image=attachment.url)
+				else:
+					overflow()
+					final_text += f"{attachment.url} "
+					embed.footer = "embeds support up to 4 images"
+			else:
+				overflow()
+				final_text += f"{attachment.url} "
 
 		embed.description = final_text
 
