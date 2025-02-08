@@ -533,21 +533,21 @@ nikogotchi:
       [name] hat ein ganzes leben gelebt das dauerte: [age].
 
 
-      - Hours since last taken care of: **[time_difference]**
+      - Stunden seit der letzten Betreuung: **[time_difference]**
 
 
-      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
+      Nikogotchis verlassen Sie sich auf Ihre Liebe und aufmerksamkeit, so  probiert mal besser um dein Nikogotchi zu kümmern nächstes mal!
 
 
       R.I.P....
   treasured: 
-    title: 🎉 Your Nikogotchi found some treasures!
+    title: 🎉 Dein Nikogotchi hat welche Schätze gefunden!
     message: > 
       [treasures]
 
-      Total Treasures: **[total]**
+      Totale Schätze: **[total]**
 
-      Time Spent Looking: [time].
+      Zeitaufwand beim Suchen: [time].
       
     dialogues:
       sent: "Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
