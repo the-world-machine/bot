@@ -485,7 +485,7 @@ nikogotchi:
         
         willst du deine Nikogotchi handeln ([name_two]) mit ihnen?
 
-      waiting: "[ Senden [user] a trade offer!  warten für ihre Antwort... [emoji:loading] ]"
+      waiting: "[ Senden [user] ein Handel Anfrage!  warten für ihre Antwort... [emoji:loading] ]"
       declined: "[ Deine Handel Anfrage wurde abgelehnt... ]"
       success_decline: "[ Handel anfrage erfolgreich abgelehnt. ]"
       success: "[ Erfolgreich gehandelt mit [user]! Sag hallo zu **[name]**! ]"
@@ -506,7 +506,7 @@ nikogotchi:
     dirty: "🛀 [name] will geputzt sein!"
     hungry: "🥞 [name] ist hungrig..."
     treasure: "🎒 [name] ist derzeit auf der Suche nach Schätzen!"
-    danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
+    danger: 🚨 [name] ist am niedrige gesundheit! benutz Goldene Pfannkuchen um ihre Gesundheit wiederherzustellen!
 
   components:
     pet: streicheln 
@@ -550,13 +550,13 @@ nikogotchi:
       Zeitaufwand beim Suchen: [time].
       
     dialogues:
-      sent: "Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
-      none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+      sent: "Dein Nikogotchi war weg geschickt zum Schätze zu find! Note dass ihre stats will sinken schnell als normal , so  vergiss nicht ihn zurück rufen."
+      none_found: "Dein Nikogotchi hat gar nichts gefunden... Vielleicht gibt ihnen mehr zeit?"
 
   levelupped:
-    title: 🏆 they levelled up to level [level]!
+    title: 🏆 Sie haben aufgestiegen zu level [level]!
     message: >
-      Here are the stat changes:
+      Hier sind die stat Veränderungen:
 
       [stats]
     stat: "- [icon] +**[increase]** ([old_value] → [new_value])"
@@ -564,40 +564,40 @@ nikogotchi:
   dialogue:
     niko:
       fed:
-        - "Ah... Pancakes!"
-        - "Wow, these are just a good as the ones my mama makes!"
-        - "Please tell me there are hazelnuts in this one!"
-        - "PANCAKES!"
+        - "Ah... Pfannkuchen!"
+        - "Wow, diese sind so gut wie meine mama macht!"
+        - "Bitte sag mir hier sind Haselnüsse in diesen!"
+        - "PFANNKUCHEN!!!"
         - "Yummy!"
       pet:
-        - "Wow... thank you!"
-        - "Aw, that feels nice!"
+        - "Wow... Danke!"
+        - "Aw, das fühlt sich schön an!"
         - "*purr*"
       cleaned:
-        - "Feeling pretty refreshed!"
+        - "Fühlt sich schön erfrischt!"
         - "Squeaky clean!"
-        - "My fur's all nice and fluffy!"
+        - "Meine fell is all schön un fluffig!"
     nikonlanger:
       fed:
         - "yum"
       pet:
         - ","
       cleaned:
-        - "so qlean so lush"
+        - "so waskh so ueppik"
     prophet_bot:
       fed:
-        - "[My purpose is not to eat. But thank you.]"
-        - "[Thank you for the gesture.]"
+        - "[Mein ziel is nicht zu essen. Aber danke.]"
+        - "[Danke für deine geste.]"
       pet:
         - "[...]"
-        - "[I appreciate your attention.]"
+        - "[Ich freue mich über Ihre Aufmerksamkeit.]"
       cleaned:
-        - "[Maintenance is necessary for my purpose. Thank you.]"
+        - "[Instandhaltung ist wichtig für mein ziel. Dankeschön.]"
     silver:
       fed:
-        - "[Food is no longer necessary for me, but thank you for the gesture.]"
+        - "[Essen is nicht mehr wichtig für mich, aber danke für die Geste.]"
       pet:
-        - "[Your touch is comforting, though I lack the ability to feel.]"
+        - "[Your Deine Berührung tröstet mir, aber mir fehlt die Fähigkeit zu fühlen.]"
       cleaned:
         - "[I appreciate your efforts to maintain my function. Thank you.]"
     alula:
@@ -651,11 +651,11 @@ nikogotchi:
         - "A little sprucing up, eh? I feel ready to take on a whole assembly line now!"
     penguin:
       fed:
-        - "HELLO."
+        - "HALLO."
       pet:
-        - "HELLO."
+        - "HALLO."
       cleaned:
-        - "HELLO."
+        - "HALLO."
     george:
       fed:
         - "George graciously accepts the offering of fluffy pancakes. George's heart is content."
