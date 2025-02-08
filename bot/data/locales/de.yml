@@ -244,9 +244,9 @@ shop:
   treasures:
 
     buy:
-      title: Treasures
+      title: Schätze
       message: >
-        Du willst deine [emoji:wool]**Wool** verkaufen für Schätzen? dann bist du hier richtig! Ich habe sehr viele Schätze das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
+        Du willst deine [emoji:wool]**Wool** verkaufen für Schätze? dann bist du hier richtig! Ich habe sehr viele Schätze das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
         [stock_market]
         [selected_treasure]
         [user_wool]
@@ -460,7 +460,7 @@ nikogotchi:
         [ Dein Nikogotchi (`[id]`) nicht mehr existiert. Du kannst eine neues haben Sie können ein neues mit den gleichen seltenheit bekommen ober schick es weg. ]
         
 
-        [ What do you want to do? ]
+        [ Was willst du machen? ]
       buttons: 
         send_away: Schick es weg
         rotate: drehen
@@ -599,56 +599,56 @@ nikogotchi:
       pet:
         - "[Your Deine Berührung tröstet mir, aber mir fehlt die Fähigkeit zu fühlen.]"
       cleaned:
-        - "[I appreciate your efforts to maintain my function. Thank you.]"
+        - "[Ich schätze Ihre Bemühungen meine Funktion aufrechtzuerhalten, Dankeschön.]"
     alula:
       fed:
-        - "Yum! I much prefer fish though!"
-        - "Delicious! I was pretty hungry!"
+        - "Yum! Ich allerdings mag fisch mehr! "
+        - "Delicious! Ich war schon hungrig!"
         - "Yum!"
       pet:
-        - "Hee hee, that tickles!"
+        - "Hee hee, dass kitzelt!"
       cleaned:
-        - "I feel so refreshed and clean! Whee!"
+        - "Ich fühle mich so erfrischt und sauber! Whee!"
     calamus:
       fed:
-        - "Oh, pancakes? Thank you so much."
+        - "Oh, Pfannkuchen? Danke sehr."
       pet:
-        - "That's quite nice. Thanks for the attention."
+        - "Das ist ganz nett. Danke fürfür die aufmerksamkeit."
       cleaned:
-        - "I really needed that. These ruins can get quite dusty."
+        - "Ich richtig brauchte das, diese Ruinen konnen staubig sein."
     magpie:
       fed:
-        - "Ah, pancakes! Exactly the ones I sold you!"
-        - "Ah thank you! It is interesting becoming a Nikogotchi, but eating pancakes does get a little tiring."
+        - "Ah, pfannkuchen! genau die, die ich habe dir verkauft!"
+        - "Ah Dankeschön! es ist interessant um ein Nikogotchi werden, aber immer Pfannkuchen essen kann schon langweilig sein."
       pet:
-        - "A gentle touch, just what I like!"
-        - "Well, aren't you a friendly one? A pat on the feathers always brightens my day."
+        - "A eine sanfte Berührung, nur was ich mag!"
+        - "na, bist du nicht ein freundliche? ein Streich an meine feder immer macht mein tag besser."
       cleaned:
-        - "Ah, a little sprucing up, I appreciate it!"
+        - "Ah, ein kleine Verschönerung, Ich schätze es! (das andere schätze ich hab schon genug)"
     lamplighter:
       fed:
-        - "Oh, thanks. Coffee's my usual, but I could use a change. Appreciate it."
-        - "Pancakes? Thanks. I could use a little extra fuel right now."
+        - "Oh, danke. kaffee ist mein übliches, aber ich kann ein Veränderung benutzen. Schätze es."
+        - "Pfannkuchen? Danke. Ich kann jetzt ein bisschen mehr Energie benutzen"
       pet:
-        - "Oh, uh, thanks. Not used to this... but it's not bad."
-        - "Oh, uh, thanks. I, um, appreciate the gesture."
+        - "Oh, uh, danke. nicht daran gewöhnt... aber ist nicht schlecht."
+        - "Oh, uh, danke. I, um, Schätze dir geste."
       cleaned:
-        - "Really? I mean, sure, I appreciate it. Thanks."
-        - "Cleanliness is... important. Thanks."
+        - "Echt? Ich meine, sicher, Ich schätze es. danke."
+        - "Sauberkeit ist... wichtig. danke."
     ling:
       fed:
-        - "Oh, thank you! You're too kind. Usually I'd be the one serving these!"
+        - "Oh, danke! du bist zu nett. normalerweise wäre ich derjenige serviert diese!"
       pet:
-        - "Ah, that's quite pleasant. Thank you for the little pick-me-up."
+        - "Ah, das ist schon angenehm. danke für die kleine Muntermacher."
       cleaned:
-        - "I'm feeling quite refreshed. Thank you."
+        - "Ich fühle schön erfrischt. Dankeschön."
     kip:
       fed:
-        - "Mmm, pancakes! You know the way to an engineer's heart. Thanks!"
+        - "Mmm, Pfannkuchen! du weiß der weg zum einen Ingenieurs herz. danke!"
       pet:
-        - "You've got a knack for this, my friend."
+        - "Du hast ein knack für das, mein Freund.. ober freundinnen?"
       cleaned:
-        - "A little sprucing up, eh? I feel ready to take on a whole assembly line now!"
+        - "Ein kleines verhübschung, eh? ich fühle mich bereit eine ganze Montagelinie zu übernehmen!"
     penguin:
       fed:
         - "HALLO."
@@ -658,10 +658,10 @@ nikogotchi:
         - "HALLO."
     george:
       fed:
-        - "George graciously accepts the offering of fluffy pancakes. George's heart is content."
-        - "I guess pancakes are fine. Don't expect me to be all sunshine and rainbows about it."
-        - "Oh, pancakes... I suppose they're alright. Nothing really matters anyway."
-        - "Wow, pancakes! I can't help but smile. Thanks a bunch!"
+        - "George akzeptieren der Angebot von fluffige pfannkuchen. George's heart is content."
+        - "Ich denke pfannkuchhen sind gut. erwarte nicht das ich alles Sonnenschien und Regenbogen bin über es"
+        - "Oh, Pfannkuchen... Ich vermute die sind essbar . nichts ist sowieso wirklich wichtig really."
+        - "Wow, Pfannkuchen! I can't help but smile. Thanks a bunch!"
         - "Oh dear, you shouldn't have. But thank you, sweetie. I appreciate it."
         - "Pancakes? Rad choice, my friend! I'm all about that."
       pet:
