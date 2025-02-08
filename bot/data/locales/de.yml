@@ -393,11 +393,11 @@ interact:
       name: Kopf streichel
       messages: "[user_one] gibt [user_two] ein Kopf streicheln!"
     tickle:
-      name: Tickle
+      name: kitzeln
       messages:
-        - "[user_one] started tickling [user_two] a surprise tickle!"
-        - "[user_one] gave [user_two] a surprise tickle!"
-        - "[user_one] tickled [user_two] and sparked a tickle fight!"
+        - "[user_one] startet [user_two] zu kitzel!"
+        - "[user_one] gibt [user_two] ein Überraschung kitzel!"
+        - "[user_one] kitzelte [user_two] und startete ein kitzel kämpf!"
         - "[user_one] went for a tickle attack towards [user_two]!"
     hug:
       name: Umarmung 
@@ -462,7 +462,7 @@ nikogotchi:
 
         [ What do you want to do? ]
       buttons: 
-        send_away: Schick ew weg
+        send_away: Schick es weg
         rotate: drehen
 
     send_away:
@@ -473,7 +473,7 @@ nikogotchi:
       title: Gibt dein Nikogotchi eine neue name!
       input: 
         label: Name
-        placeholder: Enter the new name for your Nikogotchi...
+        placeholder: Geben Sie einen neuen Namen ein für dein Nikogotchi...
       button: Rename # used when you use a nikogotchi capsule
       response: > 
         Erfolgreich umbenannt dein Nikogotchi!
@@ -481,56 +481,56 @@ nikogotchi:
 
     trade:
       request: >
-        ### **[user]** wants to trade their Nikogotchi ([name_one]) with you!
+        ### **[user]** will handeln sein Nikogotchi ([name_one]) mit dir!
         
-        Do you want to trade your Nikogotchi ([name_two]) with them?
+        willst du deine Nikogotchi handeln ([name_two]) mit ihnen?
 
-      waiting: "[ Sent [user] a trade offer! Waiting on their response... [emoji:loading] ]"
-      declined: "[ Your trade request has been declined... ]"
-      success_decline: "[ Trade request successfully declined. ]"
-      success: "[ Successfully traded with [user]! Say hello to **[name]**! ]"
+      waiting: "[ Senden [user] a trade offer!  warten für ihre Antwort... [emoji:loading] ]"
+      declined: "[ Deine Handel Anfrage wurde abgelehnt... ]"
+      success_decline: "[ Handel anfrage erfolgreich abgelehnt. ]"
+      success: "[ Erfolgreich gehandelt mit [user]! Sag hallo zu **[name]**! ]"
 
   found:
-    title: You found [name]!
+    title: Du hast gefunden [name]!
     description: | 
-      Want to give them a different a name?
+      willst du ihnen eine andere name geben?
       
-      -# note: you can always do this later using `/nikogotchi rename`
+      -# note: Du kann immer sie umbenennen mit`/nikogotchi rename`
 
   status:
     template: "*[status]*"
 
-    normal: "👍 Currently doing fine."
-    normal-rare: "🙂 Waiting for something to happen?"
-    pet: "🥺 [name] wants attention!"
-    dirty: "🛀 [name] wants to be cleaned!"
-    hungry: "🥞 [name] is feeling hungry..."
-    treasure: "🎒 [name] is currently looking for treasures!"
+    normal: "👍 geht es derzeit gut."
+    normal-rare: "🙂 wartet für etwas zu passieren"
+    pet: "🥺 [name] will Aufmerksamkeit!"
+    dirty: "🛀 [name] will geputzt sein!"
+    hungry: "🥞 [name] ist hungrig..."
+    treasure: "🎒 [name] ist derzeit auf der Suche nach Schätzen!"
     danger: 🚨 [name] is at low health! Use Golden Pancakes to restore their health!
 
   components:
-    pet: Pet
-    clean: Clean
-    find_treasure: Find Treasure
-    call_back: Call Back
+    pet: streicheln 
+    clean: putzen
+    find_treasure: Schätze findem
+    call_back: Wieder rufen 
 
     feed:
-      placeholder: "Choose food to feed with..."
+      placeholder: "Wahl essen zum futtern mit..."
       
-      pancakes: Feed Pancake (x[amount])
-      golden_pancakes: Feed Golden Pancake (x[amount])
-      glitched_pancakes: Feed ??? (x[amount])
+      pancakes: Futtern Pfannkuchen (x[amount])
+      golden_pancakes: Futtern Goldene Pfannkuchen (x[amount])
+      glitched_pancakes: Futtern ??? (x[amount])
 
-      glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
+      glitched_powerup: "Dein Nikogotchi has wurde deutlich verstärkt nachdem dein Nikogotchi hat diese Chaos von einem Pfannkuchen gegessen..."
 
-      no_food: "No Food... you can get some at the shop!"
-      invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
+      no_food: "Kein essen... Du kannst welche kaufen in den Laden!"
+      invalid: Du kannst nicht dein Nikogotchi futtern dass! bitte aktualisieren mit [emojis:refresh]!
 
 
   died:
-    title: "🪦 [name] passed away..."
+    title: "🪦 [name] ist gestorben..."
     description: >
-      [name] lived a full life which lasted for: [age].
+      [name] hat ein ganzes leben gelebt das dauerte: [age].
 
 
       - Hours since last taken care of: **[time_difference]**
