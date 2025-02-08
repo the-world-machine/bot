@@ -661,46 +661,46 @@ nikogotchi:
         - "George akzeptieren der Angebot von fluffige pfannkuchen. George's heart is content."
         - "Ich denke pfannkuchhen sind gut. erwarte nicht das ich alles Sonnenschien und Regenbogen bin über es"
         - "Oh, Pfannkuchen... Ich vermute die sind essbar . nichts ist sowieso wirklich wichtig really."
-        - "Wow, Pfannkuchen! I can't help but smile. Thanks a bunch!"
-        - "Oh dear, you shouldn't have. But thank you, sweetie. I appreciate it."
-        - "Pancakes? Rad choice, my friend! I'm all about that."
+        - "Wow, Pfannkuchen! Ich kann nicht helfen aber zu lächeln. Dankeschön sehr viel!"
+        - "Oh Liebling, du solltest nicht. aber danke, sweetie. Ich schätze es."
+        - "Pfannkuchen? Rad wahl, mein freund ober freundin! Ich bin alles für das."
       pet:
-        - "Your gentle touch pleases George greatly. George appreciates it."
-        - "What are you touching me for? Keep your hands to yourself."
-        - "Why bother petting me? I don't deserve it."
-        - "Awww, you're the best! I feel all warm and fuzzy now."
-        - "You're so caring. Thank you my dear!"
-        - "Chill vibes, dude! Your petting game is on point."
+        - "Dein Streichen gefällt George. George schätzs das."
+        - "Was fass du mich an für? halt deine hände für dich."
+        - "Warum streichelst du mich? Ich verdiene es gar nicht."
+        - "Awww, du bist der beste! ober die beste? Ich fühle all warm und verschwommen."
+        - "Du bist so fürsorglich. Danke mein liebling!"
+        - "Chill vibes, digga! dein streichel spiel ist auf den Punkt." please tell me if i should remove it or leave it be
       cleaned:
-        - "George is pleased with the tidiness. It reflects well upon George."
-        - "Finally, someone does something right. About time."
-        - "Cleaning up after me won't make a difference in this bleak world."
-        - "You're so thoughtful! With a clean space, I can do anything!"
-        - "Thank you dear for keeping things tidy. It makes my life much easier!"
-        - "Thanks for keeping it chill and clean around here. I respect that."
+        - "George ist glücklich mit den sauberkeit. es reflektiert gut an George."
+        - "Endlich ,jemand macht etwas richtig."
+        - "putzen nach mir macht keine Veränderung in diesem trostlose Welt."
+        - "Du bist sehr nachdenklich! mit einen sauberen raum, Ich kann alles machen!"
+        - "danke liebling, dass du ordnung haltest. es macht mein leben so viel einfacher!"
+        - "danke das du halts es chill und sauber hie. Ich respektiere das."
     rue:
       fed:
-        - "Mmm, these pancakes are delightful. Thank you!"
-        - "Pancakes? My favorite! You're too kind."
+        - "Mmm, diese Pfannkuchen seind köstlich. Dankeschön!"
+        - "Pfannkuchen? Mein Lieblingsessen! du bist zu nett."
       pet:
-        - "Ah, that's the spot! You're quite good at this, aren't you?"
-        - "A little scratch behind the ears is always appreciated."
+        - "Ah, das trifft den Punkt! du bist gut an das, bist du nicht?"
+        - "A ein kleiner Kratzer hinter die Ohren ist immer geschätzt."
       cleaned:
-        - "Oh, you really didn't have to, but I appreciate the effort."
-        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring"
+        - "Oh, du musstest nicht, aber ich schätze die bemühung."
+        - "Ich bin ein bisschen staubig, aber es it nicht was ich kann nicht bewältigen. danke für kummern"
     prototype:
       fed:
-        - "[This is...unexpected. Thank you.]"
+        - "[Das ist... Überraschend. Dankeschön.]"
       pet:
-        - "[Hm, not bad, human. Your touch isn't as cold as your technology.]"
-        - "[I may not feel it, but I appreciate the gesture.]"
+        - "[Hm, nicht schlect, Mensch. dein berührung ist nicht als kalt as deine Technologie.]"
+        - "[Ich kann es nicht fühlenit, aber ich schätze die geste.]"
       cleaned:
-        - "[I suppose even a machine like me needs some maintenance now and then. Carry on.]"
-        - "[Maintenance is necessary, even for a reclusive robot. I suppose I'm due for a little care.]"
+        - "[Ich vermute das eine machine wie ich braucht etwa sorgung. mach weiter.]"
+        - "[Sorgung ist wichtig auch für eine zurückgezogen Roboter. Ich vermute bin hier für kleine pflege.]"
     cedric:
       fed:
-        - "Ah, a delectable offering! My thanks, dear friend."
-        - "These pancakes are a delightful treat. You have my gratitude."
+        - "Ah, ein köstliches Angebot! Mein danke, lieblings freund ober freundin."
+        - "Diese pfannkuchen sind ein köstliches Genuss. You have my gratitude."
       pet:
         - "Your kindness warms my heart. A gentle touch in trying times."
         - "A moment of respite, I appreciate your companionship."
