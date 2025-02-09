@@ -50,7 +50,7 @@ misc:
     title: Rollen [amount]d[sides]...
     desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
-    multi: "Totaling at **[total]**."
+    multi: "insgesamt **[total]**."
 
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
@@ -104,7 +104,7 @@ profile:
     loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
 
     image:
-      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Wollen [wool]"
+      alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Woolen [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
       alt_cont: "[alt_nodescription]. Dieser Beschreibung sagt: [description]"
@@ -152,7 +152,7 @@ shop:
   main_title: Willkommen!
 
   main: >
-    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schätze,Hintergründe , Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen,Hintergründe , Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
 
 
     um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
@@ -193,7 +193,7 @@ shop:
       ...
 
 
-      *AHEM* existenziell Furcht beiseite, füttern sie mit Plankuchen und gut um sie kümmern, erlaubt dir um zu Schätzen zu suchen! und dann kannst du dir mir verkaufen! cool ober?
+      *AHEM* existenziell Furcht beiseite, füttern sie mit Pfannkuchen und gut um sie kümmern, erlaubt dir um zu Schatzen zu suchen! und dann kannst du dir mir verkaufen! cool ober?
 
 
       So warum nicht jetzt eine Kapsel kaufen? nur für [emoji:wool]**[cost]**!
@@ -254,16 +254,16 @@ shop:
       option: '"[name]" - [price] Wool'
 
     sell:
-      title: Schätze verkaufen 
+      title: Schatze verkaufen 
       message: >
-        Ah... du bist interessiert zum deine Schätze zu verkaufen!  das ist gut!
-        Immer wann du verkaufst deine Schätze, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
+        Ah... du bist interessiert zum deine Schatze zu verkaufen!  das ist gut!
+        Immer wann du verkaufst deine Schatze, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
         [stock_market]
         [selected_treasure]
         [user_wool]
-      #not_selected: "*Du hast nicht gewählt welche Schätze zu verkaufen...*"
+      #not_selected: "*Du hast nicht gewählt welche Schatze zu verkaufen...*"
       placeholder:  Wähl ein Schatz zu verkaufen...
-      no_treasures: Du hast keine Schätze zu verkaufen.
+      no_treasures: Du hast keine Schatze zu verkaufen.
       option: '"[name]" (x[amount])'
 
     selection: >
