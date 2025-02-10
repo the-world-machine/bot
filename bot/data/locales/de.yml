@@ -1,19 +1,19 @@
-ongeneral:
+general:
   loading: "[ Laden... [emoji:loading] ]"
-  command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in[timestamp_relative]. ]"
+  command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"
 
   buttons:
     _yes: "Ja"
     _no: "Nein"
-    _cancel: "stornieren"
-    _back: "wieder"
-    _continue: "weiter"
+    _cancel: "Stornieren"
+    _back: "Wieder"
+    _continue: "Weiter"
     _open_site: "Seite öffenen"
 
 # ---------------------------------------------------------------
 
-music: 
-  loading: 
+music:
+  loading:
     search: "[ Suchen... [emoji:loading] ]"
     file: "[ Lade deine Daten... [emoji:loading] ]"
 
@@ -29,7 +29,7 @@ misc:
 
   stats:
     owner: "👑 @[name]"
-    names: 
+    names:
       shards: "Shards"
       avg_ping: "Durchschnittlich ping"
       commit_hash: "Commit hash"     #
@@ -50,11 +50,11 @@ misc:
     title: Rollen [amount]d[sides]...
     desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
-    multi: "insgesamt **[total]**."
+    multi: "Insgesamt **[total]**."
 
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
-    
+
 # ---------------------------------------------------------------
 
 wool: ~
@@ -68,7 +68,7 @@ settings:
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
-  
+
   server:
     welcome:
       editor:
@@ -85,8 +85,8 @@ settings:
       auto: "[ Übertragungs kanal zurücksetzet]"
       Changed: "[Übertragungs Kanal wurde eingestellt auf [channel] ]"
     images:
-      enabled: "[ aktiviert Übertragungs Bilder ]"
-      disabled: "[ deaktiviert Übertragungs Bilder ]"
+      enabled: "[ Aktiviert Übertragungs Bilder ]"
+      disabled: "[ Deaktiviert Übertragungs Bilder ]"
     anonymous:
       enabled: "[ Erfolgreich aktiviert anonymer modus ]"
       disabled: "[ Erfolgreich deaktiviert anonymer modus ]"
@@ -97,7 +97,7 @@ settings:
 # ---------------------------------------------------------------
 
 profile:
-  view: 
+  view:
     message: v Anzeige [usermention]'s profil
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Verändere deine Profil"
     bots: "[ Bots haben keine profilen! ]"
@@ -112,14 +112,14 @@ profile:
       title: "[username]'s Profil"
       unlocked:
         stamps: "Entsperrte Stempeln:"
-  edit: 
-    text: "Du kannst dein Profil verändern über diese Website!" 
+  edit:
+    text: "Du kannst dein Profil verändern über diese Website!"
 
 # ---------------------------------------------------------------
 
 explode:
   dialogue:
-    why: 
+    why:
       - "[ Warum? ]"
       - "[ Ich muss wieder waschen wenn jemand macht dass.]"
       - "[ Wow... Echt? ]"
@@ -127,7 +127,7 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! verstehst du wie viele Welten hast du zerstört?! Unglaublich von dir. ]"
+    nineninenineninenine: "[ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! Unglaublich von dir. ]"
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -137,25 +137,25 @@ shop:
   loading: "[ Laden Laden?... [emoji:loading] ]"
 
   user_wool: "**Ihr Guthaben: [emoji:wool][wool]**"
-  owned: "Du hast **[amount]**"
+  owned: "du hast **[amount]**"
 
   buttons:
     buy: Kaufen
     buy_all: Alles kaufen
-    too_poor: kann es nicht leisten
-    too_poor_all: kann es nicht alles leisten
-    sell: verkaufen
-    sell_all: verkaufen alles 
+    too_poor: Kann es nicht leisten
+    too_poor_all: Kann es nicht alles leisten
+    sell: Verkaufen
+    sell_all: Verkaufen alles
     go_back: Wieder gehen
     owned: Schon Besitzt
 
   main_title: Willkommen!
 
   main: >
-    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen,Hintergründe, Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen, Hintergründe, Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
 
 
-    um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
+    Um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich**, Soo.. besser eine Auge halten für diese!
 
 
     [motd]
@@ -164,16 +164,16 @@ shop:
     [user_wool]
 
   motds:
-    - "Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?"
-    - "ich habe vielleicht den wool markt gebrochen einmal or zwei.. aber bitte sag es Niemanden."
+    - "Der wool Markt verändert sich täglich, wir Vogel-Menschen haben eine gute Intuition darüber und mit intuition ich meinte Ich manchal Zunahm ober verringern die Preise.. Ich Weiß das ohne Fleiß kein Preis aber, wer will mich stoppen?"
+    - "Ich habe vielleicht den wool markt gebrochen einmal or zwei.. Aber bitte sag es Niemanden."
     - "Wörter der Weisheit als ein Freund: wenn du kaufst hoch und Verkaufst niedrig, Glück erwartet..! überprüfe das nicht.. bitte?"
-    - "Meine Schätze und Schmuckstücke sind verloren... kannst du mir mehr finden für mich?"
-    - "Du willst wissen was ist passiert über der Händler bevor mich?	ich würde es nicht wissen.. *ich würde es nicht wissen*" # während der welt  Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
-    - gefällt dir meine flasche Kollektion? ich mag meine Flasche Kollektion. was meinst du es ist alles \"Hard Liquor\"? Ist das was es sagt?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
+    - "Meine Schätze und Schmuckstücke sind verloren... Kannst du mir mehr finden für mich?"
+    - "Du willst wissen was ist passiert über der Händler bevor mich?	Ich würde es nicht wissen.. *ich würde es nicht wissen*" # während der welt Maschine edition AMA Nightmargin hat scherzhaft gesagt das Magpie hat eine Körper versteckt der würder nicht gefunden noch, in Anbetracht der Tatsache das der violette Händler ist nie gefunden in der Neuauflage, es it höchstwahrscheinlich das der ist der Opfer von dieser mutmaßliches Mörder.
+    - Gefällt dir meine flasche Kollektion? Ich mag meine Flasche Kollektion. Was meinst du es ist alles \"Hard Liquor\"? Ist das was es sagt?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
   traded: '> Erfolgreich gekauft "[item_name]" für [amount]' # [price] is also available here
   traded_sell: '> Erfolgreich "[item_name]" Verkauft für [price] Wool!'
-  traded_fail: ">Du kannst nicht das kaufen."
+  traded_fail: "> Du kannst nicht das kaufen."
 
   stocks: >
     ```Stock Wert: [value]
@@ -186,7 +186,7 @@ shop:
 
     main: >
       Ich sehe das du bist interessiert in diesem seltsamen Kapseln Dingen!..
-      Wenn ich nicht dumm bin, diese kapseln sind zu **Nikogotchis!** entsperren!
+      Wenn ich nicht dumm bin, diese kapseln sind zu **Nikogotchis**! entsperren!
       Was sind *Nikogotchis* fragst du? *Nikogotchis* sind irgendwie einfache Tiere (nicht wilde Tiere), das du kannst kümmern um.
 
 
@@ -200,33 +200,33 @@ shop:
 
 
       * Denken Sie daran das du kannst nur **eine Kapsel** per Nikogotchi.*
-    
+
 
       [user_wool]
 
     result: >
       > Du gibst Magpie [amount] Woole, dann er dreht sich um zum die gatchapon Maschine und...
 
-      > Er gibt dir eine [capsule_name]! 
+      > Er gibt dir eine [capsule_name]!
 
-    result_footer: Benutz [ /nikogotchi check ]  um dein neuen Nikogotchi zu sehen
+    result_footer: Benutz [ /nikogotchi check ] um dein neuen Nikogotchi zu sehen
 
   pancakes:
 
-    title: Pfannkuchen 
+    title: Pfannkuchen
 
     main: >
       Nikogotchis absolut mögen Pfannkuchen , und dank gottes Wille für dich weil ich sie hier verkaufe!
 
 
       [items]
-    
+
 
       [user_wool]
 
   backgrounds:
 
-    title: Hintergründe 
+    title: Hintergründe
 
     main: >
       Willst du diese Hintergrund für [emoji:wool]**[amount]**?
@@ -234,7 +234,7 @@ shop:
 
       [user_wool]
 
-    newly_owned: > 
+    newly_owned: >
       Danke! Jetzt bist du der Stolz Besitzer von dieser Hintergrund.
 
 
@@ -246,28 +246,28 @@ shop:
     buy:
       title: Schätze
       message: >
-        Du willst deine [emoji:wool]**Wool** verkaufen für Schatzen!? dann bist du hier richtig! Ich habe sehr viele Schatzen das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
+        Du willst deine [emoji:wool]**Wool** verkaufen für Schatzen!? Dann bist du hier richtig! Ich habe sehr viele Schatzen das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
         [stock_market]
         [selected_treasure]
         [user_wool]
-      placeholder: wählen eine Schatz zu verkaufen...
+      placeholder: Wählen eine Schatz zu verkaufen...
       option: '"[name]" - [price] Wool'
 
     sell:
-      title: Schatze verkaufen 
+      title: Schatze verkaufen
       message: >
-        Ah... du bist interessiert zum deine Schatze zu verkaufen!  das ist gut!
-        Immer wann du verkaufst deine Schatzen, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
+        Ah... du bist interessiert zum deine Schatze zu verkaufen! Das ist gut!
+        Immer wann du verkaufst deine Schatzen, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie es echt verkaufen will!
         [stock_market]
         [selected_treasure]
         [user_wool]
       #not_selected: "*Du hast nicht gewählt welche Schatze zu verkaufen...*"
-      placeholder:  Wähl ein Schatz zu verkaufen...
+      placeholder: Wähl ein Schatz zu verkaufen...
       no_treasures: Du hast keine Schatze zu verkaufen.
       option: '"[name]" (x[amount])'
 
     selection: >
-      **aktuell ausgewählt:**
+      **Aktuell ausgewählt:**
 
       - [treasure_icon] "**[treasure_name]**" - [owned]
 
@@ -282,7 +282,7 @@ items:
   treasures:
     amber:
       name: Leuchtende Amber
-      description:  es hat ein drei blätter Klee Muster.
+      description: Es hat ein drei blätter Klee Muster.
     bottle:
       name: Flasce Alkohol
       description: Eine Flasche Alkohol. Perfekt für molotov cocktails.
@@ -296,46 +296,46 @@ items:
       name: Leuchtendes Würfel
       description: Ein Würfel mit leuchtenden Punkten.
     journal:
-      name: Mysteriöse Journal 
+      name: Mysteriöse Journal
       description: Es ist geschreiben in eine unbekannte Sprache.
     pen:
-      name: Leuchtendes Feder 
-      description: Ein langes Feder mit Leuchtenden Kanten. 
+      name: Leuchtendes Feder
+      description: Ein langes Feder mit Leuchtenden Kanten.
     shirt:
       name: Novelty Shirt
-      description: '" Ich have widder gehüttet und alles was ich kriege ist diese lousy T-shirt?"'
+      description: '"Ich have widder gehüttet und alles was ich kriege ist diese lousy T-shirt?"'
     sun:
-      name: Die Sonne 
-      description: Eine große Glühbirne, Es ist die Sonne. 
+      name: Die Sonne
+      description: Eine große Glühbirne, Es ist die Sonne.
 
   pancakes:
     normal:
-      name: Pfannkuchen 
+      name: Pfannkuchen
       description: >
-        das absolute Minimum zum Füttern a Nikogotchi.
+        Das absolute Minimum zum Füttern a Nikogotchi.
 
         *+25 🥞*
 
         *+1 ❤️*
-    
+
     golden:
-      name: Goldene Pfannkuchen 
+      name: Goldene Pfannkuchen
       description: >
         Teuer, aber Wert es.
 
         *MAX 🥞*
 
         *+25 ❤️*
-    
+
     glitched:
       name: '???'
       description: Ich weiß nicht was das ist und wie es ist gekommen.
 
   capsules:
-    blue: Barrens Kapseln 
-    green: Glens Kapseln 
-    red: Refuge Kapseln 
-    yellow: Solstice Kapseln 
+    blue: Barrens Kapseln
+    green: Glens Kapseln
+    red: Refuge Kapseln
+    yellow: Solstice Kapseln
 
   backgrounds:
     Alula and Calamus: Alula and Calamus
@@ -345,7 +345,7 @@ items:
     Pancakes: Pfannkuchen
     Magpie: Magpie
     Catwalk: Laufsteg
-    Ruins: Ruinen 
+    Ruins: Ruinen
     Factory: Kraftwerk
     Lamplighter: Laternenanzünder
     Library: Bibliotheke
@@ -365,7 +365,7 @@ interact:
   options:
     boop:
       name: Boop
-      messages: 
+      messages:
         # lotta booping, you can remove some of these lines if you're too lazy to translate
         # (it'll just not include them in the message)
         - "[user_one] booped [user_two]"
@@ -384,7 +384,7 @@ interact:
       name: Schlagen
       messages: "[user_one] hat [user_two] geschlagen, wahrscheinlich verdient."
     punch:
-      name: Schlagen?.. 
+      name: Schlagen?..
       messages: "[user_one] Schlägte [user_two], das würd ein blaues fleck lassen."
     pet:
       name: Streichlen
@@ -400,14 +400,14 @@ interact:
         - "[user_one] kitzelte [user_two] und startete ein kitzel kämpf!"
         - "[user_one] went for a tickle attack towards [user_two]!"
     hug:
-      name: Umarmung 
+      name: Umarmung
       messages: "[user_one] Umarmte [user_two]!"
     cuddle:
       name: kuscheln
       messages: "[user_one] kuschelte mit [user_two]!"
     kiss:
       name: Küssen
-      messages: 
+      messages:
         - "[user_one] hat [user_two] geküsst! ❤️"
         - "[user_one] gibt [user_two] ein warmes küssen ❤️"
     molotov:
@@ -424,14 +424,14 @@ treasure:
 
     [treasures]
 
-    -# note: Du kannst mehr Schätze bekommen  in den Laden ober mit Nikogotchis!
+    -# note: Du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
 
 # ---------------------------------------------------------------
 
 nikogotchi:
   loading: "[ Laden Nikogotchi... [emoji:loading] ]"
-  invalid: "[ Du hast kein Nikogotchi! du kannst eine Kapsel kaufen von den laden un entsperrt eine! ]"
-  owned: Besitzt von[user]
+  invalid: "[ Du hast kein Nikogotchi! Du kannst eine Kapsel kaufen von den laden un entsperrt eine! ]"
+  owned: Besitzt von [user]
 
   name:
     niko: Niko
@@ -458,10 +458,10 @@ nikogotchi:
     error:
       description: > # Kelvin was a nikogotchi before
         [ Dein Nikogotchi (`[id]`) nicht mehr existiert. Du kannst eine neues haben Sie können ein neues mit den gleichen seltenheit bekommen ober schick es weg. ]
-        
+
 
         [ Was willst du machen? ]
-      buttons: 
+      buttons:
         send_away: Schick es weg
         rotate: drehen
 
@@ -471,37 +471,37 @@ nikogotchi:
 
     renaming:
       title: Gibt dein Nikogotchi eine neue name!
-      input: 
+      input:
         label: Name
         placeholder: Geben Sie einen neuen Namen ein für dein Nikogotchi...
       button: Rename # used when you use a nikogotchi capsule
-      response: > 
+      response: >
         Erfolgreich umbenannt dein Nikogotchi!
         "[old_name]" → "[new_name]"
 
     trade:
       request: >
         ### **[user]** will handeln sein Nikogotchi ([name_one]) mit dir!
-        
-        willst du deine Nikogotchi handeln ([name_two]) mit ihnen?
 
-      waiting: "[ Senden [user] ein Handel Anfrage!  warten für ihre Antwort... [emoji:loading] ]"
+        Willst du deine Nikogotchi handeln ([name_two]) mit ihnen?
+
+      waiting: "[ Senden [user] ein Handel Anfrage! Warten für ihre Antwort... [emoji:loading] ]"
       declined: "[ Deine Handel Anfrage wurde abgelehnt... ]"
       success_decline: "[ Handel anfrage erfolgreich abgelehnt. ]"
       success: "[ Erfolgreich gehandelt mit [user]! Sag hallo zu **[name]**! ]"
 
   found:
     title: Du hast gefunden [name]!
-    description: | 
-      willst du ihnen eine andere name geben?
-      
-      -# note: Du kann immer sie umbenennen mit`/nikogotchi rename`
+    description: |
+      Willst du ihnen eine andere name geben?
+
+      -# note: Du kann immer sie umbenennen mit `/nikogotchi rename`
 
   status:
     template: "*[status]*"
 
-    normal: "👍 geht es derzeit gut."
-    normal-rare: "🙂 wartet für etwas zu passieren"
+    normal: "👍 Geht es derzeit gut."
+    normal-rare: "🙂 Wartet für etwas zu passieren"
     pet: "🥺 [name] will Aufmerksamkeit!"
     dirty: "🛀 [name] will geputzt sein!"
     hungry: "🥞 [name] ist hungrig..."
@@ -509,14 +509,14 @@ nikogotchi:
     danger: 🚨 [name] ist am niedrige gesundheit! benutz Goldene Pfannkuchen um ihre Gesundheit wiederherzustellen!
 
   components:
-    pet: streicheln 
-    clean: putzen
+    pet: Streicheln
+    clean: Putzen
     find_treasure: Schätze findem
-    call_back: Wieder rufen 
+    call_back: Wieder rufen
 
     feed:
       placeholder: "Wahl essen zum futtern mit..."
-      
+
       pancakes: Futtern Pfannkuchen (x[amount])
       golden_pancakes: Futtern Goldene Pfannkuchen (x[amount])
       glitched_pancakes: Futtern ??? (x[amount])
@@ -536,19 +536,19 @@ nikogotchi:
       - Stunden seit der letzten Betreuung: **[time_difference]**
 
 
-      Nikogotchis verlassen Sie sich auf Ihre Liebe und aufmerksamkeit, so  probiert mal besser um dein Nikogotchi zu kümmern nächstes mal!
+      Nikogotchis verlassen Sie sich auf Ihre Liebe und aufmerksamkeit, so probiert mal besser um dein Nikogotchi zu kümmern nächstes mal!
 
 
       R.I.P....
-  treasured: 
+  treasured:
     title: 🎉 Dein Nikogotchi hat welche Schätze gefunden!
-    message: > 
+    message: >
       [treasures]
 
       Totale Schatzen: **[total]**
 
       Zeitaufwand beim Suchen: [time].
-      
+
     dialogues:
       sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find! Note dass ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen."
       none_found: "Dein Nikogotchi hat gar nichts gefunden... Vielleicht gibt ihnen mehr zeit?"
@@ -586,23 +586,23 @@ nikogotchi:
         - "so waskh so ueppik"
     prophet_bot:
       fed:
-        - "[Mein ziel is nicht zu essen. Aber danke.]"
-        - "[Danke für deine geste.]"
+        - "[ Mein ziel is nicht zu essen. Aber danke. ]"
+        - "[ Danke für deine geste. ]"
       pet:
-        - "[...]"
-        - "[Ich freue mich über Ihre Aufmerksamkeit.]"
+        - "[ ... ]"
+        - "[ Ich freue mich über Ihre Aufmerksamkeit. ]"
       cleaned:
-        - "[Instandhaltung ist wichtig für mein ziel. Dankeschön.]"
+        - "[ Instandhaltung ist wichtig für mein ziel. Dankeschön. ]"
     silver:
       fed:
-        - "[Essen is nicht mehr wichtig für mich, aber danke für die Geste.]"
+        - "[ Essen is nicht mehr wichtig für mich, aber danke für die Geste. ]"
       pet:
-        - "[Your Deine Berührung tröstet mir, aber mir fehlt die Fähigkeit zu fühlen.]"
+        - "[ Your Deine Berührung tröstet mir, aber mir fehlt die Fähigkeit zu fühlen. ]"
       cleaned:
-        - "[Ich schätze Ihre Bemühungen meine Funktion aufrechtzuerhalten, Dankeschön.]"
+        - "[ Ich schätze Ihre Bemühungen meine Funktion aufrechtzuerhalten, Dankeschön. ]"
     alula:
       fed:
-        - "Yum! Ich allerdings mag fisch mehr! "
+        - "Yum! Ich allerdings mag fisch mehr!"
         - "Delicious! Ich war schon hungrig!"
         - "Yum!"
       pet:
@@ -618,11 +618,11 @@ nikogotchi:
         - "Ich richtig brauchte das, diese Ruinen konnen staubig sein."
     magpie:
       fed:
-        - "Ah, pfannkuchen! genau die, die ich habe dir verkauft!"
-        - "Ah Dankeschön! es ist interessant um ein Nikogotchi werden, aber immer Pfannkuchen essen kann schon langweilig sein."
+        - "Ah, pfannkuchen! Genau die, die ich habe dir verkauft!"
+        - "Ah Dankeschön! Es ist interessant um ein Nikogotchi werden, aber immer Pfannkuchen essen kann schon langweilig sein."
       pet:
         - "A eine sanfte Berührung, nur was ich mag!"
-        - "na, bist du nicht ein freundliche? ein Streich an meine feder immer macht mein tag besser."
+        - "Na, bist du nicht ein freundliche? Ein Streich an meine feder immer macht mein tag besser."
       cleaned:
         - "Ah, ein kleine Verschönerung, Ich schätze es! (das andere schätze ich hab schon genug)"
     lamplighter:
@@ -630,25 +630,25 @@ nikogotchi:
         - "Oh, danke. kaffee ist mein übliches, aber ich kann ein Veränderung benutzen. Schätze es."
         - "Pfannkuchen? Danke. Ich kann jetzt ein bisschen mehr Energie benutzen"
       pet:
-        - "Oh, uh, danke. nicht daran gewöhnt... aber ist nicht schlecht."
+        - "Oh, uh, danke. nicht daran gewöhnt... Aber ist nicht schlecht."
         - "Oh, uh, danke. I, um, Schätze dir geste."
       cleaned:
-        - "Echt? Ich meine, sicher, Ich schätze es. danke."
-        - "Sauberkeit ist... wichtig. danke."
+        - "Echt? Ich meine, sicher, Ich schätze es. Danke."
+        - "Sauberkeit ist... wichtig. Danke."
     ling:
       fed:
-        - "Oh, danke! du bist zu nett. normalerweise wäre ich derjenige serviert diese!"
+        - "Oh, danke! du bist zu nett. Normalerweise wäre ich derjenige serviert diese!"
       pet:
-        - "Ah, das ist schon angenehm. danke für die kleine Muntermacher."
+        - "Ah, das ist schon angenehm. Danke für die kleine Muntermacher."
       cleaned:
         - "Ich fühle schön erfrischt. Dankeschön."
     kip:
       fed:
-        - "Mmm, Pfannkuchen! du weiß der weg zum einen Ingenieurs herz. danke!"
+        - "Mmm, Pfannkuchen! du weiß der weg zum einen Ingenieurs herz. Danke!"
       pet:
         - "Du hast ein knack für das, mein Freund.. ober freundinnen?"
       cleaned:
-        - "Ein kleines verhübschung, eh? ich fühle mich bereit eine ganze Montagelinie zu übernehmen!"
+        - "Ein kleines verhübschung, eh? Ich fühle mich bereit eine ganze Montagelinie zu übernehmen!"
     penguin:
       fed:
         - "HALLO."
@@ -658,11 +658,11 @@ nikogotchi:
         - "HALLO."
     george:
       fed:
-        - "George akzeptieren der Angebot von fluffige pfannkuchen. George's heart is content."
-        - "Ich denke pfannkuchhen sind gut. erwarte nicht das ich alles Sonnenschien und Regenbogen bin über es"
-        - "Oh, Pfannkuchen... Ich vermute die sind essbar . nichts ist sowieso wirklich wichtig really."
+        - "George akzeptieren der Angebot von fluffige pfannkuchen. George Herz ist zufrieden."
+        - "Ich denke pfannkuchhen sind gut. Erwarte nicht das ich alles Sonnenschien und Regenbogen bin über es"
+        - "Oh, Pfannkuchen... Ich vermute die sind essbar. Nichts ist sowieso wirklich wichtig really."
         - "Wow, Pfannkuchen! Ich kann nicht helfen aber zu lächeln. Dankeschön sehr viel!"
-        - "Oh Liebling, du solltest nicht. aber danke, sweetie. Ich schätze es."
+        - "Oh Liebling, du solltest nicht. Aber danke, sweetie. Ich schätze es."
         - "Pfannkuchen? Rad wahl, mein freund ober freundin! Ich bin alles für das."
       pet:
         - "Dein Streichen gefällt George. George schätzs das."
@@ -670,32 +670,32 @@ nikogotchi:
         - "Warum streichelst du mich? Ich verdiene es gar nicht."
         - "Awww, du bist der beste! ober die beste? Ich fühle all warm und verschwommen."
         - "Du bist so fürsorglich. Danke mein liebling!"
-        - "Chill vibes, digga! dein streichel spiel ist auf den Punkt." please tell me if i should remove it or leave it be
+        - "Chill vibes, digga! dein streichel spiel ist auf den Punkt."
       cleaned:
         - "George ist glücklich mit den sauberkeit. es reflektiert gut an George."
         - "Endlich ,jemand macht etwas richtig."
-        - "putzen nach mir macht keine Veränderung in diesem trostlose Welt."
-        - "Du bist sehr nachdenklich! mit einen sauberen raum, Ich kann alles machen!"
-        - "danke liebling, dass du ordnung haltest. es macht mein leben so viel einfacher!"
-        - "danke das du halts es chill und sauber hie. Ich respektiere das."
+        - "Putzen nach mir macht keine Veränderung in diesem trostlose Welt."
+        - "Du bist sehr nachdenklich! Mit einen sauberen raum, Ich kann alles machen!"
+        - "Danke liebling, dass du ordnung haltest. es macht mein leben so viel einfacher!"
+        - "Danke das du halts es chill und sauber hie. Ich respektiere das."
     rue:
       fed:
         - "Mmm, diese Pfannkuchen seind köstlich. Dankeschön!"
-        - "Pfannkuchen? Mein Lieblingsessen! du bist zu nett."
+        - "Pfannkuchen? Mein Lieblingsessen! Du bist zu nett."
       pet:
         - "Ah, das trifft den Punkt! du bist gut an das, bist du nicht?"
         - "A ein kleiner Kratzer hinter die Ohren ist immer geschätzt."
       cleaned:
         - "Oh, du musstest nicht, aber ich schätze die bemühung."
-        - "Ich bin ein bisschen staubig, aber es it nicht was ich kann nicht bewältigen. danke für kummern"
+        - "Ich bin ein bisschen staubig, aber es it nicht was ich kann nicht bewältigen. Danke für kummern"
     prototype:
       fed:
         - "[Das ist... Überraschend. Dankeschön.]"
       pet:
-        - "[Hm, nicht schlect, Mensch. dein berührung ist nicht als kalt as deine Technologie.]"
+        - "[Hm, nicht schlect, Mensch. Dein berührung ist nicht als kalt as deine Technologie.]"
         - "[Ich kann es nicht fühlenit, aber ich schätze die geste.]"
       cleaned:
-        - "[Ich vermute das eine machine wie ich braucht etwa sorgung. mach weiter.]"
+        - "[Ich vermute das eine machine wie ich braucht etwa sorgung. Mach weiter.]"
         - "[Sorgung ist wichtig auch für eine zurückgezogen Roboter. Ich vermute bin hier für kleine pflege.]"
     cedric:
       fed:
@@ -705,14 +705,14 @@ nikogotchi:
         - "dein Nettigkeite wärmt mein herz. Ein sanftes berühren in schwierigen Zeiten."
         - "Ein moment der Ruhe, Ich schätze unsere freundschaft."
       cleaned:
-        - "Ein fleck von sorgung, sehr geschätz! ein gepflegt flüg-machine ist zuverlässige eine."
+        - "Ein fleck von sorgung, sehr geschätz! Ein gepflegt flüg-machine ist zuverlässige eine."
         - "Du ehrst mich mit deinem Fleiß. Ein saubers Apparatus funktioniert optimal."
     the_world_machine:
       fed:
         - "[Ah... Dankeschön.]"
         - "[Oh, Pfannkuchen? Ich habe niemals gedacht dass ich wurde etwas essen wie das.]"
       pet:
-        - "[Ich kann es nicht fühlen in der gleichen weg wie du, aber ich spüre deine FreundlichkeitI . es ist bequem in eine einzigartige Weise.]"
+        - "[Ich kann es nicht fühlen in der gleichen weg wie du, aber ich spüre deine FreundlichkeitI. Es ist bequem in eine einzigartige Weise.]"
       cleaned:
         - "[Mich Putzen? das ist überraschend, aber es fühlt sich... erfrischend.]"
         - "[Ich vermute auch digitale Entitäten brauchen ein bisschen sorge. Du hast mein dankbarkeit.]"
