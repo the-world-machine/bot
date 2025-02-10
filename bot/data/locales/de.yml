@@ -152,7 +152,7 @@ shop:
   main_title: Willkommen!
 
   main: >
-    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen,Hintergründe , Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen,Hintergründe, Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
 
 
     um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich** ,Soo.. besser eine Auge halten für diese!
@@ -185,7 +185,7 @@ shop:
     title: Kapseln
 
     main: >
-      Ich sehe das du bist interessiert in diesem seltsamen kapseln Dingen!..
+      Ich sehe das du bist interessiert in diesem seltsamen Kapseln Dingen!..
       Wenn ich nicht dumm bin, diese kapseln sind zu **Nikogotchis!** entsperren!
       Was sind *Nikogotchis* fragst du? *Nikogotchis* sind irgendwie einfache Tiere (nicht wilde Tiere), das du kannst kümmern um.
 
@@ -246,7 +246,7 @@ shop:
     buy:
       title: Schätze
       message: >
-        Du willst deine [emoji:wool]**Wool** verkaufen für Schätze? dann bist du hier richtig! Ich habe sehr viele Schätze das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
+        Du willst deine [emoji:wool]**Wool** verkaufen für Schatzen!? dann bist du hier richtig! Ich habe sehr viele Schatzen das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
         [stock_market]
         [selected_treasure]
         [user_wool]
@@ -257,7 +257,7 @@ shop:
       title: Schatze verkaufen 
       message: >
         Ah... du bist interessiert zum deine Schatze zu verkaufen!  das ist gut!
-        Immer wann du verkaufst deine Schatze, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
+        Immer wann du verkaufst deine Schatzen, ich kann es zu anderen Leuten verkaufen, so stellen Sie sicher das sie  es echt verkaufen will!
         [stock_market]
         [selected_treasure]
         [user_wool]
@@ -545,12 +545,12 @@ nikogotchi:
     message: > 
       [treasures]
 
-      Totale Schätze: **[total]**
+      Totale Schatzen: **[total]**
 
       Zeitaufwand beim Suchen: [time].
       
     dialogues:
-      sent: "Dein Nikogotchi war weg geschickt zum Schätze zu find! Note dass ihre stats will sinken schnell als normal , so  vergiss nicht ihn zurück rufen."
+      sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find! Note dass ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen."
       none_found: "Dein Nikogotchi hat gar nichts gefunden... Vielleicht gibt ihnen mehr zeit?"
 
   levelupped:
