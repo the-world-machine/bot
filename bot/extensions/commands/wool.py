@@ -37,7 +37,7 @@ class WoolCommands(Extension):
 	@slash_option(description='The person you want to view balance of instead', name='of', opt_type=OptionType.USER)
 	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
 	async def balance(self, ctx: SlashContext, of: User = None, public: bool = False):
-		await ctx.defer(ephemeral=public)
+		await ctx.defer(ephemeral=not public)
 		loc = Localization(ctx.locale)
 		if of is None:
 			of = ctx.user
