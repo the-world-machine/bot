@@ -10,6 +10,10 @@ general:
     _continue: "Continue"
     _open_site: "Open Website"
 
+  responses:
+    timeout:
+      yn: "[ You took too long to respond ]"
+
 # ---------------------------------------------------------------
 
 music: 
@@ -57,8 +61,54 @@ misc:
     
 # ---------------------------------------------------------------
 
-wool: ~
+wool: 
+  balance:
+    you:
+      none: "[ You have **no[emoji:wool]Wool** ]"
+      some: "[ You have **[balance]**[emoji:wool] ]"
+    other:
+      none: "[ **[mention]** has **no[emoji:wool]Wool** ]"
+      some: "[ **[mention]** has **[balance]**[emoji:wool] ]"
+    bot:
+      none: |
+        [ Bots usually don't interact with me, not that they even can,
+        
+        so [mention] has no [emoji:wool]**Wool** ]
+      some: |
+        [ Bots usually don't interact with me, not that they even can, but...
 
+        [mention] was given [emoji:wool]**[balance]** ]
+    twm:
+      none: "[ I try not to influence the economy, so i have **no[emoji:wool]Wool** ]"
+      some: "[ I try not to influence the economy, but i've got [emoji:wool]**[balance]** ]"
+  transfer:
+    errors:
+      self_transfer: "[ Done... ]"
+      not_enough: "[ You don't have that much [emoji:wool] wool! (you have only [emoji:wool]**[balance]**) ]"
+
+    to:
+      bot:
+        none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous!"
+        some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous..."
+        confirmation: "[ Are you sure you want to give wool to... a bot? You won't be able get it back, you know... ]"
+      user:
+        none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous after all..."
+        some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous!"
+    steal: "[user_one] stole a single piece of wool from [user_two], why!?"
+  pray:
+    errors:
+      timeout: "[ You've already prayed in the past 24 hours. You can pray again [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
+    finds:
+      misdeed: "...but they saw your misdeed the other day."
+      unhappy: "...but they aren't happy with you today."
+      despise: "...and they despise you today... Too bad..."
+      ogie: "...and they see you're doing okay."
+      yippie: "...and they're happy with you! Praise be The World Machine!"
+      devoted: "...and they see you're truly a devoted follower. Praise be The World Machine!"
+    title: "You prayed to The World Machine..."
+    Change:
+      gain: "you also got [emoji:wool]**[amount]** wool!"
+      loss: "you also lost [emoji:wool]**[amount]** wool..."
 # ---------------------------------------------------------------
 
 settings:
