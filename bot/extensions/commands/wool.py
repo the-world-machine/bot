@@ -16,12 +16,12 @@ wool_finds = {
     100: [ "ogie", 'positive_minimum']
 }
 wool_values = {
-    'positive_minimum': [ 5_000, 30_000 ],
-    'positive_normal': [ 10_000, 30_000 ],
-    'positive_major': [ 100_000, 500_000 ],
-    'negative_minimum': [-100, -500],
-    'negative_normal': [-1_000, -3_000],
-    'negative_major': [-5_000, -10_000]
+    'positive_minimum': [ 500, 3_000 ],
+    'positive_normal': [ 5_000, 15_000 ],
+    'positive_major': [ 20_000, 50_000 ],
+    'negative_minimum': [-10, -100],
+    'negative_normal': [-100, -300],
+    'negative_major': [-500, -1000]
 }
 
 
