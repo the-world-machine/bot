@@ -95,7 +95,7 @@ wool:
     steal: "[user_one] hat eine singulare stück wool gestohlen von [user_two], warum!?"
   pray:
     errors:
-      timeout: "[ Du hast schon gebetet in der 24. Du kannst nochmal beten in [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
+      timeout: "[ Du hast schon gebetet in der 24. Du kannst nochmal beten [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
     finds:
       misdeed: "... aber Sie sahen deine Missetat der andere tage."
       unhappy: "...aber sie sind nicht glücklich mit dir heute."
