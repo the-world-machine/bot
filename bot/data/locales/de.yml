@@ -12,6 +12,56 @@ general:
 
 # ---------------------------------------------------------------
 
+wool: 
+  balance:
+    you:
+      none: "[ Du hast **no[emoji:wool]Wool** ]"
+      some: "[ Du hast **[balance]**[emoji:wool] ]"
+    other:
+      none: "[ **[mention]** hat **no[emoji:wool]Wool** ]"
+      some: "[ **[mention]** hat **[balance]**[emoji:wool] ]"
+    bot:
+      none: |
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal.
+        
+        so [mention] hat keine [emoji:wool]**Wool** ]
+      some: |
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
+
+        [mention] war gegeben [emoji:wool]**[balance]** ]
+    twm:
+      none: "[ Ich probiere nicht die wirtschaft beeinflussen, so ich habe **no[emoji:wool]Wool** ]"
+      some: "[ Ich probiere nicht die wirtschaft beeinflussen, aber ich habe [emoji:wool]**[balance]** ]"
+  transfer:
+    errors:
+      self_transfer: "[ Fertig... ]"
+      not_enough: "[ Du hast nicht so viel  [emoji:wool] wool! (du hast nur [emoji:wool]**[balance]**) ]"
+
+    to:
+      bot:
+        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
+        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
+        confirmation: "[ Bist du sicherer das du will woole geben zu ein bot...? Du kannst es nicht wieder haben, du weißt dass? ... ]"
+      user:
+        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig schließlich..."
+        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig!"
+    steal: "[user_one] hat eine singulare stück wool gestohlen von [user_two], warum!?"
+  pray:
+    errors:
+      timeout: "[ Du hast schon gebetet in der 24. Du kannst nochmal beten in [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
+    finds:
+      misdeed: "... aber Sie sahen deine Missetat der andere tage."
+      unhappy: "...aber sie sind nicht glücklich mit dir heute."
+      despise: "...und sie hassen die... zu schlect..."
+      ogie: "...und sie sehen das du bist okay."
+      yippie: "...und sie sind glücklich mir dir! Lob sei die Welt Maschine!"
+      devoted: "...und sie sehen du bist ein echetr  they see you're truly a devoted follower. 	Lob sei die Welt maschine!"
+    title: "You prayed to The World Machine..."
+    Change:
+      gain: "you also got [emoji:wool]**[amount]** wool!"
+      loss: "you also lost [emoji:wool]**[amount]** wool..."
+# ---------------------------------------------------------------
+
 music:
   loading:
     search: "[ Suchen... [emoji:loading] ]"
