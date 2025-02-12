@@ -10,9 +10,7 @@ general:
     _continue: "Weiter"
     _open_site: "Seite öffenen"
 
-# ---------------------------------------------------------------
-
-wool: 
+# ---------------------------------------------------------------wool: 
   balance:
     you:
       none: "[ Du hast **no[emoji:wool]Wool** ]"
@@ -60,6 +58,32 @@ wool:
     Change:
       gain: "you also got [emoji:wool]**[amount]** wool!"
       loss: "you also lost [emoji:wool]**[amount]** wool..."
+
+wool: 
+  balance:
+    you:
+      none: "[ Du hast **no[emoji:wool]Wool** ]"
+      some: "[ Du hast **[balance]**[emoji:wool] ]"
+    other:
+      none: "[ **[mention]** hat **no[emoji:wool]Wool** ]"
+      some: "[ **[mention]** hat **[balance]**[emoji:wool] ]"
+    bot:
+      none: |
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal.
+        
+        so [mention] hat keine [emoji:wool]**Wool** ]
+      some: |
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
+
+        [mention] war gegeben [emoji:wool]**[balance]** ]
+    twm:
+      none: "[ Ich probiere nicht die wirtschaft beeinflussen, so ich habe **no[emoji:wool]Wool** ]"
+      some: "[ Ich probiere nicht die wirtschaft beeinflussen, aber ich habe [emoji:wool]**[balance]** ]"
+  transfer:
+    errors:
+      self_transfer: "[ Fertig... ]"
+      not_enough: "[ Du hast nicht so viel  [emoji:wool] wool! (du hast nur [emoji:wool]**[balance]**) ]"
+
 # ---------------------------------------------------------------
 
 music:
