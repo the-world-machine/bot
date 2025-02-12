@@ -28,6 +28,8 @@ wool_values = {
 class WoolCommands(Extension):
 
 	@slash_command(description='All things to do with wool')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def wool(self, ctx: SlashContext):
 		pass
 

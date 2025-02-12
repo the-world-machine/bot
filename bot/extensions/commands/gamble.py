@@ -1,11 +1,11 @@
 import asyncio
 import random
-from utilities.emojis import emojis
+from interactions import *
 from dataclasses import dataclass
+from utilities.emojis import emojis
 from utilities.localization import fnum
 from utilities.database.main import UserData
 from utilities.message_decorations import Colors, fancy_message
-from interactions import Embed, Extension, OptionType, SlashContext, slash_command, slash_option
 
 
 @dataclass
@@ -48,6 +48,8 @@ slots = [
 class GambleCommands(Extension):
 
 	@slash_command(description='All things to do with gambling wool')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def gamble(self, ctx: SlashContext):
 		pass
 
@@ -195,6 +197,6 @@ class GambleCommands(Extension):
 			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
 
 		text += "\n".join(point_rows)+'\n\n'+\
-      'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
+                  'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
 
 		await fancy_message(ctx, text)

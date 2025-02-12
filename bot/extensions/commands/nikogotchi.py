@@ -163,15 +163,15 @@ class NikogotchiCommands(Extension):
 			return f"{make_progress_bar(current, maximum, 5, 'round')} ({current} / {maximum})"
 
 		info = \
-             f"❤️  {make_pb(n.health, n.max_health)}\n"+\
-             f'⚡  {make_pb(n.energy, 5)}\n'+\
-             '\n'+\
-             f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
-             f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
-             f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
-             '\n'+\
-             f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-             f'{treasure_looking}{age}'
+                   f"❤️  {make_pb(n.health, n.max_health)}\n"+\
+                   f'⚡  {make_pb(n.energy, 5)}\n'+\
+                   '\n'+\
+                   f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
+                   f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
+                   f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
+                   '\n'+\
+                   f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+                   f'{treasure_looking}{age}'
 		if not preview:
 			if dialogue:
 				info += f'\n-# 💬 {dialogue}'
@@ -198,6 +198,7 @@ class NikogotchiCommands(Extension):
 
 	@slash_command(description="All things about your Nikogotchi!")
 	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def nikogotchi(self, ctx: SlashContext):
 		pass
 

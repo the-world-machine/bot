@@ -18,8 +18,9 @@ except Exception as e:
 
 
 class MiscellaneousCommands(Extension):
-
 	@slash_command(description='View various statistics about the bot')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def stats(self, ctx: SlashContext):
 		await ctx.defer()
 		loc = Localization(ctx.locale)
