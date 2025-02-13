@@ -10,7 +10,8 @@ class ShippingCommands(Extension):
 	@slash_command(description="Ship two people together")
 	@slash_option(name="who", description="First person (can be a @user)", opt_type=OptionType.STRING, required=True)
 	@slash_option(argument_name="whomst", name="with", description="Second person (can be a @user)", opt_type=OptionType.STRING, required=True)
-	async def ship(self, ctx: SlashContext, who: str, whomst: str):
+	@slash_option(description="Whether you want the response to be visible for others in the channel (default: True)", name="public", opt_type=OptionType.BOOLEAN)
+	async def ship(self, ctx: SlashContext, who: str, whomst: str, public: bool = True):
 
 		if '<' in who:
 			parsed_id = who.strip('<@>')
@@ -73,4 +74,4 @@ class ShippingCommands(Extension):
 
 		embed.set_footer(text=description)
 
-		await ctx.send(embeds=embed)
+		await ctx.send(embeds=embed, ephemeral=not public)
