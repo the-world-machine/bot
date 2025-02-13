@@ -538,7 +538,7 @@ nikogotchi:
 
   found:
     title: Ви знайшли [name]!
-    description: 
+    description: |
       Хочете прейменувати його?
       
       -# нотатка: це завжди можна зробити пізніше за допомогою команди `/nikogotchi rename`
