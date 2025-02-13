@@ -92,7 +92,7 @@ class TextboxCommands(Extension):
 		await ctx.defer(edit_origin=True)
 		faces_select = self.make_faces_select_menu(ctx.locale, character_name=ctx.values[0])
 
-		await ctx.edit(embed=Embed(description=f"[ <@{ctx.user.id}>, select a face. ]", color=Colors.DARKER_WHITE), components=faces_select)
+		await ctx.edit(embed=Embed(description=f"[ <@{ctx.user.id}>, select a face. ]"), components=faces_select)
 		faces = await ctx.client.wait_for_component(components=faces_select)
 		ctx = faces.ctx
 		await ctx.defer(edit_origin=True)
@@ -114,4 +114,4 @@ class TextboxCommands(Extension):
 		else:
 			await ctx.edit(files=file)
 
-		await ctx.edit(embed=Embed(description=f"[ Done! ]", color=Colors.DARKER_WHITE), components=[])
+		await ctx.edit(embed=Embed(description=f"[ Done! ]", color=Colors.DEFAULT), components=[])
