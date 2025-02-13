@@ -88,10 +88,7 @@ class TextboxCommands(Extension):
 		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select)
 		char = await ctx.client.wait_for_component(components=characters_select)
 		ctx = char.ctx
-		await ctx.defer(edit_origin=True)
 
-		char = await ctx.client.wait_for_component(components=characters_select)
-		ctx = char.ctx
 		await ctx.defer(edit_origin=True)
 		faces_select = self.make_faces_select_menu(ctx.locale, character_name=ctx.values[0])
 
