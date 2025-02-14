@@ -7,6 +7,8 @@ from utilities.message_decorations import Colors, fancy_message
 class SettingsCommands(Extension):
 
 	@slash_command(description="Configure the behavior of The World Machine for this server")
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def settings(self, ctx: SlashContext):
 		pass
 

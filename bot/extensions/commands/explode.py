@@ -21,6 +21,8 @@ class ExplodeCommands(Extension):
 	last_called = {}
 
 	@slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def explode(self, ctx: SlashContext):
 		loc = Localization(ctx.locale)
 		uid = ctx.user.id

@@ -13,6 +13,8 @@ from utilities.transmission_connection_manager import *
 class TransmissionCommands(Extension):
 
 	@slash_command(description='Transmit to over servers!')
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def transmit(self, ctx: SlashContext):
 		pass
 

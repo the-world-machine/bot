@@ -35,6 +35,8 @@ async def get_lavalink_stats():
 class MusicCommands(Extension):
 	# Base Command
 	@slash_command(description="Listen to music using The World Machine!")
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def music(self, ctx: SlashContext):
 		pass
 

@@ -96,6 +96,8 @@ class WoolCommands(Extension):
 		)
 
 	@slash_command(description="Pray to The World Machine")
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def pray(self, ctx: SlashContext):
 		loc = Localization(ctx.locale)
 

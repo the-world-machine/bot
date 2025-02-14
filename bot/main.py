@@ -18,7 +18,7 @@ from interactions.api.events import Startup
 
 intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
 
-client = Client(intents=intents, disable_dm_commands=True, send_command_tracebacks=False, send_not_ready_messages=True, sync_interactions=False, sync_ext=False)
+client = Client(intents=intents, send_command_tracebacks=False, send_not_ready_messages=True, sync_interactions=False, sync_ext=False)
 
 if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
 
