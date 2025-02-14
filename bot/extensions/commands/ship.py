@@ -4,13 +4,14 @@ from interactions import *
 from utilities.message_decorations import *
 
 
-# TODO: localiazeeeeeeeeee
 class ShippingCommands(Extension):
 
 	@slash_command(description="Ship two people together")
 	@slash_option(name="who", description="First person (can be a @user)", opt_type=OptionType.STRING, required=True)
 	@slash_option(argument_name="whomst", name="with", description="Second person (can be a @user)", opt_type=OptionType.STRING, required=True)
 	@slash_option(description="Whether you want the response to be visible for others in the channel (default: True)", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def ship(self, ctx: SlashContext, who: str, whomst: str, public: bool = True):
 
 		if '<' in who:

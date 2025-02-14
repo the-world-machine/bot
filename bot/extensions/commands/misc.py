@@ -46,6 +46,8 @@ class MiscellaneousCommands(Extension):
 
 	@slash_command(description='A random wikipedia article')
 	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def random_wikipedia(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx.locale)
 		await ctx.defer(ephemeral=not public)
@@ -58,6 +60,8 @@ class MiscellaneousCommands(Extension):
 
 	@slash_command(description='bogus')
 	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def amogus(self, ctx: SlashContext, public: bool = False):
 		await ctx.send('https://media.discordapp.net/attachments/868336598067056690/958829667513667584/1c708022-7898-4121-9968-0f0d24b8f986-1.gif', ephemeral=not public)
 
@@ -65,6 +69,8 @@ class MiscellaneousCommands(Extension):
 	@slash_option(description='What sided dice to roll', min_value=1, max_value=9999, name='sides', opt_type=OptionType.INTEGER, required=True)
 	@slash_option(description='How many times to roll it', min_value=1, max_value=10, name='amount', opt_type=OptionType.INTEGER)
 	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def roll(self, ctx: SlashContext, sides: int, amount: int = 1, public: bool = False):
 		loc = Localization(ctx.locale)
 
@@ -83,6 +89,8 @@ class MiscellaneousCommands(Extension):
 
 	@slash_command(description="Show a picture of a kitty or a cat or a Catto")
 	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def cat(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx.locale)
 		embed = Embed(title=loc.l("misc.miaou.title"), color=Colors.DEFAULT)
