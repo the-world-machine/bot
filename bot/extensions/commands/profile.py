@@ -1,21 +1,25 @@
 import time
+from interactions import *
 import utilities.database.main as db
 from utilities.config import debugging
 from datetime import datetime, timedelta
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
-from utilities.localization import Localization, fnum, ftime
-from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
+from utilities.localization import Localization, fnum
 
 
 class ProfileCommands(Extension):
 
 	@slash_command(description='All things to do with profiles')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def profile(self, ctx):
 		pass
 
 	@slash_command(description='All things to do with Suns')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def sun(self, ctx):
 		pass
 
@@ -92,4 +96,4 @@ class ProfileCommands(Extension):
 	    SlashCommandChoice(name='Times Asked', value='times_asked'),
 	    SlashCommandChoice(name='Times Messaged', value='times_messaged'),
 	    SlashCommandChoice(name='Times Transmitted', value='times_transmitted')
-	]
+	]                                                                           # TODO: what is this

@@ -763,6 +763,8 @@ class ShopCommands(Extension):
 			return embed, components
 
 	@slash_command(description="Open the Shop")
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def shop(self, ctx: SlashContext):
 
 		await ctx.defer(ephemeral=True)
