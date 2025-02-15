@@ -4,58 +4,61 @@ config-check-level: 4
 # 2 = stops the bot on missing
 # 3 = doesn't log missing
 bot:
-    token: ~
-    prod:
-        token: ~ # if ~ always uses token above
-        override: ~
-        branch: "origin"
-        command-marker: ~ # see dev.command-marker
-    debug: ~ # defaults to false on prod
+  token: ~
+  prod:
+    token: ~ # if ~ always uses token above
+    override: ~
+    branch: "origin"
+    command-marker: ~ # see dev.command-marker
+  debug: ~ # defaults to false on prod
 
-    rolling:
-        avatar: true # uses unstable.png if not on prod
-        status: true # has no status at all instead
-        interval: 3600 # seconds
-        statuses: # can also be just a string
-            - "[ ... ]" # Can use the variables: [shard_count] [guild_count] [token]
-            - "[ ... ]" 
-            - "[ ... ]" # e.g. - - - - \/
-            - "[ Monitoring over [guild_count] places at once. ]"
-            - "[ Do I really have to do things for these users? ]"
-            - "[ No thoughts right now. ]"
+  rolling:
+    avatar: true # uses unstable.png if not on prod
+    status: true # has no status at all instead
+    interval: 3600 # seconds
+    statuses: # can also be just a string
+      - "[ ... ]" # Can use the variables: [shard_count] [guild_count] [token]
+      - "[ ... ]" 
+      - "[ ... ]" # e.g. - - - - \/
+      - "[ Monitoring over [guild_count] places at once. ]"
+      - "[ Do I really have to do things for these users? ]"
+      - "[ No thoughts right now. ]"
 
 dev:
-    guild: 
-        id: ~ # server id, in ""
+  guild-id: ~ # server id, in ""
+  channels:
+    logs: ~ # channel id, in ""
+  send-startup-message: true
 
-    command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^
-    whitelist:
-        - ~
-        - ~ # user ids, all in ""
-        - ~
+  command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^
+  whitelist:
+    - ~
+    - ~ # user ids, all in ""
+    - ~
 
 database:
-    dns-fix: false # use this if you're on termux and connecting to db doesn't work
-    uri: ~ # example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
+  dns-fix: false # use this if you're on termux and connecting to db doesn't work
+  uri: ~ # example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
 
 localization:
-    main-locale: en # make sure the locale is 100% complete
-    debug: ~ # defaults to false on prod, shows detailed error messages for not found paths if true
-    whitelist:
-        en:
-            - ~ 
-            - ~ # user ids, all in ""
+  main-locale: en # make sure the locale is 100% complete
+  debug: ~ # defaults to false on prod, shows detailed error messages for not found paths if true
+  whitelist:
+    en:
+      - ~ 
+      - ~ # user ids, all in ""
 
 music: # deprecated
-    enabled: true
-    spotify:
-        secret: ~
-        id: ~
-    
-    lavalink:
-        ip: "localhost"
-        port: 4230
-        password: password_here
+  enabled: true
+  spotify:
+    secret: ~
+    id: ~
+  
+  lavalink:
+    ip: "localhost"
+    port: 4230
+    password: password_here
 
 textbox:
-    font: "bot/data/fonts/TerminusTTF-Bold.ttf"
+  font: "bot/data/fonts/TerminusTTF-Bold.ttf"
+  frame-limit: 50

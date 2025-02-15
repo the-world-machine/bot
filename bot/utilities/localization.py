@@ -1,17 +1,21 @@
+import asyncio
+import inspect
 import re
 from babel import Locale
 from pathlib import Path
 from termcolor import colored
-from yaml import safe_load
+import yaml as yaml
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from typing import Literal, Union
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
+import yaml.parser
 from utilities.data_watcher import subscribe
 from utilities.misc import FrozenDict, rabbit
 from utilities.config import debugging, get_config, on_prod
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
+from extensions.events.Ready import ReadyEvent
 
 emoji_dict = {}
 
@@ -39,28 +43,35 @@ def local_override(locale: str, data: dict):
 
 
 def load_locale(locale: str):
-	with open(Path('bot/data/locales', locale + '.yml'), 'r', encoding='utf-8') as f:
-		return safe_load(f)
+	return yaml.full_load(open(Path('bot/data/locales', locale + '.yml'), 'r', encoding='utf-8'))
 
 
 last_update_timestamps = {}
-debounce_interval = 1 # seconds
+debounce_interval = 1  # seconds
 
 
 def on_file_update(filename):
 	global fallback_locale
 	current_time = datetime.now()
 	locale = Path(filename).stem
-	if filename in last_update_timestamps and (current_time - last_update_timestamps[filename]).seconds < debounce_interval:
+	if filename in last_update_timestamps and (
+	    current_time - last_update_timestamps[filename]
+	).seconds < debounce_interval:
 		return print(".", end="")
 	last_update_timestamps[filename] = current_time
-	text = f'─ Reloading locale {locale}'
-	print(f"{colored(text, 'yellow')}", end=" ─ ─ ─ ")
-	_locales[locale] = FrozenDict(load_locale(locale))
+	print(colored(f'─ Reloading locale {locale}', 'yellow'), end="")
+	try:
+		hello = load_locale(locale)
+	except Exception as e:
+		print(colored(" FAILED", "red"))
+		print(ReadyEvent)
+		ReadyEvent.log(e)
+		return
+	_locales[name] = hello
+	print(" ─ ─ ─ ")
 
 	if locale == get_config("localization.main-locale"):
 		fallback_locale = _locales[locale]
-	print("done")
 
 
 class UnknownLanguageError(Exception):
@@ -95,7 +106,15 @@ subscribe("locales/", on_file_update)
 loaded = 0
 for file in Path('bot/data/locales').glob('*.yml'):
 	name = file.stem
-	_locales[name] = load_locale(name)
+	try:
+		_locales[name] = FrozenDict(load_locale(name))
+	except Exception as e:
+		if get_config("localization.main-locale") == name:
+			raise e
+		if debugging():
+			print("| FAILED " + name)
+		ReadyEvent.log(e)
+
 	if debugging():
 		print("| " + name)
 	loaded += 1
@@ -125,7 +144,11 @@ class Localization:
 		return self.sl(path=path, locale=self.locale, **variables)
 
 	@staticmethod
-	def sl(path: str, locale: str, raise_on_not_found: bool = False, self=None, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+	def sl(path: str,
+	       locale: str,
+	       raise_on_not_found: bool = False,
+	       self=None,
+	       **variables: dict[str, any]) -> Union[str, list[str], dict]:
 		""" Static version of .l for single use (where making another Localization() makes it cluttery)"""
 		if locale == None:
 			raise ValueError("No locale provided")
@@ -141,12 +164,19 @@ class Localization:
 		return assign_variables(value, locale, **variables)
 
 	@staticmethod
-	def sl_all(localization_path: str, raise_on_not_found: bool = False, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+	def sl_all(localization_path: str,
+	           raise_on_not_found: bool = False,
+	           **variables: str) -> dict[str, Union[str, list[str], dict]]:
 		results = {}
 
 		for locale in _locales.keys():
 			value = get_locale(locale)
-			value = rabbit(value, localization_path, raise_on_not_found=raise_on_not_found, _error_message="[path] ([error], debug mode ON)" if debug else "[path]")
+			value = rabbit(
+			    value,
+			    localization_path,
+			    raise_on_not_found=raise_on_not_found,
+			    _error_message="[path] ([error], debug mode ON)" if debug else "[path]"
+			)
 
 			results[locale] = assign_variables(value, locale, **variables)
 
@@ -161,7 +191,7 @@ def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 	if locale in ("ru", "uk", "be", "kk", "ro", "sr", "bg"):
 		fmtd = fmtd.replace(",", " ")
 
-	if ordinal and isinstance(num, int) and locale not in ("ru", "uk"):
+	if ordinal and isinstance(num, int) and locale not in ("ru", "uk", "be", "kk", "ro", "sr", "bg"):
 		fmtd += english_ordinal_for(num)
 
 	return fmtd
