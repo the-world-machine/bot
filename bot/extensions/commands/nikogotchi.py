@@ -162,16 +162,17 @@ class NikogotchiCommands(Extension):
 		def make_pb(current, maximum) -> str:
 			return f"{make_progress_bar(current, maximum, 5, 'round')} ({current} / {maximum})"
 
-		info = \
-                           f"❤️  {make_pb(n.health, n.max_health)}\n"+\
-                           f'⚡  {make_pb(n.energy, 5)}\n'+\
-                           '\n'+\
-                           f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
-                           f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
-                           f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
-                           '\n'+\
-                           f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-                           f'{treasure_looking}{age}'
+		info = (
+		    f"❤️  {make_pb(n.health, n.max_health)}\n" +  # yapf: ignore
+		    f'⚡  {make_pb(n.energy, 5)}\n' +  # yapf: ignore
+		    '\n' +  # yapf: ignore
+		    f'🍴  {make_pb(n.hunger, n.max_hunger)}\n' +  # yapf: ignore
+		    f'🫂  {make_pb(n.happiness, n.max_happiness)}\n' +  # yapf: ignore
+		    f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n' +  # yapf: ignore
+		    '\n' +  # yapf: ignore
+		    f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**' +  # yapf: ignore
+		    f'{treasure_looking}{age}'  # yapf: ignore
+		)
 
 		if not preview:
 			if dialogue:
