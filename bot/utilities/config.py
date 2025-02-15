@@ -23,11 +23,12 @@ def get_config(path: str, raise_on_not_found: bool | None = True, return_None: b
 cl = get_config("config-check-level", ignore_None=True)
 if cl is not None:
 	to_check: list[tuple[str, bool]] = [
-	                                      #   (key,                       required)
+	    #   (key,                       required)
 	    ("bot.token", True),
 	    ("database.uri", True),
-	    ("dev.guild.id", True),
-	    ("bot.prod.token", True),
+	    ("localization.main-locale", True),
+	    ("dev.guild.id", False),
+	    ("bot.prod.token", False),
 	    ("bot.rolling.avatar", False),
 	    ("bot.rolling.status", False),
 	    ("bot.rolling.interval", False),
