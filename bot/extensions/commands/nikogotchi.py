@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from utilities.emojis import emojis
 from typing import Dict, List, Union
 from datetime import datetime, timedelta
+from utilities.misc import make_empty_select
 from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
@@ -158,20 +159,20 @@ class NikogotchiCommands(Extension):
 		age = ftime(await self.get_nikogotchi_age(n._id), minimum_unit="minute")
 		age = f"  •  ⏰  {age}" if len(age) != 0 else ""
 
-
 		def make_pb(current, maximum) -> str:
 			return f"{make_progress_bar(current, maximum, 5, 'round')} ({current} / {maximum})"
 
 		info = \
-                   f"❤️  {make_pb(n.health, n.max_health)}\n"+\
-                   f'⚡  {make_pb(n.energy, 5)}\n'+\
-                   '\n'+\
-                   f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
-                   f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
-                   f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
-                   '\n'+\
-                   f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
-                   f'{treasure_looking}{age}'
+                           f"❤️  {make_pb(n.health, n.max_health)}\n"+\
+                           f'⚡  {make_pb(n.energy, 5)}\n'+\
+                           '\n'+\
+                           f'🍴  {make_pb(n.hunger, n.max_hunger)}\n'+\
+                           f'🫂  {make_pb(n.happiness, n.max_happiness)}\n'+\
+                           f'🧽  {make_pb(n.cleanliness, n.max_cleanliness)}\n'+\
+                           '\n'+\
+                           f'-# 🏆  **{n.level}**  •  🗡️  **{n.attack}**  •  🛡️  **{n.defense}**'+\
+                           f'{treasure_looking}{age}'
+
 		if not preview:
 			if dialogue:
 				info += f'\n-# 💬 {dialogue}'
@@ -297,7 +298,7 @@ class NikogotchiCommands(Extension):
 			if value > 4900:
 				treasure_id = random.choice([ "die", "sun", "clover"])
 			elif value > 3500:
-				treasure_id = random.choice([ "amber", "pen", "card"]) # TODO: store rarity in DB
+				treasure_id = random.choice([ "amber", "pen", "card"])  # TODO: store rarity in DB
 			elif value > 100:
 				treasure_id = random.choice([ "journal", "bottle", "shirt"])
 
@@ -397,7 +398,7 @@ class NikogotchiCommands(Extension):
 		dialogue = ''
 		treasures_found = None
 		buttons = self.nikogotchi_buttons(ctx, uid)
-		select = await self.feed_nikogotchi(ctx)
+		select = await self.make_food_select(loc, nikogotchi, f'feed_food {ctx.user.id}')
 
 		if nikogotchi.status == 2:
 			if custom_id == 'pet':
@@ -446,43 +447,22 @@ class NikogotchiCommands(Extension):
 			await ctx.edit(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
 		await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
-	async def feed_nikogotchi(self, ctx):
-		food_options = []
-
-		nikogotchi_data: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
-
-		nikogotchi = await self.get_nikogotchi(ctx.author.id)
-
-		loc = Localization(ctx.locale)
-
-		if nikogotchi_data.glitched_pancakes > 0:
-			food_options.append(
-			    StringSelectOption(
-			        label=loc.l('nikogotchi.components.feed.glitched_pancakes', amount=nikogotchi_data.glitched_pancakes), emoji=emojis['pancakes']['glitched'], value=f'glitched'
-			    )
+	async def make_food_select(self, loc, data: Nikogotchi, custom_id: str):
+		if all(getattr(data, attr) <= 0 for attr in [ "glitched_pancakes", "golden_pancakes", "pancakes"]):
+			return make_empty_select(placeholder=loc.l('nikogotchi.components.feed.no_food'))
+		name_map = {  #TODO: rm this when db fix
+		    "glitched_pancakes": "glitched",
+		    "golden_pancakes": "golden",
+		    "pancakes": "normal"
+		}
+		select = StringSelectMenu(custom_id=custom_id, placeholder=loc.l('nikogotchi.components.feed.placeholder', name=data.name))
+		for pancake in [ "glitched_pancakes", "golden_pancakes", "pancakes"]:
+			amount = getattr(data, pancake)
+			if amount <= 0:
+				continue
+			select.options.append(
+			    StringSelectOption(label=loc.l(f'nikogotchi.components.feed.{pancake}', amount=amount), emoji=emojis['pancakes'][name_map[pancake]], value=name_map[pancake])
 			)
-
-		if nikogotchi_data.golden_pancakes > 0:
-			food_options.append(
-			    StringSelectOption(
-			        label=loc.l('nikogotchi.components.feed.golden_pancakes', amount=nikogotchi_data.golden_pancakes), emoji=emojis['pancakes']['golden'], value=f'golden'
-			    )
-			)
-
-		if nikogotchi_data.pancakes > 0:
-			food_options.append(
-			    StringSelectOption(label=loc.l('nikogotchi.components.feed.pancakes', amount=nikogotchi_data.pancakes), emoji=emojis['pancakes']['normal'], value=f'normal')
-			)
-
-		placeholder = loc.l('nikogotchi.components.feed.placeholder', name=nikogotchi.name)
-		disabled = False
-		if len(food_options) == 0:
-			food_options.append(StringSelectOption(label=f'no food', value='nofood')) # invisible to end user but required by api
-			disabled = True
-			placeholder = loc.l('nikogotchi.components.feed.no_food')
-
-		select = StringSelectMenu(*food_options, custom_id=f'feed_food {ctx.user.id}', placeholder=placeholder, disabled=disabled)
-
 		return select
 
 	ff = re.compile(r'feed_food (\d+)$')
@@ -552,7 +532,7 @@ class NikogotchiCommands(Extension):
 		await self.save_nikogotchi(nikogotchi, ctx.author.id)
 
 		buttons = self.nikogotchi_buttons(ctx, ctx.author.id)
-		select = await self.feed_nikogotchi(ctx)
+		select = await self.make_food_select(loc, nikogotchi, f'feed_food {ctx.user.id}')
 
 		embeds = await self.get_main_embeds(ctx, nikogotchi, dialogue, stats_update=updated_stats)
 
@@ -727,6 +707,7 @@ class NikogotchiCommands(Extension):
 
 	@slash_command(description="View what treasure someone has")
 	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	@slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
 	async def treasures(self, ctx: SlashContext, user: User = None):
 		loc = Localization(ctx.locale)

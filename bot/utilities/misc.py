@@ -6,7 +6,7 @@ import subprocess
 from PIL import Image
 from io import BytesIO
 from typing import Union, Optional
-from interactions import Activity, ActivityType, Client, File
+from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption
 
 
 class FrozenDict(dict):
@@ -190,7 +190,7 @@ def rabbit(
 
 
 def exec(command: list) -> str:
-	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout # TODO: eror handling
+	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout  # TODO: eror handling
 
 
 def shell(command: str) -> str:
@@ -215,3 +215,7 @@ async def set_status(client: Client, text: str | list):
 
 async def set_avatar(client: Client, avatar: File | Path | str):
 	return await client.user.edit(avatar=avatar)
+
+
+def make_empty_select(loc, placeholder: str = None):
+	return StringSelectMenu(*[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True)
