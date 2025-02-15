@@ -3,9 +3,5 @@
         {
             "path": "."
         }
-		],
-		"settings": {
-			"editor.formatOnSave": false,
-			"editor.formatOnSaveMode": "modificationsIfAvailable"
-		}
+		]
 }
