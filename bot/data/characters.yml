@@ -1,5 +1,5 @@
 characters:
-  - name: "Niko"
+  - id: "Niko"
     faces:
       - name: "Normal"
         emoji: 1019605517695463484
@@ -29,7 +29,7 @@ characters:
         emoji: 1019605509625618522
       - name: "Fed Up"
         emoji: 1019605511802458185
-  - name: "Alula"
+  - id: "Alula"
     faces:
       - name: "Normal"
         emoji: 1071085652327813212
@@ -39,7 +39,7 @@ characters:
         emoji: 1071085653753876541
       - name: "Gasping"
         emoji: 1071085649815416882
-  - name: "Calamus"
+  - id: "Calamus"
     faces:
       - name: "Normal"
         emoji: 1071085682132529294
@@ -55,7 +55,7 @@ characters:
         emoji: 1071085678638673970
       - name: "Happy"
         emoji: 1071085680819712120
-  - name: "Lamplighter"
+  - id: "Lamplighter"
     faces:
       - name: "Normal"
         emoji: 1071085718975283310
@@ -67,7 +67,7 @@ characters:
         emoji: 1071085723664515143
       - name: "Concerned"
         emoji: 1071085716454514799
-  - name: "Kip"
+  - id: "Kip"
     faces:
       - name: "Normal"
         emoji: 1027240024992927814
@@ -85,7 +85,7 @@ characters:
         emoji: 1027240035893915711
       - name: "kip, but cool."
         emoji: 1019605513387900978
-  - name: "The World Machine"
+  - id: "The World Machine"
     faces:
       - name: "Normal"
         emoji: 1023573456664662066
@@ -99,7 +99,7 @@ characters:
         emoji: 1023573452944322560
       - name: "Pancakes"
         emoji: 1071085762843512983
-  - name: "Ling"
+  - id: "Ling"
     faces:
       - name: "Normal"
         emoji: 1090982149659836466
@@ -113,7 +113,7 @@ characters:
         emoji: 1090982152168030330
       - name: "Smiling"
         emoji: 1090982155863199784
-  - name: "Other"
+  - id: "Other"
     faces:
       - name: "Raised Eyebrow"
         emoji: 1027306556783603813

@@ -1,14 +1,23 @@
 general:
   loading: "[ Loading... [emoji:loading] ]"
+  loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
     _yes: "Yes"
     _no: "No"
+    _done: "Done"
     _cancel: "Cancel"
     _back: "Back"
+    _forwards: "Forwards"
     _continue: "Continue"
+    _next: "Next"
+    _previous: "Previous"
     _open_site: "Open Website"
+
+  select:
+    empty: hallo, english (original) translation made by @meqativ and @axiinyaa # u can change this to whatever you want, links to other socials are also 👍 (MAX: 150 characters)
+    multiple: ([current]/[total])
 
   responses:
     timeout:
@@ -55,7 +64,6 @@ misc:
     desc: "...got [result]."
     # adds on when more than 1 dice
     multi: "Totaling at **[total]**."
-
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
@@ -767,3 +775,44 @@ nikogotchi:
       cleaned:
         - "[Cleaning me up? That's unexpected, but it feels... refreshing.]"
         - "[I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  button: 
+    generate: Generate
+
+  select:
+    chars: Characters...
+    faces: Faces...
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press: "[ Press the green button whenever you're ready ]"
+    generating: "[ Generating image... [emoji:loading] ]"
+    uploading: "[ Uploading image... [emoji:loading] ]"
+    done: "[ Done [debug] ]"
+
+    debug: "(Took: [time], Sid: **[sid]**)" # TODO: unused
+
+  single:
+    alt: 
+      character:
+        left: "A textbox similar to the one's in OneShot. On the left of it is an icon of [character] with the [face] expression."
+        right: "A textbox similar to the one's in OneShot. On the right of it is an icon of [character] with the [face] expression."
+      other: 
+          left: "A textbox similar to the one's in OneShot. On the left of it is an icon of [character] with the [face] expression."
+          right: "A textbox similar to the one's in OneShot. On the right of it is an icon of [character] with the [face] expression."
+      # you may also still use any of the variables from above, if your language requires some rewording
+      cont: "[alt]. The text says: [text]"
+    name: "TWM textbox ([character]-[face]-[timestamp]-[userid])"
+  
+  multi:
+    alt: 
+      cutoff: "Notice, this text has been truncated to fit within Discord's limitations."
+      beginning: "A GIF of OneShot characters talking, that uses textboxes similar to the one's in OneShot. [frames]"
+      other: "A GIF of some characters talking, that uses textboxes similar to the one's in OneShot. [frames]"
+      
+      frame: '[character] ([face]) says: "[text]"'
+    name: "TWM textbox ([frame]-[timestamp]-[userid])"

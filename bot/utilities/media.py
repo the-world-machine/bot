@@ -7,7 +7,13 @@ from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
 
 
-async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime.now()}-textbox") -> File:
+async def generate_dialogue(
+    text: str,
+    icon_url: str,
+    animated: bool = False,
+    filename: str = f"{datetime.now()}-textbox",
+    alt_text: str = None
+) -> File:
 	img = Image.open("bot/data/images/textbox/niko-background.png")
 	icon = await get_image(url=icon_url)
 	icon = icon.resize((96, 96))
@@ -49,4 +55,4 @@ async def generate_dialogue(text, icon_url, animated=False, filename=f"{datetime
 		filename = f"{filename}.png"
 
 	img_buffer.seek(0)
-	return File(file=img_buffer, file_name=filename, description=text)
+	return File(file=img_buffer, file_name=filename, description=alt_text if alt_text is not None else text)
