@@ -50,7 +50,7 @@ class ReadyEvent(Extension):
 			    embed=Embed(
 			        description=
 			        f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>" +
-			        f"(Ready: **{fnum(ready_delta.total_seconds())}**s{emojis['icons']['loading']})" + "\n" +
+			        f"(Ready: **{fnum(ready_delta.total_seconds())}**s {emojis['icons']['loading']})" + "\n" +
 			        f"Git hash: {get_git_hash()}"
 			    )
 			)
