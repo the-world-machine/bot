@@ -16,7 +16,7 @@ general:
     _open_site: "Відкрити Cайт"
 
   select:
-    empty: пивіт, український переклад зробив @meqativ # u can change this to whatever you want, links to other socials are also 👍 (MAX: 150 characters)
+    empty: пивіт, український переклад зробив @meqativ
     multiple: ([current]/[total])
 
   responses:

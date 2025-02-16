@@ -15,7 +15,7 @@ general:
     _previous: "Zurück"
     _open_site: "Seite öffene"
   select:
-    empty: hallo, english (original) übersetztung war gemacht bei @meqativ und @axiinyaa #  :3, links to other socials are also 👍 (MAX: 150 characters)
+    empty: hallo, english (original) übersetztung war gemacht bei @meqativ und @axiinyaa #  :3
 
   responses:
     timeout:

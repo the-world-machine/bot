@@ -16,7 +16,7 @@ general:
     _open_site: "Open Website"
 
   select:
-    empty: hallo, english (original) translation made by @meqativ and @axiinyaa # u can change this to whatever you want, links to other socials are also 👍 (MAX: 150 characters)
+    empty: hallo, english (original) translation made by @meqativ and @axiinyaa # u can change this to whatever you want when translating 👍 (MAX: 150 characters)
     multiple: ([current]/[total])
 
   responses:
