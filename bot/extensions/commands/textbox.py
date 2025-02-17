@@ -5,45 +5,11 @@ from typing import Literal
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.emojis import emojis
-from utilities.mediagen.textbox import Styles, render_textbox
+from utilities.mediagen.textbox import Frame, Styles, render_textbox
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import make_empty_select, pretty_user
 from utilities.textbox.characters import Character, Face, get_character, get_character_list, get_characters
-
-
-class Frame:
-	style: Styles = Styles.NORMAL_RIGHT
-
-	animated: bool = False
-	text: str | None
-	character_id: Character | None
-	face_name: Face | None
-	speed: float = 1.00
-
-	def check(self):
-		return self.character_id is not None and self.face_name is not None
-
-	def __init__(
-	    self,
-	    style: Literal[0, 1] = 1,
-	    animated: bool = False,
-	    text: str | None = None,
-	    character_id: str | None = None,
-	    face_name: str | None = None,
-	    speed: float = 1.00
-	):
-		self.style = style
-		self.text = text
-		self.animated = animated
-		self.character_id = character_id
-		self.face_name = face_name
-		if speed < 0.01:
-			raise ValueError("Speed must be above 0.01")
-		self.speed = speed
-
-	def __repr__(self):
-		return f"Frame(character={self.character_id}, face={self.face_name}, speed={self.speed})"
 
 
 class State:
@@ -274,7 +240,7 @@ class TextboxCommands(Extension):
 			case "update_animated":
 				frame_data.animated = not frame_data.animated
 			case "render":
-				await ctx.edit(
+				await ctx.edit_origin(
 				    embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE)
 				)
 				file = await self.make_frame(ctx, state.frames[int(frame_index)])
