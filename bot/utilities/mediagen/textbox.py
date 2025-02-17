@@ -1,24 +1,31 @@
 import io
+from pathlib import Path
 import textwrap
+from enum import Enum
 from datetime import datetime
 from interactions import File
-from utilities.misc import get_image
+from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
 
+from utilities.textbox.characters import Face
 
-async def generate_dialogue(
+class Styles(Enum):
+	NORMAL_LEFT: int = 0
+	NORMAL_RIGHT: int = 1
+
+async def render_textbox(
     text: str,
-    icon_url: str,
+    face: Face,
     animated: bool = False,
     filename: str = f"{datetime.now()}-textbox",
     alt_text: str = None
 ) -> File:
-	img = Image.open("bot/data/images/textbox/niko-background.png")
-	icon = await get_image(url=icon_url)
+	img = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
+	icon = await face.get_image(size=96)
 	icon = icon.resize((96, 96))
 
-	fnt = ImageFont.truetype(get_config("textbox.font"), 20)
+	fnt = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text_x, text_y = 20, 17
 	img_buffer = io.BytesIO()
 	frames = []
@@ -55,4 +62,4 @@ async def generate_dialogue(
 		filename = f"{filename}.png"
 
 	img_buffer.seek(0)
-	return File(file=img_buffer, file_name=filename, description=alt_text if alt_text is not None else text)
+	return File(file=img_buffer, file_name=filename, description=alt_text if alt_text else text)

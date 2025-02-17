@@ -62,3 +62,4 @@ music: # deprecated
 textbox:
   font: "bot/data/fonts/TerminusTTF-Bold.ttf"
   frame-limit: 50
+  max-text-length-per-frame: 1423

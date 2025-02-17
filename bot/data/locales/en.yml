@@ -779,40 +779,84 @@ nikogotchi:
 # ---------------------------------------------------------------
 
 textbox:
+  errors:
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    unknown_frame: "Frame №[index] not found. Total frames: [total]"
+    invalid_character: The character "[character_name]" is not real
+    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    
+  placeholder_text: 'Hello! You can make me say things with the "Edit Text" button'
+  filetypes:
+    gif: GIF
+    webp: WEBP
+    apng: APNG
+    
+    png: PNG
+    jpg: JPG
+
   button: 
-    generate: Generate
+    render: Render [type]
+    render&send: Render [type] & Send
+    text: Edit Text
+    labels: Show Labels
+    next: Next Frame
+    previous: Previous Frame
+    manual_frame: Input Frame
+    
 
   select:
     chars: Characters...
     faces: Faces...
 
+  modal:
+    edit_text:
+      title: Enter text for frame №[index]!
+      input: 
+        label: Text
+        placeholder: Enter the text...
+      response: > 
+        Text changed!
+
+        New text: [new_text]
+
+        Old text: [old_text]
+
   monologue:
     char: "[ Pick a character for the textbox ]"
     face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
     press: "[ Press the green button whenever you're ready ]"
-    generating: "[ Generating image... [emoji:loading] ]"
+    rendering: "[ Rendering image... [emoji:loading] ]"
     uploading: "[ Uploading image... [emoji:loading] ]"
-    done: "[ Done [debug] ]"
+    done: "[ Done ]"
 
-    debug: "(Took: [time], Sid: **[sid]**)" # TODO: unused
+    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
 
   single:
     alt: 
       character:
         left: "A textbox similar to the one's in OneShot. On the left of it is an icon of [character] with the [face] expression."
         right: "A textbox similar to the one's in OneShot. On the right of it is an icon of [character] with the [face] expression."
+      avatar: 
+        left: "A textbox similar to the one's in OneShot. On the left of it is the avatar of [username]."
+        right: "A textbox similar to the one's in OneShot. On the right of it is the avatar of [username]."
       other: 
-          left: "A textbox similar to the one's in OneShot. On the left of it is an icon of [character] with the [face] expression."
-          right: "A textbox similar to the one's in OneShot. On the right of it is an icon of [character] with the [face] expression."
-      # you may also still use any of the variables from above, if your language requires some rewording
+        left: "A textbox similar to the one's in OneShot. On the left of it is [name]."
+        right: "A textbox similar to the one's in OneShot. On the right of it is the avatar of [name]."
+
       cont: "[alt]. The text says: [text]"
-    name: "TWM textbox ([character]-[face]-[timestamp]-[userid])"
+      cont_silly: "[alt]. There is no text. Uh"
+    name: "TWM textbox ([character];[face];[timestamp];[userid])"
   
-  multi:
+  multi: # TODO: unused
     alt: 
-      cutoff: "Notice, this text has been truncated to fit within Discord's limitations."
-      beginning: "A GIF of OneShot characters talking, that uses textboxes similar to the one's in OneShot. [frames]"
-      other: "A GIF of some characters talking, that uses textboxes similar to the one's in OneShot. [frames]"
+      beginning: "Characters talking, in textboxes similar to those in OneShot. [frames]"
       
       frame: '[character] ([face]) says: "[text]"'
     name: "TWM textbox ([frame]-[timestamp]-[userid])"

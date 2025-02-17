@@ -4,9 +4,9 @@ import aiohttp
 import datetime
 import subprocess
 from PIL import Image
-from io import BytesIO
+import io
 from typing import Union, Optional
-from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption
+from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
 
 class FrozenDict(dict):
@@ -57,22 +57,28 @@ class StupidError(Exception):
 	...
 
 
-_yac: dict[str, Image.Image] = {}
+_yac: dict[str, io.BytesIO] = {}
 
 
-async def get_image(url: str) -> Image.Image:
-	if url in _yac:
-		return Image.open(_yac[url])
+async def cached_get(loc: str | Path, force: bool = False) -> io.BytesIO:
+	if not force and str(loc) in _yac:
+		return _yac[str(loc)]
+
+	if Path(loc).is_file():
+		file_bytes = open(loc, 'rb').read()
+
+		_yac[str(loc)] = io.BytesIO(file_bytes)
+		return _yac[str(loc)]
 
 	async with aiohttp.ClientSession() as session:
-		async with session.get(url) as resp:
+		async with session.get(loc) as resp:
 			if resp.status == 200:
-				file = BytesIO(await resp.read())
+				file = io.BytesIO(await resp.read())
 
-				_yac[url] = file
-				return Image.open(_yac[url])
+				_yac[loc] = file
+				return _yac[loc]
 			else:
-				raise ValueError(f"{resp.status} Discord cdn shittig!!")
+				raise ValueError(f"{resp.status} website shittig!!")
 
 
 def rabbit(
@@ -148,7 +154,8 @@ def rabbit(
 			if value == None:
 				raise KeyError(f"{key} not found")
 			if len(parsed_path) > len(went_through) + 1:
-				if not isinstance(value, (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
+				if not isinstance(value,
+				                  (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
 					error_msg = f"expected nested structure, found {type(value).__name__}"
 					if not fallback_value and not simple_error:
 						error_msg += f", no fallback passed"
@@ -190,7 +197,9 @@ def rabbit(
 
 
 def exec(command: list) -> str:
-	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout  # TODO: eror handling
+	return subprocess.run(
+	    command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+	).stdout  # TODO: eror handling
 
 
 def shell(command: str) -> str:
@@ -208,7 +217,12 @@ def get_current_branch() -> str:
 async def set_status(client: Client, text: str | list):
 	from utilities.localization import assign_variables
 	if text is not None:
-		status = assign_variables(input=text, shard_count=1 if not hasattr(client, "shards") else len(client.shards), guild_count=len(client.guilds), token=client.token)
+		status = assign_variables(
+		    input=text,
+		    shard_count=1 if not hasattr(client, "shards") else len(client.shards),
+		    guild_count=len(client.guilds),
+		    token=client.token
+		)
 	await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
 	return status
 
@@ -218,4 +232,10 @@ async def set_avatar(client: Client, avatar: File | Path | str):
 
 
 def make_empty_select(loc, placeholder: str = None):
-	return StringSelectMenu(*[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True)
+	return StringSelectMenu(
+	    *[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True
+	)
+
+
+def pretty_user(user: User):
+	return f"({user.username}) {user.display_name}" if user.display_name != user.username else user.username

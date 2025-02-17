@@ -1,13 +1,13 @@
 import io
 import textwrap
-from interactions import File, User
 from termcolor import colored
-from utilities.misc import get_image
-from utilities.config import debugging, get_config
+from interactions import File, User
 from utilities.message_decorations import Colors
+from utilities.misc import cached_get, pretty_user
+from utilities.config import debugging, get_config
 from utilities.localization import Localization, fnum
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 from utilities.shop.fetch_items import fetch_background, fetch_badge
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 
 import utilities.database.main as db
 
@@ -46,7 +46,9 @@ async def load_profile_assets():
 
 	for _, badge in badges.items():
 		badge
-		img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
+		img = Image.open(
+		    await cached_get(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless')
+		)
 		img = img.convert('RGBA')
 		img = img.resize((35, 35), Image.NEAREST)
 		if debugging():
@@ -54,11 +56,11 @@ async def load_profile_assets():
 		icons.append(img)
 		assets += 1
 
-	wool_icon = await get_image('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+	wool_icon = await cached_get('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
 	if debugging():
 		print(f"| Wool icon")
 	assets += 1
-	sun_icon = await get_image('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
+	sun_icon = await cached_get('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
 	if debugging():
 		print(f"| Sun icon")
 	assets += 1
@@ -87,7 +89,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 	title = loc.l("profile.view.image.title", username=user.display_name)
 
 	backgrounds = await fetch_background()
-	image = await get_image(backgrounds[user_data.equipped_bg]['image'])
+	image = await cached_get(backgrounds[user_data.equipped_bg]['image'])
 
 	base_profile = ImageDraw.Draw(image, "RGBA")
 
@@ -95,20 +97,26 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 	if len(user_data.profile_description) > 0:
 		# textwrap.fill makes it so the text doesn't overflow out of the image
 		base_profile.text(
-		    (210, 140), textwrap.fill(user_data.profile_description, 35), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex, align='center'
+		    (210, 140),
+		    textwrap.fill(user_data.profile_description, 35),
+		    font=font,
+		    fill=(255, 255, 255),
+		    stroke_width=2,
+		    stroke_fill=Colors.BLACK.hex,
+		    align='center'
 		)
 
-	init_x = 60       # Start with the first column (adjust as needed)
-	init_y = 310      # Start with the first row (adjust as needed)
+	init_x = 60  # Start with the first column (adjust as needed)
+	init_y = 310  # Start with the first row (adjust as needed)
 
-	x = init_x   # x position of Stamp
-	y = init_y   # y position of Stamp
+	x = init_x  # x position of Stamp
+	y = init_y  # y position of Stamp
 
 	x_increment = 45  # How much to move to the next column
 	y_increment = 50  # How much to move down to the next row
 
-	current_row = 0    # Keep track of the current row
-	current_column = 1 # Keep track of the current column
+	current_row = 0  # Keep track of the current row
+	current_column = 1  # Keep track of the current column
 
 	badge_keys = list(badges.keys())
 
@@ -123,12 +131,12 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 
 		image.paste(icon, (x, y), icon)
 
-		x += x_increment # Move to the next column
+		x += x_increment  # Move to the next column
 
 		# If we have reached the end of a row
 		if (i + 1) % 5 == 0:
-			x = init_x       # Reset to the first column
-			y += y_increment # Move to the next row
+			x = init_x  # Reset to the first column
+			y += y_increment  # Move to the next row
 			current_row += 1
 
 		# If we have displayed all the rows, start the next one.
@@ -142,18 +150,39 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 			current_row = 0
 
 	base_profile.text(
-	    (648, 70), f'{fnum(user_data.wool, locale=loc.locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2, stroke_fill=Colors.BLACK.hex
+	    (648, 70),
+	    f'{fnum(user_data.wool, locale=loc.locale)} x',
+	    font=font,
+	    fill=(255, 255, 255),
+	    anchor='rt',
+	    align='right',
+	    stroke_width=2,
+	    stroke_fill=Colors.BLACK.hex
 	)
 	image.paste(wool_icon, (659, 63), wool_icon.convert('RGBA'))
 
 	base_profile.text(
-	    (648, 32), f'{fnum(user_data.suns, locale=loc.locale)} x', font=font, fill=(255, 255, 255), anchor='rt', align='right', stroke_width=2, stroke_fill=Colors.BLACK.hex
+	    (648, 32),
+	    f'{fnum(user_data.suns, locale=loc.locale)} x',
+	    font=font,
+	    fill=(255, 255, 255),
+	    anchor='rt',
+	    align='right',
+	    stroke_width=2,
+	    stroke_fill=Colors.BLACK.hex
 	)
 	image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
 
-	base_profile.text((42, 251), loc.l("profile.view.image.unlocked.stamps", username=user.username), font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=Colors.BLACK.hex)
+	base_profile.text(
+	    (42, 251),
+	    loc.l("profile.view.image.unlocked.stamps", username=user.username),
+	    font=font,
+	    fill=(255, 255, 255),
+	    stroke_width=2,
+	    stroke_fill=Colors.BLACK.hex
+	)
 
-	pfp = await get_image(user_pfp_url)
+	pfp = await cached_get(user_pfp_url)
 	frames = []
 	if animated:
 		for pfp_frame in ImageSequence.Iterator(pfp):
@@ -174,7 +203,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 	img_buffer.seek(0)
 
 	# TODO: move this out of here sometime
-	username = f"({user.username}) {user.display_name}" if user.display_name != user.username else user.username
+	username = pretty_user(user)
 
 	alt = alt if alt is not None else loc.l(
 	    "profile.view.image.alt_nodescription",
