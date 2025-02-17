@@ -21,16 +21,26 @@ class ExplodeCommands(Extension):
 	last_called = {}
 
 	@slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
+	@slash_option(
+	    description="Whether you want the response to be visible for others in the channel",
+	    name="public",
+	    opt_type=OptionType.BOOLEAN
+	)
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
-	async def explode(self, ctx: SlashContext):
+	async def explode(self, ctx: SlashContext, public=True):
 		loc = Localization(ctx.locale)
 		uid = ctx.user.id
 		explosion_amount = (await UserData(uid).fetch()).times_shattered
 		if uid in self.last_called:
 			if datetime.datetime.now() < self.last_called[uid]:
-				return await fancy_message(ctx, loc.l("general.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])), ephemeral=True, color=Colors.RED)
-
+				return await fancy_message(
+				    ctx,
+				    loc.l("general.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
+				    ephemeral=True,
+				    color=Colors.RED
+				)
+		await ctx.defer(ephemeral=not public)
 		self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(seconds=20)
 
 		random_number = random.randint(1, len(self.explosion_image)) - 1
