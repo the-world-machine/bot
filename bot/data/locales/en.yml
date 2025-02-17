@@ -791,7 +791,6 @@ textbox:
     invalid_face: The face "[face_name]" is not real for "[character_name]"
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
     
-  placeholder_text: 'Hello! You can make me say things with the "Edit Text" button'
   filetypes:
     gif: GIF
     webp: WEBP
@@ -803,23 +802,29 @@ textbox:
   button: 
     render: Render [type]
     render&send: Render [type] & Send
-    text: Edit Text
-    labels: Show Labels
-    next: Next Frame
-    previous: Previous Frame
-    manual_frame: Input Frame
-    
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+  
+  frame_position: ([current]/[total])
+
 
   select:
     chars: Characters...
     faces: Faces...
+    styles: Styles...
 
   modal:
     edit_text:
-      title: Enter text for frame №[index]!
+      title: "Editing text for frame #[index]!"
       input: 
         label: Text
-        placeholder: Enter the text...
+        placeholder: Text goes here i think
       response: > 
         Text changed!
 
@@ -852,11 +857,12 @@ textbox:
 
       cont: "[alt]. The text says: [text]"
       cont_silly: "[alt]. There is no text. Uh"
-    name: "TWM textbox ([character];[face];[timestamp];[userid])"
+      empty: "An empty textbox similar to the one's in OneShot."
+    name: "TWM textbox ([character].[face].[timestamp])"
   
   multi: # TODO: unused
     alt: 
       beginning: "Characters talking, in textboxes similar to those in OneShot. [frames]"
       
       frame: '[character] ([face]) says: "[text]"'
-    name: "TWM textbox ([frame]-[timestamp]-[userid])"
+    name: "TWM textbox ([frame].[timestamp])"

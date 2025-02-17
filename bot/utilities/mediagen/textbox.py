@@ -1,49 +1,91 @@
+import builtins
 import io
 from pathlib import Path
 import textwrap
 from enum import Enum
 from datetime import datetime
+from typing import Literal
 from interactions import File
 from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
 
-from utilities.textbox.characters import Face
+from utilities.textbox.characters import Character, Face
+
 
 class Styles(Enum):
 	NORMAL_LEFT: int = 0
 	NORMAL_RIGHT: int = 1
 
+
+class Frame:
+	style: Styles = Styles.NORMAL_RIGHT
+
+	animated: bool = False
+	text: str | None
+	character_id: Character | None
+	face_name: Face | None
+	speed: float = 1.00
+
+	def check(self):
+		return self.character_id is not None and self.face_name is not None
+
+	def __init__(
+	    self,
+	    style: Literal[0, 1] = 1,
+	    animated: bool = False,
+	    text: str | None = None,
+	    character_id: str | None = None,
+	    face_name: str | None = None,
+	    speed: float = 1.00
+	):
+		self.style = style
+		self.text = text
+		self.animated = animated
+		self.character_id = character_id
+		self.face_name = face_name
+		if speed < 0.01:
+			raise ValueError("Speed must be above 0.01")
+		self.speed = speed
+
+	def __repr__(self):
+		return f"Frame(character={self.character_id}, face={self.face_name}, speed={self.speed})"
+
+
 async def render_textbox(
-    text: str,
-    face: Face,
+    text: str | None,
+    face: Face | None,
     animated: bool = False,
     filename: str = f"{datetime.now()}-textbox",
     alt_text: str = None
 ) -> File:
-	img = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
-	icon = await face.get_image(size=96)
-	icon = icon.resize((96, 96))
+	background = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
+	if text:
+		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
+	if face:
+		icon = await face.get_image(size=96)
+		icon = icon.resize((96, 96))
 
-	fnt = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text_x, text_y = 20, 17
 	img_buffer = io.BytesIO()
 	frames = []
 
-	def draw_frame(img, text_content):
-		d = ImageDraw.Draw(img)
-		y_offset = text_y
-		for line in textwrap.wrap(text_content, width=46):
-			d.text((text_x, y_offset), line, font=fnt, fill=(255, 255, 255))
-			y_offset += 25
-		img.paste(icon, (496, 16), icon.convert('RGBA'))
+	def draw_frame(img, text):
+		if text:
+			d = ImageDraw.Draw(img)
+			y_offset = text_y
+			for line in textwrap.wrap(text, width=46):
+				d.text((text_x, y_offset), line, font=font, fill=(255, 255, 255))
+				y_offset += 25
+		if face:
+			img.paste(icon, (496, 16), icon.convert('RGBA'))
 		return img
 
-	if animated:
+	if text and animated:
 		cumulative_text = ""
 		for char in text:
 			cumulative_text += char
-			frame_img = draw_frame(img.copy(), cumulative_text)
+			frame_img = draw_frame(background.copy(), cumulative_text)
 			match char:
 				case '.' | '!' | '?':
 					frame_delay = 10
@@ -57,7 +99,7 @@ async def render_textbox(
 		frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames, duration=40)
 		filename = f"{filename}.gif"
 	else:
-		final_frame = draw_frame(img, text)
+		final_frame = draw_frame(background, text)
 		final_frame.save(img_buffer, format="PNG")
 		filename = f"{filename}.png"
 

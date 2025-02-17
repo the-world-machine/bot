@@ -1,3 +1,6 @@
+styles:
+  - "Normal, face on the Left"
+  - "Normal, face on the Right"
 Niko:
   localized: Niko
   faces:

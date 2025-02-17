@@ -42,7 +42,7 @@ class TextboxCommands(Extension):
 
 	@staticmethod
 	def make_characters_select_menu(
-	    loc: Localization = Localization(), default: str = None, custom_id: str = "textbox update_char -1"
+	    loc: Localization = Localization(), default: str = None, custom_id: str = "textbox update_char 0"
 	):
 		characters = get_characters()
 
@@ -66,7 +66,7 @@ class TextboxCommands(Extension):
 	def make_faces_select_menu(
 	    loc: Localization = Localization(),
 	    character_id: str = None,
-	    custom_id: str = "textbox update_face 0 -1",
+	    custom_id: str = "textbox update_face 0 0",
 	    default: str = None
 	):
 		try:
@@ -82,6 +82,27 @@ class TextboxCommands(Extension):
 			    label=name, value=name
 			)  # TODO: label=Localization(in=LocPaths.Textboxes, "{id}.faces.{name}")
 			option.emoji = face.get_icon_emoji()
+			if not dedup and default == name:
+				option.default = True
+			if len(select.options) > 24:
+				return select
+			select.options.append(option)
+
+		return select
+
+	@staticmethod
+	def make_styles_select_menu(
+	    loc: Localization = Localization(),
+	    custom_id: str = "textbox update_style 0 0",
+	    default: str = None
+	):
+		select = StringSelectMenu(custom_id=custom_id, placeholder=loc.l("textbox.select.styles"))
+
+		dedup = False
+		for name, key in Styles.__dict__["_member_map_"].items():
+			option = StringSelectOption(
+			    label=name, value=name
+			)  # TODO: label=Localization(in=LocPaths.Textboxes, "{id}.faces.{name}")
 			if not dedup and default == name:
 				option.default = True
 			if len(select.options) > 24:
@@ -207,15 +228,13 @@ class TextboxCommands(Extension):
 			raise e
 		try:
 			frame_data: Frame = state.frames[int(frame_index)]
-		except IndexError as e:
-			await fancy_message(
-			    ctx, loc.l("textbox.errors.unknown_frame", index=int(frame_index) + 1, total=len(state.frames))
-			)
-			raise e
+		except KeyError as e:
+			frame_data = Frame(character_id=state.frames[int(frame_index)-1].character_id)
+			state.frames[int(frame_index)] = frame_data
 		return (state, frame_data)
 
 	handle_components_regex = re.compile(
-	    r"textbox (?P<method>render|update_(char|face|style|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
+	    r"textbox (?P<method>refresh|render|update_(char|face|style|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
 	)
 
 	@component_callback(handle_components_regex)
@@ -240,30 +259,38 @@ class TextboxCommands(Extension):
 			case "update_animated":
 				frame_data.animated = not frame_data.animated
 			case "render":
+				pos = ""
+				if len(state.frames) > 0:
+					pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
 				await ctx.edit_origin(
-				    embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE)
+				    embed=Embed(description=loc.l("textbox.monologue.rendering")+pos, color=Colors.DARKER_WHITE)
 				)
 				file = await self.make_frame(ctx, state.frames[int(frame_index)])
 				asyncio.create_task(
-				    ctx.edit(embed=Embed(description=loc.l("textbox.monologue.uploading"), color=Colors.DARKER_WHITE))
+				    ctx.edit(embed=Embed(description=loc.l("textbox.monologue.uploading")+pos, color=Colors.DARKER_WHITE))
 				)
 				await ctx.edit(files=file)
 
-				return await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.done"), color=Colors.DEFAULT))
+				return await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.done")+pos, color=Colors.DEFAULT))
 
 		await self.respond(ctx, state_id, frame_index)
 
 	async def make_frame(self, ctx: ComponentContext|SlashContext, frame: Frame, preview: bool = False):
 		loc = Localization(ctx.locale)
-		char = get_character(frame.character_id)
-		face = char.get_face(frame.face_name)
+		char = None
+		face = None
+		if frame.character_id:
+			char = get_character(frame.character_id)
+		if char and frame.face_name:
+			face = char.get_face(frame.face_name)
 
-		if frame.face_name == 'Your Avatar':
-			await face.set_custom_icon(ctx.author.avatar.url)
+			if frame.face_name == 'Your Avatar':
+				await face.set_custom_icon(ctx.author.avatar.url)
 
 		filename = loc.l("textbox.single.name", character=frame.character_id, face=frame.face_name,timestamp=datetime.now().timestamp())
+
 		alt_text = \
-		loc.l(f"textbox.single.alt.{ \
+		loc.l("textbox.single.alt.empty" if not face and not frame.text else f"textbox.single.alt.{ \
 			"avatar" if frame.face_name == "Your Avatar" \
 			else "other" if frame.character_id == "Other" \
 			else "character" \
@@ -276,54 +303,64 @@ class TextboxCommands(Extension):
 				name=frame.face_name
 		)# yapf: ignore
 			
-		text = frame.text
-		alt_text = loc.l(f'textbox.single.alt.{"cont" if text else "cont_silly"}', text=text, alt=alt_text)  
-		if not text:
-			text = loc.l("textbox.placeholder_text")
-		return await render_textbox(text, face, not preview if preview else frame.animated, filename, alt_text)
+		alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
+		return await render_textbox(frame.text, face, not preview if preview else frame.animated, filename, alt_text)
 
 	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int):
 		loc = Localization(ctx.locale)
 		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
 
-		files = []
-		if state.frames[int(frame_index)].check():
-			files.append(await self.make_frame(ctx, state.frames[int(frame_index)], preview=True))
+		files = [await self.make_frame(ctx, state.frames[int(frame_index)], preview=True)]
+		pos = ""
+		if len(state.frames) > 0:
+			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
+		next_frame_exists = len(state.frames) != int(frame_index)+1
+		print(state)
 		embed = Embed(
 		    color=Colors.DEFAULT,
-		    description=loc.l("textbox.monologue.char")
+		    description=(loc.l("textbox.monologue.char")
 		    if frame_data.character_id is None else loc.l("textbox.monologue.face") if frame_data.face_name is None else
-		    loc.l("textbox.monologue.press") if frame_data.text else loc.l("textbox.monologue.press_notext")
+		    loc.l("textbox.monologue.press") if frame_data.text else loc.l("textbox.monologue.press_notext"))+pos
 		)
 		components = [
-		    ActionRow(
-		        self.make_characters_select_menu(
-		            loc, custom_id=f"textbox update_char {state_id} {frame_index}", default=frame_data.character_id
-		        )
-		    ),
-		    ActionRow(
-		        make_empty_select(loc, placeholder=loc.l("textbox.select.faces"))
-		        if frame_data.face_name is None and frame_data.character_id is None else self.make_faces_select_menu(
-		            loc,
-		            custom_id=f"textbox update_face {state_id} {frame_index}",
-		            character_id=frame_data.character_id,
-		            default=frame_data.face_name
-		        )
-		    ),
-		    ActionRow(
-		        Button(
-		            style=ButtonStyle.GRAY,
-		            label=loc.l("textbox.button.text"),
-		            custom_id=f"textbox update_text {state_id} {frame_index}",
-		            disabled=not state
-		        ),
-		        Button(
-		            style=ButtonStyle.GREEN,
-		            label=loc.l("textbox.button.render", type=loc.l(f"textbox.filetypes.{state.filetype}")),
-		            custom_id=f"textbox render {state_id} 0",
-		            disabled=not state.ready()
-		        )
-		    )
+			ActionRow(
+				self.make_characters_select_menu(
+					loc, custom_id=f"textbox update_char {state_id} {frame_index}", default=frame_data.character_id
+				)
+			),
+			ActionRow(
+				make_empty_select(loc, placeholder=loc.l("textbox.select.faces"))
+				if frame_data.face_name is None and frame_data.character_id is None else self.make_faces_select_menu(
+					loc,
+					custom_id=f"textbox update_face {state_id} {frame_index}",
+					character_id=frame_data.character_id,
+					default=frame_data.face_name
+				)
+			),
+			ActionRow(
+				Button(
+					style=ButtonStyle.GRAY,
+					label=loc.l("textbox.button.frame.previous"),
+					custom_id=f"textbox refresh {state_id} {int(frame_index)-1}",
+					disabled=int(frame_index) - 1 < 0
+				),
+				Button(
+					style=ButtonStyle.GREEN if frame_data.text else ButtonStyle.GRAY,
+					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
+					custom_id=f"textbox update_text {state_id} {frame_index}"
+				),
+				Button(
+					style=ButtonStyle.GREEN,
+					label=loc.l("textbox.button.render", type=loc.l(f"textbox.filetypes.{state.filetype}")),
+					custom_id=f"textbox render {state_id} {frame_index}",
+					disabled=not state.ready()
+				),
+				Button(
+					style=ButtonStyle.GRAY,
+					label=loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
+					custom_id=f"textbox refresh {state_id} {int(frame_index)+1}"
+				),
+			)
 		]
 
 		if isinstance(ctx, ComponentContext):
@@ -340,11 +377,13 @@ class TextboxCommands(Extension):
 		loc = Localization(ctx.locale)
 		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
 		modal = Modal(
-		    ShortText(
+		    ParagraphText(
 		        custom_id='new_text',
+						required=False,
 		        value=frame_data.text,
 		        label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
 		        placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
+						min_length=0,
 		        max_length=get_config("textbox.max-text-length-per-frame")
 		    ),
 		    custom_id=f'textbox update_text_finish {state_id} {frame_index}',
