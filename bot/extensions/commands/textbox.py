@@ -209,7 +209,7 @@ class TextboxCommands(Extension):
 		)
 
 		if send and state.ready():
-			await ctx.send(embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE))
+			await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE))
 			start=datetime.now()
 			file = await self.make_frame(ctx, state.frames[0])
 			end=datetime.now()
@@ -274,7 +274,7 @@ class TextboxCommands(Extension):
 			case "update_animated":
 				frame_data.animated = not frame_data.animated
 			case "render":
-				await ctx.edit_origin(
+				await ctx.edit(
 				    embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE)
 				)
 				file = await self.make_frame(ctx, state.frames[int(frame_index)])
