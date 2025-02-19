@@ -800,8 +800,10 @@ textbox:
     jpg: JPG
 
   button: 
-    render: Render [type]
-    render&send: Render [type] & Send
+    render:
+      full: Render [type]
+      frame: Render Frame
+      send: Render [type] & Send
     text:
       edit: Edit Text
       add: Add Text
@@ -862,7 +864,7 @@ textbox:
   
   multi: # TODO: unused
     alt: 
-      beginning: "Characters talking, in textboxes similar to those in OneShot. [frames]"
+      beginning: "Dialogue of characters talking, in textboxes similar to those in OneShot. [frames]"
       
       frame: '[character] ([face]) says: "[text]"'
     name: "TWM textbox ([frame].[timestamp])"

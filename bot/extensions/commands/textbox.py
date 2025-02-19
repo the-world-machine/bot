@@ -5,7 +5,7 @@ from typing import Literal
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.emojis import emojis
-from utilities.mediagen.textbox import Frame, Styles, render_textbox
+from utilities.mediagen.textbox import Frame, Styles, render_frame
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import make_empty_select, pretty_user
@@ -198,7 +198,7 @@ class TextboxCommands(Extension):
 		if send and state.ready():
 			await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE))
 			start=datetime.now()
-			file = await self.make_frame(ctx, state.frames[0])
+			file = await self.render(ctx, state, frame_index=0)
 			end=datetime.now()
 			took=start-end
 			asyncio.create_task(
@@ -265,7 +265,7 @@ class TextboxCommands(Extension):
 				await ctx.edit_origin(
 				    embed=Embed(description=loc.l("textbox.monologue.rendering")+pos, color=Colors.DARKER_WHITE)
 				)
-				file = await self.make_frame(ctx, state.frames[int(frame_index)])
+				file = await self.render(ctx, state)
 				asyncio.create_task(
 				    ctx.edit(embed=Embed(description=loc.l("textbox.monologue.uploading")+pos, color=Colors.DARKER_WHITE))
 				)
@@ -275,8 +275,10 @@ class TextboxCommands(Extension):
 
 		await self.respond(ctx, state_id, frame_index)
 
-	async def make_frame(self, ctx: ComponentContext|SlashContext, frame: Frame, preview: bool = False):
+	async def render(self, ctx: ComponentContext|SlashContext, state: State, frame_index: int = 0, preview: bool = False):
 		loc = Localization(ctx.locale)
+		# TODO: replace with check for multiple frames
+		frame = state.frames[int(frame_index)]
 		char = None
 		face = None
 		if frame.character_id:
@@ -302,15 +304,59 @@ class TextboxCommands(Extension):
 				username=pretty_user(ctx.author), 
 				name=frame.face_name
 		)# yapf: ignore
-			
-		alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
-		return await render_textbox(frame.text, face, not preview if preview else frame.animated, filename, alt_text)
+
+		if frame.face_name:
+			alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
+
+		render = await render_frame(frame.text, face, False if preview else frame.animated)
+		if frame.text and frame.animated:
+			filename = f"{filename}.gif"
+		else:
+			filename = f"{filename}.png"
+		return File(file=render, file_name=filename, description=alt_text if alt_text else frame.text)
+
+	async def init_update_text_flow(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: str):
+		loc = Localization(ctx.locale)
+		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
+		modal = Modal(
+		    ParagraphText(
+		        custom_id='new_text',
+						required=False,
+		        value=frame_data.text,
+		        label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
+		        placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
+						min_length=0,
+		        max_length=get_config("textbox.max-text-length-per-frame")
+		    ),
+		    custom_id=f'textbox update_text_finish {state_id} {frame_index}',
+		    title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
+		)
+		await ctx.send_modal(modal)
+
+	handle_modal_regex = re.compile(r"textbox update_text_finish (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$")
+
+	@modal_callback(handle_modal_regex)
+	async def handle_modals(self, ctx: ModalContext, new_text: str):
+		loc = Localization(ctx.locale)
+
+		match = self.handle_modal_regex.match(ctx.custom_id)
+		if len(match.groups()) < 2:
+			return ctx.edit_origin()
+		state_id, frame_index = match.group("state_id", "frame_index")
+		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
+		old_text = frame_data.text
+		frame_data.text = new_text
+		if debugging():
+			await fancy_message(
+					ctx, loc.l('textbox.modal.edit_text.response', new_text=new_text, old_text=old_text), ephemeral=True
+			)
+		await self.respond(ctx, state_id, frame_index)
 
 	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int):
 		loc = Localization(ctx.locale)
 		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
 
-		files = [await self.make_frame(ctx, state.frames[int(frame_index)], preview=True)]
+		files = [await self.render(ctx, state, frame_index=frame_index, preview=True)]
 		pos = ""
 		if len(state.frames) > 0:
 			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
@@ -351,9 +397,9 @@ class TextboxCommands(Extension):
 				),
 				Button(
 					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.render", type=loc.l(f"textbox.filetypes.{state.filetype}")),
+					label=loc.l("textbox.button.render.frame", type=loc.l(f"textbox.filetypes.{state.filetype}")),
 					custom_id=f"textbox render {state_id} {frame_index}",
-					disabled=not state.ready()
+					disabled=not state.frames[int(frame_index)].check()
 				),
 				Button(
 					style=ButtonStyle.GRAY,
@@ -372,40 +418,3 @@ class TextboxCommands(Extension):
 			    components=components,
 			    files=files
 			)
-
-	async def init_update_text_flow(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: str):
-		loc = Localization(ctx.locale)
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
-		modal = Modal(
-		    ParagraphText(
-		        custom_id='new_text',
-						required=False,
-		        value=frame_data.text,
-		        label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
-		        placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
-						min_length=0,
-		        max_length=get_config("textbox.max-text-length-per-frame")
-		    ),
-		    custom_id=f'textbox update_text_finish {state_id} {frame_index}',
-		    title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
-		)
-		await ctx.send_modal(modal)
-
-	handle_modal_regex = re.compile(r"textbox update_text_finish (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$")
-
-	@modal_callback(handle_modal_regex)
-	async def handle_modals(self, ctx: ModalContext, new_text: str):
-		loc = Localization(ctx.locale)
-
-		match = self.handle_modal_regex.match(ctx.custom_id)
-		if len(match.groups()) < 2:
-			return ctx.edit_origin()
-		state_id, frame_index = match.group("state_id", "frame_index")
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
-		old_text = frame_data.text
-		frame_data.text = new_text
-		if debugging():
-			await fancy_message(
-					ctx, loc.l('textbox.modal.edit_text.response', new_text=new_text, old_text=old_text), ephemeral=True
-			)
-		await self.respond(ctx, state_id, frame_index)

@@ -18,6 +18,8 @@ aioconsole = "*"
 aiofiles = "*"
 pillow = "*"
 psutil = "*"
+opencv-contrib-python-headless = "*"
+numpy = "*"
 
 [dev-packages]
 yapf = "*"

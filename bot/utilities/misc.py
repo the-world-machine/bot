@@ -1,11 +1,14 @@
+import io
 import copy
-from pathlib import Path
+import numpy
+import aiofiles
 import aiohttp
 import datetime
 import subprocess
 from PIL import Image
-import io
-from typing import Union, Optional
+from pathlib import Path
+from numpy.typing import NDArray
+from typing import Literal, Union, Optional
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
 
@@ -57,29 +60,52 @@ class StupidError(Exception):
 	...
 
 
-_yac: dict[str, io.BytesIO] = {}
+def _convert(bytes: bytes, to: Literal["numpy_buffer", "bytesio"]) -> NDArray[numpy.float64] | str | io.BytesIO:
+	match to:
+		case "numpy_buffer":
+			return numpy.frombuffer(bytes, dtype=numpy.uint8)
+		case "bytesio":
+			return io.BytesIO(bytes)
 
 
-async def cached_get(loc: str | Path, force: bool = False) -> io.BytesIO:
-	if not force and str(loc) in _yac:
-		return _yac[str(loc)]
+class InvalidResponseError(Exception):
+	...
 
-	if Path(loc).is_file():
-		file_bytes = open(loc, 'rb').read()
 
-		_yac[str(loc)] = io.BytesIO(file_bytes)
-		return _yac[str(loc)]
-
+async def fetch(url: str):
 	async with aiohttp.ClientSession() as session:
-		async with session.get(loc) as resp:
-			if resp.status == 200:
-				file = io.BytesIO(await resp.read())
-
-				_yac[loc] = file
-				return _yac[loc]
+		async with session.get(url) as resp:
+			if 200 <= resp.status < 300:
+				return await resp.read()
 			else:
-				raise ValueError(f"{resp.status} website shittig!!")
+				raise InvalidResponseError(f"{resp.status} website shittig!!")
 
+
+async def read_file(path: Path):
+	async with aiofiles.open(path, "rb") as f:
+		return await f.read()
+
+
+cache: dict[str, bytes] = {}
+
+
+async def cached_get(
+    location: str | Path,
+    force: bool = False,
+    convert: Literal["numpy_buffer", "bytesio", "nop"] = "bytesio"
+) -> NDArray[numpy.float64] | str | io.BytesIO | bytes:
+	loki = str(location)
+	is_file = Path(location).is_file()
+	if is_file:
+		location = Path(location).absolute()
+
+	if force or loki not in cache:
+		cache[loki] = await read_file(location) if is_file else await fetch(loki)
+
+	if convert == "nop":
+		return cache[loki]
+
+	return _convert(cache[loki], to=convert)
 
 def rabbit(
     value: dict,

@@ -25,7 +25,6 @@ class Frame:
 	text: str | None
 	character_id: Character | None
 	face_name: Face | None
-	speed: float = 1.00
 
 	def check(self):
 		return self.character_id is not None and self.face_name is not None
@@ -36,29 +35,19 @@ class Frame:
 	    animated: bool = False,
 	    text: str | None = None,
 	    character_id: str | None = None,
-	    face_name: str | None = None,
-	    speed: float = 1.00
+	    face_name: str | None = None
 	):
 		self.style = style
 		self.text = text
 		self.animated = animated
 		self.character_id = character_id
 		self.face_name = face_name
-		if speed < 0.01:
-			raise ValueError("Speed must be above 0.01")
-		self.speed = speed
 
 	def __repr__(self):
-		return f"Frame(character={self.character_id}, face={self.face_name}, speed={self.speed})"
+		return f"Frame(character={self.character_id}, face={self.face_name})"
 
 
-async def render_textbox(
-    text: str | None,
-    face: Face | None,
-    animated: bool = False,
-    filename: str = f"{datetime.now()}-textbox",
-    alt_text: str = None
-) -> File:
+async def render_frame(text: str | None, face: Face | None, animated: bool = False) -> io.BytesIO:
 	background = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
 	if text:
 		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
@@ -68,7 +57,7 @@ async def render_textbox(
 
 	text_x, text_y = 20, 17
 	img_buffer = io.BytesIO()
-	frames = []
+	frames: list[Image.Image] = []
 
 	def draw_frame(img, text):
 		if text:
@@ -97,11 +86,13 @@ async def render_textbox(
 			frames.extend([frame_img] * frame_delay)
 
 		frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames, duration=40)
-		filename = f"{filename}.gif"
 	else:
 		final_frame = draw_frame(background, text)
 		final_frame.save(img_buffer, format="PNG")
-		filename = f"{filename}.png"
 
 	img_buffer.seek(0)
-	return File(file=img_buffer, file_name=filename, description=alt_text if alt_text else text)
+	return img_buffer
+
+
+async def make_textboxes(*frames: dict[str, Frame]):
+	pass

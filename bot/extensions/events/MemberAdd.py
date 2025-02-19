@@ -1,5 +1,5 @@
 from interactions import *
-from utilities.mediagen.textbox import render_textbox
+from utilities.mediagen.textbox import render_frame
 from interactions.api.events import MemberAdd
 from utilities.database.main import ServerData
 from utilities.localization import assign_variables
@@ -25,7 +25,7 @@ class MemberAddEvent(Extension):
 		)
 		await event.guild.system_channel.send(
 		    content=event.member.mention,
-		    files=await render_textbox(
+		    files=await render_frame(
 		        message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless'
 		        # twm amazed
 		    ),
