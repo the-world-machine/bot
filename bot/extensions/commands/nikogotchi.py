@@ -450,7 +450,7 @@ class NikogotchiCommands(Extension):
 
 	async def make_food_select(self, loc, data: Nikogotchi, custom_id: str):
 		if all(getattr(data, attr) <= 0 for attr in [ "glitched_pancakes", "golden_pancakes", "pancakes"]):
-			return make_empty_select(placeholder=loc.l('nikogotchi.components.feed.no_food'))
+			return make_empty_select(loc, placeholder=loc.l('nikogotchi.components.feed.no_food'))
 		name_map = {  #TODO: rm this when db fix
 		    "glitched_pancakes": "glitched",
 		    "golden_pancakes": "golden",
