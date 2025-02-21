@@ -1,5 +1,5 @@
 general:
-  loading: "[ Loading... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading... ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
@@ -27,8 +27,8 @@ general:
 
 music: 
   loading: 
-    search: "[ Searching... [emoji:loading] ]"
-    file: "[ Loading your file... [emoji:loading] ]"
+    search: "[ [emoji:loading] Searching... ]"
+    file: "[ [emoji:loading] Loading your file... ]"
 
 # ---------------------------------------------------------------
 
@@ -160,7 +160,7 @@ profile:
     message: Viewing [usermention]'s profile
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
     bots: "[ Bots don't have profiles! ]"
-    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+    loading: "[ [emoji:loading] Loading [user]'s profile... ]"
 
     image: 
       alt_nodescription: "On the image is profile of user [username] in The World Machine's system. They own: Suns [suns], Wool [wool]"
@@ -193,7 +193,7 @@ explode:
 # ---------------------------------------------------------------
 
 shop:
-  loading: "[ Loading Shop... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading Shop... ]"
 
   user_wool: "**Your Balance: [emoji:wool][wool]**"
   owned: "you have **[amount]**"
@@ -488,7 +488,7 @@ treasure:
 # ---------------------------------------------------------------
 
 nikogotchi:
-  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading Nikogotchi... ]"
   invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
 
@@ -544,7 +544,7 @@ nikogotchi:
         
         Do you want to trade your Nikogotchi ([name_two]) with them?
 
-      waiting: "[ Sent [user] a trade offer! Waiting on their response... [emoji:loading] ]"
+      waiting: "[ Sent [user] a trade offer! [emoji:loading] Waiting for their response... ]"
       declined: "[ Your trade request has been declined... ]"
       success_decline: "[ Trade request successfully declined. ]"
       success: "[ Successfully traded with [user]! Say hello to **[name]**! ]"
@@ -800,10 +800,8 @@ textbox:
     jpg: JPG
 
   button: 
-    render:
-      full: Render [type]
-      frame: Render Frame
-      send: Render [type] & Send
+    render: Render [type]
+    'render&send': "Render [type] & Send"
     text:
       edit: Edit Text
       add: Add Text
@@ -813,7 +811,7 @@ textbox:
       previous: Previous Frame
       manual: Input Frame
   
-  frame_position: ([current]/[total])
+  frame_position: "frame: [current] / [total]"
 
 
   select:
@@ -839,8 +837,8 @@ textbox:
     face: "[ Pick a face ]"
     press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
     press: "[ Press the green button whenever you're ready ]"
-    rendering: "[ Rendering image... [emoji:loading] ]"
-    uploading: "[ Uploading image... [emoji:loading] ]"
+    rendering: "[ [emoji:loading] Rendering... ]"
+    sending: "[ [emoji:loading] Sending... ]"
     done: "[ Done ]"
 
     debug: "(Took: **[time]**ms., Sid: **[sid]**)"
@@ -859,12 +857,14 @@ textbox:
 
       cont: "[alt]. The text says: [text]"
       cont_silly: "[alt]. There is no text. Uh"
-      empty: "An empty textbox similar to the one's in OneShot."
+      empty: "An empty textbox similar to the one's in OneShot"
     name: "TWM textbox ([character].[face].[timestamp])"
   
   multi: # TODO: unused
     alt: 
       beginning: "Dialogue of characters talking, in textboxes similar to those in OneShot. [frames]"
       
-      frame: '[character] ([face]) says: "[text]"'
-    name: "TWM textbox ([frame].[timestamp])"
+      frame: ' [character] ([face]) says: "[text]".[next]'
+      frame_nothing: " [character] ([face]) doesn't say anything.[next]"
+
+    name: "TWM textbox ([frames].[timestamp])"

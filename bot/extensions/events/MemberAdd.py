@@ -1,8 +1,10 @@
+import io
 from interactions import *
 from utilities.mediagen.textbox import render_frame
 from interactions.api.events import MemberAdd
 from utilities.database.main import ServerData
 from utilities.localization import assign_variables
+from utilities.textbox.characters import get_character
 
 
 class MemberAddEvent(Extension):
@@ -23,11 +25,13 @@ class MemberAddEvent(Extension):
 		print(
 		    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
 		)
+		buffer = io.BytesIO()
+		(await render_frame(message,
+		                    get_character("The World Machine").get_face("Pancakes"),
+		                    False))[0].save(buffer, format="PNG")
+		buffer.seek(0)
 		await event.guild.system_channel.send(
 		    content=event.member.mention,
-		    files=await render_frame(
-		        message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless'
-		        # twm amazed
-		    ),
+		    files=File(file=buffer, file_name=f"welcome textbox.png"),
 		    allowed_mentions={ 'users': []}
 		)

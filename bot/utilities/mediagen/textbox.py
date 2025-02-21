@@ -10,7 +10,7 @@ from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
 
-from utilities.textbox.characters import Character, Face
+from utilities.textbox.characters import Character, Face, get_character
 
 
 class Styles(Enum):
@@ -25,9 +25,6 @@ class Frame:
 	text: str | None
 	character_id: Character | None
 	face_name: Face | None
-
-	def check(self):
-		return self.character_id is not None and self.face_name is not None
 
 	def __init__(
 	    self,
@@ -47,7 +44,12 @@ class Frame:
 		return f"Frame(character={self.character_id}, face={self.face_name})"
 
 
-async def render_frame(text: str | None, face: Face | None, animated: bool = False) -> io.BytesIO:
+PALCEHOLDER_DELAY_BETWEEN_CHARACTERS_Bleh = 2000  # this needs to go to the end of the last frame
+
+
+async def render_frame(text: str | None,
+                       face: Face | None,
+                       animated: bool = True) -> tuple[list[Image.Image], list[float]] | Image.Image:
 	background = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
 	if text:
 		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
@@ -56,10 +58,8 @@ async def render_frame(text: str | None, face: Face | None, animated: bool = Fal
 		icon = icon.resize((96, 96))
 
 	text_x, text_y = 20, 17
-	img_buffer = io.BytesIO()
-	frames: list[Image.Image] = []
 
-	def draw_frame(img, text):
+	def draw_frame(img: Image.Image = None, text: str = None) -> Image.Image:
 		if text:
 			d = ImageDraw.Draw(img)
 			y_offset = text_y
@@ -70,29 +70,43 @@ async def render_frame(text: str | None, face: Face | None, animated: bool = Fal
 			img.paste(icon, (496, 16), icon.convert('RGBA'))
 		return img
 
-	if text and animated:
+	if not animated and (text or face):
+		return [draw_frame(background.copy(), text)]
+	if not face and not text:
+		return [draw_frame(background.copy())]
+
+	images: list[Image.Image] = []
+	if animated:
+		if face and not text:
+			return [draw_frame(background.copy())]
+
 		cumulative_text = ""
 		for char in text:
 			cumulative_text += char
-			frame_img = draw_frame(background.copy(), cumulative_text)
+			duration = 1
 			match char:
-				case '.' | '!' | '?':
-					frame_delay = 10
-				case ',':
-					frame_delay = 4
-				case _:
-					frame_delay = 1
+				case '.' | '!' | '?' | '．' | '？' | '！':
+					duration = 200
+				case ',' | '，':
+					duration = 40
 
-			frames.extend([frame_img] * frame_delay)
+			images.extend(draw_frame(background.copy(), cumulative_text) * duration)
 
-		frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames, duration=40)
-	else:
-		final_frame = draw_frame(background, text)
-		final_frame.save(img_buffer, format="PNG")
-
-	img_buffer.seek(0)
-	return img_buffer
+	return images
 
 
-async def make_textboxes(*frames: dict[str, Frame]):
-	pass
+async def make_textboxes(frames: dict[str, Frame]):
+	frame_images: list[Image.Image] = []
+	for frame in frames.values():
+		char = None
+		face = None
+		if frame.character_id:
+			char = get_character(frame.character_id)
+		if char and frame.face_name:
+			face = char.get_face(frame.face_name)
+
+		images, durs = await render_frame(frame.text, face)
+		frame_images.extend(images)
+	buffer = io.BytesIO()
+	frame_images[0].save(buffer, format="GIF", save_all=True, append_images=frame_images[1:], loop=0)
+	return buffer

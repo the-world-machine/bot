@@ -1,11 +1,12 @@
 import asyncio
 from datetime import datetime
+import io
 import re
 from typing import Literal
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.emojis import emojis
-from utilities.mediagen.textbox import Frame, Styles, render_frame
+from utilities.mediagen.textbox import Frame, Styles, render_frame, make_textboxes
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import make_empty_select, pretty_user
@@ -16,12 +17,12 @@ class State:
 	owner: int
 	frames: dict[int, Frame]
 	filetype: Literal["webp", "gif", "apng", "png", "gif"]
-	def ready(self):
-		return all(frame.check() for frame in self.frames.values())
-
-	def __init__(self, owner: int, filetype: Literal["webp", "gif", "apng", "png", "gif"] = "webp", frames: dict[int, Frame] | list[Frame] | Frame | None = None):
+	send: bool
+	
+	def __init__(self, owner: int, send: bool = False, filetype: Literal["webp", "gif", "apng", "png", "gif"] = "webp", frames: dict[int, Frame] | list[Frame] | Frame | None = None):
 		self.owner = owner
 		self.filetype = filetype
+		self.send = send
 		self.frames = {}
 		if not frames:
 			return
@@ -183,7 +184,7 @@ class TextboxCommands(Extension):
 				)
 		if face and char:
 			try:
-				char.get_face(face)
+				f = char.get_face(face)
 			except ValueError as e:
 				return await fancy_message(
 						ctx, loc.l("textbox.errors.invalid_face", face_name=face, character_name=character), color=Colors.BAD, edit=True
@@ -195,10 +196,10 @@ class TextboxCommands(Extension):
 				frames=Frame(text=text, animated=animated, character_id=character, face_name=face)
 		)
 
-		if send and state.ready():
+		if send and character and face:
 			await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE))
 			start=datetime.now()
-			file = await self.render(ctx, state, frame_index=0)
+			file = await self.render(ctx, state)
 			end=datetime.now()
 			took=start-end
 			asyncio.create_task(
@@ -212,7 +213,7 @@ class TextboxCommands(Extension):
 				await ctx.send(content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={ 'users': []})
 			desc = loc.l("textbox.monologue.done")
 			if debugging():
-				desc+=loc.l("textbox.monologue.debug", took=took.total_seconds, sid=state_id)
+				desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
 			return await ctx.edit(embed=Embed(description=desc, color=Colors.DEFAULT))
 
 		await self.respond(ctx, state_id, 0)
@@ -223,9 +224,9 @@ class TextboxCommands(Extension):
 			state: State = states[state_id]
 		except KeyError as e:
 			await fancy_message(
-			    ctx, loc.l("textbox.errors.unknown_state", discord_invite="https://discord.gg/SXzqfhBtkk")
+			    ctx, loc.l("textbox.errors.unknown_state", id=state_id, discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
 			)  # TODO: move discord invite to bot config
-			raise e
+			return (None, None)
 		try:
 			frame_data: Frame = state.frames[int(frame_index)]
 		except KeyError as e:
@@ -260,60 +261,92 @@ class TextboxCommands(Extension):
 				frame_data.animated = not frame_data.animated
 			case "render":
 				pos = ""
-				if len(state.frames) > 0:
+				if len(state.frames) > 1:
 					pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
 				await ctx.edit_origin(
 				    embed=Embed(description=loc.l("textbox.monologue.rendering")+pos, color=Colors.DARKER_WHITE)
 				)
+				start=datetime.now()
 				file = await self.render(ctx, state)
+				end=datetime.now()
+				took=start-end
 				asyncio.create_task(
-				    ctx.edit(embed=Embed(description=loc.l("textbox.monologue.uploading")+pos, color=Colors.DARKER_WHITE))
+						ctx.edit(embed=Embed(description=loc.l("textbox.monologue.sending")+pos, color=Colors.DARKER_WHITE))
 				)
-				await ctx.edit(files=file)
+				if state.send:
+					if ctx.guild_id:
+						await ctx.channel.send(
+								content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={ 'users': []}
+						)
+					else:
+						await ctx.send(content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={ 'users': []})
+						
+				else:
+					await ctx.edit(files=file)
 
-				return await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.done")+pos, color=Colors.DEFAULT))
+				desc = loc.l("textbox.monologue.done")
+				if debugging():
+					desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
+
+				return await ctx.edit(embed=Embed(description=desc+pos, color=Colors.DEFAULT))
 
 		await self.respond(ctx, state_id, frame_index)
 
-	async def render(self, ctx: ComponentContext|SlashContext, state: State, frame_index: int = 0, preview: bool = False):
+	async def render(self, ctx: ComponentContext|SlashContext, state: State, frame_index: int = None) -> File:
 		loc = Localization(ctx.locale)
-		# TODO: replace with check for multiple frames
-		frame = state.frames[int(frame_index)]
-		char = None
-		face = None
-		if frame.character_id:
-			char = get_character(frame.character_id)
-		if char and frame.face_name:
-			face = char.get_face(frame.face_name)
+		buffer = None
+		if frame_index is None:
+			filename = loc.l("textbox.multi.name", frames=len(state.frames),timestamp=datetime.now().timestamp())
+			alt_accum = ""
+			for frame in state.frames.values():
+				char = None
+				face = None
+				if frame.character_id:
+					char = get_character(frame.character_id)
+				if char and frame.face_name:
+					face = char.get_face(frame.face_name)
 
-			if frame.face_name == 'Your Avatar':
-				await face.set_custom_icon(ctx.author.avatar.url)
-
-		filename = loc.l("textbox.single.name", character=frame.character_id, face=frame.face_name,timestamp=datetime.now().timestamp())
-
-		alt_text = \
-		loc.l("textbox.single.alt.empty" if not face and not frame.text else f"textbox.single.alt.{ \
-			"avatar" if frame.face_name == "Your Avatar" \
-			else "other" if frame.character_id == "Other" \
-			else "character" \
-			}.{ \
-				"left" if frame.style == Styles.NORMAL_LEFT else "right" \
-			}",
-				character=frame.character_id, 
-				face=frame.face_name, 
-				username=pretty_user(ctx.author), 
-				name=frame.face_name
-		)# yapf: ignore
-
-		if frame.face_name:
-			alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
-
-		render = await render_frame(frame.text, face, False if preview else frame.animated)
-		if frame.text and frame.animated:
+				alt_accum = loc.l("textbox.multi.alt.frame" +("" if frame.text else "_nothing"), character=frame.character_id, face=frame.face_name, text=frame.text)
+			alt_text = loc.l("textbox.multi.alt.beginning", frames=alt_accum)
+			buffer = await make_textboxes(state.frames)
 			filename = f"{filename}.gif"
 		else:
+			frame = state.frames[int(frame_index)]
+			char = None
+			face = None
+			if frame.character_id:
+				char = get_character(frame.character_id)
+			if char and frame.face_name:
+				face = char.get_face(frame.face_name)
+
+				if frame.face_name == 'Your Avatar':
+					await face.set_custom_icon(ctx.author.avatar.url)
+
+			filename = loc.l("textbox.single.name", character=frame.character_id, face=frame.face_name,timestamp=datetime.now().timestamp())
+
+			alt_text = \
+			loc.l("textbox.single.alt.empty" if not face and not frame.text else f"textbox.single.alt.{ \
+				"avatar" if frame.face_name == "Your Avatar" \
+				else "other" if frame.character_id == "Other" \
+				else "character" \
+				}.{ \
+					"left" if frame.style == Styles.NORMAL_LEFT else "right" \
+				}",
+					character=frame.character_id, 
+					face=frame.face_name, 
+					username=pretty_user(ctx.author), 
+					name=frame.face_name
+			)# yapf: ignore
+
+			if frame.face_name:
+				alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
+
+			buffer = io.BytesIO()
+			(await render_frame(frame.text, face, False))[0][0].save(buffer, format="PNG")
 			filename = f"{filename}.png"
-		return File(file=render, file_name=filename, description=alt_text if alt_text else frame.text)
+	
+		buffer.seek(0)
+		return File(file=buffer, file_name=filename, description=alt_text if alt_text else frame.text)
 
 	async def init_update_text_flow(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: str):
 		loc = Localization(ctx.locale)
@@ -356,7 +389,7 @@ class TextboxCommands(Extension):
 		loc = Localization(ctx.locale)
 		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
 
-		files = [await self.render(ctx, state, frame_index=frame_index, preview=True)]
+		files = [await self.render(ctx, state, frame_index=frame_index)]
 		pos = ""
 		if len(state.frames) > 0:
 			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
@@ -391,15 +424,14 @@ class TextboxCommands(Extension):
 					disabled=int(frame_index) - 1 < 0
 				),
 				Button(
-					style=ButtonStyle.GREEN if frame_data.text else ButtonStyle.GRAY,
+					style=ButtonStyle.GRAY if frame_data.text else ButtonStyle.GREEN,
 					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
 					custom_id=f"textbox update_text {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.render.frame", type=loc.l(f"textbox.filetypes.{state.filetype}")),
-					custom_id=f"textbox render {state_id} {frame_index}",
-					disabled=not state.frames[int(frame_index)].check()
+					label=loc.l("textbox.button.render"+("&send" if state.send else ""), type=loc.l(f"textbox.filetypes.{state.filetype}")),
+					custom_id=f"textbox render {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.GRAY,
