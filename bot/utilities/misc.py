@@ -1,13 +1,11 @@
 import io
 import copy
-import numpy
 import aiofiles
 import aiohttp
 import datetime
 import subprocess
 from PIL import Image
 from pathlib import Path
-from numpy.typing import NDArray
 from typing import Literal, Union, Optional
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
@@ -60,14 +58,6 @@ class StupidError(Exception):
 	...
 
 
-def _convert(bytes: bytes, to: Literal["numpy_buffer", "bytesio"]) -> NDArray[numpy.float64] | str | io.BytesIO:
-	match to:
-		case "numpy_buffer":
-			return numpy.frombuffer(bytes, dtype=numpy.uint8)
-		case "bytesio":
-			return io.BytesIO(bytes)
-
-
 class InvalidResponseError(Exception):
 	...
 
@@ -89,23 +79,20 @@ async def read_file(path: Path):
 cache: dict[str, bytes] = {}
 
 
-async def cached_get(
-    location: str | Path,
-    force: bool = False,
-    convert: Literal["numpy_buffer", "bytesio", "nop"] = "bytesio"
-) -> NDArray[numpy.float64] | str | io.BytesIO | bytes:
+async def cached_get(location: str | Path, force: bool = False, raw: bool = False) -> io.BytesIO | bytes:
 	loki = str(location)
 	is_file = Path(location).is_file()
 	if is_file:
 		location = Path(location).absolute()
 
+	if location is str and (not location.startswith("https://") or not location.startswith("http://")):
+		raise ValueError("invalid url")
+
 	if force or loki not in cache:
 		cache[loki] = await read_file(location) if is_file else await fetch(loki)
 
-	if convert == "nop":
-		return cache[loki]
+	return cache[loki] if raw else io.BytesIO(cache[loki])
 
-	return _convert(cache[loki], to=convert)
 
 def rabbit(
     value: dict,
