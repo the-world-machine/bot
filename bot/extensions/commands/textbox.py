@@ -192,7 +192,8 @@ class TextboxCommands(Extension):
 
 		states[state_id] = state = State(
 		    owner=ctx.user.id,
-				filetype="gif",
+		    filetype="gif",
+			  send=send,
 				frames=Frame(text=text, animated=animated, character_id=character, face_name=face)
 		)
 
@@ -342,7 +343,7 @@ class TextboxCommands(Extension):
 				alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
 
 			buffer = io.BytesIO()
-			(await render_frame(frame.text, face, False))[0][0].save(buffer, format="PNG")
+			(await render_frame(frame.text, face, False))[0].save(buffer, format="PNG")
 			filename = f"{filename}.png"
 	
 		buffer.seek(0)
