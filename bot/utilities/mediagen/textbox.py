@@ -90,7 +90,7 @@ async def render_frame(text: str | None,
 				case ',' | '，':
 					duration = 40
 
-			images.extend(draw_frame(background.copy(), cumulative_text) * duration)
+			images.extend([draw_frame(background.copy(), cumulative_text)] * duration)
 
 	return images
 
@@ -105,8 +105,7 @@ async def make_textboxes(frames: dict[str, Frame]):
 		if char and frame.face_name:
 			face = char.get_face(frame.face_name)
 
-		images, durs = await render_frame(frame.text, face)
-		frame_images.extend(images)
+		frame_images.extend(await render_frame(frame.text, face))
 	buffer = io.BytesIO()
-	frame_images[0].save(buffer, format="GIF", save_all=True, append_images=frame_images[1:], loop=0)
+	frame_images[0].save(buffer, format="GIF", save_all=True, append_images=frame_images[1:], loop=None)
 	return buffer
