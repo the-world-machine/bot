@@ -13,7 +13,7 @@ from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.extensions import load_commands # used, actually
+from utilities.extensions import load_commands  # used, actually
 from traceback import _parse_value_tb, TracebackException
 from utilities.misc import shell
 from utilities.shop.fetch_shop_data import reset_shop_data
@@ -100,8 +100,10 @@ async def execute_dev_command(message: Message):
 	if subcommand_name == "db":
 		subcommand_name += " ─"
 	print(
-	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" + f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
-	    f"{colored('│', 'yellow')} {formatted_command_content}\n" + f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
+	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" +
+	    f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
+	    f"{colored('│', 'yellow')} {formatted_command_content}\n" +
+	    f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
 	)
 
 	match subcommand_name:
@@ -170,7 +172,8 @@ async def execute_dev_command(message: Message):
 							raise BaseException("no code provided")
 						result = eval(code, globals(), locals())
 				end_time = time.perf_counter()
-			except:
+			except Exception as e:
+				print(e)
 				end_time = time.perf_counter()
 				state['raisure'] = True
 				exc_type, exc_value, exc_tb = sys.exc_info()
@@ -180,17 +183,19 @@ async def execute_dev_command(message: Message):
 				if method == "eval":
 					result = str(exc_value)
 				else:
-					value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
-					tb = TracebackException(type(value), value, tb, limit=None, compact=True)
-					lines = []
-					for line in tb.format(chain=True):
+					for line in tb.format_exc(chain=True).split("\n"):
+						# yapf: disable
 						lines.append(
-						    line.replace('  File "<aexec>", ', " - at ").replace('  File "<string>", ', " - at ").replace(', in __corofn', '').replace(', in <module>', '')
+						 line.replace('  File "<aexec>", ', " - at ")
+						     .replace('  File "<string>", ', " - at ")
+						     .replace(', in __corofn', '')
+						     .replace(', in <module>', '')
 						)
+						# yapf: enable
 					lines.pop(0)
-					result = ''.join(lines)
+					result = '\n'.join(lines)
 					result_tmp = result.split(" in redir_prints\n    method(code, globals, locals)")
-					if len(result_tmp) != 2: # aexec
+					if len(result_tmp) != 2:  # aexec
 						state['asnyc_warn'] = True
 						result_tmp = result.split(" new_local = await coro\n                        ^^^^^^^^^^\n")
 					result = result_tmp[1] if len(result_tmp) > 1 else result
@@ -215,8 +220,12 @@ async def execute_dev_command(message: Message):
 					result = ansi_escape_pattern.sub('', result)
 				return await handle_reply(runtime, result)
 			except Exception as e:
-				if "Description cannot exceed 4096 characters" in str(e): # TODO: paging
-					return await handle_reply(runtime, str(result)[0:3900], "\n-# Result too long to display, showing first 3900 characters")
+				print(e)
+				if "Description cannot exceed 4096 characters" in str(e):  # TODO: paging
+					return await handle_reply(
+					    runtime,
+					    str(result)[0:3900], "\n-# Result too long to display, showing first 3900 characters"
+					)
 				else:
 					result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
 					exc_type, exc_value, exc_tb = sys.exc_info()
@@ -291,7 +300,9 @@ async def execute_dev_command(message: Message):
 
 						await collection.manage_wool(amount)
 
-						return await message.reply(f'`[ Successfully modified wool, updated value is now {collection.wool} ]`')
+						return await message.reply(
+						    f'`[ Successfully modified wool, updated value is now {collection.wool} ]`'
+						)
 					case _:
 						return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
 			except Exception as e:
