@@ -190,10 +190,11 @@ class GambleCommands(Extension):
 
 	@gamble.subcommand(sub_cmd_description="Read up on how the gamble command works")
 	async def help(self, ctx: SlashContext):
-		text = '''## Slot Machine
-    Gamble any amount of wool as long as you can afford it.
-    Here are the slots you can roll and their values:
-    '''
+		text = ( # yapf: disable
+		 "## Slot Machine" + "\n" +
+		 "Gamble any amount of wool as long as you can afford it." + "\n" +
+		 "Here are the slots you can roll and their values:\n"
+		) # yapf: enable
 
 		existing_slots = []
 		point_rows = []
@@ -205,7 +206,10 @@ class GambleCommands(Extension):
 			value = int(slot.value * 100)
 			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
 
-		text += "\n".join(point_rows)+'\n\n'+\
-                              'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
+		text += ( # yapf: disable
+		    "\n".join(point_rows) + '\n\n' +
+		  "Points are added up and then multiplied by your bet." +
+		    "You also get double the points when you hit a jackpot"
+		)  # yapf: enable
 
 		await fancy_message(ctx, text)
