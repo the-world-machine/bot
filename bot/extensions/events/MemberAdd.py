@@ -2,7 +2,7 @@ import io
 from interactions import *
 from utilities.mediagen.textbox import render_frame
 from interactions.api.events import MemberAdd
-from utilities.database.main import ServerData
+from utilities.database.schemas import ServerData
 from utilities.localization import assign_variables
 from utilities.textbox.characters import get_character
 
@@ -15,7 +15,7 @@ class MemberAddEvent(Extension):
 
 		if event.member.bot:
 			return
-		server_data: ServerData = await ServerData(event.guild_id).fetch()
+		server_data: ServerData = await ServerData(_id=event.guild_id).fetch()
 
 		if not event.guild.system_channel or not server_data.welcome_message:
 			return

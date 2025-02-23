@@ -7,7 +7,7 @@ from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treas
 from utilities.message_decorations import *
 from utilities.shop.fetch_shop_data import DictItem, Item, ShopData, fetch_shop_data, reset_shop_data
 from datetime import datetime, timedelta
-from utilities.database.main import Nikogotchi, UserData
+from utilities.database.schemas import Nikogotchi, UserData
 from utilities.emojis import emojis
 from utilities.localization import Localization, fnum
 import re
@@ -99,7 +99,7 @@ class ShopCommands(Extension):
 
 		stock_price = daily_shop.stock_price
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		all_treasures = await fetch_treasure()
 		owned_treasure = user_data.owned_treasures
@@ -163,7 +163,7 @@ class ShopCommands(Extension):
 
 		await self.load_shop()
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		match = self.r_treasure_buy.match(ctx.custom_id)
 
@@ -224,7 +224,7 @@ class ShopCommands(Extension):
 		loc = Localization(ctx.locale)
 		await ctx.defer(edit_origin=True)
 
-		user: UserData = await UserData(ctx.author.id).fetch()
+		user: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		match = self.r_buy_bg.match(ctx.custom_id)
 
@@ -262,8 +262,8 @@ class ShopCommands(Extension):
 
 		loc = Localization(ctx.locale)
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
-		nikogotchi: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
+		nikogotchi: Nikogotchi = await Nikogotchi(_id=ctx.author.id).fetch()
 
 		capsule_id = random.randint(0, 3)
 
@@ -299,8 +299,8 @@ class ShopCommands(Extension):
 
 		loc = Localization(ctx.locale)
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
-		nikogotchi_data: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
+		nikogotchi_data: Nikogotchi = await Nikogotchi(_id=ctx.author.id).fetch()
 
 		match = self.r_buy_object.match(ctx.custom_id)
 
@@ -385,7 +385,7 @@ class ShopCommands(Extension):
 
 		embed, components = await self.embed_manager(ctx, 'Backgrounds', page=bg_page)
 
-		embed.color = Colors.TEAL # TODO: check up on why is this here
+		embed.color = Colors.TEAL  # TODO: check up on why is this here
 
 		await ctx.edit(embed=embed, components=components)
 
@@ -398,14 +398,16 @@ class ShopCommands(Extension):
 
 		loc = Localization(ctx.locale)
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		wool: int = user_data.wool
 
 		stock: str = loc.l('shop.stocks', value=daily_shop.stock_value, price=daily_shop.stock_price)
 
 		user_wool = loc.l('shop.user_wool', wool=user_data.wool)
-		magpie = EmbedAttachment('https://cdn.discordapp.com/attachments/1025158352549982299/1176956900928131143/Magpie.webp')
+		magpie = EmbedAttachment(
+		    'https://cdn.discordapp.com/attachments/1025158352549982299/1176956900928131143/Magpie.webp'
+		)
 
 		go_back = Button(style=ButtonStyle.GRAY, custom_id='go_back', label=loc.l('shop.buttons.go_back'))
 
@@ -426,10 +428,30 @@ class ShopCommands(Extension):
 			embed = Embed(title=title, description=description, thumbnail=magpie, color=Colors.TEAL)
 
 			buttons = [
-			    Button(label=loc.l('shop.nikogotchi.title'), emoji=emojis['icons']["capsule"], style=ButtonStyle.BLURPLE, custom_id='capsules'),
-			    Button(label=loc.l('shop.pancakes.title'), emoji=emojis["pancakes"]['normal'], style=ButtonStyle.BLURPLE, custom_id='pancakes'),
-			    Button(label=loc.l('shop.backgrounds.title'), emoji=emojis['treasures']["card"], style=ButtonStyle.BLURPLE, custom_id='Backgrounds'),
-			    Button(label=loc.l('shop.treasures.buy.title'), emoji=emojis['icons']["inverted_clover"], style=ButtonStyle.BLURPLE, custom_id='Treasures')
+			    Button(
+			        label=loc.l('shop.nikogotchi.title'),
+			        emoji=emojis['icons']["capsule"],
+			        style=ButtonStyle.BLURPLE,
+			        custom_id='capsules'
+			    ),
+			    Button(
+			        label=loc.l('shop.pancakes.title'),
+			        emoji=emojis["pancakes"]['normal'],
+			        style=ButtonStyle.BLURPLE,
+			        custom_id='pancakes'
+			    ),
+			    Button(
+			        label=loc.l('shop.backgrounds.title'),
+			        emoji=emojis['treasures']["card"],
+			        style=ButtonStyle.BLURPLE,
+			        custom_id='Backgrounds'
+			    ),
+			    Button(
+			        label=loc.l('shop.treasures.buy.title'),
+			        emoji=emojis['icons']["inverted_clover"],
+			        style=ButtonStyle.BLURPLE,
+			        custom_id='Treasures'
+			    )
 			]
 
 			return embed, buttons
@@ -449,7 +471,12 @@ class ShopCommands(Extension):
 
 				capsule_loc = loc.l(f'items.capsules.{item.id}')
 
-			button = Button(label=loc.l('shop.buttons.buy'), emoji=PartialEmoji(1147279947086438431), style=ButtonStyle.BLURPLE, custom_id=f'nikogotchi_buy')
+			button = Button(
+			    label=loc.l('shop.buttons.buy'),
+			    emoji=PartialEmoji(1147279947086438431),
+			    style=ButtonStyle.BLURPLE,
+			    custom_id=f'nikogotchi_buy'
+			)
 
 			if nikogotchi.available or nikogotchi.status > -1:
 				button.disabled = True
@@ -491,7 +518,12 @@ class ShopCommands(Extension):
 
 				pancake_text += f"{emojis['pancakes'][pancake_id]} **{pancake_loc['name']}** - {emojis['icons']['wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
 
-				button = Button(label=loc.l('shop.buttons.buy'), emoji=emojis['pancakes'][pancake_id], style=ButtonStyle.BLURPLE, custom_id=f'buy_pancakes_{id_}')
+				button = Button(
+				    label=loc.l('shop.buttons.buy'),
+				    emoji=emojis['pancakes'][pancake_id],
+				    style=ButtonStyle.BLURPLE,
+				    custom_id=f'buy_pancakes_{id_}'
+				)
 
 				if wool < pancake.cost:
 					button.disabled = True
@@ -520,15 +552,23 @@ class ShopCommands(Extension):
 			user_backgrounds = user_data.owned_backgrounds
 
 			background_name = loc.l(f'items.backgrounds.{background}')
-			background_description = loc.l('shop.backgrounds.main', amount=fetched_background['price'], user_wool=user_wool)
+			background_description = loc.l(
+			    'shop.backgrounds.main', amount=fetched_background['price'], user_wool=user_wool
+			)
 
-			embed = Embed(title=background_name, description=background_description, thumbnail=magpie, color=Colors.TEAL)
+			embed = Embed(
+			    title=background_name, description=background_description, thumbnail=magpie, color=Colors.TEAL
+			)
 
 			embed.set_image(url=fetched_background["image"])
 
 			buttons = [
 			    Button(label='<', style=ButtonStyle.BLURPLE, custom_id=f'page_prev_{bg_page}'),
-			    Button(label=loc.l('shop.buttons.buy'), style=ButtonStyle.GREEN, custom_id=f'buy_bg_{background}_{bg_page}'), go_back,
+			    Button(
+			        label=loc.l('shop.buttons.buy'),
+			        style=ButtonStyle.GREEN,
+			        custom_id=f'buy_bg_{background}_{bg_page}'
+			    ), go_back,
 			    Button(label='>', style=ButtonStyle.BLURPLE, custom_id=f'page_next_{bg_page}')
 			]
 
@@ -558,7 +598,7 @@ class ShopCommands(Extension):
 
 			treasure_details = ''
 
-			user_data = await UserData(ctx.author.id).fetch()
+			user_data = await UserData(_id=ctx.author.id).fetch()
 
 			owned = user_data.owned_treasures
 			all_treasures = await fetch_treasure()
@@ -599,7 +639,7 @@ class ShopCommands(Extension):
 			buttons: list[Button] = []
 			bottom_buttons: list[Button] = []
 
-			user_data = await UserData(ctx.author.id).fetch()
+			user_data = await UserData(_id=ctx.author.id).fetch()
 
 			owned = user_data.owned_treasures
 
@@ -614,7 +654,9 @@ class ShopCommands(Extension):
 
 				treasure_list.append(
 				    StringSelectOption(
-				        label=loc.l('shop.treasures.buy.option', name=treasure_loc['name'], price=get_treasure['price']),
+				        label=loc.l(
+				            'shop.treasures.buy.option', name=treasure_loc['name'], price=get_treasure['price']
+				        ),
 				        description=treasure_loc['description'],
 				        value=treasure,
 				        emoji=emojis['treasures'][treasure]
@@ -626,11 +668,17 @@ class ShopCommands(Extension):
 				get_selected_treasure = all_treasures[selected_treasure]
 
 				button = Button(
-				    label=loc.l('shop.buttons.buy'), emoji=emojis['treasures'][selected_treasure], style=ButtonStyle.BLURPLE, custom_id=f'treasure_buy_{selected_treasure}_One'
+				    label=loc.l('shop.buttons.buy'),
+				    emoji=emojis['treasures'][selected_treasure],
+				    style=ButtonStyle.BLURPLE,
+				    custom_id=f'treasure_buy_{selected_treasure}_One'
 				)
 
 				button_all = Button(
-				    label=loc.l('shop.buttons.buy_all'), emoji=emojis['treasures'][selected_treasure], style=ButtonStyle.BLURPLE, custom_id=f'treasure_buy_{selected_treasure}_All'
+				    label=loc.l('shop.buttons.buy_all'),
+				    emoji=emojis['treasures'][selected_treasure],
+				    style=ButtonStyle.BLURPLE,
+				    custom_id=f'treasure_buy_{selected_treasure}_All'
 				)
 
 				if wool < buy_price_one:
@@ -645,12 +693,21 @@ class ShopCommands(Extension):
 				buttons.append(button)
 				buttons.append(button_all)
 
-			buttons.append(Button(label=loc.l('shop.treasures.sell.title'), style=ButtonStyle.GREEN, custom_id='sell_treasure_menu'))
+			buttons.append(
+			    Button(
+			        label=loc.l('shop.treasures.sell.title'), style=ButtonStyle.GREEN, custom_id='sell_treasure_menu'
+			    )
+			)
 
 			buttons.append(go_back)
 
 			title = loc.l('shop.treasures.buy.title')
-			description = loc.l('shop.treasures.buy.message', stock_market=stock, selected_treasure=treasure_details, user_wool=user_wool)
+			description = loc.l(
+			    'shop.treasures.buy.message',
+			    stock_market=stock,
+			    selected_treasure=treasure_details,
+			    user_wool=user_wool
+			)
 
 			embed = Embed(title=title, description=description, thumbnail=magpie, color=Colors.TEAL)
 
@@ -663,7 +720,12 @@ class ShopCommands(Extension):
 				    custom_id=f'select_treasure',
 				)
 			else:
-				select_menu = StringSelectMenu('💥💥💥💥💥💥💥💥💥💥💥💥', placeholder=loc.l('shop.treasures.cannot_sell'), custom_id=f'select_treasure', disabled=True)
+				select_menu = StringSelectMenu(
+				    '💥💥💥💥💥💥💥💥💥💥💥💥',
+				    placeholder=loc.l('shop.treasures.cannot_sell'),
+				    custom_id=f'select_treasure',
+				    disabled=True
+				)
 
 			components = [ActionRow(select_menu), ActionRow(*buttons)]
 
@@ -678,7 +740,7 @@ class ShopCommands(Extension):
 
 			treasure_details = ''
 
-			user_data = await UserData(ctx.author.id).fetch()
+			user_data = await UserData(_id=ctx.author.id).fetch()
 
 			owned = user_data.owned_treasures
 			all_treasures = await fetch_treasure()

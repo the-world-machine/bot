@@ -3,13 +3,12 @@ import textwrap
 from termcolor import colored
 from interactions import File, User
 from utilities.message_decorations import Colors
+from utilities.database.schemas import UserData
 from utilities.misc import cached_get, pretty_user
 from utilities.config import debugging, get_config
 from utilities.localization import Localization, fnum
 from utilities.shop.fetch_items import fetch_background, fetch_badge
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
-
-import utilities.database.main as db
 
 icons = []
 shop_icons = []
@@ -84,7 +83,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 
 	user_pfp_url += "?size=160&quality=lossless"
 
-	user_data: db.UserData = await db.UserData(user_id).fetch()
+	user_data: UserData = await UserData(_id=user_id).fetch()
 
 	title = loc.l("profile.view.image.title", username=user.display_name)
 

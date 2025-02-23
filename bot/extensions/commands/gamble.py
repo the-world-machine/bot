@@ -4,7 +4,7 @@ from interactions import *
 from dataclasses import dataclass
 from utilities.emojis import emojis
 from utilities.localization import fnum
-from utilities.database.main import UserData
+from utilities.database.schemas import UserData
 from utilities.message_decorations import Colors, fancy_message
 
 
@@ -54,14 +54,22 @@ class GambleCommands(Extension):
 		pass
 
 	@gamble.subcommand(sub_cmd_description="Waste your wool away with slots. Totally not a scheme by Magpie")
-	@slash_option(description='How much wool would you like to bet?', name='bet', required=True, opt_type=OptionType.INTEGER, min_value=100)
+	@slash_option(
+	    description='How much wool would you like to bet?',
+	    name='bet',
+	    required=True,
+	    opt_type=OptionType.INTEGER,
+	    min_value=100
+	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		await ctx.defer()
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
-			return await fancy_message(ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD)
+			return await fancy_message(
+			    ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD
+			)
 
 		# take the wool
 		await user_data.update(wool=user_data.wool - bet)
@@ -132,7 +140,8 @@ class GambleCommands(Extension):
 					else:
 						ticker += f'{s} ┋ '
 			return Embed(
-			    description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(bet)}**.\n{ticker}",
+			    description=
+			    f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(bet)}**.\n{ticker}",
 			    color=Colors.DEFAULT,
 			)
 
@@ -197,6 +206,6 @@ class GambleCommands(Extension):
 			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
 
 		text += "\n".join(point_rows)+'\n\n'+\
-                  'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
+                              'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
 
 		await fancy_message(ctx, text)

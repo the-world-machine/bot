@@ -120,16 +120,29 @@ wool:
 
 # ---------------------------------------------------------------
 
+transmit:
+  autocomplete:
+    unknown_server: Unknown ([server_id])
+
+# ---------------------------------------------------------------
+
 settings:
   errors:
+    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please readd [app:mention] to the server.
     missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
     channel_not_messageable: "[ I cannot send messages in that channel ]"
     invalid_server_id: "[ Invalid server ID. ]"
-    uncached_server: "-# couldn't find the server's name (i am not in it)"
+    uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
-  
+
   server:
     welcome:
+      enabled:
+        yah: "[ Welcome messages have been enabled ]"
+        nah: "[ Welcome messages have been disabled ]"
+      channel:
+        auto: "[ Welcome message channel has been reset ]"
+        Changed: "[ Welcome message channel has been set to [channel] ]"
       editor:
         title: "[ You are editing the welcome message... ]"
         input: "Welcome Message"
@@ -139,6 +152,7 @@ settings:
         done: |
           [ Successfully updated welcome message ]
         # new message shows up right after this
+        disabled_warning: Make sure to enable them with `/settings server welcome enabled value:True`
   transmissions:
     channel:
       auto: "[ Transmission channel has been reset ]"

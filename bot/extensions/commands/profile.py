@@ -1,6 +1,6 @@
 import time
 from interactions import *
-import utilities.database.main as db
+from utilities.database.schemas import UserData
 from utilities.config import debugging
 from datetime import datetime, timedelta
 from utilities.message_decorations import *
@@ -26,7 +26,7 @@ class ProfileCommands(Extension):
 	@sun.subcommand(sub_cmd_description='Give someone a sun!')
 	@slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
 	async def give(self, ctx: SlashContext, who: User):
-		user_data: db.UserData = await db.UserData(who.id).fetch()
+		user_data: UserData = await UserData(_id=who.id).fetch()
 
 		if who.bot:
 			return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=Colors.BAD, ephemeral=True)

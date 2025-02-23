@@ -1,8 +1,9 @@
-# import asyncio
-async def TEMP():
-	...
+#import asyncio
 
-#asyncio.run(TEMP())
+#async def temp():
+
+#if __name__ == "__main__":
+#	asyncio.run(temp())
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
 from utilities.config import get_config, get_token  # import config first (for prerequisites)
