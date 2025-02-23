@@ -4,7 +4,7 @@ import random
 import datetime
 import utilities.profile.badge_manager as bm
 from utilities.localization import Localization, fnum
-from utilities.database.main import UserData
+from utilities.database.schemas import UserData
 
 
 class ExplodeCommands(Extension):
@@ -31,7 +31,7 @@ class ExplodeCommands(Extension):
 	async def explode(self, ctx: SlashContext, public=True):
 		loc = Localization(ctx.locale)
 		uid = ctx.user.id
-		explosion_amount = (await UserData(uid).fetch()).times_shattered
+		explosion_amount = (await UserData(_id=uid).fetch()).times_shattered
 		if uid in self.last_called:
 			if datetime.datetime.now() < self.last_called[uid]:
 				return await fancy_message(

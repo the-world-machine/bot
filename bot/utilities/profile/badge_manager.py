@@ -1,11 +1,11 @@
-import utilities.database.main as db
+from utilities.database.schemas import UserData
 from interactions import *
 from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge
 
 
 async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, target: User, send_message: bool = True):
-	user_data = await db.UserData(target.id).fetch()
+	user_data = await UserData(_id=target.id).fetch()
 
 	emoji = PartialEmoji(id=badge_data['emoji'])
 
@@ -47,7 +47,7 @@ async def increment_value(ctx: SlashContext, value_to_increment: str, amount: in
 	else:
 		user = ctx.author
 
-	user_data = await db.UserData(user.id).fetch()
+	user_data = await UserData(_id=user.id).fetch()
 	json_data = user_data.__dict__
 
 	await user_data.increment_value(value_to_increment, amount)
