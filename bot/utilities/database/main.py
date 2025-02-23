@@ -13,7 +13,6 @@ connection_uri = get_config('database.uri')
 
 def init_things(self):
 	type_hints = get_type_hints(self.__class__)
-	print(self)
 	for field_info in fields(self):
 		value = getattr(self, field_info.name)
 		name = field_info.name
@@ -141,29 +140,29 @@ K = TypeVar('K')
 V = TypeVar('V')
 
 class DBDynamicDict(dict[K, V], Generic[K, V]):
-    def __init__(self, *args, _parent=None, _parent_field=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._parent = _parent
-        self._parent_field = _parent_field
+	def __init__(self, *args, _parent=None, _parent_field=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._parent = _parent
+		self._parent_field = _parent_field
 
-    async def __setitem__(self, key, value):
-        if self._parent is not None:
-            update_fields = {self._parent_field: dict(self, **{key: value})}
-            await self._parent.update(**update_fields)
-        super().__setitem__(key, value)
-        
-    async def update(self, **kwargs):
-        if self._parent is None:
-            raise Exception("Parent not set for nested update.")
-            
-        update_fields = {self._parent_field: dict(self, **kwargs)}
-        await self._parent.update(**update_fields)
-        
-        super().update(**kwargs)
-        return self._parent
+	async def __setitem__(self, key, value):
+		if self._parent is not None:
+			update_fields = {self._parent_field: dict(self, **{key: value})}
+			await self._parent.update(**update_fields)
+		super().__setitem__(key, value)
 
-    def __repr__(self):
-        return f"DBD{super().__repr__()}"
+	async def update(self, **kwargs):
+		if self._parent is None:
+			raise Exception("Parent not set for nested update.")
+
+		update_fields = {self._parent_field: dict(self, **kwargs)}
+		await self._parent.update(**update_fields)
+
+		super().update(**kwargs)
+		return self._parent
+
+	def __repr__(self):
+		return f"DBD{super().__repr__()}"
 
 connection = None
 

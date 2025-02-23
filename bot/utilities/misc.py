@@ -1,4 +1,5 @@
 import io
+from base64 import b64decode
 import copy
 import aiofiles
 import aiohttp
@@ -252,3 +253,13 @@ def make_empty_select(loc, placeholder: str = None):
 
 def pretty_user(user: User):
 	return f"({user.username}) {user.display_name}" if user.display_name != user.username else user.username
+	return StringSelectMenu(
+	    *[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True
+	)
+
+
+def decode_base64_padded(s):
+	missing_padding = len(s) % 4
+	if missing_padding:
+		s += '=' * (4 - missing_padding)
+	return b64decode(s).decode("utf-8")

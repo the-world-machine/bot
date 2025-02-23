@@ -3,7 +3,6 @@ import yaml.parser
 import yaml as yaml
 from babel import Locale
 from pathlib import Path
-from base64 import b64decode
 from termcolor import colored
 from typing import Literal, Union
 from dataclasses import dataclass
@@ -11,8 +10,8 @@ from datetime import datetime, timedelta
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
-from utilities.misc import FrozenDict, rabbit
 from extensions.events.Ready import ReadyEvent
+from utilities.misc import FrozenDict, decode_base64_padded, rabbit
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
 
@@ -253,7 +252,7 @@ def english_ordinal_for(n: int | float):
 	return suffix
 
 
-bot_id = b64decode(get_token().split('.')[0]).decode("utf-8")
+bot_id = decode_base64_padded(get_token().split('.')[0])
 
 
 def assign_variables(
