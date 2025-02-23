@@ -132,7 +132,7 @@ class SettingsCommands(Extension):
 		    loc.l(
 		        f"settings.transmissions.blocked.{'yah' if server_id in blocklist else 'nah'}",
 		        server_name=guild.name if guild else server_id
-		    ) + ("\n-# " + loc.l("settings.errors.uncached_server" if not guild else "")),
+		    ) + (("\n-# " + loc.l("settings.errors.uncached_server")) if not guild else ""),
 		    ephemeral=True
 		)
 
@@ -148,7 +148,7 @@ class SettingsCommands(Extension):
 		servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-                     guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+                                 guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable
@@ -159,11 +159,11 @@ class SettingsCommands(Extension):
 
 		for server_id, server_name in servers.items():
 			if isinstance(server_name, tuple):
-				servers.append({ "name": server_name[0], "value": server_id})
+				filtered_servers.append({ "name": server_name[0], "value": server_id})
 				continue
 
 			if server.lower() in server_name.lower():
-				servers.append({ "name": server_name, "value": server_id})
+				filtered_servers.append({ "name": server_name, "value": server_id})
 
 		await ctx.send(filtered_servers)
 
