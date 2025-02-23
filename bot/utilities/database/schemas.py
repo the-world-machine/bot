@@ -89,18 +89,6 @@ class UserData(Collection):
 		return await self.update(wool=int(wool))
 
 
-
-@dataclass
-class NikogotchiData(Collection):
-	last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	data: DBDynamicDict[str, int] = field(default_factory=dict)
-	nikogotchi_available: bool = False
-	rarity: int = 0
-	pancakes: int = 5
-	golden_pancakes: int = 1
-	glitched_pancakes: int = 0
-
 @dataclass
 class StatUpdate:
 	icon: str
