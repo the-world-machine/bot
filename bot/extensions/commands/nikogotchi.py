@@ -2,6 +2,7 @@ import math
 import re
 import random
 from interactions import *
+from collections import Counter
 from asyncio import TimeoutError
 from dataclasses import dataclass
 from utilities.emojis import emojis
@@ -24,6 +25,7 @@ class TreasureSeekResults:
 
 
 class NikogotchiCommands(Extension):
+
 	async def get_nikogotchi(self, uid: int) -> Union[Nikogotchi, None]:
 		data: Nikogotchi = await Nikogotchi(uid).fetch()
 
@@ -307,7 +309,6 @@ class NikogotchiCommands(Extension):
 			return None
 
 		treasures_found = {}
-		user_treasures = user_data.owned_treasures
 
 		for _ in range(amount):
 			value = random.randint(0, 5000)
@@ -316,17 +317,15 @@ class NikogotchiCommands(Extension):
 			if value > 4900:
 				treasure_id = random.choice([ "die", "sun", "clover"])
 			elif value > 3500:
-				treasure_id = random.choice([ "amber", "pen", "card"])  # TODO: store rarity in DB
+				treasure_id = random.choice([ "amber", "pen", "card"])
 			elif value > 100:
 				treasure_id = random.choice([ "journal", "bottle", "shirt"])
 
 			if treasure_id:
 				treasures_found.setdefault(treasure_id, 0)
 				treasures_found[treasure_id] += 1
-				user_treasures.setdefault(treasure_id, 0)
-				user_treasures[treasure_id] += 1
 
-		await user_data.update(owned_treasures=user_treasures)
+		await user_data.update(owned_treasures=Counter(user_data.owned_treasures) + Counter(treasures_found))
 		return TreasureSeekResults(treasures_found, amount, time_taken)
 
 	r_nikogotchi_interaction = re.compile(r'action_(feed|pet|clean|findtreasure|refresh|callback|exit)_(\d+)$')
