@@ -1,21 +1,20 @@
-import asyncio
-import inspect
 import re
+import yaml.parser
+import yaml as yaml
 from babel import Locale
 from pathlib import Path
+from base64 import b64decode
 from termcolor import colored
-import yaml as yaml
-from datetime import datetime, timedelta
-from dataclasses import dataclass
 from typing import Literal, Union
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
-import yaml.parser
 from utilities.data_watcher import subscribe
 from utilities.misc import FrozenDict, rabbit
-from utilities.config import debugging, get_config, on_prod
-from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from extensions.events.Ready import ReadyEvent
+from utilities.emojis import emojis, flatten_emojis, on_emojis_update
+from utilities.config import debugging, get_config, get_token, on_prod
 
 emoji_dict = {}
 
@@ -230,7 +229,10 @@ def ftime(
 		translated_component = format_timedelta(timedelta(**{ unit: amount}), locale=locale, format=format, **kwargs)
 		return translated_component
 
-	filtered_components = [ part for part in formatted.split(", ") if unit_hierarchy.index(part.split(" ", 1)[1].rstrip('s')) <= min_unit_index ]
+	filtered_components = [
+	    part for part in formatted.split(", ")
+	    if unit_hierarchy.index(part.split(" ", 1)[1].rstrip('s')) <= min_unit_index
+	]
 
 	translated = ", ".join([translate_unit(part) for part in filtered_components])
 
@@ -251,10 +253,22 @@ def english_ordinal_for(n: int | float):
 	return suffix
 
 
-def assign_variables(input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]):
+bot_id = b64decode(get_token().split('.')[0])
+
+
+def assign_variables(
+    input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]
+):
 	if isinstance(input, str):
 		result = input
-		for name, data in { **variables, **emoji_dict }.items():
+		for name, data in {
+		    **variables,
+		    **emoji_dict,
+		    **{
+		        'app:mention': f"<@{bot_id}>",
+		        'app:id': str(bot_id)
+		    }
+		}.items():
 			if isinstance(data, (int, float)):
 				data = fnum(data, locale)
 			elif not isinstance(data, str):
