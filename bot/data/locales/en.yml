@@ -65,6 +65,9 @@ misc:
     # adds on when more than 1 dice
     multi: "Totaling at **[total]**."
 
+  welcome:
+    placeholder_text: "[ Welcome to [server_name], [user_name]! You're the [member_count] member here! ]"
+
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
 # ---------------------------------------------------------------
@@ -131,6 +134,7 @@ settings:
     weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please readd [app:mention] to the server.
     missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
     channel_not_messageable: "[ I cannot send messages in that channel ]"
+    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
     invalid_server_id: "[ Invalid server ID. ]"
     uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
@@ -138,22 +142,31 @@ settings:
   server:
     welcome:
       enabled:
-        yah: "[ Welcome messages have been enabled ]"
-        nah: "[ Welcome messages have been disabled ]"
+        yah: "[ Welcome textboxes have been enabled ]"
+        nah: "[ Welcome textboxes have been disabled ]"
+        edit_warning: "You can change the textbox message with `/settings welcome edit`"
       channel:
-        auto: "[ Welcome message channel has been reset ]"
-        Changed: "[ Welcome message channel has been set to [channel] ]"
+        auto: "[ Welcome textboxes channel has been reset ]"
+        Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+      ping:
+        yah: "[ Welcome textboxes should now ping the newcomers ]"
+        nah: "[ Welcome textboxes will no longer ping the newcomers ]"
       editor:
-        title: "[ You are editing the welcome message... ]"
+        title: "[ You are editing the welcome textbox message... ]"
         input: "Welcome Message"
         placeholder: "Leave blank to disable
 
-        - You can use the variables: [user_name] [server_name]"
-        done: |
-          [ Successfully updated welcome message ]
-        # new message shows up right after this
-        disabled_warning: Make sure to enable them with `/settings server welcome enabled value:True`
+        - Variables: [user_name] [server_name] [member_count]"
+        done: "[ Successfully updated the welcome textbox message ]"
+        debug: | 
+          Previous: [old_text]
+
+          New (current): [new_text]
+        disabled_warning: "Don't forget to enable them with `/settings welcome enabled value:True`"
   transmissions:
+    enabled:
+      yah: "[ This server is now closed for calls ]"
+      nah: "[ This server is now open for calls ]"
     channel:
       auto: "[ Transmission channel has been reset ]"
       Changed: "[ Transmission channel has been set to [channel] ]"

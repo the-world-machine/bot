@@ -3,23 +3,6 @@ from datetime import datetime
 from dataclasses import asdict, dataclass, field
 from utilities.database.main import DBDict, DBDynamicDict, DBList, Collection
 
-
-"""{
-  "_id": "1142872664323666020",
-  "allow_ask": true,
-  "anonymous": false,
-  "blocked_servers": [],
-  "language": "english",
-  "transmit_channel": null,
-			blocklist
-  "transmit_images": true,
-  "transmittable_servers": {
-    "1017479547664482444": "TWM Development",
-    "1228802704181301381": "Cult of Sinkeme"
-  },
-  "welcome_message": ""
-}"""
-
 @dataclass
 class TransmitConfig(DBDict):
 	disabled: bool = False
