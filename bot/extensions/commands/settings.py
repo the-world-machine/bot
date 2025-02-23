@@ -1,4 +1,5 @@
 from interactions import *
+from utilities.config import debugging, get_config
 from utilities.database.schemas import ServerData
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
@@ -12,11 +13,26 @@ class SettingsCommands(Extension):
 	async def settings(self, ctx: SlashContext):
 		pass
 
-	server = settings.group(name="server")
-	welcome = server.group(name="welcome")
-	transmissions = settings.group(name="transmissions")
+	async def channel_permission_check(loc, ctx: SlashContext, channel: GuildText) -> bool:
+		if not isinstance(channel, MessageableMixin):
+			await fancy_message(
+			    ctx,
+			    loc.l("settings.errors.channel_not_messageable"),
+			    color=Colors.BAD,
+			)
+			return False
+		required_perms = Permissions.SEND_MESSAGES | Permissions.VIEW_CHANNEL | Permissions.ATTACH_FILES
+		channel_perms = channel.permissions_for(ctx.guild.me)
+		has_perms = (channel_perms & required_perms) == required_perms
+		if not has_perms:
+			await fancy_message(
+			    ctx,
+			    loc.l("settings.errors.channel_insufficient_perms"),
+			    color=Colors.BAD,
+			)
+		return True
 
-	async def permission_check(self, ctx: SlashContext, loc):
+	async def permission_check(self, loc, ctx: SlashContext):
 		member = ctx.guild.get_member(ctx.user.id)
 		if not member:
 			await fancy_message(ctx, loc.l("settings.errors.weird_edgecase_number_0"), color=Colors.BAD, ephemeral=True)
@@ -28,15 +44,33 @@ class SettingsCommands(Extension):
 
 		return True
 
-	async def basic(self, ctx) -> tuple[Localization, ServerData]:
+	async def basic(self, ctx: SlashContext) -> tuple[Localization, ServerData]:
 		loc = Localization(ctx.locale)
-		if not await self.permission_check(ctx, loc):
+		if not await self.permission_check(loc, ctx):
 			return
 		await ctx.defer(ephemeral=True)
+		server_data: ServerData = await ServerData(ctx.guild.id).fetch()
+		return (loc, server_data)
 
-		return (loc, await ServerData(ctx.guild.id).fetch())
+	transmissions = settings.group(name="transmissions")
 
-	@transmissions.subcommand(sub_cmd_description="The specific channel to use for calling")
+	@transmissions.subcommand(sub_cmd_description="Toggle this server's ability to receive calls")
+	@slash_option(
+	    description="default: True",
+	    name="value",
+	    opt_type=OptionType.BOOLEAN,
+	    required=True,
+	)
+	async def enabled(self, ctx: SlashContext, value):
+		loc, server_data = self.basic(ctx)
+
+		await server_data.welcome.update(disabled=not value)
+
+		return await fancy_message(
+		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
+		)
+
+	@transmissions.subcommand(sub_cmd_description="Channel to be used by default when accepting calls")
 	@slash_option(
 	    description="(omit option to reset) default: Current",
 	    name="channel",
@@ -49,22 +83,15 @@ class SettingsCommands(Extension):
 			await server_data.transmissions.update(channel_id=None)
 			return await fancy_message(ctx, loc.l("settings.transmissions.channel.auto"), ephemeral=True)
 
-		if not isinstance(channel, MessageableMixin):
-			return await fancy_message(
-			    ctx,
-			    loc.l("settings.errors.channel_not_messageable"),
-			    color=Colors.BAD,
-			)
+		if not self.channel_permission_check(loc, ctx, channel):
+			return
+
 		await server_data.transmissions.update(channel_id=str(channel.id))
 		return await fancy_message(
-		    ctx,
-		    loc.l("settings.transmissions.channel.Changed", channel=channel.mention),
+		    ctx, loc.l("settings.transmissions.channel.Changed", channel=channel.mention), ephemeral=True
 		)
 
-	@transmissions.subcommand(
-	    sub_cmd_description=
-	    "Disable/Enable receiving images when transmitting. All redacted images will be sent as [IMAGE]"
-	)
+	@transmissions.subcommand(sub_cmd_description="Toggle embedding images when transmitting")
 	@slash_option(
 	    description="default: True",
 	    name="value",
@@ -146,10 +173,9 @@ class SettingsCommands(Extension):
 		]
 		# yapf: disable
 		servers = {
-		 guild.id if isinstance(guild, Guild) else guild
-		 :
-                                 guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
-		 for guild in guilds
+		  guild.id if isinstance(guild, Guild) else guild:
+                                        guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+		  for guild in guilds
 		}
 		# yapf: enable
 
@@ -167,29 +193,9 @@ class SettingsCommands(Extension):
 
 		await ctx.send(filtered_servers)
 
-	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
-	async def edit(self, ctx: SlashContext):
-		loc = Localization(ctx.locale)
-		if not await self.permission_check(ctx, loc):
-			return
+	welcome = settings.group(name="welcome")
 
-		await ServerData(ctx.guild_id).fetch()
-		return await ctx.send_modal(
-		    Modal(
-		        InputText(
-		            label=loc.l("settings.server.welcome.editor.input"),
-		            style=TextStyles.PARAGRAPH,
-		            custom_id="message",
-		            placeholder=loc.l("settings.server.welcome.editor.placeholder"),
-		            max_length=200,
-		            required=False,
-		        ),
-		        title=loc.l("settings.server.welcome.editor.title"),
-		        custom_id="welcome_message_editor",
-		    )
-		)
-
-	@transmissions.subcommand(sub_cmd_description="Whether to send the welcome textbox when someone joins")
+	@welcome.subcommand(sub_cmd_description="Whether to send the welcome textbox when someone joins")
 	@slash_option(
 	    description="default: False",
 	    name="value",
@@ -201,20 +207,65 @@ class SettingsCommands(Extension):
 
 		await server_data.welcome.update(disabled=not value)
 
-		return await fancy_message(
-		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
+		return await fancy_message(ctx, loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}"), ephemeral=True)
+
+	@welcome.subcommand(sub_cmd_description="Whether to ping the newcomers (shows the @mention regardless)")
+	@slash_option(
+	    description="default: False",
+	    name="value",
+	    opt_type=OptionType.BOOLEAN,
+	    required=True,
+	)
+	async def ping(self, ctx: SlashContext, value):
+		loc, server_data = self.basic(ctx)
+
+		await server_data.welcome.update(ping=not value)
+
+		return await fancy_message(ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True)
+	
+	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
+	async def edit(self, ctx: SlashContext):
+		loc = Localization(ctx.locale)
+		if not await self.permission_check(loc, ctx):
+			return
+		server_data = await ServerData(ctx.guild_id).fetch()
+
+		return await ctx.send_modal(
+		    Modal(
+		        InputText(
+		            label=loc.l("settings.server.welcome.editor.input"),
+		            style=TextStyles.PARAGRAPH,
+		            custom_id="text",
+		            placeholder=loc.l("settings.server.welcome.editor.placeholder"),
+		            max_length=get_config("textbox.max-text-length-per-frame", ignore_None=True) or 1423,
+		            required=True,
+								value=server_data.welcome.text or loc.l("misc.welcome.placeholder_text") 
+		        ),
+		        title=loc.l("settings.server.welcome.editor.title"),
+		        custom_id="welcome_message_editor",
+		    )
 		)
 
 	@modal_callback("welcome_message_editor")
-	async def welcome_message_editor(self, ctx: ModalContext, message: str):
-
+	async def welcome_message_editor(self, ctx: ModalContext, text: str):
+		text = ""; warn = ""
+		loc = Localization(ctx.locale)
 		server_data: ServerData = await ServerData(ctx.guild_id).fetch()
-		await server_data.welcome.update(message=message)
-		message = f"```\n{message.replace('```', '` ``')}```"
+		old_text = server_data.welcome.message
 
-		await ctx.send(Localization(ctx.locale).l("settings.server.welcome.editor.done") + message, ephemeral=True)
+		await server_data.welcome.update(message=None if text == loc.l("misc.welcome.placeholder_text") else text)
+		
+		old_text = f"```\n{old_text.replace('```', '` ``')}```"
+		new_text = f"```\n{text.replace('```', '` ``')}```"
 
-	@welcome.subcommand(sub_cmd_description="The specific channel to send the welcome textboxes to")
+		if not server_data.welcome.enabled:
+			warn = "\n-# "+loc.l("settings.server.welcome.editor.disabled_warning")
+		debug = ""
+		if debugging():
+			debug = loc.l("settings.server.welcome.editor.debug", old_text=old_text, new_text=new_text)
+		await fancy_message(loc.l("settings.server.welcome.editor.done") + debug + warn, ephemeral=True)
+
+	@welcome.subcommand(sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(
 	    description="(omit option to reset) default: Server Settings -> System Messages channel",
 	    name="channel",
@@ -226,15 +277,16 @@ class SettingsCommands(Extension):
 		if channel is None:
 			await server_data.welcome.update(channel_id=None)
 			return await fancy_message(ctx, loc.l("settings.welcome.channel.auto"), ephemeral=True)
+		if not self.channel_permission_check(loc, ctx, channel):
+			return
+		await server_data.welcome.update(channel_id=str(channel.id))
 
-		if not isinstance(channel, MessageableMixin):
-			return await fancy_message(
-			    ctx,
-			    loc.l("settings.errors.channel_not_messageable"),
-			    color=Colors.BAD,
-			)
-		await server_data.transmissions.update(channel_id=str(channel.id))
+		warn = ""
+		if not server_data.welcome.enabled:
+			warn += "\n-# "+loc.l("settings.server.welcome.editor.disabled_warning")
+		if not server_data.welcome.message:
+			warn += "\n-# "+loc.l("settings.server.welcome.enabled.edit_warning")
 		return await fancy_message(
 		    ctx,
-		    loc.l("settings.transmissions.channel.Changed", channel=channel.mention),
+		    loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn,
 		)
