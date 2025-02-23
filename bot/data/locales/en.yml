@@ -57,7 +57,7 @@ misc:
     multi: "Totaling at **[total]**."
 
   welcome:
-    placeholder_text: "[ Welcome to [server_name], [user_name]! You're the [member_count] member here! ]"
+    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
@@ -143,11 +143,9 @@ settings:
         yah: "[ Welcome textboxes should now ping the newcomers ]"
         nah: "[ Welcome textboxes will no longer ping the newcomers ]"
       editor:
-        title: "[ You are editing the welcome textbox message... ]"
+        title: "Editing the welcome textbox message..."
         input: "Welcome Message"
-        placeholder: "Leave blank to disable
-
-        - Variables: [user_name] [server_name] [member_count]"
+        placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
         done: "[ Successfully updated the welcome textbox message ]"
         debug: | 
           Previous: [old_text]
