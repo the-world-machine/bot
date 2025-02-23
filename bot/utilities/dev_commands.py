@@ -3,7 +3,7 @@ import re
 import sys
 import time
 import json
-from yaml import dump
+import yaml
 import traceback as tb
 from aioconsole import aexec
 from termcolor import colored
@@ -22,8 +22,8 @@ from utilities.shop.fetch_shop_data import reset_shop_data
 ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 
-async def get_collection(collection: str, _id: str):
-	return schemas[collection](_id)
+def get_collection(collection: str, _id: str):
+	return getattr(schemas, collection)(_id)
 
 
 class CapturePrints:
@@ -108,10 +108,8 @@ async def _execute_dev_command(message: Message):
 	subcommand_name = args[0]
 
 	formatted_command_content = command_content.replace('\n', '\n' + colored('│ ', 'yellow'))
-	if subcommand_name == "db":
-		subcommand_name += " ─"
 	print(
-	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" +
+	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name + (" ─" if subcommand_name=="db" else "")}\n" +
 	    f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
 	    f"{colored('│', 'yellow')} {formatted_command_content}\n" +
 	    f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
@@ -256,7 +254,7 @@ async def _execute_dev_command(message: Message):
 
 			match args[1]:
 				case "view":
-					return await message.reply(f"```yml\n{dump(shop)}```")
+					return await message.reply(f"```yml\n{yaml.dump(shop, default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 				case "reset":
 					try:
 						await reset_shop_data()
@@ -280,7 +278,7 @@ async def _execute_dev_command(message: Message):
 
 						data = json.loads(str_data)
 
-						collection = await main.fetch_from_database(await get_collection(collection, _id))
+						collection = await get_collection(collection, _id).fetch()
 
 						await collection.update(**data)
 
@@ -293,23 +291,21 @@ async def _execute_dev_command(message: Message):
 						if collection == 'shop':
 							collection = await get_collection(collection, 0)
 						else:
-							collection = await main.fetch_from_database(await get_collection(collection, _id))
+							collection = await get_collection(collection, _id).fetch()
 
 						return await message.reply(f'`[ The value of {value} is {str(collection.__dict__[value])} ]`')
 					case "view_all":
 						collection = args[2]
 						_id = args[3]
 
-						collection = await main.fetch_from_database(await get_collection(collection, _id))
+						collection = await get_collection(collection, _id).fetch()
 
-						data = collection.__dict__
-
-						return await message.reply(f"```yml\n{dump(data)}```")
+						return await message.reply(f"```yml\n{yaml.dump(main.to_dict(collection), default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 					case "wool":
 						_id = args[2]
 						amount = int(args[3])
 
-						collection: schemas.UserData = await main.fetch_from_database(await get_collection('user', _id))
+						collection: schemas.UserData = await schemas.UserData(_id).fetch()
 
 						await collection.manage_wool(amount)
 
