@@ -238,7 +238,7 @@ class TransmissionCommands(Extension):
 		known_servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-               guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+                     guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable
@@ -405,13 +405,14 @@ class TransmissionCommands(Extension):
 				final_text += '\n\n'
 
 		for attachment in message.attachments:
-			if allow_images and attachment.content_type and attachment.content_type.startswith("image/"):
-				if len(embed.images) < 3:
+			if attachment.content_type and attachment.content_type.startswith("image/"):
+				if allow_images and len(embed.images) < 3:
 					embed.add_image(image=attachment.url)
 				else:
 					overflow()
 					final_text += f"{attachment.url} "
-					embed.footer = "embeds support up to 4 images"
+					if allow_images:
+						embed.footer = "embeds support up to 4 images"
 			else:
 				overflow()
 				final_text += f"{attachment.url} "
