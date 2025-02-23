@@ -80,7 +80,6 @@ class TransmissionCommands(Extension):
 	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
 
 	# 	if not other_server_data.transmissions.channel_id:
-	# 		print("OTHER", other_server, other_server_data)
 	# 		return await fancy_message(select_results.ctx,
 	# 								   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
 	# 								   color=Colors.BAD, ephemeral=True)
@@ -239,7 +238,7 @@ class TransmissionCommands(Extension):
 		known_servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-         guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+               guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable
