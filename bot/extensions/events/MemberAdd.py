@@ -34,17 +34,20 @@ class MemberAddEvent(Extension):
 		buffer.seek(0)
 
 		target_channel = guild.system_channel
-		if config.channel_id and config.channel_id in list(map(lambda c: c.id, guild.channels)):
+		channels = list(map(lambda c: str(c.id), guild.channels))
+		if config.channel_id and config.channel_id in channels:
 			target_channel = guild.get_channel(config.channel_id)
 
 		if not target_channel:
 			return
 
-		message = config.message if config.message else loc.l("misc.welcome.placeholder_message")
+		message = config.message or loc.l("misc.welcome.placeholder_text")
 
-		message = assign_variables(message, user_name=event.member.display_name, server_name=guild.name)
+		message = assign_variables(
+		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
+		)
 		try:
-			await guild.system_channel.send(
+			await target_channel.send(
 			    content=f"-# {event.member.mention}",
 					files=File(file=buffer, file_name=f"welcome textbox.png"),
 			    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()

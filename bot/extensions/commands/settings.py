@@ -13,7 +13,7 @@ class SettingsCommands(Extension):
 	async def settings(self, ctx: SlashContext):
 		pass
 
-	async def channel_permission_check(loc, ctx: SlashContext, channel: GuildText) -> bool:
+	async def channel_permission_check(self, loc, ctx: SlashContext, channel: GuildText) -> bool:
 		if not isinstance(channel, MessageableMixin):
 			await fancy_message(
 			    ctx,
@@ -62,7 +62,7 @@ class SettingsCommands(Extension):
 	    required=True,
 	)
 	async def enabled(self, ctx: SlashContext, value):
-		loc, server_data = self.basic(ctx)
+		loc, server_data = await self.basic(ctx)
 
 		await server_data.welcome.update(disabled=not value)
 
@@ -77,13 +77,13 @@ class SettingsCommands(Extension):
 	    opt_type=OptionType.CHANNEL,
 	)
 	async def channel(self, ctx: SlashContext, channel: GuildText = None):
-		loc, server_data = self.basic(ctx)
+		loc, server_data = await self.basic(ctx)
 
 		if channel is None:
 			await server_data.transmissions.update(channel_id=None)
 			return await fancy_message(ctx, loc.l("settings.transmissions.channel.auto"), ephemeral=True)
 
-		if not self.channel_permission_check(loc, ctx, channel):
+		if not await self.channel_permission_check(loc, ctx, channel):
 			return
 
 		await server_data.transmissions.update(channel_id=str(channel.id))
@@ -173,8 +173,7 @@ class SettingsCommands(Extension):
 		]
 		# yapf: disable
 		servers = {
-		  guild.id if isinstance(guild, Guild) else guild:
-                                        guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+		  guild.id if isinstance(guild, Guild) else guild: guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		  for guild in guilds
 		}
 		# yapf: enable
@@ -203,7 +202,7 @@ class SettingsCommands(Extension):
 	    required=True,
 	)
 	async def enabled(self, ctx: SlashContext, value):
-		loc, server_data = self.basic(ctx)
+		loc, server_data = await self.basic(ctx)
 
 		await server_data.welcome.update(disabled=not value)
 
@@ -222,7 +221,7 @@ class SettingsCommands(Extension):
 		await server_data.welcome.update(ping=not value)
 
 		return await fancy_message(ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True)
-	
+
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
 		loc = Localization(ctx.locale)
@@ -238,8 +237,8 @@ class SettingsCommands(Extension):
 		            custom_id="text",
 		            placeholder=loc.l("settings.server.welcome.editor.placeholder"),
 		            max_length=get_config("textbox.max-text-length-per-frame", ignore_None=True) or 1423,
-		            required=True,
-								value=server_data.welcome.text or loc.l("misc.welcome.placeholder_text") 
+		            required=False,
+		            value=server_data.welcome.message or loc.l("misc.welcome.placeholder_text")
 		        ),
 		        title=loc.l("settings.server.welcome.editor.title"),
 		        custom_id="welcome_message_editor",
@@ -248,22 +247,26 @@ class SettingsCommands(Extension):
 
 	@modal_callback("welcome_message_editor")
 	async def welcome_message_editor(self, ctx: ModalContext, text: str):
-		text = ""; warn = ""
+		warn = ""
 		loc = Localization(ctx.locale)
 		server_data: ServerData = await ServerData(ctx.guild_id).fetch()
-		old_text = server_data.welcome.message
+		config = server_data.welcome
+		old_text = config.message
+		new_text = text
+		if text == loc.l("misc.welcome.placeholder_text"):
+			new_text = None
 
-		await server_data.welcome.update(message=None if text == loc.l("misc.welcome.placeholder_text") else text)
-		
+		await config.update(message=new_text)
+
 		old_text = f"```\n{old_text.replace('```', '` ``')}```"
 		new_text = f"```\n{text.replace('```', '` ``')}```"
 
-		if not server_data.welcome.enabled:
-			warn = "\n-# "+loc.l("settings.server.welcome.editor.disabled_warning")
+		if config.disabled:
+			warn = "\n-# " + loc.l("settings.server.welcome.editor.disabled_warning")
 		debug = ""
 		if debugging():
 			debug = loc.l("settings.server.welcome.editor.debug", old_text=old_text, new_text=new_text)
-		await fancy_message(loc.l("settings.server.welcome.editor.done") + debug + warn, ephemeral=True)
+		await fancy_message(ctx, loc.l("settings.server.welcome.editor.done") + debug + warn, ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(
@@ -272,21 +275,21 @@ class SettingsCommands(Extension):
 	    opt_type=OptionType.CHANNEL,
 	)
 	async def channel(self, ctx: SlashContext, channel: GuildText = None):
-		loc, server_data = self.basic(ctx)
-
+		loc, server_data = await self.basic(ctx)
+		config = server_data.welcome
 		if channel is None:
-			await server_data.welcome.update(channel_id=None)
-			return await fancy_message(ctx, loc.l("settings.welcome.channel.auto"), ephemeral=True)
-		if not self.channel_permission_check(loc, ctx, channel):
+			await config.update(channel_id=None)
+			return await fancy_message(ctx, loc.l("settings.server.welcome.channel.auto"), ephemeral=True)
+		if not await self.channel_permission_check(loc, ctx, channel):
 			return
-		await server_data.welcome.update(channel_id=str(channel.id))
+		await config.update(channel_id=str(channel.id))
 
 		warn = ""
-		if not server_data.welcome.enabled:
-			warn += "\n-# "+loc.l("settings.server.welcome.editor.disabled_warning")
-		if not server_data.welcome.message:
-			warn += "\n-# "+loc.l("settings.server.welcome.enabled.edit_warning")
+		if config.disabled:
+			warn += "\n-# " + loc.l("settings.server.welcome.editor.disabled_warning")
+		if not config.message:
+			warn += "\n-# " + loc.l("settings.server.welcome.enabled.edit_warning")
 		return await fancy_message(
 		    ctx,
-		    loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn,
+		    loc.l("settings.server.welcome.channel.Changed", channel=channel.mention) + warn,
 		)
