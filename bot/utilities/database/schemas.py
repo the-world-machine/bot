@@ -77,6 +77,7 @@ class StatUpdate:
 	icon: str
 	old_value: int
 	new_value: int
+
 @dataclass
 class Nikogotchi(Collection):
 	available: bool = False
