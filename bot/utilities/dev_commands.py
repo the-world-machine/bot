@@ -4,32 +4,26 @@ import sys
 import time
 import json
 from yaml import dump
+import traceback as tb
 from aioconsole import aexec
 from termcolor import colored
+from utilities.misc import shell
 from utilities.emojis import emojis
 import utilities.database.main as main
 from utilities.localization import fnum
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
+import utilities.database.schemas as schemas
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
 from utilities.extensions import load_commands  # used, actually
-from traceback import _parse_value_tb, TracebackException
-from utilities.misc import shell
 from utilities.shop.fetch_shop_data import reset_shop_data
 
 ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 
 async def get_collection(collection: str, _id: str):
-	key_to_collection: dict[str, main.Collection] = {
-	    'user': main.UserData(_id),
-	    'nikogotchi': main.Nikogotchi(_id),
-	    'nikogotchi_old': main.NikogotchiData(_id),
-	    'server': main.ServerData(_id)
-	}
-
-	return key_to_collection[collection]
+	return schemas[collection](_id)
 
 
 class CapturePrints:
@@ -76,6 +70,23 @@ if on_prod:
 
 
 async def execute_dev_command(message: Message):
+	try:
+		return await _execute_dev_command(message)
+	except Exception as e:
+		result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
+		lines = []
+		raw_tb = tb.format_exc(chain=True)
+		print(raw_tb)
+		for line in raw_tb.split("\n"):
+			lines.append(line)
+		lines.pop(0)
+		result = '\n'.join(lines)
+		return await message.reply(
+		    embeds=Embed(color=Colors.BAD, description=f"\n```py\n{result[0:3900].replace('```', '` ``')}```")
+		)
+
+
+async def _execute_dev_command(message: Message):
 	if not message.content:
 		return
 
@@ -173,7 +184,6 @@ async def execute_dev_command(message: Message):
 						result = eval(code, globals(), locals())
 				end_time = time.perf_counter()
 			except Exception as e:
-				print(e)
 				end_time = time.perf_counter()
 				state['raisure'] = True
 				exc_type, exc_value, exc_tb = sys.exc_info()
@@ -183,7 +193,10 @@ async def execute_dev_command(message: Message):
 				if method == "eval":
 					result = str(exc_value)
 				else:
-					for line in tb.format_exc(chain=True).split("\n"):
+					lines = []
+					raw_tb = tb.format_exc(chain=True)
+					print(raw_tb)
+					for line in raw_tb.split("\n"):
 						# yapf: disable
 						lines.append(
 						 line.replace('  File "<aexec>", ', " - at ")
@@ -228,14 +241,11 @@ async def execute_dev_command(message: Message):
 					)
 				else:
 					result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
-					exc_type, exc_value, exc_tb = sys.exc_info()
-					value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
-					tb = TracebackException(type(value), value, tb, limit=None, compact=True)
 					lines = []
-					for line in tb.format(chain=True):
+					for line in tb.format_exc(chain=True).split("\n"):
 						lines.append(line)
 					lines.pop(0)
-					result = ''.join(lines)
+					result = '\n'.join(lines)
 					return await handle_reply(runtime, result)
 		case "shop":
 			items = await main.fetch_items()
@@ -296,7 +306,7 @@ async def execute_dev_command(message: Message):
 						_id = args[2]
 						amount = int(args[3])
 
-						collection: main.UserData = await main.fetch_from_database(await get_collection('user', _id))
+						collection: schemas.UserData = await main.fetch_from_database(await get_collection('user', _id))
 
 						await collection.manage_wool(amount)
 
