@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 from utilities.config import get_config
 from interactions import Snowflake
+import yaml
 if get_config("database.dns-fix", ignore_None=True):
 	import dns.resolver
 	dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
@@ -45,7 +46,7 @@ class Collection:
 		updated_data = await update_in_database(self, **kwargs)
 		for k, v in to_dict(updated_data).items():
 			setattr(self, k, v)
-		return updated_data
+		return init_things(updated_data)
 
 	async def fetch(self: TCollection) -> TCollection:
 		'''Fetch the current collection using id.'''
@@ -90,10 +91,8 @@ class DBDict(dict):
 		update_fields = {self._parent_field: updated_state}
 		updated_parent = await self._parent.update(**update_fields)
 
-		for k, v in kwargs.items():
+		for k, v in update_fields.items():
 			setattr(self, k, v)
-
-		return updated_parent
 
 	async def update_array(self, field: str, operator: str, value: Any):
 		if self._parent is None:
@@ -137,10 +136,15 @@ class DBList(list):
 		await self._parent.update_array(self._parent_field, '$set', [])
 		super().clear()
 
+
 K = TypeVar('K')
 V = TypeVar('V')
 
+
 class DBDynamicDict(dict[K, V], Generic[K, V]):
+	_parent: InitVar[Collection] = None
+	_parent_field: InitVar[str] = None
+
 	def __init__(self, *args, _parent=None, _parent_field=None, **kwargs):
 		super().__init__(*args, **kwargs)
 		self._parent = _parent
@@ -148,7 +152,7 @@ class DBDynamicDict(dict[K, V], Generic[K, V]):
 
 	async def __setitem__(self, key, value):
 		if self._parent is not None:
-			update_fields = {self._parent_field: dict(self, **{key: value})}
+			update_fields = {self._parent_field: dict(self, **{ key: value})}
 			await self._parent.update(**update_fields)
 		super().__setitem__(key, value)
 
@@ -160,10 +164,10 @@ class DBDynamicDict(dict[K, V], Generic[K, V]):
 		await self._parent.update(**update_fields)
 
 		super().update(**kwargs)
-		return self._parent
 
 	def __repr__(self):
 		return f"DBD{super().__repr__()}"
+
 
 connection = None
 
@@ -229,9 +233,15 @@ def to_dict(obj):
 			value = getattr(obj, f.name)
 			result[f.name] = to_dict(value)
 		return result
-	elif isinstance(obj, (list, tuple)):
+	elif isinstance(obj, (DBList, list, tuple)):
 		return type(obj)(to_dict(x) for x in obj)
-	elif isinstance(obj, dict):
+	elif isinstance(obj, (DBDict, DBDynamicDict, dict)):
 		return { k: to_dict(v) for k, v in obj.items() }
 	else:
 		return obj
+
+
+for dc in (yaml.Dumper, yaml.SafeDumper):
+	yaml.add_representer(DBList, lambda dumper, data: dumper.represent_list(list(data)), Dumper=dc)
+	yaml.add_representer(DBDict, lambda dumper, data: dumper.represent_dict(to_dict(data)), Dumper=dc)
+	yaml.add_representer(DBDynamicDict, lambda dumper, data: dumper.represent_dict(to_dict(data)), Dumper=dc)
