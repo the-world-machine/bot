@@ -73,7 +73,7 @@ async def execute_dev_command(message: Message):
 	try:
 		return await _execute_dev_command(message)
 	except Exception as e:
-		result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
+		result = f"Raised an exception when processing command: {str(e)}"
 		lines = []
 		raw_tb = tb.format_exc(chain=True)
 		print(raw_tb)
@@ -140,9 +140,12 @@ async def _execute_dev_command(message: Message):
 					msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
 					await msg.client.synchronise_interactions()
 					return await msg.edit(content=f"[ Synchronized ]")
-				case "git_pull":
-					msg = await message.reply(f"[ Pulling... {emojis['icons']['loading']} ]")
-					output = shell("git pull")
+				case "shell":
+					msg = await message.reply(f"[ Running... {emojis['icons']['loading']} ]")
+					parse = ' '.join(args).split(args[1])
+					if len(parse) < 1:
+						return await msg.edit(content=f"[ No command passed ]")
+					output = shell(parse[1])
 					return await msg.edit(content=f"[ Done ]\n```bash\n{output}```")
 
 				case _:
