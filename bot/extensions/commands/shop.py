@@ -1,3 +1,4 @@
+from collections import Counter
 from dataclasses import asdict
 import os
 import random
@@ -102,7 +103,7 @@ class ShopCommands(Extension):
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		all_treasures = await fetch_treasure()
-		owned_treasure = user_data.owned_treasures
+		owned_treasure = Counter(user_data.owned_treasures)
 
 		amount_of_treasure = owned_treasure[treasure_id]
 
@@ -140,14 +141,10 @@ class ShopCommands(Extension):
 
 			sell_price = int(treasure['price'] * stock_price)
 			owned_treasure[treasure_id] -= 1
-
+		await user_data.update(owned_treasures=owned_treasure)
 		result_text = loc.l('shop.traded_sell', item_name=treasure_loc['name'], amount=amount, price=sell_price)
 
 		await user_data.manage_wool(sell_price)
-
-		await user_data.update(
-		    owned_treasures=owned_treasure,
-		)
 
 		await update()
 
@@ -207,12 +204,11 @@ class ShopCommands(Extension):
 			price = int(treasure_price)
 			amount = 1
 
-		owned_treasure = user_data.owned_treasures
+		owned_treasure = Counter(user_data.owned_treasures)
 
 		owned_treasure[treasure_id] = owned_treasure.get(treasure_id, 0) + amount
 
 		await user_data.update(owned_treasures=owned_treasure)
-
 		await user_data.manage_wool(-price)
 
 		return await update(loc.l('shop.traded', item_name=name, amount=int(amount), price=int(price)))
@@ -245,11 +241,8 @@ class ShopCommands(Extension):
 		elif user.wool < get_background['price']:
 			embed.set_footer(loc.l('shop.buttons.too_poor'))
 		else:
-			owned_backgrounds.append(bg_id)
+			await owned_backgrounds.append(bg_id)
 
-			await user.update(
-			    owned_backgrounds=owned_backgrounds,
-			)
 			embed.description = loc.l('shop.backgrounds.newly_owned', user_wool=loc.l('shop.user_wool', wool=user.wool))
 			await user.manage_wool(-get_background['price'])
 			embed.set_footer(loc.l('shop.backgrounds.traded'))
