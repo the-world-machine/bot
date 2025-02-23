@@ -17,7 +17,7 @@ def make_interactions_select_menu(loc: Localization, uid: User) -> StringSelectM
 
 class InteractCommands(Extension):
 
-	@slash_command(sub_cmd_description="Interact with others in various ways (sends a message in chat)")
+	@slash_command(description="Interact with others in various ways (sends a message in chat)")
 	@slash_option(name='with', description='The person you want to interact with', opt_type=OptionType.USER, required=True, argument_name="user")
 	@integration_types(guild=True, user=False)
 	@contexts(bot_dm=False)
