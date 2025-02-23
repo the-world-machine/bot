@@ -13,22 +13,23 @@ connection_uri = get_config('database.uri')
 
 def init_things(self):
 	type_hints = get_type_hints(self.__class__)
-	for field_info in fields(self):
-		value = getattr(self, field_info.name)
-		name = field_info.name
+	if is_dataclass(self):
+		for field_info in fields(self):
+			value = getattr(self, field_info.name)
+			name = field_info.name
 
-		field_type = type_hints.get(name)
+			field_type = type_hints.get(name)
 
-		if name in [ "_id", "_parent", "_parent_field"]:
-			continue
+			if name in [ "_id", "_parent", "_parent_field"]:
+				continue
 
-		if isinstance(value, dict):
-			if field_type.__origin__ == DBDynamicDict:
-				setattr(self, name, field_type(_parent=self, _parent_field=name, **value))
-			else:
-				setattr(self, name, init_things(field_type(_parent=self, _parent_field=name, **value)))
-		elif isinstance(value, list):
-			setattr(self, name, field_type(default=value, _parent=self, _parent_field=name))
+			if isinstance(value, dict):
+				if isinstance(field_type, DBDynamicDict):
+					setattr(self, name, field_type(_parent=self, _parent_field=name, **value))
+				else:
+					setattr(self, name, init_things(field_type(_parent=self, _parent_field=name, **value)))
+			elif isinstance(value, list):
+				setattr(self, name, field_type(default=value, _parent=self, _parent_field=name))
 	return self
 
 
