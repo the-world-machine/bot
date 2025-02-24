@@ -3,7 +3,7 @@ import random
 from interactions import *
 from dataclasses import dataclass
 from utilities.emojis import emojis
-from utilities.localization import fnum
+from utilities.localization import Localization, fnum
 from utilities.database.schemas import UserData
 from utilities.message_decorations import Colors, fancy_message
 
@@ -62,8 +62,8 @@ class GambleCommands(Extension):
 	    min_value=100
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
-		await ctx.defer()
-
+		loc = Localization(ctx.locale)
+		await fancy_message(ctx, loc.l('nikogotchi.loading'))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
@@ -145,7 +145,7 @@ class GambleCommands(Extension):
 			    color=Colors.DEFAULT,
 			)
 
-		msg = await ctx.send(embed=generate_embed(0, -1, slot_images))
+		await ctx.edit(embed=generate_embed(0, -1, slot_images))
 
 		slot_values = [ 0, 0, 0 ]
 
@@ -156,7 +156,7 @@ class GambleCommands(Extension):
 				await asyncio.sleep(sleep_first_rotata_s * ((i + 1) / max_rolls)**1.5)
 
 				result_embed = generate_embed(i, column, slot_images)
-				await msg.edit(embed=result_embed)
+				await ctx.edit(embed=result_embed)
 				slot_values[column] = rows[column][i].value
 
 		result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
@@ -186,7 +186,7 @@ class GambleCommands(Extension):
 			result_embed.color = Colors.PURE_RED
 			result_embed.set_footer(text=f'{ctx.author.username} lost it all... better luck next time!')
 
-		await msg.edit(embed=result_embed)
+		await ctx.edit(embed=result_embed)
 
 	@gamble.subcommand(sub_cmd_description="Read up on how the gamble command works")
 	async def help(self, ctx: SlashContext):
