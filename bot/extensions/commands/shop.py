@@ -31,7 +31,10 @@ class ShopCommands(Extension):
 	max_buy_sell_limit = 1000000000000000000000000
 
 	@listen(Ready)
-	async def load_shop():
+	async def loadde_shoppe(self, event: Ready):
+		await self.load_shop()
+
+	async def load_shop(self):
 		global daily_shop
 		data = await fetch_shop_data()
 		if datetime.now() > data.last_updated + timedelta(days=1):
