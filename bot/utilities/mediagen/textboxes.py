@@ -1,11 +1,8 @@
-import builtins
 import io
 from pathlib import Path
 import textwrap
 from enum import Enum
-from datetime import datetime
 from typing import Literal
-from interactions import File
 from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
@@ -47,9 +44,9 @@ class Frame:
 PALCEHOLDER_DELAY_BETWEEN_CHARACTERS_Bleh = 2000  # this needs to go to the end of the last frame
 
 
-async def render_frame(text: str | None,
-                       face: Face | None,
-                       animated: bool = True) -> tuple[list[Image.Image], list[float]] | Image.Image:
+async def render_textbox(text: str | None,
+                         face: Face | None,
+                         animated: bool = True) -> tuple[list[Image.Image], list[float]] | Image.Image:
 	background = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
 	if text:
 		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
@@ -95,7 +92,7 @@ async def render_frame(text: str | None,
 	return images
 
 
-async def make_textboxes(frames: dict[str, Frame]):
+async def render_textboxes(frames: dict[str, Frame]):
 	frame_images: list[Image.Image] = []
 	for frame in frames.values():
 		char = None
@@ -105,7 +102,7 @@ async def make_textboxes(frames: dict[str, Frame]):
 		if char and frame.face_name:
 			face = char.get_face(frame.face_name)
 
-		frame_images.extend(await render_frame(frame.text, face))
+		frame_images.extend(await render_textbox(frame.text, face))
 	buffer = io.BytesIO()
 	frame_images[0].save(buffer, format="GIF", save_all=True, append_images=frame_images[1:], loop=None)
 	return buffer

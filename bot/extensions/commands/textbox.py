@@ -6,7 +6,7 @@ from typing import Literal
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.emojis import emojis
-from utilities.mediagen.textbox import Frame, Styles, render_frame, make_textboxes
+from utilities.mediagen.textboxes import Frame, Styles, render_textbox, render_textboxes
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import make_empty_select, pretty_user
@@ -309,7 +309,7 @@ class TextboxCommands(Extension):
 
 				alt_accum = loc.l("textbox.multi.alt.frame" +("" if frame.text else "_nothing"), character=frame.character_id, face=frame.face_name, text=frame.text)
 			alt_text = loc.l("textbox.multi.alt.beginning", frames=alt_accum)
-			buffer = await make_textboxes(state.frames)
+			buffer = await render_textboxes(state.frames)
 			filename = f"{filename}.gif"
 		else:
 			frame = state.frames[int(frame_index)]
@@ -343,7 +343,7 @@ class TextboxCommands(Extension):
 				alt_text = loc.l(f'textbox.single.alt.{"cont" if frame.text else "cont_silly"}', text=frame.text, alt=alt_text)
 
 			buffer = io.BytesIO()
-			(await render_frame(frame.text, face, False))[0].save(buffer, format="PNG")
+			(await render_textbox(frame.text, face, False))[0].save(buffer, format="PNG")
 			filename = f"{filename}.png"
 	
 		buffer.seek(0)

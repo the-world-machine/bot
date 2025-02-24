@@ -1,7 +1,7 @@
 import io
 import traceback as tb
 from interactions import *
-from utilities.mediagen.textbox import render_frame
+from utilities.mediagen.textboxes import render_textbox
 from interactions.api.events import MemberAdd
 from utilities.database.schemas import ServerData
 from utilities.textbox.characters import get_character
@@ -28,9 +28,9 @@ class MemberAddEvent(Extension):
 		    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
 		)
 		buffer = io.BytesIO()
-		(await render_frame(message,
-		                    get_character("The World Machine").get_face("Pancakes"),
-		                    False))[0].save(buffer, format="PNG")
+		(await render_textbox(message,
+		                      get_character("The World Machine").get_face("Pancakes"),
+		                      False))[0].save(buffer, format="PNG")
 		buffer.seek(0)
 
 		target_channel = guild.system_channel
@@ -49,7 +49,7 @@ class MemberAddEvent(Extension):
 		try:
 			await target_channel.send(
 			    content=f"-# {event.member.mention}",
-					files=File(file=buffer, file_name=f"welcome textbox.png"),
+			    files=File(file=buffer, file_name=f"welcome textbox.png"),
 			    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
 			)
 		except Exception as e:
