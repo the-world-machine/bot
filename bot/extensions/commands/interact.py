@@ -55,7 +55,7 @@ class InteractCommands(Extension):
 		args = ctx.values[0].split('_')
 		user = ctx.client.get_user(args[1])
 		text = loc.l(f'interact.options.{args[0]}.messages')
-		if isinstance(text, list):
+		if isinstance(text, tuple):
 			text = random.choice(text)
 
 		await ctx.channel.send(assign_variables(text, locale=ctx.locale, user_one=ctx.author.mention, user_two=user.mention))
