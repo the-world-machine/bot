@@ -5,6 +5,16 @@
 	"editor.tabSize": 2,
 	"editor.insertSpaces": false,
 	"editor.formatOnSave": true,
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/__pycache__": true,
+		"Pipfile.lock": true
+	},
 	"[python]": {
 		"editor.formatOnSaveMode": "modifications",
 		"editor.formatOnSave": true,
