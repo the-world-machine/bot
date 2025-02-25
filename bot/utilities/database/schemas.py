@@ -43,7 +43,7 @@ class UserData(Collection):
 	owned_badges: DBList[str] = field(default_factory=list)
 	ask_limit: int = 14
 	last_asked: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	daily_wool_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
+	daily_wool_timestamp: datetime = None
 	daily_sun_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
 	times_asked: int = 0
 	times_transmitted: int = 0

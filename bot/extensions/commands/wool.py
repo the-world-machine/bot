@@ -6,24 +6,24 @@ from datetime import datetime, timedelta
 from utilities.database.schemas import UserData
 from utilities.localization import Localization, fnum
 from utilities.message_decorations import Colors, fancy_message
-
+# yapf: disable
 wool_finds = {
-    5: [ "devoted", "positive_major"],
-    20: [ "unhappy", "negative_normal"],
-    30: [ "yippie", 'positive_normal'],
-    40: [ "misdeed", 'negative_minimum'],
-    70: [ "despise", 'negative_major'],
-    100: [ "ogie", 'positive_minimum']
+	 10: [ "devoted", "positive_major"   ],
+	 30: [  "yippie", 'positive_normal'  ],
+	 60: [    "ogie", 'positive_minimum' ],
+	 70: [ "misdeed", 'negative_minimum' ],
+	 95: [ "unhappy", "negative_normal"  ],
+	100: [ "despise", 'negative_major'   ]
 }
 wool_values = {
-    'positive_minimum': [ 500, 3_000 ],
-    'positive_normal': [ 5_000, 15_000 ],
-    'positive_major': [ 20_000, 50_000 ],
-    'negative_minimum': [-10, -100],
-    'negative_normal': [-100, -300],
-    'negative_major': [-500, -1000]
+	  'positive_major': [  5_000, 20_000  ],
+	 'positive_normal': [  3_000, 5_000   ],
+	'positive_minimum': [    500, 3_000   ],
+	'negative_minimum': [    -10, -1_000  ],
+	 'negative_normal': [ -1_000, -5_000  ],
+	  'negative_major': [ -5_000, -30_000 ]
 }
-
+# yapf: enable
 
 class WoolCommands(Extension):
 
