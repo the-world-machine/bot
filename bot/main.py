@@ -6,7 +6,7 @@
 #	asyncio.run(temp())
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
-from utilities.config import get_config, get_token  # import config first (for prerequisites)
+from utilities.config import get_config, get_token
 
 from interactions import *
 # from utilities.misc import set_status
@@ -16,6 +16,9 @@ from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_status, roll_avatar
 from interactions.api.events import Startup
 from datetime import datetime
+from utilities.logging import createLogger
+
+logger = createLogger(__name__)
 
 intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
 
@@ -24,7 +27,8 @@ client = Client(
     send_command_tracebacks=False,
     send_not_ready_messages=True,
     sync_interactions=False,
-    sync_ext=False
+    sync_ext=False,
+    logger=createLogger("client")
 )
 client.started_at = datetime.now()
 if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
