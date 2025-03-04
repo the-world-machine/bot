@@ -144,7 +144,7 @@ settings:
       enabled:
         yah: "[ Welcome textboxes have been enabled ]"
         nah: "[ Welcome textboxes have been disabled ]"
-        edit_warning: "You can change the textbox message with `/settings welcome edit`"
+        edit_warning: "note: you can change the textbox message with `/settings welcome edit`"
       channel:
         auto: "[ Welcome textboxes channel has been reset ]"
         Changed: "[ Welcome textboxes channel has been set to [channel] ]"
