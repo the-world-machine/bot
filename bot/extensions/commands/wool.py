@@ -8,20 +8,20 @@ from utilities.localization import Localization, fnum
 from utilities.message_decorations import Colors, fancy_message
 # yapf: disable
 wool_finds = {
-	 10: [ "devoted", "positive_major"   ],
-	 30: [  "yippie", 'positive_normal'  ],
-	 60: [    "ogie", 'positive_minimum' ],
-	 70: [ "misdeed", 'negative_minimum' ],
-	 95: [ "unhappy", "negative_normal"  ],
-	100: [ "despise", 'negative_major'   ]
+  10: [ "devoted", "positive_major"   ],
+  30: [  "yippie", 'positive_normal'  ],
+  60: [    "ogie", 'positive_minimum' ],
+  70: [ "misdeed", 'negative_minimum' ],
+  95: [ "unhappy", "negative_normal"  ],
+ 100: [ "despise", 'negative_major'   ]
 }
 wool_values = {
-	  'positive_major': [  5_000, 20_000  ],
-	 'positive_normal': [  3_000, 5_000   ],
-	'positive_minimum': [    500, 3_000   ],
-	'negative_minimum': [    -10, -1_000  ],
-	 'negative_normal': [ -1_000, -5_000  ],
-	  'negative_major': [ -5_000, -30_000 ]
+   'positive_major': [  5_000, 20_000  ],
+  'positive_normal': [  3_000, 5_000   ],
+ 'positive_minimum': [    500, 3_000   ],
+ 'negative_minimum': [    -10, -1_000  ],
+  'negative_normal': [ -1_000, -5_000  ],
+   'negative_major': [ -5_000, -30_000 ]
 }
 # yapf: enable
 
@@ -141,17 +141,22 @@ class WoolCommands(Extension):
 		loc = Localization(ctx.locale)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
-		last_reset_time = user_data.daily_wool_timestamp
+		reset_timestamp = user_data.daily_wool_timestamp
 
 		now = datetime.now()
 
-		if now < last_reset_time:
-			time_unix = last_reset_time.timestamp()
-			return await fancy_message(ctx, loc.l("wool.pray.errors.timeout", timestamp_relative=f"<t:{int(time_unix)}:R>"), ephemeral=True, color=Colors.BAD)
+		if reset_timestamp and now < reset_timestamp:
+			time_unix = reset_timestamp.timestamp()
+			return await fancy_message(
+			    ctx,
+			    loc.l("wool.pray.errors.timeout", timestamp_relative=f"<t:{int(time_unix)}:R>"),
+			    ephemeral=True,
+			    color=Colors.BAD
+			)
 		# TODO: use silly relative timestamp function
 
 		# reset the limit if it is a new day
-		if now >= last_reset_time:
+		if now >= reset_timestamp:
 			reset_time = datetime.combine(now.date(), now.time()) + timedelta(days=1)
 			await user_data.update(daily_wool_timestamp=reset_time)
 		rolled = random.randint(0, 100)
