@@ -206,7 +206,9 @@ class SettingsCommands(Extension):
 
 		await server_data.welcome.update(disabled=not value)
 
-		return await fancy_message(ctx, loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}"), ephemeral=True)
+		return await fancy_message(
+		    ctx, loc.l(f"settings.server.welcome.enabled.{'yah' if value else 'nah'}"), ephemeral=True
+		)
 
 	@welcome.subcommand(sub_cmd_description="Whether to ping the newcomers (shows the @mention regardless)")
 	@slash_option(
@@ -220,7 +222,9 @@ class SettingsCommands(Extension):
 
 		await server_data.welcome.update(ping=not value)
 
-		return await fancy_message(ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True)
+		return await fancy_message(
+		    ctx, loc.l(f"settings.server.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True
+		)
 
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
