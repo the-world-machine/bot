@@ -216,7 +216,7 @@ class SettingsCommands(Extension):
 	    required=True,
 	)
 	async def ping(self, ctx: SlashContext, value):
-		loc, server_data = self.basic(ctx)
+		loc, server_data = await self.basic(ctx)
 
 		await server_data.welcome.update(ping=not value)
 
