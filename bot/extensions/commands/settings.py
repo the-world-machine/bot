@@ -261,15 +261,15 @@ class SettingsCommands(Extension):
 			new_text = None
 
 		await config.update(message=new_text)
-
-		old_text = f"```\n{old_text.replace('```', '` ``')}```"
-		new_text = f"```\n{text.replace('```', '` ``')}```"
-
 		if config.disabled:
 			warn = "\n-# " + loc.l("settings.server.welcome.editor.disabled_warning")
 		debug = ""
 		if debugging():
-			debug = loc.l("settings.server.welcome.editor.debug", old_text=old_text, new_text=new_text)
+			debug = loc.l(
+			    "settings.server.welcome.editor.debug",
+			    old_text=f"```\n{old_text.replace('```', '` ``')}```",
+			    new_text=f"```\n{text.replace('```', '` ``')}```"
+			)
 		await fancy_message(ctx, loc.l("settings.server.welcome.editor.done") + debug + warn, ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_description="Where to send the welcome textboxes to")
