@@ -11,9 +11,11 @@ general:
     _open_site: "Open Website"
     _dont_show_again: "Don't Show Again"
   
-  temporaries:
+  minis:
     note: "❕ note:"
     tip: "❔ tip:"
+    warn: "⚠️ warning:"
+    err: "‼️ error:"
 
   responses:
     timeout:
