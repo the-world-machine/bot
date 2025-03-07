@@ -16,9 +16,11 @@ general:
     _open_site: "Open Website"
     _dont_show_again: "Don't Show Again"
   
-  temporaries:
+  minis:
     note: "❕ note:"
     tip: "❔ tip:"
+    warn: "⚠️ warning:"
+    err: "‼️ error:"
 
   select:
     empty: hallo, english (original) translation made by @meqativ and @axiinyaa # u can change this to whatever you want when translating 👍 (MAX: 150 characters)

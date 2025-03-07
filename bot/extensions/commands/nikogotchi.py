@@ -12,7 +12,7 @@ from utilities.misc import make_empty_select
 from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
-from utilities.localization import Localization, fnum, ftime, temporary_notip
+from utilities.localization import Localization, fnum, ftime, put_mini
 from utilities.message_decorations import Colors, fancy_message, make_progress_bar
 from utilities.database.schemas import StatUpdate, UserData, Nikogotchi
 
@@ -251,7 +251,7 @@ class NikogotchiCommands(Extension):
 				return await fancy_message(
 				    ctx,
 				    loc.l('nikogotchi.invalid') +
-				    await temporary_notip(loc, ctx.user.id, "nikogotchi.tipinvalid", "tip", "\n\n"),
+				    await put_mini(loc, ctx.user.id, "nikogotchi.tipinvalid", "tip", "\n\n"),
 				    ephemeral=True,
 				    color=Colors.BAD
 				)
@@ -283,7 +283,7 @@ class NikogotchiCommands(Extension):
 			    title=loc.l('nikogotchi.found.title', name=nikogotchi.name),
 			    color=Colors.GREEN,
 			    description=loc.l('nikogotchi.found.description') +
-			    await temporary_notip(loc, ctx.user.id, "nikogotchi.found.renamenote", 'note', "\n\n")
+			    await put_mini(loc, ctx.user.id, "nikogotchi.found.renamenote", 'note', "\n\n")
 			)
 
 			hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
@@ -447,7 +447,7 @@ class NikogotchiCommands(Extension):
 				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.cleaned'))
 
 			if custom_id == 'findtreasure':
-				dialogue = loc.l('nikogotchi.treasured.dialogues.sent') + await temporary_notip(
+				dialogue = loc.l('nikogotchi.treasured.dialogues.sent') + await put_mini(
 				    loc, ctx.user.id, 'nikogotchi.treasured.dialogues.senote', 'note', "\n"
 				)
 				nikogotchi.status = 3
@@ -818,7 +818,7 @@ class NikogotchiCommands(Extension):
 		await ctx.edit(
 		    embed=Embed(
 		        description=loc.l('treasure.message', user=user.mention, treasures=treasure_string) +
-		        (await temporary_notip(loc, ctx.user.id, "treasure.tip", "tip", "\n") if not public else ""),
+		        (await put_mini(loc, ctx.user.id, "treasure.tip", "tip", "\n") if not public else ""),
 		        color=Colors.DEFAULT,
 		    )
 		)

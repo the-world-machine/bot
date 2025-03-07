@@ -300,12 +300,12 @@ limits = {
 	"nikogotchi.found.renamenote": 5,
 	"nikogotchi.treasured.dialogues.senote": 25,
 }
-async def temporary_notip(loc: Localization, user_id: str | int, message: str, type: Literal["note", "tip"] = "note", pre: str = "", markdown: bool = True) -> str:
+async def put_mini(loc: Localization, user_id: str | int, message: str, type: Literal["note", "tip", "warn", "err"] = "note", pre: str = "", markdown: bool = True) -> str:
 	user_data = await UserData(str(user_id)).fetch()
-	reacher = user_data.temporaries_shown[message] if hasattr(user_data.temporaries_shown, message) else 0
+	reacher = user_data.minis_shown[message] if hasattr(user_data.minis_shown, message) else 0
 	if limits[message] != -1 and limits[message] <= reacher:
 		return ""
-	asyncio.create_task(user_data.temporaries_shown.increment_key(message))
-	name = loc.l(f"general.temporaries.{type}")
+	asyncio.create_task(user_data.minis_shown.increment_key(message))
+	name = loc.l(f"general.minis.{type}")
 	msg = loc.l(message)
 	return f"{pre}{"-# " if markdown else ""}{name} {msg}"

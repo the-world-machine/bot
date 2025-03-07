@@ -32,7 +32,7 @@ class ServerData(Collection):
 
 @dataclass
 class UserData(Collection):
-	temporaries_shown: DBDynamicDict[str, int] = field(default_factory=DBDynamicDict)
+	minis_shown: DBDynamicDict[str, int] = field(default_factory=DBDynamicDict)
 	wool: int = 0
 	suns: int = 0
 	equipped_bg: str = 'Default'
