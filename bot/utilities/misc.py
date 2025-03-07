@@ -1,13 +1,12 @@
 import io
-from base64 import b64decode
 import copy
-import aiofiles
 import aiohttp
+import aiofiles
 import datetime
 import subprocess
-from PIL import Image
 from pathlib import Path
-from typing import Literal, Union, Optional
+from base64 import b64decode
+from typing import Union, Optional
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
 

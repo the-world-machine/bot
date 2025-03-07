@@ -11,6 +11,7 @@ from babel.dates import format_timedelta
 from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
 from extensions.events.Ready import ReadyEvent
+from utilities.database.schemas import UserData
 from utilities.misc import FrozenDict, decode_base64_padded, rabbit
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
@@ -287,3 +288,23 @@ def assign_variables(
 		return new_dict
 	else:
 		return input
+
+limits = {
+	"wool.transfer.errors.note_nuf": -1,
+	"wool.transfer.to.bot.notefirmation": 10,
+	"settings.welcome.enabled.default_tip": 15,
+	"settings.welcome.editor.disabled_note": 15,
+	"treasure.tip": 5,
+	"nikogotchi.tipnvalid": 5,
+	"nikogotchi.found.renamenote": 5,
+	"nikogotchi.treasured.dialogues.senote": 25,
+}
+async def temporary_notip(loc: Localization, user_id: str | int, message: str, type: Literal["note", "tip"] = "note", pre: str = "", markdown: bool = True) -> str:
+	user_data = await UserData(str(user_id)).fetch()
+	reacher = user_data.temporaries_shown[message] if hasattr(user_data.temporaries_shown, message) else 0
+	if limits[message] != -1 and reacher > limits[message]:
+		return ""
+	name = loc.l(f"general.temporaries.{type}")
+	msg = loc.l(message)
+	user_data.temporaries_shown.increment_key(message)
+	return f"{pre}{"-# " if markdown else ""}{name} {msg}"

@@ -1,7 +1,7 @@
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.database.schemas import ServerData
-from utilities.localization import Localization
+from utilities.localization import Localization, temporary_notip
 from utilities.message_decorations import Colors, fancy_message
 
 
@@ -258,7 +258,7 @@ class SettingsCommands(Extension):
 
 		await config.update(message=new_text)
 		if config.disabled:
-			warn = "\n-# " + loc.l("settings.welcome.editor.disabled_warning")
+			warn = await temporary_notip(loc, ctx.user.id, "settings.welcome.editor.disabled_note", "note", "\n\n")
 		debug = ""
 		if debugging():
 			debug = loc.l(
@@ -286,9 +286,9 @@ class SettingsCommands(Extension):
 
 		warn = ""
 		if config.disabled:
-			warn += "\n-# " + loc.l("settings.welcome.editor.disabled_warning")
+			warn += await temporary_notip(loc, ctx.user.id, "settings.welcome.editor.disabled_note", "note", "\n\n")
 		if not config.message:
-			warn += "\n-# " + loc.l("settings.welcome.enabled.edit_warning")
+			warn += await temporary_notip(loc, ctx.user.id, "settings.welcome.enabled.default_tip", "note", "\n\n")
 		return await fancy_message(
 		    ctx,
 		    loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn,

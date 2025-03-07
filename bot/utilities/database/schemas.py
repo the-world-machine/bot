@@ -9,8 +9,9 @@ class TransmitConfig(DBDict):
 	channel_id: str | None = None
 	anonymous: bool = False
 	allow_images: bool = True
-	blocked_servers: DBList[str] = field(default_factory=list)
-	known_servers: DBList[str] = field(default_factory=list)
+	blocked_servers: DBList[str] = field(default_factory=DBList)
+	known_servers: DBList[str] = field(default_factory=DBList)
+
 
 @dataclass
 class WelcomeConfig(DBDict):
@@ -25,12 +26,13 @@ class WelcomeConfig(DBDict):
 
 @dataclass
 class ServerData(Collection):
-	transmissions: TransmitConfig = field(default_factory=dict)
-	welcome: WelcomeConfig = field(default_factory=dict)
+	transmissions: TransmitConfig = field(default_factory=TransmitConfig)
+	welcome: WelcomeConfig = field(default_factory=WelcomeConfig)
 
 
 @dataclass
 class UserData(Collection):
+	temporaries_shown: DBDynamicDict[str, int] = field(default_factory=DBDynamicDict)
 	wool: int = 0
 	suns: int = 0
 	equipped_bg: str = 'Default'
@@ -40,7 +42,7 @@ class UserData(Collection):
 	owned_backgrounds: DBList[str] = field(
 	    default_factory=lambda: [ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink']
 	)
-	owned_badges: DBList[str] = field(default_factory=list)
+	owned_badges: DBList[str] = field(default_factory=DBList)
 	ask_limit: int = 14
 	last_asked: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
 	daily_wool_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
@@ -50,24 +52,14 @@ class UserData(Collection):
 	times_shattered: int = 0
 	translation_language: str = 'english'
 
-	async def increment_value(self, key: str, amount: int = 1):
-		'Increment a value within the UserData object.'
-		value = asdict(self)[key]
-
-		if type(value) == float:
-			int(value)
-
-		return await self.update(**{ key: value + amount})
-
 	async def manage_wool(self, amount: int):
 
 		wool = self.wool + amount
 
 		if wool <= 0:
 			wool = 0
-
-		if wool >= 999999999999999999:
-			wool = 999999999999999999
+		elif wool >= 999_999_999_999_999_999:
+			wool = 999_999_999_999_999_999
 
 		return await self.update(wool=int(wool))
 
