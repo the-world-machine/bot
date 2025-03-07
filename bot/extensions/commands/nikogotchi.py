@@ -818,7 +818,7 @@ class NikogotchiCommands(Extension):
 		await ctx.edit(
 		    embed=Embed(
 		        description=loc.l('treasure.message', user=user.mention, treasures=treasure_string) +
-		        (await temporary_notip(loc, ctx.user.id, "treasure.tip", "tip", "\n\n") if not public else ""),
+		        (await temporary_notip(loc, ctx.user.id, "treasure.tip", "tip", "\n") if not public else ""),
 		        color=Colors.DEFAULT,
 		    )
 		)
