@@ -1,3 +1,4 @@
+from utilities.database.main import to_dict
 from utilities.database.schemas import UserData
 from interactions import *
 from utilities.message_decorations import Colors
@@ -48,11 +49,11 @@ async def increment_value(ctx: SlashContext, value_to_increment: str, amount: in
 		user = ctx.author
 
 	user_data = await UserData(_id=user.id).fetch()
-	json_data = user_data.__dict__
+	user_dict = to_dict(user_data)
 
-	await user_data.increment_value(value_to_increment, amount)
+	await user_data.increment_key(value_to_increment, amount)
 
-	get_value = json_data[value_to_increment] + amount
+	get_value = user_dict[value_to_increment] + amount
 
 	for badge, data in badges.items():
 		if data['type'] == value_to_increment:

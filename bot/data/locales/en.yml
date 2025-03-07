@@ -9,6 +9,11 @@ general:
     _back: "Back"
     _continue: "Continue"
     _open_site: "Open Website"
+    _dont_show_again: "Don't Show Again"
+  
+  temporaries:
+    note: "❕ note:"
+    tip: "❔ tip:"
 
   responses:
     timeout:
@@ -28,7 +33,7 @@ misc:
     title: "You found..."
     finding:
       noik: Niko!
-      footer: A 1 in 100 chance! Lucky!
+      note: a 1% chance! Lucky!
       cat: a cat!
 
   stats:
@@ -86,13 +91,15 @@ wool:
   transfer:
     errors:
       self_transfer: "[ Done... ]"
-      not_enough: "[ You don't have that much [emoji:wool] wool! (you have only [emoji:wool]**[balance]**) ]"
+      not_enough: "[ You don't have that much [emoji:wool] wool! ]"
+      note_nuf: "you have [emoji:wool]**[balance]**" # note:
 
     to:
       bot:
         none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous!"
         some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous..."
-        confirmation: "[ Are you sure you want to give wool to... a bot? You won't be able get it back, you know... ]"
+        confirmation: "[ Are you sure you want to give wool to... a bot? ]"
+        notefirmation: "you won't be able get it back yk..." # note:
       user:
         none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous after all..."
         some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous!"
@@ -122,7 +129,7 @@ transmit:
 
 settings:
   errors:
-    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please readd [app:mention] to the server.
+    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
     missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
     channel_not_messageable: "[ I cannot send messages in that channel ]"
     channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
@@ -134,7 +141,7 @@ settings:
     enabled:
       yah: "[ Welcome textboxes have been enabled ]"
       nah: "[ Welcome textboxes have been disabled ]"
-      edit_warning: "note: you can change the textbox message with `/settings welcome edit`"
+      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
     channel:
       auto: "[ Welcome textboxes channel has been reset ]"
       Changed: "[ Welcome textboxes channel has been set to [channel] ]"
@@ -150,7 +157,7 @@ settings:
         Previous: [old_text]
 
         New (current): [new_text]
-      disabled_warning: "Don't forget to enable them with `/settings welcome enabled value:True`"
+      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
@@ -201,7 +208,11 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? Utterly despicable. ]"
+    nineninenineninenine: |
+      [ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? ]
+      
+      ⚠️ warning: Utterly despicable.
+
   info: "Shatter count: [amount]"
   YouKilledNiko: "[ You killed Niko. ]"
 
@@ -498,14 +509,16 @@ treasure:
 
     [treasures]
 
-    -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some!  # tip:
 
 # ---------------------------------------------------------------
 
 nikogotchi:
-  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
-  invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
+  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
+  invalid: "[ You don't have a Nikogotchi! ]"
+  tipnvalid: "you can buy a capsule with one in the shop" # tip:
+  
 
   name:
     niko: Niko
@@ -566,10 +579,8 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: | 
-      Want to give them a different a name?
-      
-      -# note: you can always do this later using `/nikogotchi rename`
+    description: "Want to give them a different a name?"
+    renamenote: you can also do this using `/nikogotchi rename`  # note:
 
   status:
     template: "*[status]*"
@@ -624,7 +635,8 @@ nikogotchi:
       Time Spent Looking: [time].
       
     dialogues:
-      sent: "Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
+      sent: "Your Nikogotchi was sent to find treasures!"
+      senote: "their stats will decrease faster than normal, so don't forget to call them back" # note:
       none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
   levelupped:

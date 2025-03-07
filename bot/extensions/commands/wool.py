@@ -4,7 +4,7 @@ from interactions import *
 from utilities.emojis import emojis, make_url
 from datetime import datetime, timedelta
 from utilities.database.schemas import UserData
-from utilities.localization import Localization, fnum
+from utilities.localization import Localization, fnum, temporary_notip
 from utilities.message_decorations import Colors, fancy_message
 # yapf: disable
 wool_finds = {
@@ -24,6 +24,7 @@ wool_values = {
    'negative_major': [ -5_000, -30_000 ]
 }
 # yapf: enable
+
 
 class WoolCommands(Extension):
 
@@ -89,7 +90,8 @@ class WoolCommands(Extension):
 
 			confirmation_m = await fancy_message(
 			    ctx,
-			    message=loc.l("wool.transfer.to.bot.confirmation"),
+			    message=loc.l("wool.transfer.to.bot.confirmation") +
+			    await temporary_notip(loc, ctx.user.id, "wool.transfer.to.bot.notefirmation", "note", "\n\n"),
 			    color=Colors.WARN,
 			    components=buttons,
 			    ephemeral=True
@@ -110,7 +112,8 @@ class WoolCommands(Extension):
 		if from_user.wool < amount:
 			return await fancy_message(
 			    ctx,
-			    loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)),
+			    loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
+			    await temporary_notip(loc, ctx.user.id, "wool.transfer.errors.note_nuf", "note", "\n\n"),
 			    edit=True,
 			    ephemeral=True,
 			    color=Colors.BAD

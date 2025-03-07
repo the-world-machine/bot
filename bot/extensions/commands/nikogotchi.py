@@ -12,7 +12,7 @@ from utilities.misc import make_empty_select
 from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
 from utilities.shop.fetch_items import fetch_treasure
-from utilities.localization import Localization, fnum, ftime
+from utilities.localization import Localization, fnum, ftime, temporary_notip
 from utilities.message_decorations import Colors, fancy_message, make_progress_bar
 from utilities.database.schemas import StatUpdate, UserData, Nikogotchi
 
@@ -248,7 +248,13 @@ class NikogotchiCommands(Extension):
 				else:
 					nikogotchi.available = True
 			if not nikogotchi.available:
-				return await fancy_message(ctx, loc.l('nikogotchi.invalid'), ephemeral=True, color=Colors.BAD)
+				return await fancy_message(
+				    ctx,
+				    loc.l('nikogotchi.invalid') +
+				    await temporary_notip(loc, ctx.user.id, "nikogotchi.tipinvalid", "tip", "\n\n"),
+				    ephemeral=True,
+				    color=Colors.BAD
+				)
 			selected_nikogotchi: NikogotchiMetadata = await pick_random_nikogotchi(nikogotchi.rarity)
 
 			await nikogotchi.update(
@@ -276,7 +282,8 @@ class NikogotchiCommands(Extension):
 			hatched_embed = Embed(
 			    title=loc.l('nikogotchi.found.title', name=nikogotchi.name),
 			    color=Colors.GREEN,
-			    description=loc.l('nikogotchi.found.description')
+			    description=loc.l('nikogotchi.found.description') +
+			    await temporary_notip(loc, ctx.user.id, "nikogotchi.found.renamenote", 'note', "\n\n")
 			)
 
 			hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
@@ -440,7 +447,9 @@ class NikogotchiCommands(Extension):
 				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.cleaned'))
 
 			if custom_id == 'findtreasure':
-				dialogue = loc.l('nikogotchi.treasured.dialogues.sent')
+				dialogue = loc.l('nikogotchi.treasured.dialogues.sent') + await temporary_notip(
+				    loc, ctx.user.id, 'nikogotchi.treasured.dialogues.senote', 'note', "\n"
+				)
 				nikogotchi.status = 3
 				nikogotchi.started_finding_treasure_at = datetime.now()
 
@@ -773,8 +782,14 @@ class NikogotchiCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	@slash_option('user', description='The person you would like to see treasure of', opt_type=OptionType.USER)
-	async def treasures(self, ctx: SlashContext, user: User = None):
+	@slash_option(
+	    description="Whether you want the response to be visible for others in the channel",
+	    name="public",
+	    opt_type=OptionType.BOOLEAN
+	)
+	async def treasures(self, ctx: SlashContext, user: User = None, public: bool = True):
 		loc = Localization(ctx.locale)
+		await fancy_message(ctx, loc.l('nikogotchi.loading'), ephemeral=not public)
 
 		if user is None:
 			user = ctx.user
@@ -794,10 +809,16 @@ class NikogotchiCommands(Extension):
 			name = treasure_loc[treasure_nid]['name']
 
 			treasure_string += loc.l(
-			    'treasure.item', amount=fnum(owned_treasures.get(treasure_nid, 0), locale=loc.locale).rjust(max_amount_length), icon=emojis['treasures'][treasure_nid], name=name
+			    'treasure.item',
+			    amount=fnum(owned_treasures.get(treasure_nid, 0), locale=loc.locale).rjust(max_amount_length),
+			    icon=emojis['treasures'][treasure_nid],
+			    name=name
 			) + "\n"
 
-		await ctx.send(embed=Embed(
-		    description=str(loc.l('treasure.message', user=user.mention, treasures=treasure_string)),
-		    color=Colors.DEFAULT,
-		))
+		await ctx.edit(
+		    embed=Embed(
+		        description=loc.l('treasure.message', user=user.mention, treasures=treasure_string) +
+		        (await temporary_notip(loc, ctx.user.id, "treasure.tip", "tip", "\n\n") if public else ""),
+		        color=Colors.DEFAULT,
+		    )
+		)

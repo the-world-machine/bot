@@ -68,6 +68,15 @@ class Collection:
 		db = get_database()
 		await db.get_collection(self.__class__.__name__).update_one({ '_id': self._id}, { operator: { field: value}})
 
+	async def increment_key(self, key: str, by: int = 1):
+
+		value = getattr(self, key, 0)
+
+		if isinstance(value, float):
+			by = float(by)
+		# could use self.key += by maybe, instead of returning a whole new objec (.update does that)
+		return await self.update(**{ key: value + by})
+
 
 @dataclass
 class DBDict(dict):
@@ -93,6 +102,15 @@ class DBDict(dict):
 
 		for k, v in update_fields.items():
 			setattr(self, k, v)
+
+	async def increment_key(self, key: str, by: int = 1):
+
+		value = self.get(key, 0)
+
+		if isinstance(value, float):
+			by = float(by)
+
+		return await self.update(**{ key: value + by})
 
 	async def update_array(self, field: str, operator: str, value: Any):
 		if self._parent is None:
@@ -164,6 +182,15 @@ class DBDynamicDict(dict[K, V], Generic[K, V]):
 		await self._parent.update(**update_fields)
 
 		super().update(**kwargs)
+
+	async def increment_key(self, key: str, by: int = 1):
+
+		value = self.get(key, 0)
+
+		if isinstance(value, float):
+			by = float(by)
+
+		return await self.update(**{ key: value + by})
 
 	def __repr__(self):
 		return f"DBD{super().__repr__()}"
