@@ -125,17 +125,16 @@ settings:
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
 
-  server:
-    welcome:
-      editor:
-        title: "[ Du verändert die Willkommen Nachricht ... ]"
-        input: "Willkommen Nachricht"
-        placeholder: "Lass leer zum deaktivieren
+  welcome:
+    editor:
+      title: "[ Du verändert die Willkommen Nachricht ... ]"
+      input: "Willkommen Nachricht"
+      placeholder: "Lass leer zum deaktivieren
 
-        - Du kannst die Variablen benutzen: [user_name] [server_name]"
-        done: |
-          [ Erfolgreich Verändert die Willkommen Nachricht]
-        # new message shows up right after this
+      - Du kannst die Variablen benutzen: [user_name] [server_name]"
+      done: |
+        [ Erfolgreich Verändert die Willkommen Nachricht]
+      # new message shows up right after this
   transmissions:
     channel:
       auto: "[ Übertragungs kanal zurücksetzet]"
