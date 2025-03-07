@@ -48,10 +48,9 @@ class Character:
 	icon: str
 
 	def get_face(self, name):
-		try:
-			return self.faces[name]
-		except KeyError:
+		if name not in self.faces:
 			raise ValueError(f'Face "{name}" not found')
+		return self.faces[name]
 
 	def get_faces(self) -> list[tuple[str, Face]]:
 		return self.faces.items()
@@ -88,10 +87,9 @@ def load_characters():
 
 
 def get_character(id: str) -> Character:
-	try:
-		return env["characters"][id]
-	except KeyError:
+	if id not in env["characters"]:
 		raise ValueError(f'Character "{id}" not found')
+	return env["characters"][id]
 
 
 def get_characters() -> list[tuple[str, Character]]:

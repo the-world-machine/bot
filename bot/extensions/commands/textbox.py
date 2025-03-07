@@ -128,16 +128,20 @@ class TextboxCommands(Extension):
 	)
 	@slash_option(
 	    name='character',
+			argument_name='character_id',
 	    description='Which character do you want to be shown on the textbox',
 	    opt_type=OptionType.STRING,
-	    required=False
-	)  # TODO: autocomplete
+	    required=False,
+	    #autocomplete=True,
+	)
 	@slash_option(
 	    name='face',
+			argument_name='face_name',
 	    description="Which face of the character do you want?",
 	    opt_type=OptionType.STRING,
-	    required=False
-	)  # TODO: autocomplete
+	    required=False,
+	    #autocomplete=True,
+	)
 	@slash_option(
 	    name='animated',
 	    description='Do you want the textbox to animate? (will take longer to render, will be a GIF)',
@@ -146,17 +150,17 @@ class TextboxCommands(Extension):
 	)
 	@slash_option(
 	    name='send',
-	    description=
-	    'Do you want the image to be sent in this channel right away?', # TODO: use render&send button instead
+	    description='Do you want the image to be sent in this channel right away? (all entries required)',
 	    opt_type=OptionType.BOOLEAN,
-	    required=False
+	    required=False,
+			# choices=[SlashCommandChoice(name="Normal", value=1), SlashCommandChoice(name="DMs", value=2), SlashCommandChoice(name="Here", value=3)]
 	)
 	async def create(
 	    self,
 	    ctx: SlashContext,
 	    text: str = None,
-	    character: str = None,
-	    face: str = None,
+	    character_id: str = None,
+	    face_name: str = None,
 	    animated: bool = True,
 	    send: bool = False
 	):
@@ -175,29 +179,35 @@ class TextboxCommands(Extension):
 			choices=[SlashCommandChoice(name="WEBP", value="webp"), SlashCommandChoice(name="GIF", value="gif"), SlashCommandChoice(name="APNG", value="apng"), SlashCommandChoice(name="PNG", value="png"), SlashCommandChoice(name="JPG", value="jpg")]
 		)
 		"""
-		if character:
+		erored = False
+		if character_id:
 			try:
-				char = get_character(character)
+				char = get_character(character_id)
 			except ValueError as e:
-				return await fancy_message(
-						ctx, loc.l("textbox.errors.invalid_character", character_name=character), color=Colors.BAD, edit=True
+				erored = True
+				await fancy_message(
+						ctx, loc.l("textbox.errors.invalid_character", character_name=character_id), color=Colors.BAD, edit=True
 				)
-		if face and char:
+				character_id = None
+				face_name = None
+		if face_name and char:
 			try:
-				f = char.get_face(face)
+				f = char.get_face(face_name)
 			except ValueError as e:
-				return await fancy_message(
-						ctx, loc.l("textbox.errors.invalid_face", face_name=face, character_name=character), color=Colors.BAD, edit=True
+				erored = True
+				await fancy_message(
+						ctx, loc.l("textbox.errors.invalid_face", face_name=face_name, character_name=character_id), color=Colors.BAD, edit=True
 				)
+				face_name = None
 
 		states[state_id] = state = State(
-		    owner=ctx.user.id,
-		    filetype="gif",
-			  send=send,
-				frames=Frame(text=text, animated=animated, character_id=character, face_name=face)
+			owner=ctx.user.id,
+			filetype="gif",
+			send=send,
+			frames=Frame(text=text, animated=animated, character_id=character_id, face_name=face_name)
 		)
 
-		if send and character and face:
+		if send and character_id and face_name:
 			await ctx.edit(embed=Embed(description=loc.l("textbox.monologue.rendering"), color=Colors.DARKER_WHITE))
 			start=datetime.now()
 			file = await self.render(ctx, state)
@@ -217,7 +227,7 @@ class TextboxCommands(Extension):
 				desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
 			return await ctx.edit(embed=Embed(description=desc, color=Colors.DEFAULT))
 
-		await self.respond(ctx, state_id, 0)
+		await self.respond(ctx, state_id, 0, edit=not erored)
 
 	@staticmethod
 	async def get_basic(loc, ctx, state_id: str, frame_index: str):
@@ -386,7 +396,7 @@ class TextboxCommands(Extension):
 			)
 		await self.respond(ctx, state_id, frame_index)
 
-	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int):
+	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True):
 		loc = Localization(ctx.locale)
 		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
 
@@ -441,8 +451,9 @@ class TextboxCommands(Extension):
 				),
 			)
 		]
-
-		if isinstance(ctx, ComponentContext):
+		if not edit:
+			return await ctx.send(embed=embed, components=components, files=files, ephemeral=True)
+		elif isinstance(ctx, ComponentContext):
 			return await ctx.edit_origin(embed=embed, components=components, files=files)
 		else:
 			return await ctx.edit(
