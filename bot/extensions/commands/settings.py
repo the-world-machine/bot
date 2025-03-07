@@ -206,9 +206,7 @@ class SettingsCommands(Extension):
 
 		await server_data.welcome.update(disabled=not value)
 
-		return await fancy_message(
-		    ctx, loc.l(f"settings.server.welcome.enabled.{'yah' if value else 'nah'}"), ephemeral=True
-		)
+		return await fancy_message(ctx, loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}"), ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_description="Whether to ping the newcomers (shows the @mention regardless)")
 	@slash_option(
@@ -222,9 +220,7 @@ class SettingsCommands(Extension):
 
 		await server_data.welcome.update(ping=not value)
 
-		return await fancy_message(
-		    ctx, loc.l(f"settings.server.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True
-		)
+		return await fancy_message(ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}"), ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
@@ -236,15 +232,15 @@ class SettingsCommands(Extension):
 		return await ctx.send_modal(
 		    Modal(
 		        InputText(
-		            label=loc.l("settings.server.welcome.editor.input"),
+		            label=loc.l("settings.welcome.editor.input"),
 		            style=TextStyles.PARAGRAPH,
 		            custom_id="text",
-		            placeholder=loc.l("settings.server.welcome.editor.placeholder"),
+		            placeholder=loc.l("settings.welcome.editor.placeholder"),
 		            max_length=get_config("textbox.max-text-length-per-frame", ignore_None=True) or 1423,
 		            required=False,
 		            value=server_data.welcome.message or loc.l("misc.welcome.placeholder_text")
 		        ),
-		        title=loc.l("settings.server.welcome.editor.title"),
+		        title=loc.l("settings.welcome.editor.title"),
 		        custom_id="welcome_message_editor",
 		    )
 		)
@@ -262,15 +258,15 @@ class SettingsCommands(Extension):
 
 		await config.update(message=new_text)
 		if config.disabled:
-			warn = "\n-# " + loc.l("settings.server.welcome.editor.disabled_warning")
+			warn = "\n-# " + loc.l("settings.welcome.editor.disabled_warning")
 		debug = ""
 		if debugging():
 			debug = loc.l(
-			    "settings.server.welcome.editor.debug",
+			    "settings.welcome.editor.debug",
 			    old_text=f"```\n{old_text.replace('```', '` ``')}```",
 			    new_text=f"```\n{text.replace('```', '` ``')}```"
 			)
-		await fancy_message(ctx, loc.l("settings.server.welcome.editor.done") + debug + warn, ephemeral=True)
+		await fancy_message(ctx, loc.l("settings.welcome.editor.done") + debug + warn, ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(
@@ -283,17 +279,17 @@ class SettingsCommands(Extension):
 		config = server_data.welcome
 		if channel is None:
 			await config.update(channel_id=None)
-			return await fancy_message(ctx, loc.l("settings.server.welcome.channel.auto"), ephemeral=True)
+			return await fancy_message(ctx, loc.l("settings.welcome.channel.auto"), ephemeral=True)
 		if not await self.channel_permission_check(loc, ctx, channel):
 			return
 		await config.update(channel_id=str(channel.id))
 
 		warn = ""
 		if config.disabled:
-			warn += "\n-# " + loc.l("settings.server.welcome.editor.disabled_warning")
+			warn += "\n-# " + loc.l("settings.welcome.editor.disabled_warning")
 		if not config.message:
-			warn += "\n-# " + loc.l("settings.server.welcome.enabled.edit_warning")
+			warn += "\n-# " + loc.l("settings.welcome.enabled.edit_warning")
 		return await fancy_message(
 		    ctx,
-		    loc.l("settings.server.welcome.channel.Changed", channel=channel.mention) + warn,
+		    loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn,
 		)

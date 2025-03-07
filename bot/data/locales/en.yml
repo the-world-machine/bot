@@ -130,28 +130,27 @@ settings:
     uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
 
-  server:
-    welcome:
-      enabled:
-        yah: "[ Welcome textboxes have been enabled ]"
-        nah: "[ Welcome textboxes have been disabled ]"
-        edit_warning: "note: you can change the textbox message with `/settings welcome edit`"
-      channel:
-        auto: "[ Welcome textboxes channel has been reset ]"
-        Changed: "[ Welcome textboxes channel has been set to [channel] ]"
-      ping:
-        yah: "[ Welcome textboxes should now ping the newcomers ]"
-        nah: "[ Welcome textboxes will no longer ping the newcomers ]"
-      editor:
-        title: "Editing the welcome textbox message..."
-        input: "Welcome Message"
-        placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
-        done: "[ Successfully updated the welcome textbox message ]"
-        debug: | 
-          Previous: [old_text]
+  welcome:
+    enabled:
+      yah: "[ Welcome textboxes have been enabled ]"
+      nah: "[ Welcome textboxes have been disabled ]"
+      edit_warning: "note: you can change the textbox message with `/settings welcome edit`"
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+    editor:
+      title: "Editing the welcome textbox message..."
+      input: "Welcome Message"
+      placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
+      done: "[ Successfully updated the welcome textbox message ]"
+      debug: | 
+        Previous: [old_text]
 
-          New (current): [new_text]
-        disabled_warning: "Don't forget to enable them with `/settings welcome enabled value:True`"
+        New (current): [new_text]
+      disabled_warning: "Don't forget to enable them with `/settings welcome enabled value:True`"
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
