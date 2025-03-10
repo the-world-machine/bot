@@ -9,10 +9,18 @@ general:
     _back: "Wieder"
     _continue: "Weiter"
     _open_site: "Seite öffenen"
+    _dont_show_again: "Don't Show Again"
+  
+  minis:
+    note: "❕ note:"
+    tip: "❔ tip:"
+    warn: "⚠️ warning:"
+    err: "‼️ error:"
 
   responses:
     timeout:
       yn: "[ Du Nahm zu viel zeit zu antworten]"
+
 # ---------------------------------------------------------------
 
 music:
@@ -55,6 +63,9 @@ misc:
     # adds on when more than 1 dice
     multi: "Insgesamt **[total]**."
 
+  welcome:
+    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
+
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
 # ---------------------------------------------------------------
@@ -74,7 +85,6 @@ wool:
         so [mention] hat keine [emoji:wool]**Wool** ]
       some: |
         [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
-
 
         [mention] war gegeben [emoji:wool]**[balance]** ]
     twm:
@@ -110,6 +120,12 @@ wool:
 
 # ---------------------------------------------------------------
 
+transmit:
+  autocomplete:
+    unknown_server: Unknown ([server_id])
+
+# ---------------------------------------------------------------
+
 settings:
   errors:
     missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
@@ -119,16 +135,31 @@ settings:
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
 
   welcome:
+    enabled:
+      yah: "[ Welcome textboxes have been enabled ]"
+      nah: "[ Welcome textboxes have been disabled ]"
+      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
     editor:
-      title: "[ Du verändert die Willkommen Nachricht ... ]"
+      title: "Du verändert die Willkommen Nachricht ..."
       input: "Willkommen Nachricht"
-      placeholder: "Lass leer zum deaktivieren
+      placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
+      done: "[ Erfolgreich Verändert die Willkommen Nachricht]"
+      debug: | 
+        Previous: [old_text]
 
-      - Du kannst die Variablen benutzen: [user_name] [server_name]"
-      done: |
-        [ Erfolgreich Verändert die Willkommen Nachricht]
+        New (current): [new_text]
+      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
       # new message shows up right after this
   transmissions:
+    enabled:
+      yah: "[ This server is now closed for calls ]"
+      nah: "[ This server is now open for calls ]"
     channel:
       auto: "[ Übertragungs kanal zurücksetzet]"
       Changed: "[Übertragungs Kanal wurde eingestellt auf [channel] ]"
@@ -175,7 +206,11 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! Unglaublich von dir. ]"
+    nineninenineninenine: |
+      [ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! ]
+
+      ⚠️ warning: Unglaublich von dir.
+
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -472,14 +507,16 @@ treasure:
 
     [treasures]
 
-    -# note: Du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
+    tip: du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
 
 # ---------------------------------------------------------------
 
 nikogotchi:
-  loading: "[ Laden Nikogotchi... [emoji:loading] ]"
-  invalid: "[ Du hast kein Nikogotchi! Du kannst eine Kapsel kaufen von den laden un entsperrt eine! ]"
   owned: Besitzt von [user]
+  loading: "[ Laden Nikogotchi... [emoji:loading] ]"
+  invalid: "[ Du hast kein Nikogotchi! ]"
+  tipnvalid: "du kannst eine Kapsel kaufen von den laden un entsperrt eine" # tip:
+
 
   name:
     niko: Niko
@@ -542,8 +579,7 @@ nikogotchi:
     title: Du hast gefunden [name]!
     description: |
       Willst du ihnen eine andere name geben?
-
-      -# note: Du kann immer sie umbenennen mit `/nikogotchi rename`
+    renamenote: du kann immer sie umbenennen mit `/nikogotchi rename`  # note:
 
   status:
     template: "*[status]*"
