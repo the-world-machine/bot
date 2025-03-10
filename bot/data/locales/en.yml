@@ -620,7 +620,7 @@ nikogotchi:
       [name] lived a full life which lasted for: [age].
 
 
-      - Hours since last taken care of: **[time_difference]**
+      - Time since last taken care of: **[time_difference]**
 
 
       Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
