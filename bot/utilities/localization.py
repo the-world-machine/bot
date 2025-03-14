@@ -291,21 +291,23 @@ def assign_variables(
 		return input
 
 limits = {
-	"wool.transfer.errors.note_nuf": -1,
-	"wool.transfer.to.bot.notefirmation": 10,
-	"settings.welcome.enabled.default_tip": 15,
-	"settings.welcome.editor.disabled_note": 15,
 	"treasure.tip": 5,
 	"nikogotchi.tipnvalid": 5,
 	"nikogotchi.found.renamenote": 5,
+	"wool.transfer.errors.note_nuf": -1,
+	"settings.errors.channel_lost_warn": -1,
+	"wool.transfer.to.bot.notefirmation": 10,
+	"settings.welcome.enabled.default_tip": 15,
+	"settings.welcome.editor.disabled_note": 15,
 	"nikogotchi.treasured.dialogues.senote": 25,
 }
-async def put_mini(loc: Localization, user_id: str | int, message: str, type: Literal["note", "tip", "warn", "err"] = "note", pre: str = "", markdown: bool = True) -> str:
-	user_data = await UserData(str(user_id)).fetch()
-	reacher = user_data.minis_shown[message] if hasattr(user_data.minis_shown, message) else 0
-	if limits[message] != -1 and limits[message] <= reacher:
-		return ""
-	asyncio.create_task(user_data.minis_shown.increment_key(message))
+async def put_mini(loc: Localization, message: str, user_id: str | int = None, type: Literal["note", "tip", "warn", "err"] = "note", pre: str = "", markdown: bool = True) -> str:
+	if user_id:
+		user_data = await UserData(str(user_id)).fetch()
+		reacher = user_data.minis_shown[message] if hasattr(user_data.minis_shown, message) else 0
+		if limits[message] != -1 and limits[message] <= reacher:
+			return ""
+		asyncio.create_task(user_data.minis_shown.increment_key(message))
 	name = loc.l(f"general.minis.{type}")
 	msg = loc.l(message)
 	return f"{pre}{"-# " if markdown else ""}{name} {msg}"

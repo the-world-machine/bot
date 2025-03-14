@@ -91,7 +91,7 @@ class WoolCommands(Extension):
 			confirmation_m = await fancy_message(
 			    ctx,
 			    message=loc.l("wool.transfer.to.bot.confirmation") +
-			    await put_mini(loc, ctx.user.id, "wool.transfer.to.bot.notefirmation", "note", "\n\n"),
+			    await put_mini(loc, "wool.transfer.to.bot.notefirmation", user_id=ctx.user.id, pre="\n\n"),
 			    color=Colors.WARN,
 			    components=buttons,
 			    ephemeral=True
@@ -113,7 +113,7 @@ class WoolCommands(Extension):
 			return await fancy_message(
 			    ctx,
 			    loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
-			    await put_mini(loc, ctx.user.id, "wool.transfer.errors.note_nuf", "note", "\n\n"),
+			    await put_mini(loc, "wool.transfer.errors.note_nuf", pre="\n\n"),
 			    edit=True,
 			    ephemeral=True,
 			    color=Colors.BAD

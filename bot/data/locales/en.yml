@@ -147,6 +147,7 @@ settings:
     invalid_server_id: "[ Invalid server ID. ]"
     uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
+    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using `/settings welcome channel`, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
 
   welcome:
     enabled:
