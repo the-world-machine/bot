@@ -251,7 +251,7 @@ class NikogotchiCommands(Extension):
 				return await fancy_message(
 				    ctx,
 				    loc.l('nikogotchi.invalid') +
-				    await put_mini(loc, "nikogotchi.tipinvalid", type="tip", user_id=ctx.user.id, pre="\n\n"),
+				    await put_mini(loc, "nikogotchi.tipnvalid", type="tip", user_id=ctx.user.id, pre="\n\n"),
 				    ephemeral=True,
 				    color=Colors.BAD
 				)
