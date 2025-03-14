@@ -15,13 +15,14 @@ class TransmitConfig(DBDict):
 
 @dataclass
 class WelcomeConfig(DBDict):
-	disabled: bool | None = True
+	disabled: bool = True
 	ping: bool = False
 	channel_id: str = None
 	#character: str = None
 	#face: str = None
 	#animated: bool = True
 	message: str = ""
+	errored: bool = False
 
 
 @dataclass

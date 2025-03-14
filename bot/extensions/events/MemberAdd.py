@@ -44,4 +44,4 @@ class MemberAddEvent(Extension):
 		except Exception as e:
 			print("Failed to send welcome message. {guild.id}/{target_channel.id}")
 			print(tb.format_exc(chain=True))
-			await config.update(enabled=False)
+			await config.update(enabled=False, errored=True)

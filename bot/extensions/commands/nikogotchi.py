@@ -251,7 +251,7 @@ class NikogotchiCommands(Extension):
 				return await fancy_message(
 				    ctx,
 				    loc.l('nikogotchi.invalid') +
-				    await put_mini(loc, ctx.user.id, "nikogotchi.tipinvalid", "tip", "\n\n"),
+				    await put_mini(loc, "nikogotchi.tipinvalid", type="tip", user_id=ctx.user.id, pre="\n\n"),
 				    ephemeral=True,
 				    color=Colors.BAD
 				)
@@ -283,7 +283,7 @@ class NikogotchiCommands(Extension):
 			    title=loc.l('nikogotchi.found.title', name=nikogotchi.name),
 			    color=Colors.GREEN,
 			    description=loc.l('nikogotchi.found.description') +
-			    await put_mini(loc, ctx.user.id, "nikogotchi.found.renamenote", 'note', "\n\n")
+			    await put_mini(loc, "nikogotchi.found.renamenote", user_id=ctx.user.id, pre="\n\n")
 			)
 
 			hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
@@ -448,7 +448,7 @@ class NikogotchiCommands(Extension):
 
 			if custom_id == 'findtreasure':
 				dialogue = loc.l('nikogotchi.treasured.dialogues.sent') + await put_mini(
-				    loc, ctx.user.id, 'nikogotchi.treasured.dialogues.senote', 'note', "\n"
+				    loc, 'nikogotchi.treasured.dialogues.senote', user_id=ctx.user.id, pre="\n\n"
 				)
 				nikogotchi.status = 3
 				nikogotchi.started_finding_treasure_at = datetime.now()
@@ -818,7 +818,7 @@ class NikogotchiCommands(Extension):
 		await ctx.edit(
 		    embed=Embed(
 		        description=loc.l('treasure.message', user=user.mention, treasures=treasure_string) +
-		        (await put_mini(loc, ctx.user.id, "treasure.tip", "tip", "\n") if not public else ""),
+		        (await put_mini(loc, "treasure.tip", type="tip", user_id=ctx.user.id, pre="\n") if not public else ""),
 		        color=Colors.DEFAULT,
 		    )
 		)
