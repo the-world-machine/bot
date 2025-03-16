@@ -230,20 +230,21 @@ class TextboxCommands(Extension):
 		await self.respond(ctx, state_id, 0, edit=not erored)
 
 	@staticmethod
-	async def get_basic(loc, ctx, state_id: str, frame_index: str):
+	async def basic(ctx, state_id: str, frame_index: str):
+		loc = Localization(ctx.locale)
 		try:
 			state: State = states[state_id]
 		except KeyError as e:
 			await fancy_message(
 			    ctx, loc.l("textbox.errors.unknown_state", id=state_id, discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
 			)  # TODO: move discord invite to bot config
-			return (None, None)
+			return (loc, None, None)
 		try:
 			frame_data: Frame = state.frames[int(frame_index)]
 		except KeyError as e:
 			frame_data = Frame(character_id=state.frames[int(frame_index)-1].character_id)
 			state.frames[int(frame_index)] = frame_data
-		return (state, frame_data)
+		return (loc, state, frame_data)
 
 	handle_components_regex = re.compile(
 	    r"textbox (?P<method>refresh|render|update_(char|face|style|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
@@ -251,13 +252,13 @@ class TextboxCommands(Extension):
 
 	@component_callback(handle_components_regex)
 	async def handle_components(self, ctx: ComponentContext):
-		loc = Localization(ctx.locale)
 		match = self.handle_components_regex.match(ctx.custom_id)
 		if len(match.groups()) <= 3:
 			return ctx.edit_origin()
 		method, state_id, frame_index = match.group("method", "state_id", "frame_index")
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
-
+		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if not loc:
+			return
 		match method:
 			case "update_char":
 				frame_data.character_id = ctx.values[0]
@@ -360,8 +361,9 @@ class TextboxCommands(Extension):
 		return File(file=buffer, file_name=filename, description=alt_text if alt_text else frame.text)
 
 	async def init_update_text_flow(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: str):
-		loc = Localization(ctx.locale)
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
+		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if not loc:
+			return
 		modal = Modal(
 		    ParagraphText(
 		        custom_id='new_text',
@@ -381,13 +383,13 @@ class TextboxCommands(Extension):
 
 	@modal_callback(handle_modal_regex)
 	async def handle_modals(self, ctx: ModalContext, new_text: str):
-		loc = Localization(ctx.locale)
-
 		match = self.handle_modal_regex.match(ctx.custom_id)
 		if len(match.groups()) < 2:
 			return ctx.edit_origin()
 		state_id, frame_index = match.group("state_id", "frame_index")
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
+		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if not loc:
+			return
 		old_text = frame_data.text
 		frame_data.text = new_text
 		if debugging():
@@ -397,8 +399,9 @@ class TextboxCommands(Extension):
 		await self.respond(ctx, state_id, frame_index)
 
 	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True):
-		loc = Localization(ctx.locale)
-		state, frame_data = await self.get_basic(loc, ctx, state_id, frame_index)
+		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if not loc:
+			return
 
 		files = [await self.render(ctx, state, frame_index=frame_index)]
 		pos = ""
