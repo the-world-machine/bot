@@ -47,7 +47,7 @@ class SettingsCommands(Extension):
 	async def basic(self, ctx: SlashContext, defer: bool = True) -> tuple[Localization, ServerData]:
 		loc = Localization(ctx.locale)
 		if not await self.botmember_permission_check(loc, ctx):
-			return
+			return (None, None)
 		if defer:
 			await ctx.defer(ephemeral=True)
 		server_data: ServerData = await ServerData(ctx.guild.id).fetch()
@@ -64,7 +64,8 @@ class SettingsCommands(Extension):
 	)
 	async def enabled(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
-
+		if not loc:
+			return
 		await server_data.transmissions.update(disabled=not value)
 
 		return await fancy_message(
@@ -79,6 +80,8 @@ class SettingsCommands(Extension):
 	)
 	async def channel(self, ctx: SlashContext, channel: GuildText = None):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		if channel is None:
 			await server_data.transmissions.update(channel_id=None)
@@ -101,6 +104,8 @@ class SettingsCommands(Extension):
 	)
 	async def images(self, ctx: SlashContext, value: bool):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		await server_data.transmissions.update(allow_images=value)
 		return await fancy_message(
@@ -119,6 +124,8 @@ class SettingsCommands(Extension):
 	)
 	async def anonymous(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		await server_data.transmissions.update(anonymous=value)
 
@@ -136,6 +143,8 @@ class SettingsCommands(Extension):
 	)
 	async def block(self, ctx: SlashContext, server: str = None):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		blocklist = server_data.transmissions.blocked_servers
 
@@ -204,6 +213,8 @@ class SettingsCommands(Extension):
 	)
 	async def enabled(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		error = "" if not server_data.welcome.errored else await put_mini(
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
@@ -223,6 +234,8 @@ class SettingsCommands(Extension):
 	)
 	async def ping(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		error = "" if not server_data.welcome.errored else await put_mini(
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
@@ -236,6 +249,8 @@ class SettingsCommands(Extension):
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
 		loc, server_data = await self.basic(ctx, defer=False)
+		if not loc:
+			return
 
 		return await ctx.send_modal(
 		    Modal(
@@ -256,6 +271,8 @@ class SettingsCommands(Extension):
 	@modal_callback("welcome_message_editor")
 	async def welcome_message_editor(self, ctx: ModalContext, text: str):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 
 		config = server_data.welcome
 		old_text = config.message
@@ -287,6 +304,8 @@ class SettingsCommands(Extension):
 	)
 	async def channel(self, ctx: SlashContext, channel: GuildText = None):
 		loc, server_data = await self.basic(ctx)
+		if not loc:
+			return
 		config = server_data.welcome
 
 		if not (
