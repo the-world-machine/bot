@@ -44,11 +44,12 @@ class SettingsCommands(Extension):
 
 		return True
 
-	async def basic(self, ctx: SlashContext) -> tuple[Localization, ServerData]:
+	async def basic(self, ctx: SlashContext, defer: bool = True) -> tuple[Localization, ServerData]:
 		loc = Localization(ctx.locale)
 		if not await self.botmember_permission_check(loc, ctx):
 			return
-		await ctx.defer(ephemeral=True)
+		if defer:
+			await ctx.defer(ephemeral=True)
 		server_data: ServerData = await ServerData(ctx.guild.id).fetch()
 		return (loc, server_data)
 
@@ -234,9 +235,7 @@ class SettingsCommands(Extension):
 
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
-		loc, server_data = await self.basic(ctx)
-		if not await self.botmember_permission_check(loc, ctx):
-			return
+		loc, server_data = await self.basic(ctx, defer=False)
 
 		return await ctx.send_modal(
 		    Modal(
