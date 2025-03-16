@@ -9,7 +9,7 @@ from utilities.emojis import emojis
 from utilities.mediagen.textboxes import Frame, Styles, render_textbox, render_textboxes
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
-from utilities.misc import make_empty_select, pretty_user
+from utilities.misc import make_empty_select, optionSearch, pretty_user
 from utilities.textbox.characters import Character, Face, get_character, get_character_list, get_characters
 
 
@@ -129,10 +129,10 @@ class TextboxCommands(Extension):
 	@slash_option(
 	    name='character',
 			argument_name='character_id',
-	    description='Which character do you want to be shown on the textbox',
+	    description='Which character do you want to be shown on the textbox? (default: Other)',
 	    opt_type=OptionType.STRING,
 	    required=False,
-	    #autocomplete=True,
+	    autocomplete=True,
 	)
 	@slash_option(
 	    name='face',
@@ -140,7 +140,7 @@ class TextboxCommands(Extension):
 	    description="Which face of the character do you want?",
 	    opt_type=OptionType.STRING,
 	    required=False,
-	    #autocomplete=True,
+	    autocomplete=True,
 	)
 	@slash_option(
 	    name='animated',
@@ -150,7 +150,7 @@ class TextboxCommands(Extension):
 	)
 	@slash_option(
 	    name='send',
-	    description='Do you want the image to be sent in this channel right away? (all entries required)',
+	    description='Do you want the image to be sent in this channel right away? (pass all other arguments)',
 	    opt_type=OptionType.BOOLEAN,
 	    required=False,
 			# choices=[SlashCommandChoice(name="Normal", value=1), SlashCommandChoice(name="DMs", value=2), SlashCommandChoice(name="Here", value=3)]
@@ -180,6 +180,8 @@ class TextboxCommands(Extension):
 		)
 		"""
 		erored = False
+		if not character_id and face_name:
+			character_id = "Other"
 		if character_id:
 			try:
 				char = get_character(character_id)
@@ -229,6 +231,20 @@ class TextboxCommands(Extension):
 
 		await self.respond(ctx, state_id, 0, edit=not erored)
 
+	@create.autocomplete("character")
+	async def character_autocomplete(self, ctx: AutocompleteContext):
+		loc = Localization(ctx.locale)
+		characters = get_characters()
+		
+		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name, char in characters]))
+	
+	@create.autocomplete("face")
+	async def face_autocomplete(self, ctx: AutocompleteContext):
+		loc = Localization(ctx.locale)
+		character = get_character(ctx.kwargs["character"] if "character" in ctx.kwargs else "Other")
+
+		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name in character.get_face_list()]))
+	
 	@staticmethod
 	async def basic(ctx, state_id: str, frame_index: str):
 		loc = Localization(ctx.locale)

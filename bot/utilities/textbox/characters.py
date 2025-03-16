@@ -58,6 +58,9 @@ class Character:
 	def get_face_list(self) -> list[str]:
 		return self.faces.keys()
 
+	def has_face(self, name):
+		return hasattr(self.faces, name)
+
 	def get_icon_emoji(self) -> PartialEmoji:
 		return (PartialEmoji(id=self.icon) if self.icon else self.faces["Normal"].get_icon_emoji())
 

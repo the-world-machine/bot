@@ -6,7 +6,8 @@ import datetime
 import subprocess
 from pathlib import Path
 from base64 import b64decode
-from typing import Union, Optional
+from typing import TypedDict, Union, Optional
+from jellyfish import jaro_winkler_similarity, levenshtein_distance
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
 
@@ -252,9 +253,6 @@ def make_empty_select(loc, placeholder: str = None):
 
 def pretty_user(user: User):
 	return f"({user.username}) {user.display_name}" if user.display_name != user.username else user.username
-	return StringSelectMenu(
-	    *[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True
-	)
 
 
 def decode_base64_padded(s):
@@ -262,3 +260,39 @@ def decode_base64_padded(s):
 	if missing_padding:
 		s += '=' * (4 - missing_padding)
 	return b64decode(s).decode("utf-8")
+
+
+class Option(TypedDict):
+	names: Optional[list[str]]
+	picked_name: str
+	value: str
+
+
+def optionSearch(query: str, options: list[Option]) -> list[dict[str, str]]:
+	matches = []
+	top = []
+
+	filtered_options = [
+	    option for option in options
+	    if any(name.lower().startswith(query.lower()) for name in (option.get("names") or [option["picked_name"]]))
+	]
+
+	if filtered_options:
+		options = filtered_options
+
+	for option in options:
+		name_candidates = option.get("names") or [option["picked_name"]]
+		best_name = min(name_candidates, key=lambda name: levenshtein_distance(query, name))
+
+		if levenshtein_distance(query, best_name) == 0:
+			top.append({ "name": option["picked_name"], "value": option["value"]})
+		elif query.lower() in best_name.lower():
+			matches.append({ "name": option["picked_name"], "value": option["value"]})
+		else:
+			jaro_similarity = jaro_winkler_similarity(query.lower(), best_name.lower())
+			if jaro_similarity >= 0.5:
+				matches.append({ "name": option["picked_name"], "value": option["value"]})
+
+	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
+
+	return top + matches
