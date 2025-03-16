@@ -7,14 +7,14 @@ general:
     _cancel: "Отмена"
     _back: "Назад"
     _continue: "Продолжить"
-    _open_site: "Открыть сайт"
-    _dont_show_again: "Don't Show Again"
+    _open_site: "Открыть Сайт"
+    _dont_show_again: "Не Показывать Снова"
   
   minis:
-    note: "❕ note:"
-    tip: "❔ tip:"
-    warn: "⚠️ warning:"
-    err: "‼️ error:"
+    note: "❕ заметка:"
+    tip: "❔ совет:"
+    warn: "⚠️ предупреждение:"
+    err: "‼️ ошибка:"
 
   responses:
     timeout:
@@ -64,7 +64,7 @@ misc:
     multi: "Суммарно **[total]**."
 
   welcome:
-    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
+    placeholder_text: "[ Добро пожаловать на [server_name], [user_name]! Пока-что здесь [member_count] участников! ]"
 
   wikipedia: "[ [Вот]([link]) случайная статья из Википедии. Кажется, она о [title]... ]"
      
@@ -125,45 +125,45 @@ wool:
 
 transmit:
   autocomplete:
-    unknown_server: Unknown ([server_id])
+    unknown_server: Неизвестный ([server_id])
 
 # ---------------------------------------------------------------
 
 settings:
   errors:
-    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
+    weird_edgecase_number_0: Вы или [app:mention] не на сервере. Если вы настройщик сервера, пожалуйста, добавьте [app:mention] заного на сервер.
     missing_permissions: "[ Вы должны иметь право \"Управлять сервером\" для изменения настроек ]"
     channel_not_messageable: "[ Я не могу отправлять сообщения в данный канал ]"
-    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
+    channel_insufficient_perms: "[ У меня недостаточно прав для этого канала. Удостоверитесь, что у меня есть права на: **Отправка Сообщений**, **Просмотр Канала** and **Прикрепление Файлов**. ]"
     invalid_server_id: "[ Неверный ID сервера. ]"
     uncached_server: "-# не найдено имя сервера (меня в нём нет)"
     get_server_id: "(Настройки Discord -> Расширенные -> включите \"Режим разработчика\", затем посмотрите на нижнюю часть контекстного меню сервера)"
   
   welcome:
     enabled:
-      yah: "[ Welcome textboxes have been enabled ]"
-      nah: "[ Welcome textboxes have been disabled ]"
-      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+      yah: "[ Сообщения о приветсвии включены ]"
+      nah: "[ Сообщения о приветсвии выключены ]"
+      default_tip: "вы можете изменить сообщение в диалоговом окне через `/settings welcome edit`" # tip:
     channel:
-      auto: "[ Welcome textboxes channel has been reset ]"
-      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+      auto: "[ Канальные сообщения о приветсвии были сброшены ]"
+      Changed: "[ Канал сообщений о приветсвии был установлен на канал [channel] ]"
     ping:
-      yah: "[ Welcome textboxes should now ping the newcomers ]"
-      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+      yah: "[ Сообщения о привествии будут пинговать пришедших ]"
+      nah: "[ Сообщения о привествии НЕ будут пинговать пришедших ]"
     editor:
       title: "Вы изменяете сообщение о приветствии..." # todo: string changed
       input: "Сообщение о приветствии"
       placeholder: "Вы можете использовать переменные: [user_name] [server_name] [member_count]"
       done: "[ Успешно обновлено сообщение о приветствии ]" # todo: string changed
       debug: | 
-        Previous: [old_text]
+        Предыдущий: [old_text]
 
-        New (current): [new_text]
-      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
+        Новый (current): [new_text]
+      disabled_note: "не забудьте включить их через `/settings welcome enabled value:True`" # note:
   transmissions:
     enabled:
-      yah: "[ This server is now closed for calls ]"
-      nah: "[ This server is now open for calls ]"
+      yah: "[ Теперь сервер закрыт для звонков ]"
+      nah: "[ Теперь сервер открыт для звонков ]"
     channel:
       auto: "[ Межсерверный канал только что был сброшен ]"
       Changed: "[ Межсерверный канал был установлен на канал [channel] ]"
@@ -357,9 +357,9 @@ shop:
       - [treasure_icon] "**[treasure_name]**" - [owned]
 
 
-      **Trade One**: [emoji:wool]**[price_one]**
+      **Продать Один**: [emoji:wool]**[price_one]**
 
-      **Trade All**: [emoji:wool]**[price_all]** (x[amount])
+      **TПродать Всё**: [emoji:wool]**[price_all]** (x[amount])
 
 # ---------------------------------------------------------------
 
@@ -538,7 +538,7 @@ nikogotchi:
   other:
     you_invalid: "[ Вы не имеете Никоготчи. ]"
     other_invalid: "[ У этого человека нету Никоготчи. ]"
-    rename_you_invalid: "[ You don't have a Nikogotchi. What are you doing...? ]"
+    rename_you_invalid: "[ У вас нет Никоготчи. Что вы творите...? ]"
     error:
       description: > 
         [ Ваш Никоготчи (`[id]`) больше не существует. Вы можете получить нового с той же редкостью или избавиться от них. ]
