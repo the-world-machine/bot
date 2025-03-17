@@ -290,7 +290,6 @@ class SettingsCommands(Extension):
 		warn = "" if not config.disabled else await put_mini(
 		    loc, "settings.welcome.editor.disabled_note", user_id=ctx.user.id, pre="\n\n"
 		)
-		print(server_data)
 		error = "" if not config.errored else await put_mini(
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
 		)
