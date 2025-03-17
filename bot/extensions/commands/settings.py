@@ -282,7 +282,7 @@ class SettingsCommands(Extension):
 
 		await config.update(message=new_text)
 
-		debug = "" if not debugging() else loc.l(
+		debug = "" if not debugging() else "\n" + loc.l(
 		    "settings.welcome.editor.debug",
 		    old_text=f"```\n{old_text.replace('```', '` ``')}```",
 		    new_text=f"```\n{text.replace('```', '` ``')}```"
@@ -290,7 +290,8 @@ class SettingsCommands(Extension):
 		warn = "" if not config.disabled else await put_mini(
 		    loc, "settings.welcome.editor.disabled_note", user_id=ctx.user.id, pre="\n\n"
 		)
-		error = "" if not server_data.welcome.errored else await put_mini(
+		print(server_data)
+		error = "" if not config.errored else await put_mini(
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
 		)
 
