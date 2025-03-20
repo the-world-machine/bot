@@ -36,6 +36,11 @@ dev:
     - ~ # user ids, all in ""
     - ~
 
+watcher:
+  ignore-4913: true
+    # vim (the text editor) creates a file to check whether it can write files in the folder, causing random bullshi
+    # this should be a FileWatcher init option but too lazy, probably will implement later or wait for someone to pr (unimportant)
+
 database:
   dns-fix: false # use this if you're on termux and connecting to db doesn't work
   uri: ~ # example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost

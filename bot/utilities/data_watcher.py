@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Callable
 from threading import Thread
 from watchdog.observers import Observer
+from utilities.config import get_config
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
 Callback = Callable[[str], None]
@@ -15,7 +16,8 @@ class FileWatcher(FileSystemEventHandler):
 	def on_modified(self, event: FileModifiedEvent):
 		if not isinstance(event, FileModifiedEvent):
 			return
-
+		if event.src_path.endswith("4913") and get_config("watcher.ignore-4913"):
+			return
 		event.src_path = event.src_path.replace("\\", "/")
 		for callback in callbaques:
 			p = event.src_path.split("bot/data/")[1]
