@@ -36,10 +36,10 @@ class State:
 		return f"State(owner={self.owner}, len(frames)={len(self.frames)})"
 
 
-states = {}
 
 
 class TextboxCommands(Extension):
+	states = {}
 
 	@staticmethod
 	def make_characters_select_menu(
@@ -202,7 +202,7 @@ class TextboxCommands(Extension):
 				)
 				face_name = None
 
-		states[state_id] = state = State(
+		self.states[state_id] = state = State(
 			owner=ctx.user.id,
 			filetype="gif",
 			send=send,
@@ -245,11 +245,10 @@ class TextboxCommands(Extension):
 
 		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name in character.get_face_list()]))
 	
-	@staticmethod
-	async def basic(ctx, state_id: str, frame_index: str):
+	async def basic(self, ctx, state_id: str, frame_index: str):
 		loc = Localization(ctx.locale)
 		try:
-			state: State = states[state_id]
+			state: State = self.states[state_id]
 		except KeyError as e:
 			await fancy_message(
 			    ctx, loc.l("textbox.errors.unknown_state", id=state_id, discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
@@ -289,8 +288,8 @@ class TextboxCommands(Extension):
 				frame_data.animated = not frame_data.animated
 			case "render":
 				pos = ""
-				if len(state.frames) > 1:
-					pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
+				if len(state.frames) > 2 or frame_index != 0:
+					pos = "\n\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
 				await ctx.edit_origin(
 				    embed=Embed(description=loc.l("textbox.monologue.rendering")+pos, color=Colors.DARKER_WHITE)
 				)
@@ -421,7 +420,7 @@ class TextboxCommands(Extension):
 
 		files = [await self.render(ctx, state, frame_index=frame_index)]
 		pos = ""
-		if len(state.frames) > 0:
+		if len(state.frames) > 2 or frame_index != 0:
 			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
 		next_frame_exists = len(state.frames) != int(frame_index)+1
 		print(state)
