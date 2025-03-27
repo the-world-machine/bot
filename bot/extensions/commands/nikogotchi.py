@@ -789,12 +789,12 @@ class NikogotchiCommands(Extension):
 	)
 	async def treasures(self, ctx: SlashContext, user: User = None, public: bool = True):
 		loc = Localization(ctx.locale)
-		await fancy_message(ctx, loc.l('nikogotchi.loading'), ephemeral=not public)
-
 		if user is None:
 			user = ctx.user
 		if user.bot:
 			return await ctx.send(loc.l('treasure.bots', bot=user.mention), ephemeral=True)
+
+		await fancy_message(ctx, loc.l('nikogotchi.loading'), ephemeral=not public)
 		all_treasures = await fetch_treasure()
 		treasure_string = ''
 
