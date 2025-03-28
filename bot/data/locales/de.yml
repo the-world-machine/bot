@@ -9,7 +9,7 @@ general:
     _back: "Wieder"
     _continue: "Weiter"
     _open_site: "Seite öffenen"    
-    _dont_show_again: "Nicht nochmal zeigen"
+    _dont_show_again: "Nicht nochmal anzeigen"
   
   minis:
     note: "❕ Notierung(en):"
