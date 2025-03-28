@@ -9,13 +9,17 @@ general:
     _back: "Wieder"
     _continue: "Weiter"
     _open_site: "Seite öffenen"    
-    _dont_show_again: "Nicht nochmal anzeigen"
+    _dont_show_again: "Nicht nochmal zeigen"
   
   minis:
     note: "❕ Notierung(en):"
     tip: "❔ tip:"
     warn: "⚠️ Warnung:"
     err: "‼️ Error:"
+
+  responses:
+    timeout:
+      yn: "[ You took too long to respond ]"
 
 # --------------------------------------------------------------
 
@@ -58,7 +62,9 @@ misc:
     desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
     multi: "Insgesamt **[total]**."
-
+    
+  welcome:
+    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
@@ -87,13 +93,15 @@ wool:
   transfer:
     errors:
       self_transfer: "[ Fertig... ]"
-      not_enough: "[ Du hast nicht so viel [emoji:wool] wool! (Du hast nur [emoji:wool]**[balance]**) ]"
+      not_enough: "[ Du hast nicht so viel [emoji:wool] wool! ]"
+      note_nuf: "you have [emoji:wool]**[balance]**" # note:
 
     to:
       bot:
         none: "[user_one] verscheckt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
         some: "[user_one] verscheckt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
-        confirmation: "[ Bist du sicher du wollst wolle geben zu... Einen bot? Du kannst es nicht wieder erhalte , weißt du dass?... ]"
+        confirmation: "[ Bist du sicher du wollst wolle geben zu... Einen bot? ]"
+        notefirmation: "du kannst es nicht wieder erhalte, weißt du dass..." # note:
       user:
         none: "[user_one] verscheckt [emoji:wool]**[amount]** zu [user_two], nicht sehr großzügig Schließlich..."
         some: "[user_one] verscheckt [emoji:wool]**[amount]** zu [user_two], wie großzügig!"
@@ -112,28 +120,61 @@ pray:
     Change:
       gain: "Du hast also [emoji:wool]**[amount]** wool!"
       loss: "Du hast also [emoji:wool]**[amount]** wool..."
+      
+# ---------------------------------------------------------------
+
+transmit:
+  autocomplete:
+    unknown_server: Unknown ([server_id])
+
 # ---------------------------------------------------------------
 
 settings:
   errors:
+    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
     missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
+    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
-
+    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using `/settings welcome channel`, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+    
   server:
     welcome:
-      editor:
-        title: "[ Du verändert die Willkommen Nachricht ... ]"
-        input: "Willkommen Nachricht"
-        placeholder: "Lass leer zum deaktivieren
+      enabled:
+        yah: "[ Welcome textboxes have been enabled ]"
+        nah: "[ Welcome textboxes have been disabled ]"
+        default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+        editor:
+          title: "[ Du verändert die Willkommen Nachricht ... ]"
+          input: "Willkommen Nachricht"
+          placeholder: "Lass leer zum deaktivieren
+  
+          - Du kannst die Variablen benutzen: [user_name] [server_name]"
+          done: |
+            [ Erfolgreich Verändert die Willkommen Nachricht]
+          # new message shows up right after this
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+    editor:
+      title: "Editing the welcome textbox message..."
+      input: "Welcome Message"
+      placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
+      done: "[ Successfully updated the welcome textbox message ]"
+      debug: | 
+        Previous: [old_text]
 
-        - Du kannst die Variablen benutzen: [user_name] [server_name]"
-        done: |
-          [ Erfolgreich Verändert die Willkommen Nachricht]
-        # new message shows up right after this
+        New (current): [new_text]
+      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
+    enabled:
+      yah: "[ This server is now closed for calls ]"
+      nah: "[ This server is now open for calls ]"
     channel:
       auto: "[ Übertragungs kanal zurücksetzet]"
       Changed: "[Übertragungs Kanal wurde eingestellt auf [channel] ]"
@@ -180,7 +221,10 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! Unglaublich von dir. ]"
+    nineninenineninenine: |
+      [ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! ]
+
+      ⚠️ warnung: Unglaublich von dir.
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -476,14 +520,14 @@ treasure:
     ### [user]'s Schätze
 
     [treasures]
-
-    -# note: Du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some!  # tip:
 
 # ---------------------------------------------------------------
 
 nikogotchi:
   loading: "[ Laden Nikogotchi... [emoji:loading] ]"
-  invalid: "[ Du hast kein Nikogotchi! Du kannst eine Kapsel kaufen von den laden un entsperrt eine! ]"
+  invalid: "[ Du hast kein Nikogotchi! ]"
+  tipnvalid: "you can buy a capsule with one in the shop" # tip:
   owned: Besitzt von [user]
 
   name:
@@ -545,10 +589,8 @@ nikogotchi:
 
   found:
     title: Du hast gefunden [name]!
-    description: |
-      Willst du ihnen eine andere name geben?
-
-      -# note: Du kann immer sie umbenennen mit `/nikogotchi rename`
+    description: Willst du ihnen eine andere name geben?
+    renamenote: du kann immer sie umbenennen mit `/nikogotchi rename`  # note:
 
   status:
     template: "*[status]*"
@@ -603,7 +645,8 @@ nikogotchi:
       Zeitaufwand beim Suchen: [time].
 
     dialogues:
-      sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find! Note dass ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen."
+      sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find!"
+      senote: "ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen" # note:
       none_found: "Dein Nikogotchi hat gar nichts gefunden... Vielleicht gibt ihnen mehr zeit?"
 
   levelupped:
