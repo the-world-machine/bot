@@ -19,7 +19,7 @@ general:
 
   responses:
     timeout:
-      yn: "[ You took too long to respond ]"
+      yn: "[ Du nahm zu viel zeit zu antworten ]"
 
 # --------------------------------------------------------------
 
@@ -64,7 +64,7 @@ misc:
     multi: "Insgesamt **[total]**."
     
   welcome:
-    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
+    placeholder_text: "[ Willkommen zu [server_name], [user_name]! hier sind jetzt [member_count] benutzern hier! ]"
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
@@ -94,7 +94,7 @@ wool:
     errors:
       self_transfer: "[ Fertig... ]"
       not_enough: "[ Du hast nicht so viel [emoji:wool] wool! ]"
-      note_nuf: "you have [emoji:wool]**[balance]**" # note:
+      note_nuf: "Du hast [emoji:wool]**[balance]**" # note:
 
     to:
       bot:
@@ -125,27 +125,27 @@ pray:
 
 transmit:
   autocomplete:
-    unknown_server: Unknown ([server_id])
+    unknown_server: Unerkannt([server_id])
 
 # ---------------------------------------------------------------
 
 settings:
   errors:
-    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
+    weird_edgecase_number_0: Ober du bist [app:mention] nicht in der server. Wenn du bist der server Manager bitte nochmal [app:mention] zu dem Server einladen.
     missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
-    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
+    channel_insufficient_perms: "[ Ich hab nicht genug erlaubnisse für diesem Kannal. stell doch sicher ich habe alle von diesem: **Send Messages**, **View Channel** und **Attach Files**. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
-    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using `/settings welcome channel`, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+    channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den  Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
     
   server:
     welcome:
       enabled:
-        yah: "[ Welcome textboxes have been enabled ]"
-        nah: "[ Welcome textboxes have been disabled ]"
-        default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+        yah: "[ Willkommen textboxen sind aktiviert  ]"
+        nah: "[ Willkommen textboxen sind Deaktiviert ]"
+        default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
         editor:
           title: "[ Du verändert die Willkommen Nachricht ... ]"
           input: "Willkommen Nachricht"
