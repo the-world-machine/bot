@@ -8,7 +8,14 @@ general:
     _cancel: "Stornieren"
     _back: "Wieder"
     _continue: "Weiter"
-    _open_site: "Seite öffenen"
+    _open_site: "Seite öffenen"    
+    _dont_show_again: "Nicht nochmal zeigen"
+  
+  minis:
+    note: "❕ Notierung(en):"
+    tip: "❔ tip:"
+    warn: "⚠️ Warnung:"
+    err: "‼️ Error:"
 
 # ---------------------------------------------------------------
 
