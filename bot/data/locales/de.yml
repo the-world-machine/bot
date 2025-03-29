@@ -167,7 +167,7 @@ server:
     title: "Du verändert die Willkommen Nachricht ..."
     input: "Willkommen Nachricht"
     placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
-    done: "[ Erfolgreich Verändert die Willkommen Nachricht
+    done: "[ Erfolgreich Verändert die Willkommen Nachricht ]"
     debug: | 
       Previous: [old_text]
 
