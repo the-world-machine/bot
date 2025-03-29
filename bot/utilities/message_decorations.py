@@ -32,9 +32,10 @@ async def fancy_message(
     ctx,
     message: str = None,
     edit: bool = False,
+    edit_origin: bool = False,
     content: str = None,
     ephemeral=False,
-    components: list[BaseComponent] = [],
+    components: list[BaseComponent] = None,
     color: Color = Colors.DEFAULT,
     embed: Embed = None,
     embeds: list[Embed] = None
@@ -45,9 +46,12 @@ async def fancy_message(
 		embeds.append(Embed(description=message, color=color))
 	if embed:
 		embeds.append(embed)
-
+	if len(embeds) == 0:
+		embeds = None
+	if edit_origin:
+		return await ctx.edit_origin(content=content, embeds=embeds, components=components)
 	if edit and ctx:
-		return await ctx.edit(content=content, embeds=embeds if embeds else [], components=components if components else [])
+		return await ctx.edit(content=content, embeds=embeds, components=components)
 	if type(ctx) == Message:
 		return await ctx.reply(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 	elif type(ctx) == Modal:
