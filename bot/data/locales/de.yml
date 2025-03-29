@@ -8,7 +8,7 @@ general:
     _cancel: "Stornieren"
     _back: "Wieder"
     _continue: "Weiter"
-    _open_site: "Seite öffenen"    
+    _open_site: "Seite öffenen"
     _dont_show_again: "Nicht nochmal zeigen"
   
   minis:
@@ -48,10 +48,10 @@ misc:
     names:
       shards: "Scherben"
       avg_ping: "Durchschnittlich ping"
-      commit_hash: "Commit hash"     #
+      commit_hash: "Commit hash"
       server_count: "Server zahl"
-      user_installs: "User installiert" #
-      host: "Gastgeber"                   #
+      user_installs: "User installiert"
+      host: "Gastgeber"
       music_listeners: "Musik Mithörer"
       played_time: "Gespielt für"
       played_songs: "Gespielte songs"
@@ -103,7 +103,7 @@ wool:
       bot:
         none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
         some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
-        confirmation: "[ Bist du sicherer das du will woole geben zu ein bot...? Du kannst es nicht wieder haben, du weißt dass? ... ]"
+        confirmation: "[ Bist du sicherer das du will woole geben zu ein bot...? Du kannst es nicht wieder haben, du weißt dass...? ]"
       user:
         none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig schließlich..."
         some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig!"
@@ -117,7 +117,7 @@ wool:
       despise: "...und sie hassen die... zu schlect..."
       ogie: "...und sie sehen das du bist okay."
       yippie: "...und sie sind glücklich mir dir! Lob sei die Welt Maschine!"
-      devoted: "...und sie sehen du bist ein echetr  they see you're truly a devoted follower. 	Lob sei die Welt maschine!"
+      devoted: "...und sie sehen du bist ein echetr they see you're truly a devoted follower. Lob sei die Welt maschine!"
     title: "Du betete zu die Welt maschine..."
     Change:
       gain: "Du also hast bekommen [emoji:wool]**[amount]** wool!"
@@ -127,7 +127,7 @@ wool:
 
 transmit:
   autocomplete:
-    unknown_server: Unerkannt([server_id])
+    unknown_server: Unerkannt ([server_id])
 
 # ---------------------------------------------------------------
 
@@ -140,12 +140,12 @@ settings:
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
-    channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den  Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+    channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
     
 server:
   welcome:
     enabled:
-      yah: "[ Willkommen textboxen sind aktiviert  ]"
+      yah: "[ Willkommen textboxen sind aktiviert ]"
       nah: "[ Willkommen textboxen sind Deaktiviert ]"
       default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
       editor:
