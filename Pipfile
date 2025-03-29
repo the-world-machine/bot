@@ -18,6 +18,7 @@ aioconsole = "*"
 aiofiles = "*"
 pillow = "*"
 psutil = "*"
+regex = "*"
 
 [dev-packages]
 yapf = "*"

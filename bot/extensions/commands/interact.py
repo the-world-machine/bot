@@ -17,10 +17,11 @@ def make_interactions_select_menu(loc: Localization, uid: User) -> StringSelectM
 
 class InteractCommands(Extension):
 
-	@slash_command()
+	@slash_command(description="Interact with others in various ways (sends a message in chat)")
 	@slash_option(name='with', description='The person you want to interact with', opt_type=OptionType.USER, required=True, argument_name="user")
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def interaction(self, ctx: SlashContext, user: User):
-		'''Interact with others in various ways (sends a message in chat).'''
 
 		await self.start_interaction(ctx, user)
 
@@ -36,7 +37,7 @@ class InteractCommands(Extension):
 		if ctx.author.id == who.id:
 			return await fancy_message(ctx, loc.l('interact.twm_is_fed_up_with_you', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
 
-		if who.id == self.bot.user.id:
+		if who.id == ctx.client.user.id:
 			return await fancy_message(ctx, loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention), ephemeral=True, color=0XFF0000)
 		"""if who.bot:
             await fancy_message(ctx, loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
@@ -54,7 +55,7 @@ class InteractCommands(Extension):
 		args = ctx.values[0].split('_')
 		user = ctx.client.get_user(args[1])
 		text = loc.l(f'interact.options.{args[0]}.messages')
-		if isinstance(text, list):
+		if isinstance(text, tuple):
 			text = random.choice(text)
 
 		await ctx.channel.send(assign_variables(text, locale=ctx.locale, user_one=ctx.author.mention, user_two=user.mention))

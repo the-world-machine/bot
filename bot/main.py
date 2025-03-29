@@ -1,12 +1,12 @@
-# import asyncio
-async def TEMP():
-	...
+#import asyncio
 
+#async def temp():
 
-#asyncio.run(TEMP())
+#if __name__ == "__main__":
+#	asyncio.run(temp())
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
-from utilities.config import get_config, get_token # import config first (for prerequisites)
+from utilities.config import get_config, get_token
 
 from interactions import *
 # from utilities.misc import set_status
@@ -15,11 +15,22 @@ from utilities.database.main import connect_to_db
 from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_status, roll_avatar
 from interactions.api.events import Startup
+from datetime import datetime
+from utilities.logging import createLogger
+
+logger = createLogger(__name__)
 
 intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
 
-client = Client(intents=intents, disable_dm_commands=True, send_command_tracebacks=False, send_not_ready_messages=True, sync_interactions=False, sync_ext=False)
-
+client = Client(
+    intents=intents,
+    send_command_tracebacks=False,
+    send_not_ready_messages=True,
+    sync_interactions=False,
+    sync_ext=False,
+    logger=createLogger("client")
+)
+client.started_at = datetime.now()
 if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
 
 	@Task.create(IntervalTrigger(get_config("bot.rolling.interval")))
@@ -45,6 +56,9 @@ async def on_startup(event: Startup):
 		await roll()
 		roll.start()
 	print("\n\n─ The World Machine is ready! ─ 3/3\n\n")
+	startupped = datetime.now()
+	from extensions.events.Ready import ReadyEvent
+	await ReadyEvent.followup(startupped)
 
 
 print("\n─ Finalizing... ─ ─ ─ ─ ─ ─ ─ ─ 2/3")

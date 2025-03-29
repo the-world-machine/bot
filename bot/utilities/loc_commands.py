@@ -32,7 +32,7 @@ async def execute_loc_command(message: Message):
 	match subcommand_name:
 		case "locale_override":
 			if not message.attachments:
-				return await message.reply("`[ Please attach a locale file. ]`")
+				return await message.reply("`[ Please attach a locale file ]`")
 
 			attachment = message.attachments[0]
 			locale = attachment.filename.split(".yml")[0]

@@ -1,11 +1,11 @@
 import asyncio
 import random
-from utilities.emojis import emojis
+from interactions import *
 from dataclasses import dataclass
-from utilities.localization import fnum
-from utilities.database.main import UserData
+from utilities.emojis import emojis
+from utilities.localization import Localization, fnum
+from utilities.database.schemas import UserData
 from utilities.message_decorations import Colors, fancy_message
-from interactions import Embed, Extension, OptionType, SlashContext, slash_command, slash_option
 
 
 @dataclass
@@ -48,19 +48,28 @@ slots = [
 class GambleCommands(Extension):
 
 	@slash_command(description='All things to do with gambling wool')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def gamble(self, ctx: SlashContext):
 		pass
 
-	@gamble.subcommand()
-	@slash_option(description='How much wool would you like to bet?', name='bet', required=True, opt_type=OptionType.INTEGER, min_value=100)
+	@gamble.subcommand(sub_cmd_description="Waste your wool away with slots. Totally not a scheme by Magpie")
+	@slash_option(
+	    description='How much wool would you like to bet?',
+	    name='bet',
+	    required=True,
+	    opt_type=OptionType.INTEGER,
+	    min_value=100
+	)
 	async def wool(self, ctx: SlashContext, bet: int):
-		'''Waste your wool away with slots. Totally not a scheme by Magpie.'''
-		await ctx.defer()
-
-		user_data: UserData = await UserData(ctx.author.id).fetch()
+		loc = Localization(ctx.locale)
+		await fancy_message(ctx, loc.l('nikogotchi.loading'))
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
-			return await fancy_message(ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD)
+			return await fancy_message(
+			    ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD
+			)
 
 		# take the wool
 		await user_data.update(wool=user_data.wool - bet)
@@ -131,11 +140,12 @@ class GambleCommands(Extension):
 					else:
 						ticker += f'{s} ┋ '
 			return Embed(
-			    description=f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(bet)}**.\n{ticker}",
+			    description=
+			    f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(bet)}**.\n{ticker}",
 			    color=Colors.DEFAULT,
 			)
 
-		msg = await ctx.send(embed=generate_embed(0, -1, slot_images))
+		await ctx.edit(embed=generate_embed(0, -1, slot_images))
 
 		slot_values = [ 0, 0, 0 ]
 
@@ -146,7 +156,7 @@ class GambleCommands(Extension):
 				await asyncio.sleep(sleep_first_rotata_s * ((i + 1) / max_rolls)**1.5)
 
 				result_embed = generate_embed(i, column, slot_images)
-				await msg.edit(embed=result_embed)
+				await ctx.edit(embed=result_embed)
 				slot_values[column] = rows[column][i].value
 
 		result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
@@ -176,18 +186,15 @@ class GambleCommands(Extension):
 			result_embed.color = Colors.PURE_RED
 			result_embed.set_footer(text=f'{ctx.author.username} lost it all... better luck next time!')
 
-		await msg.edit(embed=result_embed)
+		await ctx.edit(embed=result_embed)
 
-	@gamble.subcommand()
+	@gamble.subcommand(sub_cmd_description="Read up on how the gamble command works")
 	async def help(self, ctx: SlashContext):
-		'''Read up on how the gamble command works'''
-
-		await ctx.defer()
-
-		text = f'''## Slot Machine
-    Gamble any amount of wool as long as you can afford it.
-    Here are the slots you can roll and their values:
-    '''
+		text = ( # yapf: disable
+		 "## Slot Machine" + "\n" +
+		 "Gamble any amount of wool as long as you can afford it." + "\n" +
+		 "Here are the slots you can roll and their values:\n"
+		) # yapf: enable
 
 		existing_slots = []
 		point_rows = []
@@ -199,7 +206,10 @@ class GambleCommands(Extension):
 			value = int(slot.value * 100)
 			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
 
-		text += "\n".join(point_rows)+'\n\n'+\
-                                  'Points are added up and them multiplied by your bet. You also get double the points when you hit a jackpot.'
+		text += ( # yapf: disable
+		    "\n".join(point_rows) + '\n\n' +
+		  "Points are added up and then multiplied by your bet." +
+		    "You also get double the points when you hit a jackpot"
+		)  # yapf: enable
 
 		await fancy_message(ctx, text)

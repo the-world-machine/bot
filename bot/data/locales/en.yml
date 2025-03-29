@@ -9,6 +9,17 @@ general:
     _back: "Back"
     _continue: "Continue"
     _open_site: "Open Website"
+    _dont_show_again: "Don't Show Again"
+  
+  minis:
+    note: "❕ note:"
+    tip: "❔ tip:"
+    warn: "⚠️ warning:"
+    err: "‼️ error:"
+
+  responses:
+    timeout:
+      yn: "[ You took too long to respond ]"
 
 # ---------------------------------------------------------------
 
@@ -24,7 +35,7 @@ misc:
     title: "You found..."
     finding:
       noik: Niko!
-      footer: A 1 in 100 chance! Lucky!
+      note: a 1% chance! Lucky!
       cat: a cat!
 
   stats:
@@ -32,10 +43,10 @@ misc:
     names: 
       shards: "Shards"
       avg_ping: "Average ping"
-      commit_hash: "Commit hash"     #
+      commit_hash: "Commit hash"
       server_count: "Server count"
-      user_installs: "User installs" #
-      host: "Host"                   #
+      user_installs: "User installs"
+      host: "Host"
       music_listeners: "Music Listeners"
       played_time: "Played for"
       played_songs: "Played songs"
@@ -52,35 +63,108 @@ misc:
     # adds on when more than 1 dice
     multi: "Totaling at **[total]**."
 
+  welcome:
+    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
     
 # ---------------------------------------------------------------
 
-wool: ~
+wool: 
+  balance:
+    you:
+      none: "[ You have **no[emoji:wool]Wool** ]"
+      some: "[ You have **[balance]**[emoji:wool] ]"
+    other:
+      none: "[ **[mention]** has **no[emoji:wool]Wool** ]"
+      some: "[ **[mention]** has **[balance]**[emoji:wool] ]"
+    bot:
+      none: |
+        [ Bots usually don't interact with me, not that they even can,
+        
+        so [mention] has **no[emoji:wool]Wool** ]
+      some: |
+        [ Bots usually don't interact with me, not that they even can, but...
+
+        [mention] was given [emoji:wool]**[balance]** ]
+    twm:
+      none: "[ I try not to influence the economy, so i have **no[emoji:wool]Wool** ]"
+      some: "[ I try not to influence the economy, but i've got [emoji:wool]**[balance]** ]"
+  transfer:
+    errors:
+      self_transfer: "[ Done... ]"
+      not_enough: "[ You don't have that much [emoji:wool] wool! ]"
+      note_nuf: "you have [emoji:wool]**[balance]**" # note:
+
+    to:
+      bot:
+        none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous!"
+        some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous..."
+        confirmation: "[ Are you sure you want to give wool to... a bot? ]"
+        notefirmation: "you won't be able get it back yk..." # note:
+      user:
+        none: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], not very generous after all..."
+        some: "[user_one] gave away [emoji:wool]**[amount]** to [user_two], how generous!"
+    steal: "[user_one] stole a single piece of wool from [user_two], why!?"
+  pray:
+    errors:
+      timeout: "[ You've already prayed in the past 24 hours. You can pray again [timestamp_relative]]"
+    finds:
+      misdeed: "...but they saw your misdeed the other day."
+      unhappy: "...but they aren't happy with you today."
+      despise: "...and they despise you today... Too bad..."
+      ogie: "...and they see you're doing okay."
+      yippie: "...and they're happy with you! Praise be The World Machine!"
+      devoted: "...and they see you're truly a devoted follower. Praise be The World Machine!"
+    title: "You prayed to The World Machine..."
+    Change:
+      gain: "you also got [emoji:wool]**[amount]** wool!"
+      loss: "you also lost [emoji:wool]**[amount]** wool..."
+
+# ---------------------------------------------------------------
+
+transmit:
+  autocomplete:
+    unknown_server: Unknown ([server_id])
 
 # ---------------------------------------------------------------
 
 settings:
   errors:
+    weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
     missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
     channel_not_messageable: "[ I cannot send messages in that channel ]"
+    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
     invalid_server_id: "[ Invalid server ID. ]"
-    uncached_server: "-# couldn't find the server's name (i am not in it)"
+    uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
-  
-  server:
-    welcome:
-      editor:
-        title: "[ You are editing the welcome message... ]"
-        input: "Welcome Message"
-        placeholder: "Leave blank to disable
+    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using `/settings welcome channel`, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
 
-        - You can use the variables: [user_name] [server_name]"
-        done: |
-          [ Successfully updated welcome message ]
-        # new message shows up right after this
+  welcome:
+    enabled:
+      yah: "[ Welcome textboxes have been enabled ]"
+      nah: "[ Welcome textboxes have been disabled ]"
+      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+    editor:
+      title: "Editing the welcome textbox message..."
+      input: "Welcome Message"
+      placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
+      done: "[ Successfully updated the welcome textbox message ]"
+      debug: | 
+        Previous: [old_text]
+
+        New (current): [new_text]
+      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
+    enabled:
+      yah: "[ This server is now closed for calls ]"
+      nah: "[ This server is now open for calls ]"
     channel:
       auto: "[ Transmission channel has been reset ]"
       Changed: "[ Transmission channel has been set to [channel] ]"
@@ -127,7 +211,11 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: nice 👍
-    nineninenineninenine: "[ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? Utterly despicable. ]"
+    nineninenineninenine: |
+      [ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? ]
+      
+      ⚠️ warning: Utterly despicable.
+
   info: "Shatter count: [amount]"
   YouKilledNiko: "[ You killed Niko. ]"
 
@@ -379,7 +467,7 @@ interact:
         - "[user_one] felt the need to give [user_two] a boop!"
         - "[user_one] just wanted to give [user_two] a boop!"
         - "[user_one] couldn't resist booping [user_two]"
-        - "[user_two] aggressively booped [user_two]"
+        - "[user_one] aggressively booped [user_two]"
     slap:
       name: Slap
       messages: "[user_one] slapped [user_two], probably deserved."
@@ -424,14 +512,16 @@ treasure:
 
     [treasures]
 
-    -# note: you can earn more treasure by trading in the shop or using Nikogotchis!
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some!  # tip:
 
 # ---------------------------------------------------------------
 
 nikogotchi:
-  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
-  invalid: "[ You don't have a Nikogotchi! You can buy a capsule from the shop to unlock a random one! ]"
   owned: Owned by [user]
+  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
+  invalid: "[ You don't have a Nikogotchi! ]"
+  tipnvalid: "you can buy a capsule with one in the shop" # tip:
+  
 
   name:
     niko: Niko
@@ -492,16 +582,14 @@ nikogotchi:
 
   found:
     title: You found [name]!
-    description: | 
-      Want to give them a different a name?
-      
-      -# note: you can always do this later using `/nikogotchi rename`
+    description: "Want to give them a different a name?"
+    renamenote: you can also do this using `/nikogotchi rename`  # note:
 
   status:
-    template: "-# [status]"
+    template: "*[status]*"
 
-    normal: "Currently doing fine."
-    normal-rare: "Waiting for something to happen?"
+    normal: "👍 Currently doing fine."
+    normal-rare: "🙂 Waiting for something to happen?"
     pet: "🥺 [name] wants attention!"
     dirty: "🛀 [name] wants to be cleaned!"
     hungry: "🥞 [name] is feeling hungry..."
@@ -521,7 +609,7 @@ nikogotchi:
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
 
-      glitched_powerup: "> Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
+      glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
       no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
@@ -533,7 +621,7 @@ nikogotchi:
       [name] lived a full life which lasted for: [age].
 
 
-      - Hours since last taken care of: **[time_difference]**
+      - Time since last taken care of: **[time_difference]**
 
 
       Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
@@ -550,8 +638,9 @@ nikogotchi:
       Time Spent Looking: [time].
       
     dialogues:
-      sent: "> Your Nikogotchi was sent to find treasures! Note that their stats will decrease faster than normal, so don't forget to call them back."
-      none_found: "> Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+      sent: "Your Nikogotchi was sent to find treasures!"
+      senote: "their stats will decrease faster than normal, so don't forget to call them back" # note:
+      none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
   levelupped:
     title: 🏆 they levelled up to level [level]!

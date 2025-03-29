@@ -35,6 +35,8 @@ async def get_lavalink_stats():
 class MusicCommands(Extension):
 	# Base Command
 	@slash_command(description="Listen to music using The World Machine!")
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def music(self, ctx: SlashContext):
 		pass
 
@@ -114,7 +116,7 @@ class MusicCommands(Extension):
 			author = song.author
 			requester = song.requester
 
-			user = await self.bot.fetch_user(requester)
+			user = await self.client.fetch_user(requester)
 
 			queue_list.append(EmbedField(
 			    name=f"{i}. {title}",
@@ -125,7 +127,7 @@ class MusicCommands(Extension):
 			i += 1
 
 		track = player.current
-		guild = await self.bot.fetch_guild(player.guild_id)
+		guild = await self.client.fetch_guild(player.guild_id)
 
 		time = 0
 
@@ -148,7 +150,7 @@ class MusicCommands(Extension):
 
 	async def can_modify(self, track_author: int, author: Member, guild_id: Snowflake):
 
-		track_author_member: Member = await self.bot.fetch_member(track_author, guild_id)
+		track_author_member: Member = await self.client.fetch_member(track_author, guild_id)
 
 		if Permissions.MANAGE_CHANNELS in author.guild_permissions:
 			return True
@@ -793,7 +795,7 @@ class MusicCommands(Extension):
 				main_buttons[1].label = "Loop Track"
 				main_buttons[1].style = ButtonStyle.RED
 
-			user = await self.bot.fetch_member(player.current.requester, player.guild_id)
+			user = await self.client.fetch_member(player.current.requester, player.guild_id)
 
 			can_control: bool = False
 
@@ -831,7 +833,7 @@ class MusicCommands(Extension):
 			embed.set_author(name="Stopped Playing...")
 			embed.set_thumbnail(self.get_cover_image(stopped_track.identifier))
 
-			requester = await self.bot.fetch_user(stopped_track.requester)
+			requester = await self.client.fetch_user(stopped_track.requester)
 			embed.set_footer(text="Requested by " + requester.username, icon_url=requester.avatar_url)
 
 		message = await message.edit(content="<:nikosleepy:1027492467337080872>", embed=embed, components=[])

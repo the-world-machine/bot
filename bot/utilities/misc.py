@@ -1,13 +1,13 @@
 import copy
-from pathlib import Path
 import aiohttp
 import datetime
 import subprocess
 from PIL import Image
 from io import BytesIO
+from pathlib import Path
+from base64 import b64decode
 from typing import Union, Optional
-from interactions import Activity, ActivityType, Client, File
-
+from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption
 
 class FrozenDict(dict):
 
@@ -148,7 +148,8 @@ def rabbit(
 			if value == None:
 				raise KeyError(f"{key} not found")
 			if len(parsed_path) > len(went_through) + 1:
-				if not isinstance(value, (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
+				if not isinstance(value,
+				                  (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
 					error_msg = f"expected nested structure, found {type(value).__name__}"
 					if not fallback_value and not simple_error:
 						error_msg += f", no fallback passed"
@@ -190,7 +191,9 @@ def rabbit(
 
 
 def exec(command: list) -> str:
-	return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout # TODO: eror handling
+	return subprocess.run(
+	    command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+	).stdout  # TODO: eror handling
 
 
 def shell(command: str) -> str:
@@ -208,10 +211,28 @@ def get_current_branch() -> str:
 async def set_status(client: Client, text: str | list):
 	from utilities.localization import assign_variables
 	if text is not None:
-		status = assign_variables(input=text, shard_count=1 if not hasattr(client, "shards") else len(client.shards), guild_count=len(client.guilds), token=client.token)
+		status = assign_variables(
+		    input=text,
+		    shard_count=1 if not hasattr(client, "shards") else len(client.shards),
+		    guild_count=len(client.guilds),
+		    token=client.token
+		)
 	await client.change_presence(activity=Activity("meow", type=ActivityType.CUSTOM, state=status))
 	return status
 
 
 async def set_avatar(client: Client, avatar: File | Path | str):
 	return await client.user.edit(avatar=avatar)
+
+
+def make_empty_select(loc, placeholder: str = None):
+	return StringSelectMenu(
+	    *[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True
+	)
+
+
+def decode_base64_padded(s):
+	missing_padding = len(s) % 4
+	if missing_padding:
+		s += '=' * (4 - missing_padding)
+	return b64decode(s).decode("utf-8")

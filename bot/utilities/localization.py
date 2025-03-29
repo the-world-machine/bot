@@ -1,17 +1,21 @@
 import re
+import asyncio
+import yaml.parser
+import yaml as yaml
 from babel import Locale
 from pathlib import Path
 from termcolor import colored
-from yaml import safe_load
-from datetime import datetime, timedelta
-from dataclasses import dataclass
 from typing import Literal, Union
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from babel.dates import format_timedelta
 from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
-from utilities.misc import FrozenDict, rabbit
-from utilities.config import debugging, get_config, on_prod
+from extensions.events.Ready import ReadyEvent
+from utilities.database.schemas import UserData
+from utilities.misc import FrozenDict, decode_base64_padded, rabbit
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
+from utilities.config import debugging, get_config, get_token, on_prod
 
 emoji_dict = {}
 
@@ -39,28 +43,35 @@ def local_override(locale: str, data: dict):
 
 
 def load_locale(locale: str):
-	with open(Path('bot/data/locales', locale + '.yml'), 'r', encoding='utf-8') as f:
-		return safe_load(f)
+	return yaml.full_load(open(Path('bot/data/locales', locale + '.yml'), 'r', encoding='utf-8'))
 
 
 last_update_timestamps = {}
-debounce_interval = 1 # seconds
+debounce_interval = 1  # seconds
 
 
 def on_file_update(filename):
 	global fallback_locale
 	current_time = datetime.now()
 	locale = Path(filename).stem
-	if filename in last_update_timestamps and (current_time - last_update_timestamps[filename]).seconds < debounce_interval:
+	if filename in last_update_timestamps and (
+	    current_time - last_update_timestamps[filename]
+	).seconds < debounce_interval:
 		return print(".", end="")
 	last_update_timestamps[filename] = current_time
-	text = f'─ Reloading locale {locale}'
-	print(f"{colored(text, 'yellow')}", end=" ─ ─ ─ ")
-	_locales[locale] = FrozenDict(load_locale(locale))
+	print(colored(f'─ Reloading locale {locale}', 'yellow'), end="")
+	try:
+		hello = load_locale(locale)
+	except Exception as e:
+		print(colored(" FAILED", "red"))
+		print(ReadyEvent)
+		ReadyEvent.log(e)
+		return
+	_locales[name] = hello
+	print(" ─ ─ ─ ")
 
 	if locale == get_config("localization.main-locale"):
 		fallback_locale = _locales[locale]
-	print("done")
 
 
 class UnknownLanguageError(Exception):
@@ -95,7 +106,15 @@ subscribe("locales/", on_file_update)
 loaded = 0
 for file in Path('bot/data/locales').glob('*.yml'):
 	name = file.stem
-	_locales[name] = load_locale(name)
+	try:
+		_locales[name] = FrozenDict(load_locale(name))
+	except Exception as e:
+		if get_config("localization.main-locale") == name:
+			raise e
+		if debugging():
+			print("| FAILED " + name)
+		ReadyEvent.log(e)
+
 	if debugging():
 		print("| " + name)
 	loaded += 1
@@ -125,7 +144,11 @@ class Localization:
 		return self.sl(path=path, locale=self.locale, **variables)
 
 	@staticmethod
-	def sl(path: str, locale: str, raise_on_not_found: bool = False, self=None, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+	def sl(path: str,
+	       locale: str,
+	       raise_on_not_found: bool = False,
+	       self=None,
+	       **variables: dict[str, any]) -> Union[str, list[str], dict]:
 		""" Static version of .l for single use (where making another Localization() makes it cluttery)"""
 		if locale == None:
 			raise ValueError("No locale provided")
@@ -141,12 +164,19 @@ class Localization:
 		return assign_variables(value, locale, **variables)
 
 	@staticmethod
-	def sl_all(localization_path: str, raise_on_not_found: bool = False, **variables: str) -> dict[str, Union[str, list[str], dict]]:
+	def sl_all(localization_path: str,
+	           raise_on_not_found: bool = False,
+	           **variables: str) -> dict[str, Union[str, list[str], dict]]:
 		results = {}
 
 		for locale in _locales.keys():
 			value = get_locale(locale)
-			value = rabbit(value, localization_path, raise_on_not_found=raise_on_not_found, _error_message="[path] ([error], debug mode ON)" if debug else "[path]")
+			value = rabbit(
+			    value,
+			    localization_path,
+			    raise_on_not_found=raise_on_not_found,
+			    _error_message="[path] ([error], debug mode ON)" if debug else "[path]"
+			)
 
 			results[locale] = assign_variables(value, locale, **variables)
 
@@ -161,7 +191,7 @@ def fnum(num: float | int, locale: str = "en", ordinal: bool = False) -> str:
 	if locale in ("ru", "uk", "be", "kk", "ro", "sr", "bg"):
 		fmtd = fmtd.replace(",", " ")
 
-	if ordinal and isinstance(num, int) and locale not in ("ru", "uk"):
+	if ordinal and isinstance(num, int) and locale not in ("ru", "uk", "be", "kk", "ro", "sr", "bg"):
 		fmtd += english_ordinal_for(num)
 
 	return fmtd
@@ -200,7 +230,10 @@ def ftime(
 		translated_component = format_timedelta(timedelta(**{ unit: amount}), locale=locale, format=format, **kwargs)
 		return translated_component
 
-	filtered_components = [ part for part in formatted.split(", ") if unit_hierarchy.index(part.split(" ", 1)[1].rstrip('s')) <= min_unit_index ]
+	filtered_components = [
+	    part for part in formatted.split(", ")
+	    if unit_hierarchy.index(part.split(" ", 1)[1].rstrip('s')) <= min_unit_index
+	]
 
 	translated = ", ".join([translate_unit(part) for part in filtered_components])
 
@@ -221,10 +254,22 @@ def english_ordinal_for(n: int | float):
 	return suffix
 
 
-def assign_variables(input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]):
+bot_id = decode_base64_padded(get_token().split('.')[0])
+
+
+def assign_variables(
+    input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]
+):
 	if isinstance(input, str):
 		result = input
-		for name, data in { **variables, **emoji_dict }.items():
+		for name, data in {
+		    **variables,
+		    **emoji_dict,
+		    **{
+		        'app:mention': f"<@{bot_id}>",
+		        'app:id': str(bot_id)
+		    }
+		}.items():
 			if isinstance(data, (int, float)):
 				data = fnum(data, locale)
 			elif not isinstance(data, str):
@@ -244,3 +289,25 @@ def assign_variables(input: Union[str, list, dict], locale: str = get_config("lo
 		return new_dict
 	else:
 		return input
+
+limits = {
+	"treasure.tip": 5,
+	"nikogotchi.tipnvalid": 5,
+	"nikogotchi.found.renamenote": 5,
+	"wool.transfer.errors.note_nuf": -1,
+	"settings.errors.channel_lost_warn": -1,
+	"wool.transfer.to.bot.notefirmation": 10,
+	"settings.welcome.enabled.default_tip": 15,
+	"settings.welcome.editor.disabled_note": 15,
+	"nikogotchi.treasured.dialogues.senote": 25,
+}
+async def put_mini(loc: Localization, message: str, user_id: str | int = None, type: Literal["note", "tip", "warn", "err"] = "note", pre: str = "", markdown: bool = True) -> str:
+	if user_id:
+		user_data = await UserData(str(user_id)).fetch()
+		reacher = user_data.minis_shown[message] if hasattr(user_data.minis_shown, message) else 0
+		if limits[message] != -1 and limits[message] <= reacher:
+			return ""
+		asyncio.create_task(user_data.minis_shown.increment_key(message))
+	name = loc.l(f"general.minis.{type}")
+	msg = loc.l(message)
+	return f"{pre}{"-# " if markdown else ""}{name} {msg}"

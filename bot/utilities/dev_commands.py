@@ -3,33 +3,27 @@ import re
 import sys
 import time
 import json
-from yaml import dump
+import yaml
+import traceback as tb
 from aioconsole import aexec
 from termcolor import colored
+from utilities.misc import shell
 from utilities.emojis import emojis
 import utilities.database.main as main
 from utilities.localization import fnum
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
+import utilities.database.schemas as schemas
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.extensions import load_commands # used, actually
-from traceback import _parse_value_tb, TracebackException
-from utilities.misc import shell
+from utilities.extensions import load_commands  # used, actually
 from utilities.shop.fetch_shop_data import reset_shop_data
 
 ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 
-async def get_collection(collection: str, _id: str):
-	key_to_collection: dict[str, main.Collection] = {
-	    'user': main.UserData(_id),
-	    'nikogotchi': main.Nikogotchi(_id),
-	    'nikogotchi_old': main.NikogotchiData(_id),
-	    'server': main.ServerData(_id)
-	}
-
-	return key_to_collection[collection]
+def get_collection(collection: str, _id: str):
+	return getattr(schemas, collection)(_id)
 
 
 class CapturePrints:
@@ -76,6 +70,23 @@ if on_prod:
 
 
 async def execute_dev_command(message: Message):
+	try:
+		return await _execute_dev_command(message)
+	except Exception as e:
+		result = f"Raised an exception when processing command: {str(e)}"
+		lines = []
+		raw_tb = tb.format_exc(chain=True)
+		print(raw_tb)
+		for line in raw_tb.split("\n"):
+			lines.append(line)
+		lines.pop(0)
+		result = '\n'.join(lines)
+		return await message.reply(
+		    embeds=Embed(color=Colors.BAD, description=f"\n```py\n{result[0:3900].replace('```', '` ``')}```")
+		)
+
+
+async def _execute_dev_command(message: Message):
 	if not message.content:
 		return
 
@@ -97,11 +108,11 @@ async def execute_dev_command(message: Message):
 	subcommand_name = args[0]
 
 	formatted_command_content = command_content.replace('\n', '\n' + colored('│ ', 'yellow'))
-	if subcommand_name == "db":
-		subcommand_name += " ─"
 	print(
-	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" + f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
-	    f"{colored('│', 'yellow')} {formatted_command_content}\n" + f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
+	    f"{colored('┌ dev_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name + (" ─" if subcommand_name=="db" else "")}\n" +
+	    f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
+	    f"{colored('│', 'yellow')} {formatted_command_content}\n" +
+	    f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
 	)
 
 	match subcommand_name:
@@ -127,9 +138,12 @@ async def execute_dev_command(message: Message):
 					msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
 					await msg.client.synchronise_interactions()
 					return await msg.edit(content=f"[ Synchronized ]")
-				case "git_pull":
-					msg = await message.reply(f"[ Pulling... {emojis['icons']['loading']} ]")
-					output = shell("git pull")
+				case "shell":
+					msg = await message.reply(f"[ Running... {emojis['icons']['loading']} ]")
+					parse = ' '.join(args).split(args[1])
+					if len(parse) < 1:
+						return await msg.edit(content=f"[ No command passed ]")
+					output = shell(parse[1])
 					return await msg.edit(content=f"[ Done ]\n```bash\n{output}```")
 
 				case _:
@@ -170,7 +184,7 @@ async def execute_dev_command(message: Message):
 							raise BaseException("no code provided")
 						result = eval(code, globals(), locals())
 				end_time = time.perf_counter()
-			except:
+			except Exception as e:
 				end_time = time.perf_counter()
 				state['raisure'] = True
 				exc_type, exc_value, exc_tb = sys.exc_info()
@@ -180,17 +194,22 @@ async def execute_dev_command(message: Message):
 				if method == "eval":
 					result = str(exc_value)
 				else:
-					value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
-					tb = TracebackException(type(value), value, tb, limit=None, compact=True)
 					lines = []
-					for line in tb.format(chain=True):
+					raw_tb = tb.format_exc(chain=True)
+					print(raw_tb)
+					for line in raw_tb.split("\n"):
+						# yapf: disable
 						lines.append(
-						    line.replace('  File "<aexec>", ', " - at ").replace('  File "<string>", ', " - at ").replace(', in __corofn', '').replace(', in <module>', '')
+						 line.replace('  File "<aexec>", ', " - at ")
+						     .replace('  File "<string>", ', " - at ")
+						     .replace(', in __corofn', '')
+						     .replace(', in <module>', '')
 						)
+						# yapf: enable
 					lines.pop(0)
-					result = ''.join(lines)
+					result = '\n'.join(lines)
 					result_tmp = result.split(" in redir_prints\n    method(code, globals, locals)")
-					if len(result_tmp) != 2: # aexec
+					if len(result_tmp) != 2:  # aexec
 						state['asnyc_warn'] = True
 						result_tmp = result.split(" new_local = await coro\n                        ^^^^^^^^^^\n")
 					result = result_tmp[1] if len(result_tmp) > 1 else result
@@ -215,18 +234,19 @@ async def execute_dev_command(message: Message):
 					result = ansi_escape_pattern.sub('', result)
 				return await handle_reply(runtime, result)
 			except Exception as e:
-				if "Description cannot exceed 4096 characters" in str(e): # TODO: paging
-					return await handle_reply(runtime, str(result)[0:3900], "\n-# Result too long to display, showing first 3900 characters")
+				print(e)
+				if "Description cannot exceed 4096 characters" in str(e):  # TODO: paging
+					return await handle_reply(
+					    runtime,
+					    str(result)[0:3900], "\n-# Result too long to display, showing first 3900 characters"
+					)
 				else:
 					result = f"Raised an exception when replying(WHAT did you do): {str(e)}"
-					exc_type, exc_value, exc_tb = sys.exc_info()
-					value, tb = _parse_value_tb(exc_type, exc_value, exc_tb)
-					tb = TracebackException(type(value), value, tb, limit=None, compact=True)
 					lines = []
-					for line in tb.format(chain=True):
+					for line in tb.format_exc(chain=True).split("\n"):
 						lines.append(line)
 					lines.pop(0)
-					result = ''.join(lines)
+					result = '\n'.join(lines)
 					return await handle_reply(runtime, result)
 		case "shop":
 			items = await main.fetch_items()
@@ -234,7 +254,7 @@ async def execute_dev_command(message: Message):
 
 			match args[1]:
 				case "view":
-					return await message.reply(f"```yml\n{dump(shop)}```")
+					return await message.reply(f"```yml\n{yaml.dump(shop, default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 				case "reset":
 					try:
 						await reset_shop_data()
@@ -258,7 +278,7 @@ async def execute_dev_command(message: Message):
 
 						data = json.loads(str_data)
 
-						collection = await main.fetch_from_database(await get_collection(collection, _id))
+						collection = await get_collection(collection, _id).fetch()
 
 						await collection.update(**data)
 
@@ -271,27 +291,27 @@ async def execute_dev_command(message: Message):
 						if collection == 'shop':
 							collection = await get_collection(collection, 0)
 						else:
-							collection = await main.fetch_from_database(await get_collection(collection, _id))
+							collection = await get_collection(collection, _id).fetch()
 
 						return await message.reply(f'`[ The value of {value} is {str(collection.__dict__[value])} ]`')
 					case "view_all":
 						collection = args[2]
 						_id = args[3]
 
-						collection = await main.fetch_from_database(await get_collection(collection, _id))
+						collection = await get_collection(collection, _id).fetch()
 
-						data = collection.__dict__
-
-						return await message.reply(f"```yml\n{dump(data)}```")
+						return await message.reply(f"```yml\n{yaml.dump(main.to_dict(collection), default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 					case "wool":
 						_id = args[2]
 						amount = int(args[3])
 
-						collection: main.UserData = await main.fetch_from_database(await get_collection('user', _id))
+						collection: schemas.UserData = await schemas.UserData(_id).fetch()
 
 						await collection.manage_wool(amount)
 
-						return await message.reply(f'`[ Successfully modified wool, updated value is now {collection.wool} ]`')
+						return await message.reply(
+						    f'`[ Successfully modified wool, updated value is now {collection.wool} ]`'
+						)
 					case _:
 						return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
 			except Exception as e:

@@ -1,11 +1,10 @@
-from dataclasses import asdict, dataclass, field
-from typing import Union, Dict, List
+from dataclasses import dataclass, fields, is_dataclass, InitVar
+from typing import Any, Generic, get_type_hints, TypeVar
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 from utilities.config import get_config
-from datetime import datetime
-from interactions import Embed, SlashContext, SlashContext, Snowflake
-import random
+from interactions import Snowflake
+import yaml
 if get_config("database.dns-fix", ignore_None=True):
 	import dns.resolver
 	dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
@@ -13,181 +12,189 @@ if get_config("database.dns-fix", ignore_None=True):
 connection_uri = get_config('database.uri')
 
 
-# Define the Database Schema for The World Machine:
+def init_things(self):
+	type_hints = get_type_hints(self.__class__)
+	if is_dataclass(self):
+		for field_info in fields(self):
+			value = getattr(self, field_info.name)
+			name = field_info.name
+
+			field_type = type_hints.get(name)
+
+			if name in [ "_id", "_parent", "_parent_field"]:
+				continue
+
+			if isinstance(value, dict):
+				if isinstance(field_type, DBDynamicDict):
+					setattr(self, name, field_type(_parent=self, _parent_field=name, **value))
+				else:
+					setattr(self, name, init_things(field_type(_parent=self, _parent_field=name, **value)))
+			elif isinstance(value, list):
+				setattr(self, name, field_type(default=value, _parent=self, _parent_field=name))
+	return self
+
+
+TCollection = TypeVar('T', bound='Collection')
+
+
 @dataclass
 class Collection:
-	_id: Union[str, None, Snowflake]
+	_id: str | Snowflake | None
 
 	async def update(self, **kwargs):
-		'''
-        Update the current collection with the given kwargs.
-        '''
-
+		'''Update the current collection with the given kwargs.'''
 		updated_data = await update_in_database(self, **kwargs)
-		for k, v in asdict(updated_data).items():
+		for k, v in to_dict(updated_data).items():
 			setattr(self, k, v)
-		return updated_data
+		return init_things(updated_data)
 
-	async def fetch(self):
-		'''
-        Fetch the current collection using id.
-        '''
+	async def fetch(self: TCollection) -> TCollection:
+		'''Fetch the current collection using id.'''
+		self._id = str(self._id)
 
-		self._id = str(self._id) # Make sure _id is string.
+		db = get_database()
 
-		return await fetch_from_database(self)
+		result = await db.get_collection(self.__class__.__name__).find_one({ '_id': self._id})
 
+		if result is None:
+			await new_entry(self)
+			return await self.fetch()
+		return self.__class__(**result)
 
-@dataclass
-class UserData(Collection):
-	wool: int = 0
-	suns: int = 0
-	equipped_bg: str = 'Default'
-	profile_description: str = 'Hello World!'
-	badge_notifications: bool = True
-	owned_treasures: Dict[str, int] = field(default_factory=lambda: { 'journal': 5})
-	owned_backgrounds: List[str] = field(default_factory=lambda: [ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink'])
-	owned_badges: List[str] = field(default_factory=list)
-	ask_limit: int = 14
-	last_asked: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	daily_wool_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	daily_sun_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	times_asked: int = 0
-	times_transmitted: int = 0
-	times_shattered: int = 0
-	translation_language: str = 'english'
+	def __post_init__(self):
+		init_things(self)
 
-	async def increment_value(self, key: str, amount: int = 1):
-		'Increment a value within the UserData object.'
-		value = asdict(self)[key]
+	async def update_array(self, field: str, operator: str, value: Any):
+		db = get_database()
+		await db.get_collection(self.__class__.__name__).update_one({ '_id': self._id}, { operator: { field: value}})
 
-		if type(value) == float:
-			int(value)
+	async def increment_key(self, key: str, by: int = 1):
 
-		return await self.update(**{ key: value + amount})
+		value = getattr(self, key, 0)
 
-	async def manage_wool(self, amount: int):
-
-		wool = self.wool + amount
-
-		if wool <= 0:
-			wool = 0
-
-		if wool >= 999999999999999999:
-			wool = 999999999999999999
-
-		return await self.update(wool=int(wool))
+		if isinstance(value, float):
+			by = float(by)
+		# could use self.key += by maybe, instead of returning a whole new objec (.update does that)
+		return await self.update(**{ key: value + by})
 
 
 @dataclass
-class ServerData(Collection):
-	transmit_channel: str = None
-	transmittable_servers: Dict[str, str] = field(default_factory=dict)
-	blocked_servers: List[str] = field(default_factory=list)
-	anonymous: bool = False
-	transmit_images: bool = True
-	language: str = 'english'
-	allow_ask: bool = True
-	welcome_message: str = ''
+class DBDict(dict):
+	_parent: InitVar[Collection] = None
+	_parent_field: InitVar[str] = None
+
+	def __post_init__(self, _parent=None, _parent_field=None):
+		self._parent = _parent
+		self._parent_field = _parent_field
+
+	def __repr__(self):
+		return f"DB{super().__repr__()}"
+
+	async def update(self, **kwargs):
+		if self._parent is None:
+			raise Exception("Parent not set for nested update.")
+
+		current_state = to_dict(self)
+		updated_state = { **current_state, **kwargs }
+
+		update_fields = {self._parent_field: updated_state}
+		updated_parent = await self._parent.update(**update_fields)
+
+		for k, v in update_fields.items():
+			setattr(self, k, v)
+
+	async def increment_key(self, key: str, by: int = 1):
+
+		value = self.get(key, 0)
+
+		if isinstance(value, float):
+			by = float(by)
+
+		return await self.update(**{ key: value + by})
+
+	async def update_array(self, field: str, operator: str, value: Any):
+		if self._parent is None:
+			raise Exception("Parent not set for nested update.")
+		await self._parent.update_array(f"{self._parent_field}.{field}", operator, value)
+
+	async def fetch(self) -> TCollection:
+		return await self._parent.fetch()[self._parent_field]
 
 
-@dataclass
-class NikogotchiData(Collection):
-	last_interacted: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	hatched: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
-	data: Dict[str, int] = field(default_factory=dict)
-	nikogotchi_available: bool = False
-	rarity: int = 0
-	pancakes: int = 5
-	golden_pancakes: int = 1
-	glitched_pancakes: int = 0
+class DBList(list):
+	_parent: InitVar[TCollection] = None
+	_parent_field: InitVar[str] = None
+
+	def __init__(self, default=None, _parent=None, _parent_field=None):
+		super().__init__(default or [])
+		self._parent = _parent
+		self._parent_field = _parent_field
+
+	def __repr__(self):
+		return f"DB{super().__repr__()}"
+
+	async def append(self, item) -> None:
+		"""Append object to the end of the list, and update self in the database"""
+
+		await self._parent.update_array(self._parent_field, '$push', { '$each': [item]})
+		super().append(item)
+
+	async def remove(self, item) -> None:
+		"""Remove first occurrence of value, and update self in the database"""
+		await self._parent.update_array(self._parent_field, '$pull', item)
+		super().remove(item)
+
+	async def extend(self, iterable) -> None:
+		"""Extend the list by appending items from the iterable, and update self in the database"""
+		await self._parent.update_array(self._parent_field, '$push', { '$each': iterable})
+		super().extend(iterable)
+
+	async def clear(self) -> None:
+		"""Clear the list, and update self in the database"""
+		await self._parent.update_array(self._parent_field, '$set', [])
+		super().clear()
 
 
-@dataclass
-class StatUpdate:
-	icon: str
-	old_value: int
-	new_value: int
+K = TypeVar('K')
+V = TypeVar('V')
 
 
-@dataclass
-class Nikogotchi(Collection):
-	available: bool = False
-	hatched: datetime = field(default_factory=lambda: datetime.now())
-	last_interacted: datetime = field(default_factory=lambda: datetime.now())
-	started_finding_treasure_at: datetime = field(default_factory=lambda: datetime.now())
-	status: int = -1
+class DBDynamicDict(dict[K, V], Generic[K, V]):
+	_parent: InitVar[Collection] = None
+	_parent_field: InitVar[str] = None
 
-	rarity: int = 0
-	pancakes: int = 5
-	golden_pancakes: int = 1
-	glitched_pancakes: int = 0
+	def __init__(self, *args, _parent=None, _parent_field=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._parent = _parent
+		self._parent_field = _parent_field
 
-	level: int = 0
-	health: int = 50
-	energy: int = 5
-	hunger: int = 50
-	cleanliness: int = 50
-	happiness: int = 50
+	async def __setitem__(self, key, value):
+		if self._parent is not None:
+			update_fields = {self._parent_field: dict(self, **{ key: value})}
+			await self._parent.update(**update_fields)
+		super().__setitem__(key, value)
 
-	attack: int = 5
-	defense: int = 2
+	async def update(self, **kwargs):
+		if self._parent is None:
+			raise Exception("Parent not set for nested update.")
 
-	max_health: int = 50
-	max_hunger: int = 50
-	max_cleanliness: int = 50
-	max_happiness: int = 50
+		update_fields = {self._parent_field: dict(self, **kwargs)}
+		await self._parent.update(**update_fields)
 
-	nid: str = '?'
-	name: str = 'NONAME'
+		super().update(**kwargs)
 
-	async def level_up(self, amount: int) -> List[StatUpdate]:
+	async def increment_key(self, key: str, by: int = 1):
 
-		level = self.level + amount
+		value = self.get(key, 0)
 
-		stats: List[StatUpdate] = []
+		if isinstance(value, float):
+			by = float(by)
 
-		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("❤️", int(self.max_health), int(self.max_health) + int(algorithm)))
-		self.max_health += algorithm
+		return await self.update(**{ key: value + by})
 
-		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("🍴", int(self.max_hunger), int(self.max_hunger) + int(algorithm)))
-		self.max_hunger += algorithm
+	def __repr__(self):
+		return f"DBD{super().__repr__()}"
 
-		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate(
-		    "🫂",
-		    int(self.max_happiness),
-		    int(self.max_happiness) + int(algorithm),
-		))
-		self.max_happiness += algorithm
-
-		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("🧽", int(self.max_cleanliness), int(self.max_cleanliness) + int(algorithm)))
-		self.max_cleanliness += algorithm
-
-		algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("🗡️", int(self.attack), int(self.attack) + int(algorithm)))
-		self.attack += algorithm
-
-		algorithm = int(amount * 2 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("🛡️", int(self.defense), int(self.defense) + int(algorithm)))
-		self.defense += algorithm
-
-		self.level = level
-
-		self.health = self.max_health
-		self.hunger = self.max_hunger
-		self.happiness = self.max_happiness
-		self.cleanliness = self.max_cleanliness
-
-		await self.update(**asdict(self))
-
-		return stats
-
-
-# ----------------------------------------------------
 
 connection = None
 
@@ -213,42 +220,20 @@ def get_database():
 	return connection.get_database('TheWorldMachine')
 
 
-async def fetch_from_database(collection: Collection) -> Collection:
-
-	db = get_database()
-
-	result = await db.get_collection(collection.__class__.__name__).find_one({ '_id': collection._id})
-
-	if result is None:
-		await new_entry(collection)
-		return await fetch_from_database(collection)
-
-	collection_dict = {}
-
-	for key in result.keys():
-		if collection.__dict__.get(key, None) is not None:
-			collection_dict[key] = result[key]
-	return collection.__class__(**collection_dict)
-
-
 async def new_entry(collection: Collection):
 
 	db = get_database()
 
-	await db.get_collection(collection.__class__.__name__).update_one({ '_id': collection._id}, { '$set': asdict(collection)}, upsert=True) # meow
+	await db.get_collection(collection.__class__.__name__
+	                       ).update_one({ '_id': collection._id}, { '$set': to_dict(collection)}, upsert=True)
 
 
-async def update_in_database(collection: Collection, **kwargs):
+async def update_in_database(collection: TCollection, **kwargs) -> TCollection:
 	db = get_database()
-
-	# Fetch the existing document from the database
-	existing_data = asdict(collection)
-
-	# Update only the specified fields in the existing document
+	existing_data = to_dict(collection)
 	updated_data = { **existing_data, **kwargs }
-	# Update the document in the database
-	res = await db.get_collection(collection.__class__.__name__).update_one({ '_id': collection._id}, { '$set': updated_data}, upsert=True)
-	# Create and return an updated instance of the collection
+	await db.get_collection(collection.__class__.__name__
+	                       ).update_one({ '_id': collection._id}, { '$set': updated_data}, upsert=True)
 	return collection.__class__(**updated_data)
 
 
@@ -264,3 +249,26 @@ async def update_shop(data: dict):
 	db = get_database()
 
 	await db.get_collection('ItemData').update_one({ "access": 'ItemData'}, { "$set": { "shop": data}})
+
+
+def to_dict(obj):
+	if is_dataclass(obj):
+		result = {}
+		for f in fields(obj):
+			if f.name in [ "_parent", "_parent_field", "_field_name"]:
+				continue
+			value = getattr(obj, f.name)
+			result[f.name] = to_dict(value)
+		return result
+	elif isinstance(obj, (DBList, list, tuple)):
+		return type(obj)(to_dict(x) for x in obj)
+	elif isinstance(obj, (DBDict, DBDynamicDict, dict)):
+		return { k: to_dict(v) for k, v in obj.items() }
+	else:
+		return obj
+
+
+for dc in (yaml.Dumper, yaml.SafeDumper):
+	yaml.add_representer(DBList, lambda dumper, data: dumper.represent_list(list(data)), Dumper=dc)
+	yaml.add_representer(DBDict, lambda dumper, data: dumper.represent_dict(to_dict(data)), Dumper=dc)
+	yaml.add_representer(DBDynamicDict, lambda dumper, data: dumper.represent_dict(to_dict(data)), Dumper=dc)

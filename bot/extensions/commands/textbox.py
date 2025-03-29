@@ -76,10 +76,11 @@ class TextboxCommands(Extension):
 
 		return StringSelectMenu(*options, custom_id='textbox_select_face', disabled=False, placeholder='Select a face!')
 
-	@slash_command(description='Generate a OneShot textbox!')
+	@slash_command(description='Generate a OneShot textbox')
 	@slash_option(description='What you want the character to say?', max_length=180, name='text', opt_type=OptionType.STRING, required=True)
-	@slash_option(description='Do you want the text to appear slowly? (will take more time)', name='animated', opt_type=OptionType.BOOLEAN, required=True)
-	async def textbox(self, ctx: SlashContext, text: str, animated: bool):
+	@slash_option(description='Do you want the text to appear slowly? (will take longer to generate)', name='animated', opt_type=OptionType.BOOLEAN, required=True)
+	@slash_option(description="Whether you want the response to be sent in the channel (defaults to True)", name="public", opt_type=OptionType.BOOLEAN)
+	async def textbox(self, ctx: SlashContext, text: str, animated: bool, public: bool = True):
 		await ctx.defer(ephemeral=True)
 
 		characters_select = self.make_characters_select_menu(ctx.locale)
@@ -87,27 +88,30 @@ class TextboxCommands(Extension):
 		await fancy_message(ctx, f"[ <@{ctx.user.id}>, select a character. ]", ephemeral=True, components=characters_select)
 		char = await ctx.client.wait_for_component(components=characters_select)
 		ctx = char.ctx
-		await ctx.defer(edit_origin=True)
 
-		char = await ctx.client.wait_for_component(components=characters_select)
-		ctx = char.ctx
 		await ctx.defer(edit_origin=True)
 		faces_select = self.make_faces_select_menu(ctx.locale, character_name=ctx.values[0])
 
-		await ctx.edit(embed=Embed(description=f"[ <@{ctx.user.id}>, select a face. ]", color=Colors.DARKER_WHITE), components=faces_select)
+		await ctx.edit(embed=Embed(description=f"[ <@{ctx.user.id}>, select a face. ]"), components=faces_select)
 		faces = await ctx.client.wait_for_component(components=faces_select)
 		ctx = faces.ctx
 		await ctx.defer(edit_origin=True)
-		value = ctx.values[0]
+
+		choice = ctx.values[0]
 
 		await ctx.edit(embed=Embed(description=f"[ Generating Image... {emojis['icons']['loading']} ]", color=Colors.DARKER_WHITE))
 
-		if value == '964952736460312576':
+		if choice == '964952736460312576':
 			icon = ctx.author.avatar.url
 		else:
-			icon = f'https://cdn.discordapp.com/emojis/{value}.png'
+			icon = f'https://cdn.discordapp.com/emojis/{choice}.png'
+
+		file = await generate_dialogue(text, icon, animated)
 
 		await ctx.edit(embed=Embed(description=f"[ Uploading image... {emojis['icons']['loading']} ]", color=Colors.DARKER_WHITE), components=[])
-		file = await generate_dialogue(text, icon, animated)
-		await ctx.channel.send(content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={ 'users': []})
-		await ctx.edit(embed=Embed(description=f"[ Done! ]", color=Colors.DARKER_WHITE), components=[])
+		if public:
+			await ctx.channel.send(content=f"-# [ {ctx.user.mention} ]", files=file, allowed_mentions={ 'users': []})
+		else:
+			await ctx.edit(files=file)
+
+		await ctx.edit(embed=Embed(description=f"[ Done! ]", color=Colors.DEFAULT), components=[])

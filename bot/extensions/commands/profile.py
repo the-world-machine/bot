@@ -1,28 +1,32 @@
 import time
-import utilities.database.main as db
+from interactions import *
+from utilities.database.schemas import UserData
 from utilities.config import debugging
 from datetime import datetime, timedelta
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
-from utilities.localization import Localization, fnum, ftime
-from interactions import Extension, SlashContext, User, OptionType, slash_command, slash_option, SlashCommandChoice, Button, ButtonStyle, File
+from utilities.localization import Localization, fnum
 
 
 class ProfileCommands(Extension):
 
-	@slash_command(description='All things to do with profiles.')
+	@slash_command(description='All things to do with profiles')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def profile(self, ctx):
 		pass
 
-	@slash_command(description='All things to do with Suns.')
+	@slash_command(description='All things to do with Suns')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def sun(self, ctx):
 		pass
 
 	@sun.subcommand(sub_cmd_description='Give someone a sun!')
 	@slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
 	async def give(self, ctx: SlashContext, who: User):
-		user_data: db.UserData = await db.UserData(who.id).fetch()
+		user_data: UserData = await UserData(_id=who.id).fetch()
 
 		if who.bot:
 			return await fancy_message(ctx, "[ Bot's can't receive suns! ]", color=Colors.BAD, ephemeral=True)
@@ -48,8 +52,8 @@ class ProfileCommands(Extension):
 
 		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
 
-	@profile.subcommand(sub_cmd_description='View a profile.')
-	@slash_option(description="Would you like to see someone else's profile?", name='user', opt_type=OptionType.USER)
+	@profile.subcommand(sub_cmd_description='View a profile')
+	@slash_option(description="Person you want to see the profile of", name='user', opt_type=OptionType.USER)
 	async def view(self, ctx: SlashContext, user: User = None):
 		url = "https://theworldmachine.xyz/profile"
 
@@ -80,7 +84,7 @@ class ProfileCommands(Extension):
 		    embeds=[]
 		)
 
-	@profile.subcommand(sub_cmd_description='Edit your profile.')
+	@profile.subcommand(sub_cmd_description='Edit your profile')
 	async def edit(self, ctx: SlashContext):
 		components = Button(style=ButtonStyle.URL, label=Localization(ctx.locale).l('general.buttons._open_site'), url="https://theworldmachine.xyz/profile")
 		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)
@@ -92,4 +96,4 @@ class ProfileCommands(Extension):
 	    SlashCommandChoice(name='Times Asked', value='times_asked'),
 	    SlashCommandChoice(name='Times Messaged', value='times_messaged'),
 	    SlashCommandChoice(name='Times Transmitted', value='times_transmitted')
-	]
+	]                                                                           # TODO: what is this

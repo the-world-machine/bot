@@ -1,11 +1,11 @@
-import asyncio
 import uuid
+import asyncio
 from interactions import *
-from interactions.api.events import MessageCreate, Component
-from utilities.profile.badge_manager import increment_value
 from utilities.message_decorations import *
-from utilities.localization import ftime
-from utilities.database.main import ServerData
+from utilities.database.schemas import ServerData
+from utilities.localization import Localization, ftime
+from utilities.profile.badge_manager import increment_value
+from interactions.api.events import MessageCreate, Component
 
 from utilities.transmission_connection_manager import *
 
@@ -13,27 +13,39 @@ from utilities.transmission_connection_manager import *
 class TransmissionCommands(Extension):
 
 	@slash_command(description='Transmit to over servers!')
+	@integration_types(guild=True, user=False)
+	@contexts(bot_dm=False)
 	async def transmit(self, ctx: SlashContext):
 		pass
 
 	# @transmit.subcommand(sub_cmd_description='Connect to a server you already know.')
 	# async def call(self, ctx: SlashContext):
 
-	# 	server_data: ServerData = await ServerData(ctx.guild.id).fetch()
+	# 	server_data: ServerData = await ServerData(_id=ctx.guild.id).fetch()
 
-	# 	server_ids = server_data.transmittable_servers
+	# 	guilds = [
+	# 		await ctx.client.fetch_guild(id) or id
+	# 		for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))
+	# 	]
+	# 	# yapf: disable
+	# 	server_ids = {
+	# 		guild.id if isinstance(guild, Guild) else guild
+	# 		:
+	# 									guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+	# 		for guild in guilds
+	# 	}
 
 	# 	if attempting_to_connect(ctx.guild.id):
 	# 		return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
 
-	# 	if not server_data.allow_ask:
+	# 	if server_data.transmissions.disabled:
 	# 		return await fancy_message(ctx,
 	# 								   '[ This server has opted to disable call transmissions or has simply not set a channel. ]',
 	# 								   ephemeral=True)
 
 	# 	if not server_ids:
 	# 		return await fancy_message(ctx,
-	# 								   '[ This server doesn\'t know any other servers! Connect using ``/transmit connect``! ]',
+	# 								   '[ This server hasn't connected to anyone before! Connect using ``/transmit connect``! ]',
 	# 								   ephemeral=True)
 
 	# 	options = []
@@ -56,24 +68,23 @@ class TransmissionCommands(Extension):
 
 	# 	await ctx.send(components=server_list, ephemeral=True)
 
-	# 	select_results = await self.bot.wait_for_component(components=server_list)
+	# 	select_results = await ctx.client.wait_for_component(components=server_list)
 
 	# 	other_server = int(select_results.ctx.values[0])
-	# 	other_server_data: ServerData = await ServerData(other_server).fetch()
+	# 	other_server_data: ServerData = await ServerData(_id=other_server).fetch()
 
-	# 	if other_server in server_data.blocked_servers:
+	# 	if other_server in server_data.transmissions.blocked_servers:
 	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server is blocked. ]', color=Colors.BAD, ephemeral=True)
 
-	# 	if ctx.guild_id in other_server_data.blocked_servers:
+	# 	if ctx.guild_id in other_server_data.transmissions.blocked_servers:
 	# 		return await fancy_message(select_results.ctx, '[ Sorry, but this server has blocked you. ]', color=Colors.BAD, ephemeral=True)
 
-	# 	if not other_server_data.transmit_channel:
-	# 		print("OTHER", other_server, other_server_data)
+	# 	if not other_server_data.transmissions.channel_id:
 	# 		return await fancy_message(select_results.ctx,
 	# 								   '[ Sorry, but the server you selected has not set a channel for transmissions yet. ]',
 	# 								   color=Colors.BAD, ephemeral=True)
 
-	# 	other_server_channel: GuildText = await self.bot.fetch_channel(other_server_data.transmit_channel)
+	# 	other_server_channel: GuildText = await ctx.client.fetch_channel(other_server_data.transmissions.channel_id)
 
 	# 	server_name = other_server_channel.guild.name.replace("`", "'")
 
@@ -117,7 +128,7 @@ class TransmissionCommands(Extension):
 	# 	other_server_message = await fancy_message(other_server_channel, f'[ **{ctx.guild.name}** is calling you! ]', components=[connect_button, disconnect_button])
 
 	# 	try:
-	# 		other_server_component: Component = await self.bot.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
+	# 		other_server_component: Component = await ctx.client.wait_for_component(components=[connect_button, disconnect_button], timeout=60)
 	# 	except:
 
 	# 		await other_server_message.edit(embed=embed_timeout_one, components=[])
@@ -144,13 +155,13 @@ class TransmissionCommands(Extension):
 	# 			self.on_transmission(other_server_ctx.user, other_server_message, other_server)
 	# 		) # type: ignore
 
-	@transmit.subcommand(sub_cmd_description='Transmit to another server.')
+	@transmit.subcommand(sub_cmd_description='Transmit messages to another server')
 	async def connect(self, ctx: SlashContext):
 
 		await ctx.defer()
-		server_data: ServerData = await ServerData(ctx.guild_id).fetch()
+		server_data: ServerData = await ServerData(_id=ctx.guild_id).fetch()
 
-		if available_initial_connections(server_data.blocked_servers):
+		if available_initial_connections(server_data.transmissions.blocked_servers):
 
 			if attempting_to_connect(ctx.guild_id):
 
@@ -164,7 +175,7 @@ class TransmissionCommands(Extension):
 
 			msg = await ctx.send(embeds=embed, components=cancel)
 
-			task = asyncio.create_task(self.bot.wait_for_component(components=cancel))
+			task = asyncio.create_task(ctx.client.wait_for_component(components=cancel))
 
 			while not connection_alive(ctx.guild_id):
 				done, _ = await asyncio.wait({task}, timeout=1)
@@ -185,7 +196,7 @@ class TransmissionCommands(Extension):
 
 			await increment_value(ctx, 'times_transmitted', 1, ctx.user)
 
-			await self.on_transmission(ctx.user, msg, ctx.guild_id)
+			await self.on_transmission(ctx, msg)
 			return
 
 		connected = check_if_connected(ctx.guild_id)
@@ -201,24 +212,36 @@ class TransmissionCommands(Extension):
 			await increment_value(ctx, 'times_transmitted', 1, ctx.user)
 
 			connect_to_transmission(ctx.guild_id, ctx.channel_id)
-			await self.on_transmission(ctx.user, msg, ctx.guild_id)
+			await self.on_transmission(ctx, msg)
 			return
 
-	async def on_transmission(self, user: User, msg: Message, server_id: int):
-
+	async def on_transmission(self, ctx: SlashContext, msg: Message):
+		user = ctx.user
+		server_id = ctx.guild.id
+		loc = Localization(ctx.locale)
 		transmission = get_transmission(server_id)
 
 		other_server: Guild
 		if server_id == transmission.connection_a.server_id:
-			other_server = await self.bot.fetch_guild(transmission.connection_b.server_id)
+			other_server = await self.client.fetch_guild(transmission.connection_b.server_id)
 		else:
-			other_server = await self.bot.fetch_guild(transmission.connection_a.server_id)
+			other_server = await self.client.fetch_guild(transmission.connection_a.server_id)
 
-		server_data: ServerData = await ServerData(server_id).fetch()
-		transmittable_servers = server_data.transmittable_servers
-		transmittable_servers[str(other_server.id)] = other_server.name
+		server_data: ServerData = await ServerData(_id=server_id).fetch()
+		await server_data.transmissions.known_servers.append(str(other_server.id))
 
-		await server_data.update(transmittable_servers=transmittable_servers)
+		guilds = [
+		    await ctx.client.fetch_guild(id) or id
+		    for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))
+		]
+		# yapf: disable
+		known_servers = {
+		 guild.id if isinstance(guild, Guild) else guild
+		 :
+                     guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+		 for guild in guilds
+		}
+		# yapf: enable
 
 		btn_id = uuid.uuid4()
 
@@ -228,10 +251,12 @@ class TransmissionCommands(Extension):
 			if user.id == component.ctx.user.id:
 				return True
 			else:
-				await component.ctx.send(f'[ Only the initiator of this transmission ({User.mention}) can cancel it! ]', ephemeral=True)
+				await component.ctx.send(
+				    f'[ Only the initiator of this transmission ({user.mention}) can cancel it! ]', ephemeral=True
+				)
 				return False
 
-		task = asyncio.create_task(self.bot.wait_for_component(components=disconnect, check=check_button))
+		task = asyncio.create_task(self.client.wait_for_component(components=disconnect, check=check_button))
 
 		disconnect_timer = 600
 
@@ -296,7 +321,7 @@ class TransmissionCommands(Extension):
 
 		user: TransmissionCommands.TransmitUser
 
-		if server_data.anonymous:
+		if server_data.transmissions.anonymous:
 
 			i = 0
 
@@ -304,7 +329,9 @@ class TransmissionCommands(Extension):
 
 			for i, character in enumerate(connection.characters):
 				if character['id'] == 0 or character['id'] == d_user.id:
-					user = TransmissionCommands.TransmitUser(character['Name'], d_user.id, f'https://cdn.discordapp.com/emojis/{character["Image"]}.png')
+					user = TransmissionCommands.TransmitUser(
+					    character['Name'], d_user.id, f'https://cdn.discordapp.com/emojis/{character["Image"]}.png'
+					)
 
 					connection.characters[i].update({ 'id': d_user.id})
 
@@ -328,18 +355,14 @@ class TransmissionCommands(Extension):
 		if channel.type == ChannelType.DM:
 			return
 
-		if message.author.id == 1015629604536463421 or message.author.id == 1028058097383641118:
+		if message.author.id == self.client.user.id:
 			return
 
 		if guild is None:
 			return
 
 		if connection_alive(guild.id):
-
-			if message.author.id == self.bot.user.id:
-				return
-
-			server_data: ServerData = await ServerData(guild.id).fetch()
+			server_data: ServerData = await ServerData(_id=guild.id).fetch()
 
 			transmission = get_transmission(guild.id)
 
@@ -353,14 +376,14 @@ class TransmissionCommands(Extension):
 			if first_server.channel_id == channel.id:
 				can_pass = True
 				user = await self.check_anonymous(guild.id, message.author, first_server, server_data)
-				other_connection = await self.bot.fetch_channel(second_server.channel_id)
-				allow_images = server_data.transmit_images
+				other_connection = await self.client.fetch_channel(second_server.channel_id)
+				allow_images = server_data.transmissions.allow_images
 
 			if second_server.channel_id == channel.id:
 				can_pass = True
 				user = await self.check_anonymous(guild.id, message.author, second_server, server_data)
-				other_connection = await self.bot.fetch_channel(first_server.channel_id)
-				allow_images = server_data.transmit_images
+				other_connection = await self.client.fetch_channel(first_server.channel_id)
+				allow_images = server_data.transmissions.allow_images
 
 			if can_pass:
 				embed = await self.message_manager(message, user, allow_images)
@@ -371,20 +394,28 @@ class TransmissionCommands(Extension):
 
 		final_text = message.content
 
-		embed = Embed(color=Colors.DARKER_WHITE, description=final_text)
-
-		if len(message.attachments) > 0:
-			image = message.attachments[0].url
-
-			if '.mp4' in image or '.mov' in image:
-				embed.video = EmbedAttachment(url=image)
-				embed.set_footer('User sent a video, but discord does not allow bots to send videos in embeds.')
-			elif allow_images:
-				embed.image = EmbedAttachment(url=image)
-			else:
-				final_text += '\n\n[IMAGE]'
-
+		embed = Embed(color=Colors.DARKER_WHITE, url="https://theworldmachine.xyz") # url used for putting more than 1 image into the embed, see Embed.add_image method description
 		embed.set_author(name=user.name, icon_url=user.image)
+
+		overflow = True
+
+		def overflow():
+			if overflow:
+				overflow = False
+				final_text += '\n\n'
+
+		for attachment in message.attachments:
+			if attachment.content_type and attachment.content_type.startswith("image/"):
+				if allow_images and len(embed.images) < 3:
+					embed.add_image(image=attachment.url)
+				else:
+					overflow()
+					final_text += f"{attachment.url} "
+					if allow_images:
+						embed.footer = "embeds support up to 4 images"
+			else:
+				overflow()
+				final_text += f"{attachment.url} "
 
 		embed.description = final_text
 

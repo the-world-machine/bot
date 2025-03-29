@@ -4,22 +4,24 @@ from interactions import *
 from utilities.message_decorations import *
 
 
-# TODO: localiazeeeeeeeeee
 class ShippingCommands(Extension):
 
-	@slash_command(description="Ship two people together.")
-	@slash_option(name="who", description="First person. Can be a user.", opt_type=OptionType.STRING, required=True)
-	@slash_option(argument_name="whomst", name="with", description="Second person. Can be a user.", opt_type=OptionType.STRING, required=True)
-	async def ship(self, ctx: SlashContext, who: str, whomst: str):
+	@slash_command(description="Ship two people together")
+	@slash_option(name="who", description="First person (can be a @user)", opt_type=OptionType.STRING, required=True)
+	@slash_option(argument_name="whomst", name="with", description="Second person (can be a @user)", opt_type=OptionType.STRING, required=True)
+	@slash_option(description="Whether you want the response to be visible for others in the channel (default: True)", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
+	async def ship(self, ctx: SlashContext, who: str, whomst: str, public: bool = True):
 
 		if '<' in who:
 			parsed_id = who.strip('<@>')
-			user = await self.bot.fetch_user(int(parsed_id))
+			user = await ctx.client.fetch_user(int(parsed_id))
 
 			who = user.display_name
 		if '<' in whomst:
 			parsed_id = whomst.strip('<@>')
-			user = await self.bot.fetch_user(int(parsed_id))
+			user = await ctx.client.fetch_user(int(parsed_id))
 
 			whomst = user.display_name
 		if who == ctx.author.display_name and who == whomst:
@@ -73,4 +75,4 @@ class ShippingCommands(Extension):
 
 		embed.set_footer(text=description)
 
-		await ctx.send(embeds=embed)
+		await ctx.send(embeds=embed, ephemeral=not public)

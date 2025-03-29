@@ -19,6 +19,11 @@ general:
 
   responses:
     timeout:
+      yn: "[ Du Nahm zu viel zeit zu antworten]"
+
+
+  responses:
+    timeout:
       yn: "[ Du nahm zu viel zeit zu antworten ]"
 
 # --------------------------------------------------------------
@@ -69,57 +74,54 @@ misc:
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
 # ---------------------------------------------------------------
-
-wool:  
+      
+wool: 
   balance:
     you:
-      none: "[ Du hast**keine[emoji:wool]Wool** ]"
+      none: "[ Du hast **no[emoji:wool]Wool** ]"
       some: "[ Du hast **[balance]**[emoji:wool] ]"
     other:
-      none: "[ **[mention]** hat **kein[emoji:wool]Wool** ]"
+      none: "[ **[mention]** hat **no[emoji:wool]Wool** ]"
       some: "[ **[mention]** hat **[balance]**[emoji:wool] ]"
     bot:
       none: |
-        [ Bots normalerweise Interaktiern nicht mit mit, nicht das sie können
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal.
         
-        so [mention] hat kein [emoji:wool]**Wool** ]
+        so [mention] hat keine [emoji:wool]**Wool** ]
       some: |
-        [ Bots normalerweise Interaktiern nicht mit mit, nicht das sie können, aber...
+        [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
 
         [mention] war gegeben [emoji:wool]**[balance]** ]
     twm:
-      none: "[ Ich probiere nicht die Wirtschaft zu in Beeinflussen so, ich habe **kein[emoji:wool]Wool** ]"
-      some: "[ Ich probiere nicht die Wirtschaft zu in Beeinflussen, aber ich habe [emoji:wool]**[balance]** ]"
+      none: "[ Ich probiere nicht die wirtschaft beeinflussen, so ich habe **no[emoji:wool]Wool** ]"
+      some: "[ Ich probiere nicht die wirtschaft beeinflussen, aber ich habe [emoji:wool]**[balance]** ]"
   transfer:
     errors:
       self_transfer: "[ Fertig... ]"
-      not_enough: "[ Du hast nicht so viel [emoji:wool] wool! ]"
-      note_nuf: "Du hast [emoji:wool]**[balance]**" # note:
-
+      not_enough: "[ Du hast nicht so viel [emoji:wool] wool! (du hast nur [emoji:wool]**[balance]**) ]"
     to:
       bot:
-        none: "[user_one] verscheckt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
-        some: "[user_one] verscheckt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
-        confirmation: "[ Bist du sicher du wollst wolle geben zu... Einen bot? ]"
-        notefirmation: "du kannst es nicht wieder erhalte, weißt du dass..." # note:
+        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
+        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
+        confirmation: "[ Bist du sicherer das du will woole geben zu ein bot...? Du kannst es nicht wieder haben, du weißt dass? ... ]"
       user:
-        none: "[user_one] verscheckt [emoji:wool]**[amount]** zu [user_two], nicht sehr großzügig Schließlich..."
-        some: "[user_one] verscheckt [emoji:wool]**[amount]** zu [user_two], wie großzügig!"
-    steal: "[user_one] hat eine Stückchen wolle gestohlen von [user_two], warum!?"
-pray:
+        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig schließlich..."
+        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig!"
+    steal: "[user_one] hat eine singulare stück wool gestohlen von [user_two], warum!?"
+  pray:
     errors:
-      timeout: "[ Du hast schon Gebetet in der Vergangen 24 Stunden. Du kannst beten wieder am [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
+      timeout: "[ Du hast schon gebetet in der 24. Du kannst nochmal beten [timestamp_relative]]" # example: in a day, in 5 hours # discord automatically translates
     finds:
-      misdeed: "...aber die sahen deine Missetat der andere Tage."
-      unhappy: "...aber sie sind nicht fröhlich mit dir heute."
-      despise: "... und sie hassen dich heute... Zu schlec6..."
-      ogie: "...und sie sehen du bist okay."
-      yippie: "...und sie sind fröhlich mit dir! Lob sei die Welt Maschine!"
-      devoted: "...und sie sehen du bist ein wirklicher ergebener ein wirklich ergebener beter. Lob sei die Welt Maschine!"
-    title: "Du hast zu die Welt maschine gebetet..."
+      misdeed: "... aber Sie sahen deine Missetat der andere tage."
+      unhappy: "...aber sie sind nicht glücklich mit dir heute."
+      despise: "...und sie hassen die... zu schlect..."
+      ogie: "...und sie sehen das du bist okay."
+      yippie: "...und sie sind glücklich mir dir! Lob sei die Welt Maschine!"
+      devoted: "...und sie sehen du bist ein echetr  they see you're truly a devoted follower. 	Lob sei die Welt maschine!"
+    title: "Du betete zu die Welt maschine..."
     Change:
-      gain: "Du hast also [emoji:wool]**[amount]** wool!"
-      loss: "Du hast also [emoji:wool]**[amount]** wool..."
+      gain: "Du also hast bekommen [emoji:wool]**[amount]** wool!"
+      loss: "Du also hast verloren [emoji:wool]**[amount]** wool..."
       
 # ---------------------------------------------------------------
 
@@ -162,10 +164,10 @@ settings:
       yah: "[ Welcome textboxes should now ping the newcomers ]"
       nah: "[ Welcome textboxes will no longer ping the newcomers ]"
     editor:
-      title: "Editing the welcome textbox message..."
-      input: "Welcome Message"
-      placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
-      done: "[ Successfully updated the welcome textbox message ]"
+      title: "Du verändert die Willkommen Nachricht ..."
+      input: "Willkommen Nachricht"
+      placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
+      done: "[ Erfolgreich Verändert die Willkommen Nachricht
       debug: | 
         Previous: [old_text]
 
@@ -225,6 +227,7 @@ explode:
       [ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! ]
 
       ⚠️ warnung: Unglaublich von dir.
+      
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -520,15 +523,16 @@ treasure:
     ### [user]'s Schätze
 
     [treasures]
-  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some!  # tip:
+  tip: du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
 
 # ---------------------------------------------------------------
 
 nikogotchi:
+  owned: "Besitzt von [user]"
   loading: "[ Laden Nikogotchi... [emoji:loading] ]"
   invalid: "[ Du hast kein Nikogotchi! ]"
-  tipnvalid: "you can buy a capsule with one in the shop" # tip:
-  owned: Besitzt von [user]
+  tipnvalid: "du kannst eine Kapsel kaufen von den laden un entsperrt eine" # tip:
+
 
   name:
     niko: Niko

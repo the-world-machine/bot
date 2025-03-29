@@ -2,14 +2,13 @@ import io
 import textwrap
 from interactions import File, User
 from termcolor import colored
+from utilities.database.schemas import UserData
 from utilities.misc import get_image
 from utilities.config import debugging, get_config
 from utilities.message_decorations import Colors
 from utilities.localization import Localization, fnum
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 from utilities.shop.fetch_items import fetch_background, fetch_badge
-
-import utilities.database.main as db
 
 icons = []
 shop_icons = []
@@ -46,7 +45,9 @@ async def load_profile_assets():
 
 	for _, badge in badges.items():
 		badge
-		img = await get_image(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless') # TODO: move to emojis.py
+		img = await get_image(
+		    f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless'
+		)  # TODO: move to emojis.py
 		img = img.convert('RGBA')
 		img = img.resize((35, 35), Image.NEAREST)
 		if debugging():
@@ -82,7 +83,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 
 	user_pfp_url += "?size=160&quality=lossless"
 
-	user_data: db.UserData = await db.UserData(user_id).fetch()
+	user_data: UserData = await UserData(_id=user_id).fetch()
 
 	title = loc.l("profile.view.image.title", username=user.display_name)
 

@@ -1,97 +1,86 @@
 import random
 import asyncio
 from interactions import *
-from utilities.emojis import emojis
+from utilities.emojis import emojis, make_url
 from datetime import datetime, timedelta
-from utilities.database.main import UserData
-from utilities.localization import Localization, fnum
+from utilities.database.schemas import UserData
+from utilities.localization import Localization, fnum, put_mini
 from utilities.message_decorations import Colors, fancy_message
-
-wool_finds = [
-    {
-        'message': 'and they despise you today... Too bad...',
-        'amount': 'negative_major',
-        'chance': 70
-    }, {
-        'message': 'and they\'re happy with you! Praise be The World Machine!',
-        'amount': 'positive_normal',
-        'chance': 30
-    }, {
-        'message': "and they see you're truly a devoted follower. Praise be The World Machine!",
-        'amount': 'positive_major',
-        'chance': 5
-    }, {
-        'message': 'but they saw your misdeed the other day.',
-        'amount': 'negative_minimum',
-        'chance': 40
-    }, {
-        'message': "but they aren't happy with you today.",
-        'amount': 'negative_normal',
-        'chance': 20
-    }, {
-        'message': 'and they see you\'re doing okay.',
-        'amount': 'positive_minimum',
-        'chance': 100
-    }
-]
-
-wool_values = {
-    'positive_minimum': [ 500, 3000 ],
-    'positive_normal': [ 1000, 3_000 ],
-    'positive_major': [ 10_000, 50_000 ],
-    'negative_minimum': [-10, -50],
-    'negative_normal': [-100, -300],
-    'negative_major': [-500, -1000]
+# yapf: disable
+wool_finds = {
+  10: [ "devoted", "positive_major"   ],
+  30: [  "yippie", 'positive_normal'  ],
+  60: [    "ogie", 'positive_minimum' ],
+  70: [ "misdeed", 'negative_minimum' ],
+  95: [ "unhappy", "negative_normal"  ],
+ 100: [ "despise", 'negative_major'   ]
 }
+wool_values = {
+   'positive_major': [  5_000, 20_000  ],
+  'positive_normal': [  3_000, 5_000   ],
+ 'positive_minimum': [    500, 3_000   ],
+ 'negative_minimum': [    -10, -1_000  ],
+  'negative_normal': [ -1_000, -5_000  ],
+   'negative_major': [ -5_000, -30_000 ]
+}
+# yapf: enable
 
 
 class WoolCommands(Extension):
 
 	@slash_command(description='All things to do with wool')
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def wool(self, ctx: SlashContext):
 		pass
 
 	@wool.subcommand(sub_cmd_description='View your balance')
 	@slash_option(description='The person you want to view balance of instead', name='of', opt_type=OptionType.USER)
-	async def balance(self, ctx: SlashContext, of: User = None):
+	@slash_option(
+	    description="Whether you want the response to be visible for others in the channel",
+	    name="public",
+	    opt_type=OptionType.BOOLEAN
+	)
+	async def balance(self, ctx: SlashContext, of: User = None, public: bool = False):
+		await ctx.defer(ephemeral=not public)
+		loc = Localization(ctx.locale)
 		if of is None:
 			of = ctx.user
 
-		user_data: UserData = await UserData(of.id).fetch()
+		user_data: UserData = await UserData(_id=of.id).fetch()
 		wool: int = user_data.wool
-		if of.bot:
-			if of == ctx.client.user:
-				if wool <= 0:
-					return await fancy_message(ctx, f"[ I try not to influence the economy, so i have **no{emojis['icons']['wool']}Wool** ]")
-				else:
-					return await fancy_message(ctx, f"[ I try not to influence the economy, but i was given {emojis['icons']['wool']}**{fnum(wool)}** ]")
-			if wool == 0:
-				return await fancy_message(
-				    ctx, f"[ Bots usually don't interact with The World Machine, not that they even can...\n" + f"So {of.mention} has no {emojis['icons']['wool']}**Wool** ]"
-				)
-			else:
-				return await fancy_message(
-				    ctx, f"[ Bots usually don't interact with The World Machine, not that they even can...\n" +
-				    f"But, {of.mention} was given {emojis['icons']['wool']}**{fnum(wool)}** ]"
-				)
-		if wool == 0:
-			await fancy_message(
-			    ctx,
-			    f"[ **{of.mention}** has no **Wool**{emojis['icons']['wool']}. ]",
-			)
-		else:
-			await fancy_message(
-			    ctx,
-			    f"[ **{of.mention}** has {emojis['icons']['wool']}**{fnum(wool)}**. ]",
-			)
+		who_path = "other"
+		if public == False and of == ctx.user:
+			who_path = "you"
+		if of == ctx.client.user:
+			who_path = "twm"
+		elif of.bot:
+			who_path = "bot"
+		return await fancy_message(
+		    ctx,
+		    loc.l(
+		        f'wool.balance.{who_path}.{"none" if wool == 0 else "some"}',
+		        mention=of.mention,
+		        balance=fnum(wool, locale=ctx.locale)
+		    ),
+		    edit=True
+		)
 
 	@wool.subcommand(sub_cmd_description='Give away some of your wool')
 	@slash_option(description='Who would you like to give?', name='to', required=True, opt_type=OptionType.USER)
-	@slash_option(description='How much wool would you like to give them?', name='amount', required=True, opt_type=OptionType.INTEGER, min_value=-1)
+	@slash_option(
+	    description='How much wool would you like to give them?',
+	    name='amount',
+	    required=True,
+	    opt_type=OptionType.INTEGER,
+	    min_value=-1
+	)
 	async def give(self, ctx: SlashContext, to: User, amount: int):
 		loc = Localization(ctx.locale)
 		if to.id == ctx.author.id:
-			return await fancy_message(ctx, '[ What... ]', ephemeral=True, color=Colors.BAD)
+			return await fancy_message(
+			    ctx, loc.l("wool.transfer.errors.self_transfer"), ephemeral=True, color=Colors.BAD
+			)
 
 		if to.bot and not (amount <= 0):
 			buttons = [
@@ -101,7 +90,8 @@ class WoolCommands(Extension):
 
 			confirmation_m = await fancy_message(
 			    ctx,
-			    message="[ Are you sure you want to give wool... to a bot? You won't be able get it back, you know... ]",
+			    message=loc.l("wool.transfer.to.bot.confirmation") +
+			    await put_mini(loc, "wool.transfer.to.bot.notefirmation", user_id=ctx.user.id, pre="\n\n"),
 			    color=Colors.WARN,
 			    components=buttons,
 			    ephemeral=True
@@ -110,94 +100,81 @@ class WoolCommands(Extension):
 				await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0 * 1000)
 				await ctx.delete(confirmation_m)
 			except asyncio.TimeoutError:
-				await confirmation_m.edit(content="[ You took too long to respond ]", components=[])
+				await confirmation_m.edit(content=loc.l("general.responses.timeout.yn"), components=[])
 				await ctx.delete()
 				await asyncio.sleep(15)
 				await confirmation_m.delete()
 
 		loading = await fancy_message(ctx, loc.l('general.loading'))
-		from_user: UserData = await UserData(ctx.author.id).fetch()
-		to_user: UserData = await UserData(to.id).fetch()
+		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
+		to_user: UserData = await UserData(_id=to.id).fetch()
 
 		if from_user.wool < amount:
-			return await fancy_message(ctx, f"[ You don't have that much wool! (you have only {from_user.wool}) ]", edit=True, ephemeral=True, color=Colors.BAD)
+			return await fancy_message(
+			    ctx,
+			    loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
+			    await put_mini(loc, "wool.transfer.errors.note_nuf", pre="\n\n"),
+			    edit=True,
+			    ephemeral=True,
+			    color=Colors.BAD
+			)
 
 		await from_user.manage_wool(-amount)
 		await to_user.manage_wool(amount)
 
-		if amount > 0:
-			if ctx.user.bot:
-				await fancy_message(loading, f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {to.mention}, how generous...", edit=True)
-			else:
-				await fancy_message(loading, f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {to.mention}, how generous!", edit=True)
-		elif amount == 0:
-			if ctx.user.bot:
-				await fancy_message(loading, f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {to.mention}, not very generous!", edit=True)
-			else:
-				await fancy_message(
-				    loading, f"{ctx.author.mention} gave away {emojis['icons']['wool']}**{fnum(amount)}** to {to.mention}, not very generous after all...", edit=True
-				)
-		else:
-			await fancy_message(loading, f"{ctx.author.mention} stole a single piece of wool from {to.mention}, why!?", edit=True)
+		if amount < 0:
+			return await fancy_message(
+			    loading, loc.l("wool.transfer.steal", user_one=ctx.author.mention, user_two=to.mention), edit=True
+			)
+		await fancy_message(
+		    loading,
+		    loc.l(
+		        f'wool.transfer.to.{"bot" if to.bot else "user"}.{"none" if amount == 0 else "some"}',
+		        user_one=ctx.author.mention,
+		        user_two=to.mention,
+		        amount=amount
+		    ),
+		    edit=True
+		)
 
-	@wool.subcommand()
-	async def daily(self, ctx: SlashContext):
-		'''This command has been renamed to /pray'''
-
-		await self.pray(ctx)
-
-	@slash_command()
+	@slash_command(description="Pray to The World Machine")
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
 	async def pray(self, ctx: SlashContext):
-		'''Pray to The World Machine'''
+		loc = Localization(ctx.locale)
 
-		user_data: UserData = await UserData(ctx.author.id).fetch()
-		last_reset_time = user_data.daily_wool_timestamp
+		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
+		reset_timestamp = user_data.daily_wool_timestamp
 
 		now = datetime.now()
 
-		if now < last_reset_time:
-			time_unix = last_reset_time.timestamp()
-			return await fancy_message(ctx, f"[ You've already prayed in the past 24 hours. You can pray again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
+		if reset_timestamp and now < reset_timestamp:
+			time_unix = reset_timestamp.timestamp()
+			return await fancy_message(
+			    ctx,
+			    loc.l("wool.pray.errors.timeout", timestamp_relative=f"<t:{int(time_unix)}:R>"),
+			    ephemeral=True,
+			    color=Colors.BAD
+			)
+		# TODO: use silly relative timestamp function
 
 		# reset the limit if it is a new day
-		if now >= last_reset_time:
+		if now >= reset_timestamp:
 			reset_time = datetime.combine(now.date(), now.time()) + timedelta(days=1)
 			await user_data.update(daily_wool_timestamp=reset_time)
+		rolled = random.randint(0, 100)
 
-		random.shuffle(wool_finds)
-
-		response = wool_finds[0]
-
-		number = random.randint(0, 100)
-
-		amount = 0
-		message = ''
-
-		for wool_find in wool_finds:
-			if number <= wool_find['chance']:
-				amount = wool_find['amount']
-				message = wool_find['message']
-				break
-
-		response = f'You prayed to The World Machine...'
-
-		amount = wool_values[amount]
+		finding = wool_finds[min(wool_finds.keys(), key=lambda k: abs(k - rolled))]
+		amount = wool_values[finding[1]]
 		amount = int(random.uniform(amount[0], amount[1]))
 
-		if amount > 0:
-			value = f"You got {fnum(amount)} wool!"
-			color = Colors.GREEN
-		else:
-			value = f"You lost {fnum(abs(amount))} wool..."
-			color = Colors.BAD
+		await user_data.manage_wool(amount)
 
-		await user_data.update(wool=user_data.wool + amount)
-
-		await ctx.send(embed=Embed(title='Pray', description=f'{response}\n{message}', footer=EmbedFooter(text=value), color=color))
-
-	@wool.subcommand()
-	@slash_option(description='How much wool would you like to bet?', name='bet', required=True, opt_type=OptionType.INTEGER, min_value=100)
-	async def gamble(self, ctx: SlashContext, bet: int):
-		"""Moved to /gamble wool"""
-		from interacts.gamble import GambleCommands
-		return await GambleCommands.wool(ctx, ctx, bet)
+		await ctx.send(
+		    embed=Embed(
+		        thumbnail=make_url(emojis["treasures"]["die"]),
+		        title=loc.l("wool.pray.title"),
+		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " + loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
+		        color=Colors.GREEN if amount > 0 else Colors.BAD
+		    )
+		)
