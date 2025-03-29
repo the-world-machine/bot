@@ -443,64 +443,128 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "[ Choose an action to perform on [user]. ]"
-  placeholder: Interactions...
-
-  twm_not_being_very_happy: "[ Don't touch me, [user]. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
-  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
+  selected: "Choose an action to perform on [user]"
+  selected_self: "Choose an action to perform"
+  no_path: "The action you tried to do no longer exists"
 
   options:
-    boop:
-      name: Boop
-      messages: 
-        # lotta booping, you can remove some of these lines if you're too lazy to translate
-        # (it'll just not include them in the message)
-        - "[user_one] booped [user_two]"
-        - "[user_one] pokes the nose of [user_two]!"
-        - "[user_one] reaches out and boops [user_two]!"
-        - "[user_one] felt silly and booped [user_two]!"
-        - "[user_one] leaves [user_two] in confusion via a boop!"
-        - "[user_one] gives [user_two] an unexpected boop!"
-        - "[user_one] left [user_two] speechless post-boop!"
-        - "[user_one] delicately boops and brushes the nose of [user_two]"
-        - "[user_one] felt the need to give [user_two] a boop!"
-        - "[user_one] just wanted to give [user_two] a boop!"
-        - "[user_one] couldn't resist booping [user_two]"
-        - "[user_one] aggressively booped [user_two]"
-    slap:
-      name: Slap
-      messages: "[user_one] slapped [user_two], probably deserved."
-    punch:
-      name: Punch
-      messages: "[user_one] punched [user_two], that hurts."
-    pet:
-      name: Pet
-      messages: "[user_one] pet [user_two]!"
-    headpat:
-      name: Head Pat
-      messages: "[user_one] gave [user_two] a headpat!"
-    tickle:
-      name: Tickle
+    - name: Boop
       messages:
-        - "[user_one] started tickling [user_two] a surprise tickle!"
-        - "[user_one] gave [user_two] a surprise tickle!"
-        - "[user_one] tickled [user_two] and sparked a tickle fight!"
-        - "[user_one] went for a tickle attack towards [user_two]!"
-    hug:
-      name: Hug
-      messages: "[user_one] hugged [user_two]!"
-    cuddle:
-      name: Cuddle
-      messages: "[user_one] cuddled with [user_two]!"
-    kiss:
-      name: Kiss
+        - name: Basic
+          messages: 
+            - "[user_one] booped [user_two]"
+        - name: Playful
+          messages:
+            - "[user_one] pokes the nose of [user_two]!"
+            - "[user_one] reaches out and boops [user_two]!"
+            - "[user_one] felt silly and booped [user_two]!"
+            - "[user_one] playfully boops [user_two]!"
+        - name: Delicate
+          messages:
+            - "[user_one] delicately boops and brushes the nose of [user_two]"
+            - "[user_one] delivers a dainty boop to [user_two]"
+            - "[user_one] gently taps [user_two]'s nose"
+            - "[user_one] places a delicate boop on [user_two]'s nose"
+        - name: Frustrated
+          messages:
+            - "[user_one] aggressively booped [user_two]"
+            - "[user_one] booped [user_two] out of frustration"
+            - "[user_one] huffs and boops [user_two] in irritation"
+            - "[user_one] lets out their frustration with a firm boop on [user_two]"
+        - name: Irresistible
+          messages: 
+            - "[user_one] felt the need to give [user_two] a boop!"
+            - "[user_one] just wanted to give [user_two] a boop!"
+            - "[user_one] couldn't resist booping [user_two]"
+            - "[user_one] gives in to the urge and boops [user_two]"
+        - name: Confused
+          messages:
+            - "[user_one] leaves [user_two] in confusion via a boop!"
+            - "[user_one] gives [user_two] an unexpected boop!"
+            - "[user_one] left [user_two] speechless post-boop!"
+            - "[user_one] leaves [user_two] wondering why they were booped"
+        - name: They're Cute
+          messages:
+            - "[user_one] gives [user_two] the cutest little boop!"
+            - "[user_one] boops [user_two]'s nose and giggles cutely!"
+            - "[user_one] can't handle how adorable [user_two] is and boops them!"
+            - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
+    - name: Slap
       messages: 
-        - "[user_one] kissed [user_two]! ❤️"
-        - "[user_one] gave [user_two] a warm kiss ❤️"
-    molotov:
-      name: 🔥
-      messages: "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
+        - name: Basic
+          messages: 
+            - "[user_one] slapped [user_two], probably deserved."
+    - name: Pet
+      messages: 
+        - name: Basic
+          messages: 
+            - "[user_one] pet [user_two]!"
+    - name: Head Pat
+      messages: 
+        - name: Basic
+          messages: 
+            - "[user_one] gave [user_two] a headpat!"
+    - name: Tickle
+      messages:
+        - name: Basic
+          messages: 
+            - "[user_one] started tickling [user_two] a surprise tickle!"
+            - "[user_one] gave [user_two] a surprise tickle!"
+            - "[user_one] tickled [user_two] and sparked a tickle fight!"
+            - "[user_one] went for a tickle attack at [user_two]!"
+    - name: Hug
+      messages: 
+        - name: Basic
+          messages: 
+            - "[user_one] hugged [user_two]!"
+    - name: Cuddle
+      messages: 
+        - name: Basic
+          messages: 
+            - "[user_one] cuddled with [user_two]!"
+    - name: Kiss
+      messages: 
+        - name: Basic
+          messages: 
+            - "[user_one] kissed [user_two]! ❤️"
+        - name: Warm
+          messages: 
+            - "[user_one] gave [user_two] a warm kiss ❤️"
+        - name: Romantic
+          messages:
+            - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
+        - name: Cheek Kiss
+          messages:
+            - "[user_one] plants a sweet peck on [user_two]'s cheek"
+            - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
+    - name: Attack
+      messages:
+        - name: Basic Punch
+          messages: 
+            - "[user_one] punched [user_two], that hurts."
+        - name: Random Combo
+          messages:
+            - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
+            - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
+            - "[user_one] goes full flurry mode on [user_two]!"
+        - name: Pillow
+          messages:
+            - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
+            - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
+            - "[user_one] swings a cushion at [user_two] in a soft attack!"
+    - name: 🔥
+      messages: 
+        - name: Small Rock
+          messages: 
+            - "[user_one] threw a small rock at [user_two]!"
+        - name: Molotov
+          messages: 
+            - "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
+        - name: Empty Bottle (ow)
+          #type: bottle
+          #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
+          messages: 
+            - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------
 
