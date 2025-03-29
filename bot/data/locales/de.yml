@@ -8,20 +8,25 @@ general:
     _cancel: "Stornieren"
     _back: "Wieder"
     _continue: "Weiter"
-    _open_site: "Seite öffenen"
-    _dont_show_again: "Don't Show Again"
+    _open_site: "Seite öffenen"    
+    _dont_show_again: "Nicht nochmal zeigen"
   
   minis:
-    note: "❕ note:"
+    note: "❕ Notierung(en):"
     tip: "❔ tip:"
-    warn: "⚠️ warning:"
-    err: "‼️ error:"
+    warn: "⚠️ Warnung:"
+    err: "‼️ Error:"
 
   responses:
     timeout:
       yn: "[ Du Nahm zu viel zeit zu antworten]"
 
-# ---------------------------------------------------------------
+
+  responses:
+    timeout:
+      yn: "[ Du nahm zu viel zeit zu antworten ]"
+
+# --------------------------------------------------------------
 
 music:
   loading:
@@ -41,7 +46,7 @@ misc:
   stats:
     owner: "👑 @[name]"
     names:
-      shards: "Shards"
+      shards: "Scherben"
       avg_ping: "Durchschnittlich ping"
       commit_hash: "Commit hash"     #
       server_count: "Server zahl"
@@ -62,14 +67,14 @@ misc:
     desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
     multi: "Insgesamt **[total]**."
-
+    
   welcome:
-    placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
+    placeholder_text: "[ Willkommen zu [server_name], [user_name]! hier sind jetzt [member_count] benutzern hier! ]"
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
 # ---------------------------------------------------------------
-
+      
 wool: 
   balance:
     you:
@@ -117,45 +122,57 @@ wool:
     Change:
       gain: "Du also hast bekommen [emoji:wool]**[amount]** wool!"
       loss: "Du also hast verloren [emoji:wool]**[amount]** wool..."
-
+      
 # ---------------------------------------------------------------
 
 transmit:
   autocomplete:
-    unknown_server: Unknown ([server_id])
+    unknown_server: Unerkannt([server_id])
 
 # ---------------------------------------------------------------
 
 settings:
   errors:
+    weird_edgecase_number_0: Ober du bist [app:mention] nicht in der server. Wenn du bist der server Manager bitte nochmal [app:mention] zu dem Server einladen.
     missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
+    channel_insufficient_perms: "[ Ich hab nicht genug erlaubnisse für diesem Kannal. stell doch sicher ich habe alle von diesem: **Send Messages**, **View Channel** und **Attach Files**. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
-
+    channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den  Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+    
+server:
   welcome:
     enabled:
-      yah: "[ Welcome textboxes have been enabled ]"
-      nah: "[ Welcome textboxes have been disabled ]"
-      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
-    channel:
-      auto: "[ Welcome textboxes channel has been reset ]"
-      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
-    ping:
-      yah: "[ Welcome textboxes should now ping the newcomers ]"
-      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
-    editor:
-      title: "Du verändert die Willkommen Nachricht ..."
-      input: "Willkommen Nachricht"
-      placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
-      done: "[ Erfolgreich Verändert die Willkommen Nachricht]"
-      debug: | 
-        Previous: [old_text]
+      yah: "[ Willkommen textboxen sind aktiviert  ]"
+      nah: "[ Willkommen textboxen sind Deaktiviert ]"
+      default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
+      editor:
+        title: "[ Du verändert die Willkommen Nachricht ... ]"
+        input: "Willkommen Nachricht"
+        placeholder: "Lass leer zum deaktivieren
 
-        New (current): [new_text]
-      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
-      # new message shows up right after this
+        - Du kannst die Variablen benutzen: [user_name] [server_name]"
+        done: |
+          [ Erfolgreich Verändert die Willkommen Nachricht]
+        # new message shows up right after this
+  channel:
+    auto: "[ Welcome textboxes channel has been reset ]"
+    Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+  ping:
+    yah: "[ Welcome textboxes should now ping the newcomers ]"
+    nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+  editor:
+    title: "Du verändert die Willkommen Nachricht ..."
+    input: "Willkommen Nachricht"
+    placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
+    done: "[ Erfolgreich Verändert die Willkommen Nachricht
+    debug: | 
+      Previous: [old_text]
+
+      New (current): [new_text]
+    disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
@@ -209,8 +226,8 @@ explode:
     nineninenineninenine: |
       [ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! ]
 
-      ⚠️ warning: Unglaublich von dir.
-
+      ⚠️ warnung: Unglaublich von dir.
+      
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -506,13 +523,12 @@ treasure:
     ### [user]'s Schätze
 
     [treasures]
-
-    tip: du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
+  tip: du kannst mehr Schätze bekommen in den Laden ober mit Nikogotchis!
 
 # ---------------------------------------------------------------
 
 nikogotchi:
-  owned: Besitzt von [user]
+  owned: "Besitzt von [user]"
   loading: "[ Laden Nikogotchi... [emoji:loading] ]"
   invalid: "[ Du hast kein Nikogotchi! ]"
   tipnvalid: "du kannst eine Kapsel kaufen von den laden un entsperrt eine" # tip:
@@ -577,8 +593,7 @@ nikogotchi:
 
   found:
     title: Du hast gefunden [name]!
-    description: |
-      Willst du ihnen eine andere name geben?
+    description: Willst du ihnen eine andere name geben?
     renamenote: du kann immer sie umbenennen mit `/nikogotchi rename`  # note:
 
   status:
@@ -634,7 +649,8 @@ nikogotchi:
       Zeitaufwand beim Suchen: [time].
 
     dialogues:
-      sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find! Note dass ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen."
+      sent: "Dein Nikogotchi war weg geschickt zum Schatzen zu find!"
+      senote: "ihre stats will sinken schnell als normal, so vergiss nicht ihn zurück rufen" # note:
       none_found: "Dein Nikogotchi hat gar nichts gefunden... Vielleicht gibt ihnen mehr zeit?"
 
   levelupped:
