@@ -319,4 +319,4 @@ async def _execute_dev_command(message: Message):
 		case "locale_override":
 			return
 		case _:
-			return await message.reply("Available commands: `eval` / `shop` / `db` / `bot`. See source code for usage")
+			return {}

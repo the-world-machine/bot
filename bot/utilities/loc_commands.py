@@ -59,7 +59,7 @@ async def execute_loc_command(message: Message):
 				return await message.reply(f"`[ Unknown exception: {str(e)} ]`")
 
 		case _:
-			return await message.reply("Available command: `locale_override`")
+			return {}
 	formatted_command_content = command_content.replace('\n', '\n' + colored('│ ', 'yellow'))
 	if subcommand_name == "db":
 		subcommand_name += " ─"
