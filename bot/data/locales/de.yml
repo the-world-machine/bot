@@ -142,37 +142,37 @@ settings:
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
     channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den  Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
     
-  server:
-    welcome:
-      enabled:
-        yah: "[ Willkommen textboxen sind aktiviert  ]"
-        nah: "[ Willkommen textboxen sind Deaktiviert ]"
-        default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
-        editor:
-          title: "[ Du verändert die Willkommen Nachricht ... ]"
-          input: "Willkommen Nachricht"
-          placeholder: "Lass leer zum deaktivieren
-  
-          - Du kannst die Variablen benutzen: [user_name] [server_name]"
-          done: |
-            [ Erfolgreich Verändert die Willkommen Nachricht]
-          # new message shows up right after this
-    channel:
-      auto: "[ Welcome textboxes channel has been reset ]"
-      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
-    ping:
-      yah: "[ Welcome textboxes should now ping the newcomers ]"
-      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
-    editor:
-      title: "Du verändert die Willkommen Nachricht ..."
-      input: "Willkommen Nachricht"
-      placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
-      done: "[ Erfolgreich Verändert die Willkommen Nachricht
-      debug: | 
-        Previous: [old_text]
+server:
+  welcome:
+    enabled:
+      yah: "[ Willkommen textboxen sind aktiviert  ]"
+      nah: "[ Willkommen textboxen sind Deaktiviert ]"
+      default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
+      editor:
+        title: "[ Du verändert die Willkommen Nachricht ... ]"
+        input: "Willkommen Nachricht"
+        placeholder: "Lass leer zum deaktivieren
 
-        New (current): [new_text]
-      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
+        - Du kannst die Variablen benutzen: [user_name] [server_name]"
+        done: |
+          [ Erfolgreich Verändert die Willkommen Nachricht]
+        # new message shows up right after this
+  channel:
+    auto: "[ Welcome textboxes channel has been reset ]"
+    Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+  ping:
+    yah: "[ Welcome textboxes should now ping the newcomers ]"
+    nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+  editor:
+    title: "Du verändert die Willkommen Nachricht ..."
+    input: "Willkommen Nachricht"
+    placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
+    done: "[ Erfolgreich Verändert die Willkommen Nachricht
+    debug: | 
+      Previous: [old_text]
+
+      New (current): [new_text]
+    disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
