@@ -128,19 +128,21 @@ if debug:
 	fallback_locale = get_locale(get_config("localization.main-locale"))
 
 
+trailing_dots_regex = re.compile(r"\.*$")
 @dataclass
 class Localization:
 	global debug
 	global fallback_locale
 	global _locales
 	locale: str
+	prefix: str
 
-	locale: str
-
-	def __init__(self, locale: str = None):
+	def __init__(self, locale: str = None, prefix: str = ""):
 		self.locale = locale if not None and locale in _locales.keys() else get_config("localization.main-locale")
+		self.prefix = prefix
 
 	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
+		path = f"{trailing_dots_regex.sub("", self.prefix)}.{path}" if len(self.prefix) > 0 else path
 		return self.sl(path=path, locale=self.locale, **variables)
 
 	@staticmethod
