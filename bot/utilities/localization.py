@@ -77,8 +77,7 @@ def on_file_update(filename):
 class UnknownLanguageError(Exception):
 	...
 
-
-def get_locale(locale):
+def parse_locale(locale):
 	if locale in _locales.keys():
 		pass
 	elif "-" in locale:
@@ -94,7 +93,9 @@ def get_locale(locale):
 				break
 	elif locale not in _locales.keys():
 		raise UnknownLanguageError(f"Language {locale} not found in {_locales.keys()}")
-	return _locales[locale]
+	return locale
+def get_locale(locale):
+	return _locales[parse_locale(locale)]
 
 
 if debugging():
@@ -138,7 +139,12 @@ class Localization:
 	prefix: str
 
 	def __init__(self, locale: str = None, prefix: str = ""):
-		self.locale = locale if not None and locale in _locales.keys() else get_config("localization.main-locale")
+		if locale is not None:
+			try:
+				locale = parse_locale(locale)
+			except:
+				locale = get_config("localization.main-locale")
+		self.locale = locale
 		self.prefix = prefix
 
 	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
