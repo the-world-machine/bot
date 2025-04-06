@@ -1,13 +1,23 @@
 general:
   loading: "[ Laden... [emoji:loading] ]"
+  loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"
 
   buttons:
     _yes: "Ja"
     _no: "Nein"
+    _done: "Fertig"
     _cancel: "Stornieren"
     _back: "Wieder"
+    _forwards: "Vorwärts"
     _continue: "Weiter"
+    _next: "Nächste"
+    _previous: "Zurück"
+    _open_site: "Seite öffene"
+    _dont_show_again: "Don't Show Again"
+
+  select:
+    empty: hallo, english (original) übersetztung war gemacht bei @meqativ und @axiinyaa #  :3
     _open_site: "Seite öffenen"
     _dont_show_again: "Nicht nochmal zeigen"
   
@@ -21,12 +31,7 @@ general:
     timeout:
       yn: "[ Du Nahm zu viel zeit zu antworten]"
 
-
-  responses:
-    timeout:
-      yn: "[ Du nahm zu viel zeit zu antworten ]"
-
-# --------------------------------------------------------------
+# ---------------------------------------------------------------
 
 music:
   loading:
@@ -880,3 +885,146 @@ nikogotchi:
       cleaned:
         - "[Mich Putzen? das ist überraschend, aber es fühlt sich... erfrischend.]"
         - "[Ich vermute auch digitale Entitäten brauchen ein bisschen sorge. Du hast mein dankbarkeit.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  errors:
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    unknown_frame: "Frame №[index] not found. Total frames: [total]"
+    invalid_character: The character "[character_name]" is not real
+    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    
+  filetypes:
+    gif: GIF
+    webp: WEBP
+    apng: APNG
+    
+    png: PNG
+    jpg: JPG
+
+  button: 
+    render: Render [type]
+    'render&send': "Render [type] & Send"
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+  
+  frame_position: "editing frame [current] of [total] total"
+
+
+  select:
+    chars: Characters...
+    faces: Faces...
+    styles: Styles...
+
+  modal:
+    edit_text:
+      title: "Editing text for frame #[index]!"
+      input: 
+        label: Text
+        placeholder: Text goes here i think
+      response: > 
+        Text changed!
+
+        New text: [new_text]
+
+        Old text: [old_text]
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press: "[ Press the green button whenever you're ready ]"
+    rendering: "[ [emoji:loading] Rendering... ]"
+    sending: "[ [emoji:loading] Sending... ]"
+    done: "[ Done ]"
+
+    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
+
+  alt:
+    single_frame:
+      filename: "TWM textbox ([character].[face].[timestamp])"
+      
+      character_only:
+        left: "[background_description] with [character_description] on the left"
+        right: "[background_description] with [character_description] on the right"
+      
+      with_text:
+        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
+        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
+      
+      text_only: "[background_description] containing: [text_with_effects]"
+
+    multi_frame:
+      filename: "TWM textbox ([frames].[timestamp])"
+      intro: "A sequence of OneShot-style dialogue boxes"
+      
+      frame:
+        normal: "[character_description] says: [text_with_effects]"
+        no_text: "[character_description] is silent[action_marker]"
+        no_character: "Text reads: [text_with_effects]"
+        empty: "Empty textbox"
+        
+        transition:
+          normal: "[previous_frame]; then [next_frame]"
+          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
+          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
+      
+      sequence_builder:
+        start: "First, [first_frame]"
+        middle: "[previous_sequence], [next_frame]"
+        end: "[full_sequence]."
+
+    character_description:
+      default: "[character] ([face])"
+      no_char: "([face])"
+      default_face: "[character]"
+      avatar: "user [username]'s avatar"
+      custom: "[custom_name]"
+
+    background_description:
+      default: "A OneShot-style textbox"
+      default_empty: "An empty OneShot-style textbox"
+      custom: 'A textbox with a style called "[name]"'
+
+    text_effects:
+      full:
+        bold: "(all of the text is in bold)"
+        italic: "(all of the text is in italics)"
+        color: "([color] text)"
+        shake: "(text shaking)"
+        wave: "(text is wavy)"
+        combination: "([effects_list] throughout)"
+
+      partial:
+        wrap_template: "[text] (with [effects] from here)"
+        end_template: "(regular text now)"
+        combination: "[effect1] and [effect2]"
+        
+        individual:
+          bold: "bold"
+          italic: "italics"
+          color: "[color]"
+          shake: "shaking"
+          wave: "wavy movement"
+          
+    action_markers:
+      pause: " (pause)"
+      long_pause: " (long pause)"
+      disappears: " (disappears)"
+
+    error:
+      cutoff: "(text continues beyond visible area)"
+      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."

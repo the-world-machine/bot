@@ -1,13 +1,18 @@
 general:
-  loading: "[ Loading... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading... ]"
+  loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
     _yes: "Yes"
     _no: "No"
+    _done: "Done"
     _cancel: "Cancel"
     _back: "Back"
+    _forwards: "Forwards"
     _continue: "Continue"
+    _next: "Next"
+    _previous: "Previous"
     _open_site: "Open Website"
     _dont_show_again: "Don't Show Again"
   
@@ -17,6 +22,10 @@ general:
     warn: "⚠️ warning:"
     err: "‼️ error:"
 
+  select:
+    empty: hallo, english (original) translation made by @meqativ and @axiinyaa # u can change this to whatever you want when translating 👍 (MAX: 150 characters)
+    multiple: ([current]/[total])
+
   responses:
     timeout:
       yn: "[ You took too long to respond ]"
@@ -25,8 +34,8 @@ general:
 
 music: 
   loading: 
-    search: "[ Searching... [emoji:loading] ]"
-    file: "[ Loading your file... [emoji:loading] ]"
+    search: "[ [emoji:loading] Searching... ]"
+    file: "[ [emoji:loading] Loading your file... ]"
 
 # ---------------------------------------------------------------
 
@@ -185,7 +194,7 @@ profile:
     message: Viewing [usermention]'s profile
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
     bots: "[ Bots don't have profiles! ]"
-    loading: "[ Loading [user]'s profile... [emoji:loading] ]"
+    loading: "[ [emoji:loading] Loading [user]'s profile... ]"
 
     image: 
       alt_nodescription: "On the image is profile of user [username] in The World Machine's system. They own: Suns [suns], Wool [wool]"
@@ -222,7 +231,7 @@ explode:
 # ---------------------------------------------------------------
 
 shop:
-  loading: "[ Loading Shop... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading Shop... ]"
 
   user_wool: "**Your Balance: [emoji:wool][wool]**"
   owned: "you have **[amount]**"
@@ -582,7 +591,7 @@ treasure:
 
 nikogotchi:
   owned: Owned by [user]
-  loading: "[ Loading Nikogotchi... [emoji:loading] ]"
+  loading: "[ [emoji:loading] Loading Nikogotchi... ]"
   invalid: "[ You don't have a Nikogotchi! ]"
   tipnvalid: "you can buy a capsule with one in the shop" # tip:
   
@@ -639,7 +648,7 @@ nikogotchi:
         
         Do you want to trade your Nikogotchi ([name_two]) with them?
 
-      waiting: "[ Sent [user] a trade offer! Waiting on their response... [emoji:loading] ]"
+      waiting: "[ Sent [user] a trade offer! [emoji:loading] Waiting for their response... ]"
       declined: "[ Your trade request has been declined... ]"
       success_decline: "[ Trade request successfully declined. ]"
       success: "[ Successfully traded with [user]! Say hello to **[name]**! ]"
@@ -869,3 +878,146 @@ nikogotchi:
       cleaned:
         - "[Cleaning me up? That's unexpected, but it feels... refreshing.]"
         - "[I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  errors:
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    unknown_frame: "Frame №[index] not found. Total frames: [total]"
+    invalid_character: The character "[character_name]" is not real
+    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    
+  filetypes:
+    gif: GIF
+    webp: WEBP
+    apng: APNG
+    
+    png: PNG
+    jpg: JPG
+
+  button: 
+    render: Render [type]
+    'render&send': "Render [type] & Send"
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+  
+  frame_position: "editing frame [current] of [total] total"
+
+
+  select:
+    chars: Characters...
+    faces: Faces...
+    styles: Styles...
+
+  modal:
+    edit_text:
+      title: "Editing text for frame #[index]!"
+      input: 
+        label: Text
+        placeholder: Text goes here i think
+      response: > 
+        Text changed!
+
+        New text: [new_text]
+
+        Old text: [old_text]
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press: "[ Press the green button whenever you're ready ]"
+    rendering: "[ [emoji:loading] Rendering... ]"
+    sending: "[ [emoji:loading] Sending... ]"
+    done: "[ Done ]"
+
+    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
+
+  alt:
+    single_frame:
+      filename: "TWM textbox ([character].[face].[timestamp])"
+      
+      character_only:
+        left: "[background_description] with [character_description] on the left"
+        right: "[background_description] with [character_description] on the right"
+      
+      with_text:
+        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
+        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
+      
+      text_only: "[background_description] containing: [text_with_effects]"
+
+    multi_frame:
+      filename: "TWM textbox ([frames].[timestamp])"
+      intro: "A sequence of OneShot-style dialogue boxes"
+      
+      frame:
+        normal: "[character_description] says: [text_with_effects]"
+        no_text: "[character_description] is silent[action_marker]"
+        no_character: "Text reads: [text_with_effects]"
+        empty: "Empty textbox"
+        
+        transition:
+          normal: "[previous_frame]; then [next_frame]"
+          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
+          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
+      
+      sequence_builder:
+        start: "First, [first_frame]"
+        middle: "[previous_sequence], [next_frame]"
+        end: "[full_sequence]."
+
+    character_description:
+      default: "[character] ([face])"
+      no_char: "([face])"
+      default_face: "[character]"
+      avatar: "user [username]'s avatar"
+      custom: "[custom_name]"
+
+    background_description:
+      default: "A OneShot-style textbox"
+      default_empty: "An empty OneShot-style textbox"
+      custom: 'A textbox with a style called "[name]"'
+
+    text_effects:
+      full:
+        bold: "(all of the text is in bold)"
+        italic: "(all of the text is in italics)"
+        color: "([color] text)"
+        shake: "(text shaking)"
+        wave: "(text is wavy)"
+        combination: "([effects_list] throughout)"
+
+      partial:
+        wrap_template: "[text] (with [effects] from here)"
+        end_template: "(regular text now)"
+        combination: "[effect1] and [effect2]"
+        
+        individual:
+          bold: "bold"
+          italic: "italics"
+          color: "[color]"
+          shake: "shaking"
+          wave: "wavy movement"
+          
+    action_markers:
+      pause: " (pause)"
+      long_pause: " (long pause)"
+      disappears: " (disappears)"
+
+    error:
+      cutoff: "(text continues beyond visible area)"
+      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."

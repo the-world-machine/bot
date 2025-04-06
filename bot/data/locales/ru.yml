@@ -102,6 +102,8 @@ wool:
         some: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], как щедро..."
         confirmation: "[ Вы точно хотите дать шерсть... боту?]"
         notefirmation: "вы потом не сможете вернуть её..." # note:
+        confirmation: "[ Вы точно хотите дать шерсть... боту?]"
+        notefirmation: "вы потом не сможете вернуть её..." # note:
       user:
         none: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], в конце концов не так уж и щедро..."
         some: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], как щедро!"
@@ -120,6 +122,7 @@ wool:
     Change:
       gain: "вы также получили [emoji:wool]**[amount]** шерсти!"
       loss: "вы также потеряли [emoji:wool]**[amount]** шерсти..."
+
 
 # ---------------------------------------------------------------
 
@@ -210,6 +213,10 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: "найс 👍"
+    nineninenineninenine: |
+      [ Хватит. Как ты, '#####', вообще добрался до этого числа?! Ты хоть знаешь сколько миров ты уничтожил? ]
+
+      ⚠️ warning: Это просто отвратительно.
     nineninenineninenine: |
       [ Хватит. Как ты, '#####', вообще добрался до этого числа?! Ты хоть знаешь сколько миров ты уничтожил? ]
 
@@ -576,18 +583,23 @@ interact:
 treasure:
   bots: "[ [bot] не имеет никаких сокровищ. ]"
   item: "**`[amount]`** [icon] [name]"
+  item: "**`[amount]`** [icon] [name]"
   message: >
     ### Сокровища [user]
     
     [treasures]
 
   tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
+  tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
 
 # ---------------------------------------------------------------
 
 nikogotchi:
   owned: Принадлежит [user]
+  owned: Принадлежит [user]
   loading: "[ Загрузка Никоготчи... [emoji:loading] ]"
+  invalid: "[ Вы не имеете Никоготчи! ]"
+  tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
   invalid: "[ Вы не имеете Никоготчи! ]"
   tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
 
@@ -653,6 +665,9 @@ nikogotchi:
     description: "Хотите дать Никоготчи новое имя?"
     renamenote: вы всегда можете сделать это командой `/nikogotchi rename`  # note:
 
+    description: "Хотите дать Никоготчи новое имя?"
+    renamenote: вы всегда можете сделать это командой `/nikogotchi rename`  # note:
+
   status:
     template: "*[status]*"
 
@@ -690,12 +705,14 @@ nikogotchi:
 
 
       - Часов с момента последнего ухода: **[time_difference]** 
+      - Часов с момента последнего ухода: **[time_difference]** 
 
 
       Никоготчи рассчитывают на вашу любовь и внимание, поэтому старайтесь обеспечить им наилучший уход!
 
 
       R.I.P....
+    # todo: string changed
     # todo: string changed
   treasured: 
     title: 🎉 Ваш Никоготчи нашёл сокровища!
@@ -705,6 +722,8 @@ nikogotchi:
       Заняло часов: **[time]**.
       
     dialogues:
+      sent: "Вы отправили вашего Никоготчи искать сокровища!"
+      senote: "их статистика будет снижаться быстрее, чем обычно, поэтому не забывайте вовремя позвать их обратно"
       sent: "Вы отправили вашего Никоготчи искать сокровища!"
       senote: "их статистика будет снижаться быстрее, чем обычно, поэтому не забывайте вовремя позвать их обратно"
       none_found: "Ваш Никоготчи не нашел никаких сокровищ... Может быть, вам стоит дать им больше времени?"
@@ -865,3 +884,146 @@ nikogotchi:
       cleaned:
         - "[Чистишь меня? Это неожиданно, но... освежающе.]"
         - "[Полагаю, даже цифровые сущности иногда нуждаются в заботе. Примите мою благодарность.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  errors:
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    unknown_frame: "Frame №[index] not found. Total frames: [total]"
+    invalid_character: The character "[character_name]" is not real
+    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    
+  filetypes:
+    gif: GIF
+    webp: WEBP
+    apng: APNG
+    
+    png: PNG
+    jpg: JPG
+
+  button: 
+    render: Render [type]
+    'render&send': "Render [type] & Send"
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+  
+  frame_position: "editing frame [current] of [total] total"
+
+
+  select:
+    chars: Characters...
+    faces: Faces...
+    styles: Styles...
+
+  modal:
+    edit_text:
+      title: "Editing text for frame #[index]!"
+      input: 
+        label: Text
+        placeholder: Text goes here i think
+      response: > 
+        Text changed!
+
+        New text: [new_text]
+
+        Old text: [old_text]
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press: "[ Press the green button whenever you're ready ]"
+    rendering: "[ [emoji:loading] Rendering... ]"
+    sending: "[ [emoji:loading] Sending... ]"
+    done: "[ Done ]"
+
+    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
+
+  alt:
+    single_frame:
+      filename: "TWM textbox ([character].[face].[timestamp])"
+      
+      character_only:
+        left: "[background_description] with [character_description] on the left"
+        right: "[background_description] with [character_description] on the right"
+      
+      with_text:
+        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
+        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
+      
+      text_only: "[background_description] containing: [text_with_effects]"
+
+    multi_frame:
+      filename: "TWM textbox ([frames].[timestamp])"
+      intro: "A sequence of OneShot-style dialogue boxes"
+      
+      frame:
+        normal: "[character_description] says: [text_with_effects]"
+        no_text: "[character_description] is silent[action_marker]"
+        no_character: "Text reads: [text_with_effects]"
+        empty: "Empty textbox"
+        
+        transition:
+          normal: "[previous_frame]; then [next_frame]"
+          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
+          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
+      
+      sequence_builder:
+        start: "First, [first_frame]"
+        middle: "[previous_sequence], [next_frame]"
+        end: "[full_sequence]."
+
+    character_description:
+      default: "[character] ([face])"
+      no_char: "([face])"
+      default_face: "[character]"
+      avatar: "user [username]'s avatar"
+      custom: "[custom_name]"
+
+    background_description:
+      default: "A OneShot-style textbox"
+      default_empty: "An empty OneShot-style textbox"
+      custom: 'A textbox with a style called "[name]"'
+
+    text_effects:
+      full:
+        bold: "(all of the text is in bold)"
+        italic: "(all of the text is in italics)"
+        color: "([color] text)"
+        shake: "(text shaking)"
+        wave: "(text is wavy)"
+        combination: "([effects_list] throughout)"
+
+      partial:
+        wrap_template: "[text] (with [effects] from here)"
+        end_template: "(regular text now)"
+        combination: "[effect1] and [effect2]"
+        
+        individual:
+          bold: "bold"
+          italic: "italics"
+          color: "[color]"
+          shake: "shaking"
+          wave: "wavy movement"
+          
+    action_markers:
+      pause: " (pause)"
+      long_pause: " (long pause)"
+      disappears: " (disappears)"
+
+    error:
+      cutoff: "(text continues beyond visible area)"
+      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."

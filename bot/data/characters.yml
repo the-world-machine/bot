@@ -1,123 +1,70 @@
-characters:
-  - name: "Niko"
-    faces:
-      - name: "Normal"
-        emoji: 1019605517695463484
-      - name: "Talking"
-        emoji: 1030967639633301506
-      - name: "Looking Left"
-        emoji: 1019605499685113909
-      - name: "Looking Right"
-        emoji: 1019605501228630107
-      - name: "Gasping"
-        emoji: 1019605502365274252
-      - name: "Shocked"
-        emoji: 1019605514843336764
-      - name: "Confused"
-        emoji: 1019605503485149377
-      - name: "Popcorn"
-        emoji: 1019605504957366282
-      - name: "Winking"
-        emoji: 1019605506152734790
-      - name: "Pancakes"
-        emoji: 1019605507314548862
-      - name: "Blushing"
-        emoji: 1019605508421857401
-      - name: "Upset"
-        emoji: 1019605510787453058
-      - name: "Sad"
-        emoji: 1019605509625618522
-      - name: "Fed Up"
-        emoji: 1019605511802458185
-  - name: "Alula"
-    faces:
-      - name: "Normal"
-        emoji: 1071085652327813212
-      - name: "Talking"
-        emoji: 1071085655175741500
-      - name: "Pouting"
-        emoji: 1071085653753876541
-      - name: "Gasping"
-        emoji: 1071085649815416882
-  - name: "Calamus"
-    faces:
-      - name: "Normal"
-        emoji: 1071085682132529294
-      - name: "Talking"
-        emoji: 1071085687438315632
-      - name: "Shocked"
-        emoji: 1071085686452650054
-      - name: "Nervous"
-        emoji: 1071085683365642310
-      - name: "Sad"
-        emoji: 1071085685005631530
-      - name: "Flustered"
-        emoji: 1071085678638673970
-      - name: "Happy"
-        emoji: 1071085680819712120
-  - name: "Lamplighter"
-    faces:
-      - name: "Normal"
-        emoji: 1071085718975283310
-      - name: "Talking"
-        emoji: 1071085724826353754
-      - name: "Shocked"
-        emoji: 1071085720942424094
-      - name: "Sighing"
-        emoji: 1071085723664515143
-      - name: "Concerned"
-        emoji: 1071085716454514799
-  - name: "Kip"
-    faces:
-      - name: "Normal"
-        emoji: 1027240024992927814
-      - name: "Sweating"
-        emoji: 1027240026536431687
-      - name: "Pouting"
-        emoji: 1027240031032725504
-      - name: "Sad"
-        emoji: 1027240032299405332
-      - name: "Pensive"
-        emoji: 1027240033599627264
-      - name: "Wink"
-        emoji: 1027240034430099678
-      - name: "Worried"
-        emoji: 1027240035893915711
-      - name: "kip, but cool."
-        emoji: 1019605513387900978
-  - name: "The World Machine"
-    faces:
-      - name: "Normal"
-        emoji: 1023573456664662066
-      - name: "Talking"
-        emoji: 1071085761451008062
-      - name: "Happy"
-        emoji: 1023573455456698368
-      - name: "Upset"
-        emoji: 1023573454307463338
-      - name: "Eyes Closed"
-        emoji: 1023573452944322560
-      - name: "Pancakes"
-        emoji: 1071085762843512983
-  - name: "Ling"
-    faces:
-      - name: "Normal"
-        emoji: 1090982149659836466
-      - name: "Looking Left"
-        emoji: 1090982147201978400
-      - name: "Looking Right"
-        emoji: 1090982151064911945
-      - name: "Sighing"
-        emoji: 1090982154642653265
-      - name: "Shocked"
-        emoji: 1090982152168030330
-      - name: "Smiling"
-        emoji: 1090982155863199784
-  - name: "Other"
-    faces:
-      - name: "Raised Eyebrow"
-        emoji: 1027306556783603813
-      - name: "YOU"
-        emoji: 964952736460312576
-      - name: ":nikonlanger_smug:"
-        emoji: 1234950811319275636
+Niko:
+  faces:
+    Normal: '1019605517695463484'
+    Talking: '1030967639633301506'
+    Looking Left: '1019605499685113909'
+    Looking Right: '1019605501228630107'
+    Gasping: '1019605502365274252'
+    Shocked: '1019605514843336764'
+    Confused: '1019605503485149377'
+    Popcorn: '1019605504957366282'
+    Winking: '1019605506152734790'
+    Pancakes: '1019605507314548862'
+    Blushing: '1019605508421857401'
+    Upset: '1019605510787453058'
+    Sad: '1019605509625618522'
+    Fed Up: '1019605511802458185'
+Alula:
+  faces:
+    Normal: '1071085652327813212'
+    Talking: '1071085655175741500'
+    Pouting: '1071085653753876541'
+    Gasping: '1071085649815416882'
+Calamus:
+  faces:
+    Normal: '1071085682132529294'
+    Talking: '1071085687438315632'
+    Shocked: '1071085686452650054'
+    Nervous: '1071085683365642310'
+    Sad: '1071085685005631530'
+    Flustered: '1071085678638673970'
+    Happy: '1071085680819712120'
+Lamplighter:
+  faces:
+    Normal: '1071085718975283310'
+    Talking: '1071085724826353754'
+    Shocked: '1071085720942424094'
+    Sighing: '1071085723664515143'
+    Concerned: '1071085716454514799'
+Kip:
+  faces:
+    Normal: '1027240024992927814'
+    Sweating: '1027240026536431687'
+    Pouting: '1027240031032725504'
+    Sad: '1027240032299405332'
+    Pensive: '1027240033599627264'
+    Wink: '1027240034430099678'
+    Worried: '1027240035893915711'
+    'kip, but cool.': '1019605513387900978'
+The World Machine:
+  faces:
+    Normal: '1023573456664662066'
+    Talking: '1071085761451008062'
+    Happy: '1023573455456698368'
+    Upset: '1023573454307463338'
+    Eyes Closed: '1023573452944322560'
+    Pancakes: '1071085762843512983'
+Ling:
+  faces:
+    Normal: '1090982149659836466'
+    Looking Left: '1090982147201978400'
+    Looking Right: '1090982151064911945'
+    Sighing: '1090982154642653265'
+    Shocked: '1090982152168030330'
+    Smiling: '1090982155863199784'
+Other:
+  icon: '1254289432207687732'
+  faces:
+    Your Avatar: ~
+    Raised Eyebrow Emoji: '1027306556783603813'
+    ':nikonlanger_smug:': '1234950811319275636'

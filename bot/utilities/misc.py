@@ -1,13 +1,15 @@
+import io
 import copy
 import aiohttp
+import aiofiles
 import datetime
 import subprocess
-from PIL import Image
-from io import BytesIO
 from pathlib import Path
 from base64 import b64decode
-from typing import Union, Optional
-from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption
+from typing import TypedDict, Union, Optional
+from jellyfish import jaro_winkler_similarity, levenshtein_distance
+from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
+
 
 class FrozenDict(dict):
 
@@ -57,22 +59,40 @@ class StupidError(Exception):
 	...
 
 
-_yac: dict[str, Image.Image] = {}
+class InvalidResponseError(Exception):
+	...
 
 
-async def get_image(url: str) -> Image.Image:
-	if url in _yac:
-		return Image.open(_yac[url])
-
+async def fetch(url: str):
 	async with aiohttp.ClientSession() as session:
 		async with session.get(url) as resp:
-			if resp.status == 200:
-				file = BytesIO(await resp.read())
-
-				_yac[url] = file
-				return Image.open(_yac[url])
+			if 200 <= resp.status < 300:
+				return await resp.read()
 			else:
-				raise ValueError(f"{resp.status} Discord cdn shittig!!")
+				raise InvalidResponseError(f"{resp.status} website shittig!!")
+
+
+async def read_file(path: Path):
+	async with aiofiles.open(path, "rb") as f:
+		return await f.read()
+
+
+cache: dict[str, bytes] = {}
+
+
+async def cached_get(location: str | Path, force: bool = False, raw: bool = False) -> io.BytesIO | bytes:
+	loki = str(location)
+	is_file = Path(location).is_file()
+	if is_file:
+		location = Path(location).absolute()
+
+	if location is str and (not location.startswith("https://") or not location.startswith("http://")):
+		raise ValueError("invalid url")
+
+	if force or loki not in cache:
+		cache[loki] = await read_file(location) if is_file else await fetch(loki)
+
+	return cache[loki] if raw else io.BytesIO(cache[loki])
 
 
 def rabbit(
@@ -231,8 +251,48 @@ def make_empty_select(loc, placeholder: str = None):
 	)
 
 
+def pretty_user(user: User):
+	return f"({user.username}) {user.display_name}" if user.display_name != user.username else user.username
+
+
 def decode_base64_padded(s):
 	missing_padding = len(s) % 4
 	if missing_padding:
 		s += '=' * (4 - missing_padding)
 	return b64decode(s).decode("utf-8")
+
+
+class Option(TypedDict):
+	names: Optional[list[str]]
+	picked_name: str
+	value: str
+
+
+def optionSearch(query: str, options: list[Option]) -> list[dict[str, str]]:
+	matches = []
+	top = []
+
+	filtered_options = [
+	    option for option in options
+	    if any(name.lower().startswith(query.lower()) for name in (option.get("names") or [option["picked_name"]]))
+	]
+
+	if filtered_options:
+		options = filtered_options
+
+	for option in options:
+		name_candidates = option.get("names") or [option["picked_name"]]
+		best_name = min(name_candidates, key=lambda name: levenshtein_distance(query, name))
+
+		if levenshtein_distance(query, best_name) == 0:
+			top.append({ "name": option["picked_name"], "value": option["value"]})
+		elif query.lower() in best_name.lower():
+			matches.append({ "name": option["picked_name"], "value": option["value"]})
+		else:
+			jaro_similarity = jaro_winkler_similarity(query.lower(), best_name.lower())
+			if jaro_similarity >= 0.5:
+				matches.append({ "name": option["picked_name"], "value": option["value"]})
+
+	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
+
+	return top + matches

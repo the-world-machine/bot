@@ -1,8 +1,10 @@
+import io
 import traceback as tb
 from interactions import *
-from utilities.media import generate_dialogue
+from utilities.mediagen.textboxes import render_textbox
 from interactions.api.events import MemberAdd
 from utilities.database.schemas import ServerData
+from utilities.textbox.characters import get_character
 from utilities.localization import Localization, assign_variables
 
 
@@ -19,6 +21,17 @@ class MemberAddEvent(Extension):
 
 		if config.disabled:
 			return
+		message = assign_variables(
+		    server_data.welcome_message, user_name=event.member.display_name, server_name=event.guild.name
+		)
+		print(
+		    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
+		)
+		buffer = io.BytesIO()
+		(await render_textbox(message,
+		                      get_character("The World Machine").get_face("Pancakes"),
+		                      False))[0].save(buffer, format="PNG")
+		buffer.seek(0)
 
 		target_channel = guild.system_channel
 		channels = list(map(lambda c: str(c.id), guild.channels))
@@ -36,9 +49,7 @@ class MemberAddEvent(Extension):
 		try:
 			await target_channel.send(
 			    content=f"-# {event.member.mention}",
-			    files=await generate_dialogue(
-			        message, 'https://cdn.discordapp.com/emojis/1023573458296246333.webp?size=128&quality=lossless'
-			    ),
+			    files=File(file=buffer, file_name=f"welcome textbox.png"),
 			    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
 			)
 		except Exception as e:

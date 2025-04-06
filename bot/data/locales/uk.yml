@@ -1,13 +1,18 @@
 general:
   loading: "[ Завантаження... [emoji:loading] ]"
+  loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Будь ласка, не спамте цю команду. Ви зможете використати її [timestamp_relative]. ]"
 
   buttons:
     _yes: "Так"
     _no: "Ні"
+    _done: "Готово"
     _cancel: "Скасувати"
     _back: "Назад"
+    _forwards: "Вперед"
     _continue: "Далі"
+    _next: "Наступне"
+    _previous: "Попереднє"
     _open_site: "Відкрити Cайт"
     _dont_show_again: "Більше не показувати"
   
@@ -16,6 +21,10 @@ general:
     tip: "❔ підказка:"
     warn: "⚠️ увага:"
     err: "‼️ помилка:"
+
+  select:
+    empty: пивіт, український переклад зробив @meqativ
+    multiple: ([current]/[total])
 
   responses:
     timeout:
@@ -66,6 +75,9 @@ misc:
   welcome:
     placeholder_text: "[ Ласкаво просимо до [server_name], [user_name]! Тут вже людин: [member_count]! ]"
 
+  welcome:
+    placeholder_text: "[ Ласкаво просимо до [server_name], [user_name]! Тут вже людин: [member_count]! ]"
+
   wikipedia: "[ [Ось]([link]) що знайшлось... Це «[title]» ]"
     
 # ---------------------------------------------------------------
@@ -95,11 +107,15 @@ wool:
       self_transfer: "[ Готово... ]"
       not_enough: "[ У вас немає стільки [emoji:wool] Вовни! ]"
       note_nuf: "у вас є **[balance]**[emoji:wool]"
+      not_enough: "[ У вас немає стільки [emoji:wool] Вовни! ]"
+      note_nuf: "у вас є **[balance]**[emoji:wool]"
 
     to:
       bot:
         none: "[user_one] передали **[amount]**[emoji:wool] до [user_two], не дуже щедро!"
         some: "[user_one] передали **[amount]**[emoji:wool] to [user_two], як щедро..."
+        confirmation: "[ Ви впевнені що хочете передати вовну... боту? ]"
+        notefirmation: "вона до вас ж не повернеться..."
         confirmation: "[ Ви впевнені що хочете передати вовну... боту? ]"
         notefirmation: "вона до вас ж не повернеться..."
       user:
@@ -129,16 +145,45 @@ transmit:
 
 # ---------------------------------------------------------------
 
+transmit:
+  autocomplete:
+    unknown_server: Невідомий ([server_id])
+
+# ---------------------------------------------------------------
+
 settings:
   errors:
     weird_edgecase_number_0: Або ви або [app:mention] нема у цьому сервері. Якщо ви менеджер серверу, будь ласка додайте [app:mention] до серверу ще раз.
+    weird_edgecase_number_0: Або ви або [app:mention] нема у цьому сервері. Якщо ви менеджер серверу, будь ласка додайте [app:mention] до серверу ще раз.
     missing_permissions: "[ Вам потрібен дозвіл \"Manage Server\" щоб змінювати налаштування боту ]"
     channel_not_messageable: "[ Я не можу віпдправляти повідомлення у тому каналу ]"
+    channel_insufficient_perms: "[ В мене немає достатньо дозвілів у тому каналі. Переконайтеся що мені надані ці дозволи: **Відправляти повідомлення**, **Дивитися канал** та **Прикріпляти файли**. ]"
     channel_insufficient_perms: "[ В мене немає достатньо дозвілів у тому каналі. Переконайтеся що мені надані ці дозволи: **Відправляти повідомлення**, **Дивитися канал** та **Прикріпляти файли**. ]"
     invalid_server_id: "[ Некорректний ID сервера. ]"
     uncached_server: "-# ніяк знайти назву сервера (мене в ньому нема)"
     get_server_id: "(Налаштування Discord -> Додаткові налаштування -> увімкніть 'Режим розробника', потім появиться опція 'Копіювати ID сервера' у контекстному меню серверу)"
   
+  welcome:
+    enabled:
+      yah: "[ Вітальні текстові вікна увімкнені ]"
+      nah: "[ Вітальні текстові вікна вимкнені ]"
+      default_tip: "ви можете змінити текст цього вікна за допомогою `/settings welcome edit`"
+    channel:
+      auto: "[ Канал вітальних текстових вікон зкинутий ]"
+      Changed: "[ Канал вітальних текстових вікон було встановлено на [channel] ]"
+    ping:
+      yah: "[ Вітальні текстові вікна тепер будуть відправлятися з сповіщенням ]"
+      nah: "[ Вітальні текстові вікна тепер будуть відправлятися без сповіщень ]"
+    editor:
+      title: "[ Ви редагуєте текст вікна вітального повідомлення... ]"
+      input: "текст..."
+      placeholder: "Змінні: [user_name] ім'я користувача, [server_name] назва серверу, [member_count] кол-во учасників"
+      done: "[ Текст вікна вітального повідомлення успішно оновлений ]"
+      debug: | 
+        Попередній: [old_text]
+
+        Новий (поточний): [new_text]
+      disabled_note: "не забудьте увімкнути їх використовуючи `/settings welcome enabled value:True`"
   welcome:
     enabled:
       yah: "[ Вітальні текстові вікна увімкнені ]"
@@ -210,6 +255,11 @@ explode:
       - ~ # don't touch this one, the bot inserts a random amount of dots here
 
     sixninefourtwo: найс 👍
+    nineninenineninenine: |
+      [ Це достатньо. Як ви `#####` змогли цього навіть досягти!? Ви що, не розумієте скільки всесвітів ви знищили? . ]
+      
+      ⚠️ увага: ви абсолютно мерзенні.
+
     nineninenineninenine: |
       [ Це достатньо. Як ви `#####` змогли цього навіть досягти!? Ви що, не розумієте скільки всесвітів ви знищили? . ]
       
@@ -415,6 +465,7 @@ items:
     
     glitched:
       name: '???'
+      description: Я навіть не знаю як це сюди потрапило.
       description: Я навіть не знаю як це сюди потрапило.
 
   capsules:
@@ -869,3 +920,146 @@ nikogotchi:
       cleaned:
         - "[Ви мене чистите? Це несподівано, але відчувається... освіжаюче.]"
         - "[Мабуть, навіть цифровим істотам іноді потрібно трохи уваги. Ви маєте мою вдячність.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  errors:
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    unknown_frame: "Frame №[index] not found. Total frames: [total]"
+    invalid_character: The character "[character_name]" is not real
+    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    
+  filetypes:
+    gif: GIF
+    webp: WEBP
+    apng: APNG
+    
+    png: PNG
+    jpg: JPG
+
+  button: 
+    render: Render [type]
+    'render&send': "Render [type] & Send"
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+  
+  frame_position: "editing frame [current] of [total] total"
+
+
+  select:
+    chars: Characters...
+    faces: Faces...
+    styles: Styles...
+
+  modal:
+    edit_text:
+      title: "Editing text for frame #[index]!"
+      input: 
+        label: Text
+        placeholder: Text goes here i think
+      response: > 
+        Text changed!
+
+        New text: [new_text]
+
+        Old text: [old_text]
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press: "[ Press the green button whenever you're ready ]"
+    rendering: "[ [emoji:loading] Rendering... ]"
+    sending: "[ [emoji:loading] Sending... ]"
+    done: "[ Done ]"
+
+    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
+
+  alt:
+    single_frame:
+      filename: "TWM textbox ([character].[face].[timestamp])"
+      
+      character_only:
+        left: "[background_description] with [character_description] on the left"
+        right: "[background_description] with [character_description] on the right"
+      
+      with_text:
+        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
+        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
+      
+      text_only: "[background_description] containing: [text_with_effects]"
+
+    multi_frame:
+      filename: "TWM textbox ([frames].[timestamp])"
+      intro: "A sequence of OneShot-style dialogue boxes"
+      
+      frame:
+        normal: "[character_description] says: [text_with_effects]"
+        no_text: "[character_description] is silent[action_marker]"
+        no_character: "Text reads: [text_with_effects]"
+        empty: "Empty textbox"
+        
+        transition:
+          normal: "[previous_frame]; then [next_frame]"
+          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
+          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
+      
+      sequence_builder:
+        start: "First, [first_frame]"
+        middle: "[previous_sequence], [next_frame]"
+        end: "[full_sequence]."
+
+    character_description:
+      default: "[character] ([face])"
+      no_char: "([face])"
+      default_face: "[character]"
+      avatar: "user [username]'s avatar"
+      custom: "[custom_name]"
+
+    background_description:
+      default: "A OneShot-style textbox"
+      default_empty: "An empty OneShot-style textbox"
+      custom: 'A textbox with a style called "[name]"'
+
+    text_effects:
+      full:
+        bold: "(all of the text is in bold)"
+        italic: "(all of the text is in italics)"
+        color: "([color] text)"
+        shake: "(text shaking)"
+        wave: "(text is wavy)"
+        combination: "([effects_list] throughout)"
+
+      partial:
+        wrap_template: "[text] (with [effects] from here)"
+        end_template: "(regular text now)"
+        combination: "[effect1] and [effect2]"
+        
+        individual:
+          bold: "bold"
+          italic: "italics"
+          color: "[color]"
+          shake: "shaking"
+          wave: "wavy movement"
+          
+    action_markers:
+      pause: " (pause)"
+      long_pause: " (long pause)"
+      disappears: " (disappears)"
+
+    error:
+      cutoff: "(text continues beyond visible area)"
+      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."
