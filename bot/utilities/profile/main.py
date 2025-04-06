@@ -55,11 +55,11 @@ async def load_profile_assets():
 		icons.append(img)
 		assets += 1
 
-	wool_icon = await cached_get('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png')
+	wool_icon = Image.open(await cached_get('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png'))
 	if debugging():
 		print(f"| Wool icon")
 	assets += 1
-	sun_icon = await cached_get('https://i.postimg.cc/J49XsNKW/1026207773559619644.png')
+	sun_icon = Image.open(await cached_get('https://i.postimg.cc/J49XsNKW/1026207773559619644.png'))
 	if debugging():
 		print(f"| Sun icon")
 	assets += 1
@@ -88,7 +88,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 	title = loc.l("profile.view.image.title", username=user.display_name)
 
 	backgrounds = await fetch_background()
-	image = await cached_get(backgrounds[user_data.equipped_bg]['image'])
+	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]['image']))
 
 	base_profile = ImageDraw.Draw(image, "RGBA")
 
@@ -181,7 +181,7 @@ async def draw_profile(user: User, filename: str, alt: str = None, loc: Localiza
 	    stroke_fill=Colors.BLACK.hex
 	)
 
-	pfp = await cached_get(user_pfp_url)
+	pfp = Image.open(await cached_get(user_pfp_url))
 	frames = []
 	if animated:
 		for pfp_frame in ImageSequence.Iterator(pfp):

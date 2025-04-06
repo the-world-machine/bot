@@ -21,17 +21,6 @@ class MemberAddEvent(Extension):
 
 		if config.disabled:
 			return
-		message = assign_variables(
-		    server_data.welcome_message, user_name=event.member.display_name, server_name=event.guild.name
-		)
-		print(
-		    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
-		)
-		buffer = io.BytesIO()
-		(await render_textbox(message,
-		                      get_character("The World Machine").get_face("Pancakes"),
-		                      False))[0].save(buffer, format="PNG")
-		buffer.seek(0)
 
 		target_channel = guild.system_channel
 		channels = list(map(lambda c: str(c.id), guild.channels))
@@ -46,7 +35,15 @@ class MemberAddEvent(Extension):
 		message = assign_variables(
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)
+		buffer = io.BytesIO()
+		(await render_textbox(message,
+		                      get_character("The World Machine").get_face("Pancakes"),
+		                      False))[0].save(buffer, format="PNG")
+		buffer.seek(0)
 		try:
+			print(
+			    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
+			)
 			await target_channel.send(
 			    content=f"-# {event.member.mention}",
 			    files=File(file=buffer, file_name=f"welcome textbox.png"),
