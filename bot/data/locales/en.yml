@@ -850,7 +850,7 @@ textbox:
       previous: Previous Frame
       manual: Input Frame
   
-  frame_position: "frame: [current] / [total]"
+  frame_position: "editing frame [current] of [total] total"
 
 
   select:
@@ -882,28 +882,78 @@ textbox:
 
     debug: "(Took: **[time]**ms., Sid: **[sid]**)"
 
-  single:
-    alt: 
-      character:
-        left: "A textbox similar to the one's in OneShot. On the left of it is an icon of [character] with the [face] expression."
-        right: "A textbox similar to the one's in OneShot. On the right of it is an icon of [character] with the [face] expression."
-      avatar: 
-        left: "A textbox similar to the one's in OneShot. On the left of it is the avatar of [username]."
-        right: "A textbox similar to the one's in OneShot. On the right of it is the avatar of [username]."
-      other: 
-        left: "A textbox similar to the one's in OneShot. On the left of it is [name]."
-        right: "A textbox similar to the one's in OneShot. On the right of it is the avatar of [name]."
-
-      cont: "[alt]. The text says: [text]"
-      cont_silly: "[alt]. There is no text. Uh"
-      empty: "An empty textbox similar to the one's in OneShot"
-    name: "TWM textbox ([character].[face].[timestamp])"
-  
-  multi: # TODO: unused
-    alt: 
-      beginning: "Dialogue of characters talking, in textboxes similar to those in OneShot. [frames]"
+  alt:
+    single_frame:
+      filename: "TWM textbox ([character].[face].[timestamp])"
       
-      frame: ' [character] ([face]) says: "[text]".[next]'
-      frame_nothing: " [character] ([face]) doesn't say anything.[next]"
+      character_only:
+        left: "[background_description] with [character_description] on the left"
+        right: "[background_description] with [character_description] on the right"
+      
+      with_text:
+        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
+        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
+      
+      text_only: "[background_description] containing: [text_with_effects]"
 
-    name: "TWM textbox ([frames].[timestamp])"
+    multi_frame:
+      filename: "TWM textbox ([frames].[timestamp])"
+      intro: "A sequence of OneShot-style dialogue boxes"
+      
+      frame:
+        normal: "[character_description] says: [text_with_effects]"
+        no_text: "[character_description] is silent[action_marker]"
+        no_character: "Text reads: [text_with_effects]"
+        empty: "Empty textbox"
+        
+        transition:
+          normal: "[previous_frame]; then [next_frame]"
+          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
+          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
+      
+      sequence_builder:
+        start: "First, [first_frame]"
+        middle: "[previous_sequence], [next_frame]"
+        end: "[full_sequence]."
+
+    character_description:
+      default: "[character] ([face])"
+      no_char: "([face])"
+      default_face: "[character]"
+      avatar: "user [username]'s avatar"
+      custom: "[custom_name]"
+
+    background_description:
+      default: "A OneShot-style textbox"
+      default_empty: "An empty OneShot-style textbox"
+      custom: 'A textbox with a style called "[name]"'
+
+    text_effects:
+      full:
+        bold: "(all of the text is in bold)"
+        italic: "(all of the text is in italics)"
+        color: "([color] text)"
+        shake: "(text shaking)"
+        wave: "(text is wavy)"
+        combination: "([effects_list] throughout)"
+
+      partial:
+        wrap_template: "[text] (with [effects] from here)"
+        end_template: "(regular text now)"
+        combination: "[effect1] and [effect2]"
+        
+        individual:
+          bold: "bold"
+          italic: "italics"
+          color: "[color]"
+          shake: "shaking"
+          wave: "wavy movement"
+          
+    action_markers:
+      pause: " (pause)"
+      long_pause: " (long pause)"
+      disappears: " (disappears)"
+
+    error:
+      cutoff: "(text continues beyond visible area)"
+      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."
