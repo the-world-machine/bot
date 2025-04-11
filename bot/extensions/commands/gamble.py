@@ -47,7 +47,7 @@ slots = [
 
 class GambleCommands(Extension):
 
-	@slash_command(description='All things to do with gambling wool')
+	@slash_command(description="Commands related to gambling")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def gamble(self, ctx: SlashContext):

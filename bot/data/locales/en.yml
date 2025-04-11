@@ -890,21 +890,27 @@ textbox:
     failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
     unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
-    invalid_character: The character "[character_name]" is not real
-    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    invalid_character: The character "[character_name]" doesn't exist
+    invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    failed_to_send: "[ Failed to send for some reason :[ ]"
+    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
+    apng_preview_warn: | # warn:  # TODO: implemen
+      The Discord apps do not animate APNG files by default, this may change in the future.
+      You can open the attachment in the browser, and it should animate (if there's any animation).
     
   filetypes:
-    gif: GIF
-    webp: WEBP
-    apng: APNG
+    GIF: gif
+    WEBP: webp
+    APNG: apng
     
-    png: PNG
-    jpg: JPG
+    PNG: png
+    JPEG: jpeg
 
   button: 
     render: Render [type]
     'render&send': "Render [type] & Send"
+    opts: Options
     text:
       edit: Edit Text
       add: Add Text
@@ -1019,5 +1025,5 @@ textbox:
       disappears: " (disappears)"
 
     error:
-      cutoff: "(text continues beyond visible area)"
-      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."
+      cutoff: "(text continues beyond visible area)" # TODO: make it scroll
+      remaining_frames: "Due to Discord's limitations, this text has been truncated."
