@@ -82,16 +82,16 @@ async def render_textbox(text: str | None,
 			d = ImageDraw.Draw(img)
 			y_offset = text_y
 			for line in textwrap.wrap(text, width=46):
-				d.text((text_x, y_offset), line, font=font, fill=(255, 255, 255))
+				d.multiline_text((text_x, y_offset), line, font=font, fill=(255, 255, 255))
 				y_offset += 25
 		if starting_face:
 			img.paste(icon, (496, 16), icon.convert('RGBA'))
 		return img
 
 	if not animated and (text or starting_face):
-		return [draw_frame(background.copy(), text), [0]]
+		return ([draw_frame(background.copy(), text)], [0])
 	if not starting_face and not text:
-		return [draw_frame(background.copy()), [100]]
+		return ([draw_frame(background.copy())], [100])
 
 	images: list[Image.Image] = []
 	durations: list[int] = []
@@ -159,7 +159,7 @@ async def render_textbox_frames(
 		if char and frame.starting_face_name:
 			face = char.get_face(frame.starting_face_name)
 
-		image = (await render_textbox(frame.text, face, False))[0]
+		image = (await render_textbox(frame.text, face, False))[0][0]
 		if filetype == "JPEG":
 			buffer = io.BytesIO()
 			if image.mode == 'RGBA':
@@ -221,13 +221,17 @@ async def render_textbox_frames(
 			for img in all_images:
 				temp_buffer = io.BytesIO()
 				img.save(temp_buffer, format="PNG")
-				png_images.append(temp_buffer.getvalue())
+				temp_buffer.seek(0)
+				png_obj = apng.PNG.from_bytes(temp_buffer.getvalue())
+				png_images.append(png_obj)
 
 			animation = apng.APNG()
-			for i, png_data in enumerate(png_images):
-				animation.append(png_data, delay=all_durations[i] / 1000)  # APNG uses seconds instead of ms
 
-			animation.save(buffer)
+			for i, png_obj in enumerate(png_images):
+				animation.append(png_obj, delay=int(all_durations[i]), delay_den=1000)
+
+			apng_bytes = animation.to_bytes()
+			buffer = io.BytesIO(apng_bytes)
 		case "GIF":
 			all_images[0].save(
 			    buffer,
@@ -236,6 +240,7 @@ async def render_textbox_frames(
 			    append_images=all_images[1:],
 			    duration=all_durations,
 			)
+	buffer.seek(0)
 	return buffer
 
 

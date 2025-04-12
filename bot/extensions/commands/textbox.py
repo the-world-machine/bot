@@ -389,9 +389,9 @@ class TextboxCommands(Extension):
 			#	alt_accum = loc.l("textbox.multi.alt.frame" +("" if frame.text else "_nothing"), character=frame.character_id, face=frame.face_name, text=frame.text)
 			#alt_text = loc.l("textbox.multi.alt.beginning", frames=alt_accum)
 
-		buffer = await render_textbox_frames(state.frames, state.options.quality, state.options.out_filetype if not frame_preview_index else "PNG")
+		buffer = await render_textbox_frames(state.frames, state.options.quality, state.options.out_filetype if frame_preview_index is None else "PNG")
 
-		filename = f"{filename}.{((state.options.out_filetype if state.options.out_filetype != "APNG" else "PNG") if not frame_preview_index else "PNG").lower()}"
+		filename = f"{filename}.{((state.options.out_filetype) if frame_preview_index is None else "PNG").lower()}"
 		buffer.seek(0)
 		return File(file=buffer, file_name=filename)#, description=alt_text if alt_text else frame.text)
 
