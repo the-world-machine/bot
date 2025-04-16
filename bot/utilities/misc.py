@@ -1,5 +1,6 @@
 import io
 import copy
+import re
 import aiohttp
 import aiofiles
 import datetime
@@ -95,6 +96,19 @@ async def cached_get(location: str | Path, force: bool = False, raw: bool = Fals
 	return cache[loki] if raw else io.BytesIO(cache[loki])
 
 
+def parse_path(raw_path: str):
+	pattern = r'([\'"])(.*?)\1|([^./]+)'  # haven't tested quotes with quotes inside (i dont rememebr the regex for backslash escaping)
+
+	parts = []
+	for match in re.finditer(pattern, raw_path):
+		if match.group(1):  # quoted group
+			parts.append(match.group(2))  # content inside quotes
+		else:  # normal group
+			parts.append(match.group(3))
+
+	return parts
+
+
 def rabbit(
     value: dict,
     path: str,
@@ -136,7 +150,7 @@ def rabbit(
 		_full_path = raw_path
 	if not raw_path:
 		return value
-	parsed_path = raw_path.split('.')
+	parsed_path = parse_path(raw_path)
 	went_through = []
 	key = None
 	index = None
