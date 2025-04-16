@@ -15,9 +15,9 @@ from utilities.textbox.characters import Character, Face, get_character, get_cha
 states = {}
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 class StateOptions:
-	out_filetype: SupportedFiletypes
-	send_to: 1 | 2 | 3
-	quality: int # TODO: m,ake this use an enum
+	out_filetype: SupportedFiletypes # TODO: m,ake this use an enum
+	send_to: 1 | 2 | 3 # TODO: m,ake this use an enum
+	quality: int 
 
 	def __init__(self, filetype: SupportedFiletypes = "WEBP", send_to: 1 | 2 | 3 = 1, quality: int = 100):
 		self.out_filetype = filetype
@@ -51,10 +51,10 @@ class State:
 		return (
 			f"State(\n"+
 			f"  owner={self.owner},\n"+
-			f"  options={self.options},\n"
 			f"  frames: len()={len(self.frames)}; [\n"+
 			f"{",\n".join(f"      {repr(frame)}" for index, frame in self.frames.items())}\n"+
 			f"  ]\n"+
+			f"  {self.options}\n"
 			f")"
 		)
 
@@ -442,6 +442,8 @@ class TextboxCommands(Extension):
 		pos = ""
 		if len(state.frames) > 2 or frame_index != 0:
 			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
+		if debugging():
+			pos += "\n-# **sid**: "+state_id
 		next_frame_exists = len(state.frames) != int(frame_index)+1
 		print(state)
 		embed = Embed(
@@ -507,3 +509,80 @@ class TextboxCommands(Extension):
 			    components=components,
 			    files=files
 			)
+	
+
+	int_regex = re.compile(r"^\d+$")
+	@textbox.subcommand(sub_cmd_description='Debugging command')
+	@slash_option(
+			name='opts',
+			description='sid here, special: `all` all states, `user:userid/"me"` user\'s states. at end: `!Page:Amount` (ints)',
+			opt_type=OptionType.STRING,
+			required=False
+	)
+	async def inspect(
+	    self,
+	    ctx: SlashContext,
+	    opts: str = "user:me!0:1",
+	):
+		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
+		states2show: list[tuple[str, State]] = []
+		options = opts.split("!")
+		filter = options[0]
+
+		states2show = states.items()
+		match filter:
+			case "all":
+				pass
+			case _:
+				if filter.startswith("user:"):
+					_ = filter.split(":")
+					user_id = _[1] if len(_) == 1 else "me"
+					if not self.int_regex.match(user_id) and not user_id == "me":
+						await ctx.edit(embeds=Embed(
+							color=Colors.BAD,
+							title="Invalid user id"
+						))
+					if user_id == "me":
+						user_id = str(ctx.user.id)
+					states2show = [a for a in states2show if a[1].owner == int(user_id)]
+				elif self.int_regex.match(filter):
+					if not filter in states:
+						return await ctx.edit(embeds=Embed(
+							color=Colors.BAD,
+							title=f"Couldn't find sid {filter}"
+						))
+					states2show = [states[filter]]
+		if len(states2show) > 0:
+			paging = options[1].split(":")
+			page = paging[0] if len(paging) > 0 else "0"
+			try:
+				page = int(page)
+			except:
+				return await ctx.edit(embeds=Embed(
+					color=Colors.BAD,
+					title=f"Invalid Pages (!__{page}__:{items_per_page})"
+				))
+			items_per_page = paging[1] if len(paging) > 1 else "15"
+			try:
+				items_per_page = int(items_per_page)
+			except:
+				return await ctx.edit(embeds=Embed(
+					color=Colors.BAD,
+					title=f"Invalid items per page (Amount) (!{page}:__{items_per_page}__)"
+				))
+			if page > len(states2show) * items_per_page:
+				return await ctx.edit(embeds=Embed(
+					color=Colors.BAD,
+					title=f"Page out of bounds, max: {len(states2show)} (!{page}:__{items_per_page}__)"
+				))
+			states2show = states2show[page*items_per_page:max((page*items_per_page)+items_per_page,len(states2show))]
+		if len(states2show) == 0:
+			return await ctx.edit(embeds=Embed(
+				color=Colors.BAD,
+				title="Nothing found" + (" (there are no states)" if len(states) == 0 else " (check your filter maybe?)")
+			))
+		return await ctx.edit(embeds=Embed(
+			color=Colors.DEFAULT,
+			title=f"Found results: {len(states2show)}",
+			description='\n'.join(map(lambda a: f"-# {a[0]}:\n```{a[1]}```",states2show))
+		))

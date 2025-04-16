@@ -42,6 +42,9 @@ class FrameOptions:
 		self.end_arrow_bounces = end_arrow_bounces
 		self.end_arrow_delay = end_arrow_delay
 
+	def __repr__(self):
+		return f"FrameOptions(style={self.style}, animated={self.animated}, end: delay={self.end_delay} arrow: bounces={self.end_arrow_bounces}, delay={self.end_arrow_delay})"
+
 
 class Frame:
 	text: str | None
@@ -62,7 +65,8 @@ class Frame:
 		self.options = options if options else FrameOptions()
 
 	def __repr__(self):
-		return f"Frame(\"{self.text}\", starting_character={self.starting_character_id}, starting_face={self.starting_face_name}, options)"
+		text = self.text if self.text is not None else f"\"{self.text}\""
+		return f"Frame({text}, starting_character={self.starting_character_id}, starting_face={self.starting_face_name}, {self.options.__repr__()})"
 
 
 async def render_textbox(text: str | None,
