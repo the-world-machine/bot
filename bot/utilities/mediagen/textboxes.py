@@ -10,32 +10,41 @@ from PIL import Image, ImageDraw, ImageFont
 from grapheme import graphemes
 from utilities.textbox.characters import Character, Face, get_character
 
-
-class Styles(Enum):
-	NORMAL_LEFT: int = 0
-	NORMAL_RIGHT: int = 1
-
-
+SupportedFacePositions = Literal["left", "center", "right"]
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 
 
-class FrameOptions:
-	style: Styles = Styles.NORMAL_RIGHT
-	animated: bool = True
-
-	end_delay: int
-	end_arrow_bounces: int
-	end_arrow_delay: int
+class BackgroundStyle(Enum):
+	face_position: SupportedFacePositions = "right"
 
 	def __init__(
 	    self,
-	    style: Styles = Styles.NORMAL_RIGHT,
+	    face_position: SupportedFacePositions = "right",
+	    color: str = None,
+	):
+		self.face_position = face_position
+		self.color = color
+
+
+class FrameOptions:
+	background: BackgroundStyle = None
+	animated: bool = True
+	static_delay_override: int | None  # override for the amount of time you show the frame in the gif
+	end_delay: int  # time before the arrow shows up
+	end_arrow_bounces: int
+	end_arrow_delay: int  # how much a singe frame of the arrow should take
+
+	def __init__(
+	    self,
+	    background: BackgroundStyle = None,
 	    animated: bool = True,
 	    end_delay: int = 150,
-	    end_arrow_bounces: int = 3,
-	    end_arrow_delay: int = 150
+	    end_arrow_bounces: int = 4,
+	    end_arrow_delay: int = 150,
+	    static_delay_override: int | None = None
 	):
-		self.style = style
+		self.background = background if background is not None else BackgroundStyle()
+		self.static_delay_override = static_delay_override
 		self.animated = animated
 
 		self.end_delay = end_delay
@@ -43,7 +52,7 @@ class FrameOptions:
 		self.end_arrow_delay = end_arrow_delay
 
 	def __repr__(self):
-		return f"FrameOptions(style={self.style}, animated={self.animated}, end: delay={self.end_delay} arrow: bounces={self.end_arrow_bounces}, delay={self.end_arrow_delay})"
+		return f"FrameOptions(style={self.background}, animated={self.animated}, end: delay={self.end_delay} arrow: bounces={self.end_arrow_bounces}, delay={self.end_arrow_delay})"
 
 
 class Frame:
@@ -174,8 +183,10 @@ async def render_textbox_frames(
 				image.save(buffer, format="JPEG", quality=quality)
 		else:
 			image.save(
-			    buffer, format="PNG", compress_level=9 - int(max(0, min(100, quality)) * 9 / 100)
-			)  #  quality = 0->100 = compress_level = 9->0
+			    buffer,
+			    format="PNG",
+			    compress_level=9 - int(max(0, min(100, quality)) * 9 / 100)  #  quality = 0->100 = compress_level = 9->0
+			)
 		return buffer
 
 	for frame in frames.values():
@@ -194,7 +205,7 @@ async def render_textbox_frames(
 		arrow = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal_arrow.png")))
 		arrow_rgba = arrow.convert('RGBA')
 		last_frame = all_images[-1]
-		all_durations[-1] = 1500
+		all_durations[-1] = frame.options.end_delay
 		bounce_frames = [
 		    ":3",
 		    last_frame.copy(),
@@ -205,9 +216,9 @@ async def render_textbox_frames(
 		bounce_frames[2].paste(arrow, (299, 119 - 1), arrow_rgba)
 		bounce_frames[3].paste(arrow, (299, 119 - 2), arrow_rgba)
 
-		for i in bounce(4, 3):
+		for i in bounce(frame.options.end_arrow_bounces, 3):
 			all_images.append(bounce_frames[i])
-			all_durations.append(150)
+			all_durations.append(frame.options.end_arrow_delay)
 	all_images.append(last_frame.copy())
 	all_durations.append(150)
 	match filetype:

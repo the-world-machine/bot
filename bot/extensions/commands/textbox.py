@@ -112,27 +112,6 @@ class TextboxCommands(Extension):
 
 		return select
 
-	@staticmethod
-	def make_styles_select_menu(
-	    loc: Localization = Localization(),
-	    custom_id: str = "textbox update_style 0 0",
-	    default: str = None
-	):
-		select = StringSelectMenu(custom_id=custom_id, placeholder=loc.l("textbox.select.styles"))
-
-		dedup = False
-		for name, key in Styles.__dict__["_member_map_"].items():
-			option = StringSelectOption(
-			    label=name, value=name
-			)  # TODO: label=Localization(in=LocPaths.Textboxes, "{id}.faces.{name}")
-			if not dedup and default == name:
-				option.default = True
-			if len(select.options) > 24:
-				return select
-			select.options.append(option)
-
-		return select
-
 	@slash_command(description="Commands related to Textboxes")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
@@ -286,7 +265,7 @@ class TextboxCommands(Extension):
 		return (loc, state, frame_data)
 
 	handle_components_regex = re.compile(
-	    r"textbox (?P<method>refresh|render|update_(char|face|style|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
+	    r"textbox (?P<method>refresh|render|update_(char|face|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
 	)
 
 	@component_callback(handle_components_regex)
@@ -304,8 +283,6 @@ class TextboxCommands(Extension):
 				frame_data.starting_face_name = None
 			case "update_face":
 				frame_data.starting_face_name = ctx.values[0]
-			case "update_style":
-				frame_data.style = ctx.values[0]
 			case "update_text":
 				return await self.init_update_text_flow(ctx, state_id, frame_index)
 			case "update_animated":
@@ -371,10 +348,10 @@ class TextboxCommands(Extension):
 				if frame.starting_face_name == 'Your Avatar':
 					await face.set_custom_icon(ctx.author.avatar.url) # WARN: this could leak? idk
 
-			filename = loc.l("textbox.alt.single_frame.filename", character=frame.starting_character_id, face=frame.starting_face_name,timestamp=datetime.now().timestamp())
+			filename = loc.l("textbox.alt.single_frame.filename", character=frame.starting_character_id, face=frame.starting_face_name,timestamp=str(round(datetime.now().timestamp())))
 
 		else: # NOT render button
-			filename = loc.l("textbox.alt.multi_frame.filename", frames=len(state.frames),timestamp=datetime.now().timestamp())
+			filename = loc.l("textbox.alt.multi_frame.filename", frames=len(state.frames),timestamp=str(round(datetime.now().timestamp())))
 			#alt_accum = ""
 			for frame in state.frames.values():
 				char = None
@@ -390,8 +367,12 @@ class TextboxCommands(Extension):
 			#alt_text = loc.l("textbox.multi.alt.beginning", frames=alt_accum)
 
 		buffer = await render_textbox_frames(state.frames, state.options.quality, state.options.out_filetype if frame_preview_index is None else "PNG")
-
-		filename = f"{filename}.{((state.options.out_filetype) if frame_preview_index is None else "PNG").lower()}"
+		_filetype="."+state.options.out_filetype
+		if frame_preview_index is not None:
+			_filetype = ".PNG"
+		if state.options.out_filetype == "APNG":
+			_filetype = ""
+		filename = filename + _filetype
 		buffer.seek(0)
 		return File(file=buffer, file_name=filename)#, description=alt_text if alt_text else frame.text)
 
@@ -433,11 +414,12 @@ class TextboxCommands(Extension):
 			)
 		await self.respond(ctx, state_id, frame_index)
 
-	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True):
+	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list | None = None):
 		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
 		if not loc:
 			return
-
+		if warnings is None:
+			warnings = []
 		files = [await self.render_to_file(ctx, state, frame_preview_index=frame_index)]
 		pos = ""
 		if len(state.frames) > 2 or frame_index != 0:
@@ -512,21 +494,21 @@ class TextboxCommands(Extension):
 	
 
 	int_regex = re.compile(r"^\d+$")
-	@textbox.subcommand(sub_cmd_description='Debugging command')
+	@textbox.subcommand(sub_cmd_description='Debugging command for textboxes')
 	@slash_option(
-			name='opts',
+			name='search',
 			description='sid here, special: `all` all states, `user:userid/"me"` user\'s states. at end: `!Page:Amount` (ints)',
 			opt_type=OptionType.STRING,
 			required=False
 	)
-	async def inspect(
+	async def state(
 	    self,
 	    ctx: SlashContext,
-	    opts: str = "user:me!0:1",
+	    search: str = "user:me!0:1"
 	):
 		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
 		states2show: list[tuple[str, State]] = []
-		options = opts.split("!")
+		options = search.split("!")
 		filter = options[0]
 
 		states2show = states.items()
@@ -562,7 +544,7 @@ class TextboxCommands(Extension):
 					color=Colors.BAD,
 					title=f"Invalid Pages (!__{page}__:{items_per_page})"
 				))
-			items_per_page = paging[1] if len(paging) > 1 else "15"
+			items_per_page = paging[1] if len(paging) > 1 else "10"
 			try:
 				items_per_page = int(items_per_page)
 			except:
