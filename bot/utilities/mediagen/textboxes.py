@@ -14,9 +14,9 @@ SupportedFacePositions = Literal["left", "center", "right"]
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 
 
-class BackgroundStyle(Enum):
+class BackgroundStyle():
 	face_position: SupportedFacePositions = "right"
-
+	color: str = "orange"
 	def __init__(
 	    self,
 	    face_position: SupportedFacePositions = "right",

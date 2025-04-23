@@ -6,7 +6,7 @@ from typing import Literal
 from interactions import *
 from utilities.config import debugging, get_config
 from utilities.emojis import emojis
-from utilities.mediagen.textboxes import Frame, Styles, render_textbox, render_textbox_frames
+from utilities.mediagen.textboxes import Frame, BackgroundStyle, render_textbox, render_textbox_frames
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import make_empty_select, optionSearch, pretty_user
