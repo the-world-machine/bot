@@ -5,7 +5,7 @@ bot = "python bot/main.py"
 python_version = "3.13"
 
 [packages]
-"interactions.py" = "*"
+"interactions.py" = {git = "https://github.com/interactions-py/interactions.py.git", ref = "components_v2"}
 termcolor = "*"
 pyyaml = "*"
 watchdog = "*"
