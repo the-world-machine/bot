@@ -18,18 +18,28 @@ except Exception as e:
 
 
 class MiscellaneousCommands(Extension):
-	@slash_command(description='View various statistics about the bot')
-	@slash_option(description="Whether you want the response to be visible for others in the channel", name="public", opt_type=OptionType.BOOLEAN)
+
+	@slash_command(description='About the bot')
+	@slash_option(
+	    description="Whether you want the response to be visible for others in the channel",
+	    name="public",
+	    opt_type=OptionType.BOOLEAN
+	)
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
-	async def stats(self, ctx: SlashContext, public: bool = False):
+	async def about(self, ctx: SlashContext, public: bool = False):
 		await ctx.defer(ephemeral=not public)
 		loc = Localization(ctx.locale)
 
 		host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
 		total_servers = len(ctx.client.guilds)
 
-		embed = Embed(description=loc.l("misc.stats.owner", name=ctx.client.owner.username), color=Colors.DEFAULT)
+		embed = Embed(
+		    description=loc.l(
+		        "misc.stats.owner", owners=" & ".join([user.user for user in ctx.client.app.team.members])
+		    ),
+		    color=Colors.DEFAULT
+		)
 
 		embed.add_field(loc.l("misc.stats.names.avg_ping"), loc.l("misc.stats.values.time", sec=fnum(ctx.client.latency, ctx.locale)), inline=True)
 		embed.add_field(loc.l("misc.stats.names.cpu_usg"), loc.l("misc.stats.values.percent", num=round(psutil.cpu_percent())), inline=True)

@@ -319,3 +319,13 @@ async def put_mini(loc: Localization, message: str, user_id: str | int = None, t
 	name = loc.l(f"general.minis.{type}")
 	msg = loc.l(message)
 	return f"{pre}{"-# " if markdown else ""}{name} {msg}"
+
+def amperjoin(items: list):
+	items = map(str, items)
+	if len(items) == 0:
+		return ""
+	if len(items) == 1:
+		return f"{items[0]}"
+	if len(items) == 2:
+		return " & ".join(items)
+	return ", ".join(items[:-1]) + " & " + items[-1]
