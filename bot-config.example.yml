@@ -5,11 +5,13 @@ config-check-level: 4
 # 3 = doesn't log missing
 bot:
   token: ~
+  logging-level: DEBUG
   prod:
     token: ~ # if ~ always uses token above
     override: ~
     branch: "origin"
     command-marker: ~ # see dev.command-marker
+    logging-level: WARN
   debug: ~ # defaults to false on prod
 
   rolling:
