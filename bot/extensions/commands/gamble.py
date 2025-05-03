@@ -63,7 +63,7 @@ class GambleCommands(Extension):
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		loc = Localization(ctx.locale)
-		await fancy_message(ctx, loc.l('nikogotchi.loading'))
+		await fancy_message(ctx, loc.l('general.loading'))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
