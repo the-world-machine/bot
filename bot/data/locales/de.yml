@@ -49,7 +49,10 @@ misc:
       cat: Eine Katze!
 
   stats:
-    owner: "👑 @[name]"
+    layout: |
+      👑 [owners]
+
+      [description]
     names:
       shards: "Scherben"
       avg_ping: "Durchschnittlich ping"

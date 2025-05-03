@@ -48,7 +48,10 @@ misc:
       cat: кота!
 
   stats:
-    owner: "👑 @[name]"
+    layout: |
+      👑 [owners]
+
+      [description]
     names: 
       shards: "Шарди"
       avg_ping: "Середній пінг"

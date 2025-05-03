@@ -15,7 +15,7 @@ general:
     _previous: "Previous"
     _open_site: "Open Website"
     _dont_show_again: "Don't Show Again"
-  
+
   minis:
     note: "❕ note:"
     tip: "❔ tip:"
@@ -32,8 +32,8 @@ general:
 
 # ---------------------------------------------------------------
 
-music: 
-  loading: 
+music:
+  loading:
     search: "[ [emoji:loading] Searching... ]"
     file: "[ [emoji:loading] Loading your file... ]"
 
@@ -48,10 +48,14 @@ misc:
       cat: a cat!
 
   stats:
-    owner: "👑 @[name]"
-    names: 
+    layout: |
+      👑 [owners]
+
+      [description]
+    names:
       shards: "Shards"
       avg_ping: "Average ping"
+      latency: "Response latency"
       commit_hash: "Commit hash"
       server_count: "Server count"
       user_installs: "User installs"
@@ -76,10 +80,10 @@ misc:
     placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
-    
+
 # ---------------------------------------------------------------
 
-wool: 
+wool:
   balance:
     you:
       none: "[ You have **no[emoji:wool]Wool** ]"
@@ -90,7 +94,7 @@ wool:
     bot:
       none: |
         [ Bots usually don't interact with me, not that they even can,
-        
+
         so [mention] has **no[emoji:wool]Wool** ]
       some: |
         [ Bots usually don't interact with me, not that they even can, but...
@@ -141,7 +145,7 @@ transmit:
 settings:
   errors:
     weird_edgecase_number_0: Either you or [app:mention] is not in the server. If you are a server manager, please re-add [app:mention] to the server.
-    missing_permissions: "[ You must have the \"Manage Server\" permission in order to change the settings ]"
+    missing_permissions: '[ You must have the "Manage Server" permission in order to change the settings ]'
     channel_not_messageable: "[ I cannot send messages in that channel ]"
     channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
     invalid_server_id: "[ Invalid server ID. ]"
@@ -165,7 +169,7 @@ settings:
       input: "Welcome Message"
       placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
       done: "[ Successfully updated the welcome textbox message ]"
-      debug: | 
+      debug: |
         Previous: [old_text]
 
         New (current): [new_text]
@@ -190,13 +194,13 @@ settings:
 # ---------------------------------------------------------------
 
 profile:
-  view: 
+  view:
     message: Viewing [usermention]'s profile
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
     bots: "[ Bots don't have profiles! ]"
     loading: "[ [emoji:loading] Loading [user]'s profile... ]"
 
-    image: 
+    image:
       alt_nodescription: "On the image is profile of user [username] in The World Machine's system. They own: Suns [suns], Wool [wool]"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
@@ -205,14 +209,14 @@ profile:
       title: "[username]'s Profile"
       unlocked:
         stamps: "Unlocked Stamps:"
-  edit: 
-    text: "You can edit your profile over on the website!" 
+  edit:
+    text: "You can edit your profile over on the website!"
 
 # ---------------------------------------------------------------
 
 explode:
   dialogue:
-    why: 
+    why:
       - "[ Why? ]"
       - "[ I have to clean up everytime someone does this. ]"
       - "[ Wow... really? ]"
@@ -222,7 +226,7 @@ explode:
     sixninefourtwo: nice 👍
     nineninenineninenine: |
       [ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? ]
-      
+
       ⚠️ warning: Utterly despicable.
 
   info: "Shatter count: [amount]"
@@ -244,7 +248,7 @@ shop:
     sell: Trade in
     sell_all: Trade in All
     go_back: Go Back
-    owned: Owned 
+    owned: Owned
 
   main_title: Welcome!
 
@@ -266,7 +270,7 @@ shop:
     - "Words of wisdom as a friend: If you buy high and sell low, good fortune awaits..! Don't fact check that!"
     - My poor trinket and treasures were washed away... perhaps you could find more for me?
     - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
-    - "Do you like my bottle collection? I like my bottle collection. What do you mean it's all \"Hard Liquor\"? Is that what it says?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
+    - 'Do you like my bottle collection? I like my bottle collection. What do you mean it''s all "Hard Liquor"? Is that what it says?' # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
   traded: '> Successfully traded for [amount] of "[item_name]"!' # [price] is also available here
   traded_sell: '> Sucessfully traded in [amount] "[item_name]" for [price] Wool!'
@@ -278,7 +282,6 @@ shop:
     Stock Price: [price]```
 
   nikogotchi:
-
     title: Capsules
 
     main: >
@@ -297,19 +300,18 @@ shop:
 
 
       *Do keep in mind that you can only have **one capsule** per Nikogotchi.*
-    
+
 
       [user_wool]
 
     result: >
       > You gave Magpie [amount] Wool, then he turns the gatchapon machine and...
 
-      > He gives you a [capsule_name]! 
+      > He gives you a [capsule_name]!
 
     result_footer: Use [ /nikogotchi check ] to see your new Nikogotchi!
 
   pancakes:
-
     title: Pancakes
 
     main: >
@@ -317,12 +319,11 @@ shop:
 
 
       [items]
-    
+
 
       [user_wool]
 
   backgrounds:
-
     title: Backgrounds
 
     main: >
@@ -331,7 +332,7 @@ shop:
 
       [user_wool]
 
-    newly_owned: > 
+    newly_owned: >
       Thanks! Now you are a proud owner of this background.
 
 
@@ -339,7 +340,6 @@ shop:
     traded: "> Successfully traded for this background!"
 
   treasures:
-
     buy:
       title: Treasures
       message: >
@@ -397,13 +397,13 @@ items:
       description: It's written in an unknown language.
     pen:
       name: Glowing Feather
-      description: A long and slender feather with glowing edges. 
+      description: A long and slender feather with glowing edges.
     shirt:
       name: Novelty Shirt
       description: '"I herded rams and all I got was this lousy T-shirt!"'
     sun:
       name: The Sun
-      description: A large lightbulb. It's the sun. 
+      description: A large lightbulb. It's the sun.
 
   pancakes:
     normal:
@@ -414,7 +414,7 @@ items:
         *+25 🥞*
 
         *+1 ❤️*
-    
+
     golden:
       name: Golden Pancakes
       description: >
@@ -423,9 +423,9 @@ items:
         *MAX 🥞*
 
         *+25 ❤️*
-    
+
     glitched:
-      name: '???'
+      name: "???"
       description: I don't even know how this got here.
 
   capsules:
@@ -460,7 +460,7 @@ interact:
     - name: Boop
       messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] booped [user_two]"
         - name: Playful
           messages:
@@ -481,7 +481,7 @@ interact:
             - "[user_one] huffs and boops [user_two] in irritation"
             - "[user_one] lets out their frustration with a firm boop on [user_two]"
         - name: Irresistible
-          messages: 
+          messages:
             - "[user_one] felt the need to give [user_two] a boop!"
             - "[user_one] just wanted to give [user_two] a boop!"
             - "[user_one] couldn't resist booping [user_two]"
@@ -499,45 +499,45 @@ interact:
             - "[user_one] can't handle how adorable [user_two] is and boops them!"
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Slap
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] slapped [user_two], probably deserved."
     - name: Pet
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] pet [user_two]!"
     - name: Head Pat
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] gave [user_two] a headpat!"
     - name: Tickle
       messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] started tickling [user_two] a surprise tickle!"
             - "[user_one] gave [user_two] a surprise tickle!"
             - "[user_one] tickled [user_two] and sparked a tickle fight!"
             - "[user_one] went for a tickle attack at [user_two]!"
     - name: Hug
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] hugged [user_two]!"
     - name: Cuddle
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] cuddled with [user_two]!"
     - name: Kiss
-      messages: 
+      messages:
         - name: Basic
-          messages: 
+          messages:
             - "[user_one] kissed [user_two]! ❤️"
         - name: Warm
-          messages: 
+          messages:
             - "[user_one] gave [user_two] a warm kiss ❤️"
         - name: Romantic
           messages:
@@ -549,7 +549,7 @@ interact:
     - name: Attack
       messages:
         - name: Basic Punch
-          messages: 
+          messages:
             - "[user_one] punched [user_two], that hurts."
         - name: Random Combo
           messages:
@@ -562,17 +562,17 @@ interact:
             - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
-      messages: 
+      messages:
         - name: Small Rock
-          messages: 
+          messages:
             - "[user_one] threw a small rock at [user_two]!"
         - name: Molotov
-          messages: 
+          messages:
             - "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
         - name: Empty Bottle (ow)
           #type: bottle
           #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages: 
+          messages:
             - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------
@@ -585,7 +585,7 @@ treasure:
 
     [treasures]
 
-  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some!  # tip:
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some! # tip:
 
 # ---------------------------------------------------------------
 
@@ -594,7 +594,6 @@ nikogotchi:
   loading: "[ [emoji:loading] Loading Nikogotchi... ]"
   invalid: "[ You don't have a Nikogotchi! ]"
   tipnvalid: "you can buy a capsule with one in the shop" # tip:
-  
 
   name:
     niko: Niko
@@ -621,10 +620,10 @@ nikogotchi:
     error:
       description: > # Kelvin was a nikogotchi before
         [ Your Nikogotchi (`[id]`) no longer exists. You can get a new one of the same rarity or send it away. ]
-        
+
 
         [ What do you want to do? ]
-      buttons: 
+      buttons:
         send_away: Send Away
         rotate: Rotate
 
@@ -634,18 +633,18 @@ nikogotchi:
 
     renaming:
       title: Give your Nikogotchi a new name!
-      input: 
+      input:
         label: Name
         placeholder: Enter the new name for your Nikogotchi...
       button: Rename # used when you use a nikogotchi capsule
-      response: > 
+      response: >
         Successfully renamed your Nikogotchi!
         "[old_name]" → "[new_name]"
 
     trade:
       request: >
         ### **[user]** wants to trade their Nikogotchi ([name_one]) with you!
-        
+
         Do you want to trade your Nikogotchi ([name_two]) with them?
 
       waiting: "[ Sent [user] a trade offer! [emoji:loading] Waiting for their response... ]"
@@ -656,7 +655,7 @@ nikogotchi:
   found:
     title: You found [name]!
     description: "Want to give them a different a name?"
-    renamenote: you can also do this using `/nikogotchi rename`  # note:
+    renamenote: you can also do this using `/nikogotchi rename` # note:
 
   status:
     template: "*[status]*"
@@ -677,7 +676,7 @@ nikogotchi:
 
     feed:
       placeholder: "Choose food to feed with..."
-      
+
       pancakes: Feed Pancake (x[amount])
       golden_pancakes: Feed Golden Pancake (x[amount])
       glitched_pancakes: Feed ??? (x[amount])
@@ -686,7 +685,6 @@ nikogotchi:
 
       no_food: "No Food... you can get some at the shop!"
       invalid: You can't feed your Nikogotchi this! Please refresh using [emojis:refresh]!
-
 
   died:
     title: "🪦 [name] passed away..."
@@ -701,15 +699,15 @@ nikogotchi:
 
 
       R.I.P....
-  treasured: 
+  treasured:
     title: 🎉 Your Nikogotchi found some treasures!
-    message: > 
+    message: >
       [treasures]
 
       Total Treasures: **[total]**
 
       Time Spent Looking: [time].
-      
+
     dialogues:
       sent: "Your Nikogotchi was sent to find treasures!"
       senote: "their stats will decrease faster than normal, so don't forget to call them back" # note:
@@ -887,8 +885,8 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
-    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists.
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" doesn't exist
     invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
@@ -898,18 +896,18 @@ textbox:
     apng_preview_warn: | # warn:
       Discord doesn't show or let you download `.png`s as APNG.
       You can open the attachment in the browser, and it should animate (if there's any animation).
-    
+
   filetypes:
     GIF: gif
     WEBP: webp
     APNG: apng
-    
+
     PNG: png
     JPEG: jpeg
 
-  button: 
+  button:
     render: Render [type]
-    'render&send': "Render [type] & Send"
+    "render&send": "Render [type] & Send"
     opts: Options
     text:
       edit: Edit Text
@@ -919,9 +917,8 @@ textbox:
       add: Add Frame
       previous: Previous Frame
       manual: Input Frame
-  
-  frame_position: "editing frame [current] of [total] total"
 
+  frame_position: "editing frame [current] of [total] total"
 
   select:
     chars: Characters...
@@ -931,10 +928,10 @@ textbox:
   modal:
     edit_text:
       title: "Editing text for frame #[index]!"
-      input: 
+      input:
         label: Text
         placeholder: Text goes here i think
-      response: > 
+      response: >
         Text changed!
 
         New text: [new_text]
@@ -955,32 +952,32 @@ textbox:
   alt:
     single_frame:
       filename: "TWM textbox ([character], [face], [timestamp])"
-      
+
       character_only:
         left: "[background_description] with [character_description] on the left"
         right: "[background_description] with [character_description] on the right"
-      
+
       with_text:
         left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
         right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
-      
+
       text_only: "[background_description] containing: [text_with_effects]"
 
     multi_frame:
       filename: "TWM textbox ([frames], [timestamp])"
       intro: "A sequence of OneShot-style dialogue boxes"
-      
+
       frame:
         normal: "[character_description] says: [text_with_effects]"
         no_text: "[character_description] is silent[action_marker]"
         no_character: "Text reads: [text_with_effects]"
         empty: "Empty textbox"
-        
+
         transition:
           normal: "[previous_frame]; then [next_frame]"
           style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
           action_continuation: "[previous_frame][action_marker]; then [next_frame]"
-      
+
       sequence_builder:
         start: "First, [first_frame]"
         middle: "[previous_sequence], [next_frame]"
@@ -998,7 +995,7 @@ textbox:
       default_empty: "An empty OneShot-style textbox"
       custom: 'A textbox with a style called "[name]"'
       custom_color: 'A [color] textbox with a style called "[name]"'
-    
+
     text_effects:
       full:
         bold: "(all of the text is in bold)"
@@ -1012,14 +1009,14 @@ textbox:
         wrap_template: "[text] (with [effects] from here)"
         end_template: "(regular text now)"
         combination: "[effect1] and [effect2]"
-        
+
         individual:
           bold: "bold"
           italic: "italics"
           color: "[color]"
           shake: "shaking"
           wave: "wavy movement"
-          
+
     actions:
       pause: " (pause)"
       long_pause: " (long pause)"
