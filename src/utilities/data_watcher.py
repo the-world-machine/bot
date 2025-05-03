@@ -20,7 +20,7 @@ class FileWatcher(FileSystemEventHandler):
 			return
 		event.src_path = event.src_path.replace("\\", "/")
 		for callback in callbaques:
-			p = event.src_path.split("bot/data/")[1]
+			p = event.src_path.split("src/data/")[1]
 			if p.startswith(callback[0]):
 				callback[1](p[len(callback[0]):])
 
@@ -31,7 +31,7 @@ def subscribe(path: str, cb: Callback):
 
 def watch():
 	observer = Observer()
-	observer.schedule(FileWatcher(), path="bot/data/", recursive=True, event_filter=[FileModifiedEvent])
+	observer.schedule(FileWatcher(), path="src/data/", recursive=True, event_filter=[FileModifiedEvent])
 	observer.start()
 
 	try:

@@ -26,7 +26,7 @@ class Face:
 		return PartialEmoji(id=self.icon) if self.icon else None
 
 	async def get_image(self, size: int | None) -> Image:
-		loc: str = f"bot/data/images/textbox/{self.icon}.png"
+		loc: str = f"src/data/images/textbox/{self.icon}.png"
 		if not os.path.exists(loc):
 			loc = None
 		return Image.open(
@@ -85,7 +85,7 @@ env = {
 
 
 def load_characters():
-	with open('bot/data/characters.yml', 'r') as f:
+	with open('src/data/characters.yml', 'r') as f:
 		return yaml.safe_load(f)
 
 

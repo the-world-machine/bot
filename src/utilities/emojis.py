@@ -58,7 +58,7 @@ def make_url(emoji: str, size: int = 4096, quality: str = "lossless") -> str:
 	return f"{base_url}{emoji_id}.{'gif' if animated else 'png'}?size={size}&quality={quality}"
 
 def load_emojis() -> Emojis:
-	with open("bot/data/emojis.yml", "r") as f:
+	with open("src/data/emojis.yml", "r") as f:
 		emojis_data = safe_load(f)
 		return minify_emoji_names(emojis_data)
 

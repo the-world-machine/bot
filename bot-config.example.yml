@@ -18,7 +18,7 @@ bot:
     interval: 3600 # seconds
     statuses: # can also be just a string
       - "[ ... ]" # Can use the variables: [shard_count] [guild_count] [token]
-      - "[ ... ]" 
+      - "[ ... ]"
       - "[ ... ]" # e.g. - - - - \/
       - "[ Monitoring over [guild_count] places at once. ]"
       - "[ Do I really have to do things for these users? ]"
@@ -37,7 +37,8 @@ dev:
     - ~
 
 watcher:
-  ignore-4913: true
+  ignore-4913:
+    true
     # vim (the text editor) creates a file to check whether it can write files in the folder, causing random bullshi
     # this should be a FileWatcher init option but too lazy, probably will implement later or wait for someone to pr (unimportant)
 
@@ -50,7 +51,7 @@ localization:
   debug: ~ # defaults to false on prod, shows detailed error messages for not found paths if true
   whitelist:
     en:
-      - ~ 
+      - ~
       - ~ # user ids, all in ""
 
 music: # deprecated
@@ -58,13 +59,13 @@ music: # deprecated
   spotify:
     secret: ~
     id: ~
-  
+
   lavalink:
     ip: "localhost"
     port: 4230
     password: password_here
 
 textbox:
-  font: "bot/data/fonts/TerminusTTF-Bold.ttf"
+  font: "src/data/fonts/TerminusTTF-Bold.ttf"
   frame-limit: 50
   max-text-length-per-frame: 1423

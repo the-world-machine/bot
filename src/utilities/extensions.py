@@ -4,7 +4,7 @@ from utilities.config import debugging, get_config, on_prod
 
 
 def assign_events(client: interactions.Client):
-	files = [ f for f in os.listdir('bot/extensions/events') if f != '__pycache__']
+	files = [ f for f in os.listdir('src/extensions/events') if f != '__pycache__']
 	events = [f.replace('.py', '') for f in files]
 	events = [None if len(f) < 0 or f.startswith(".") else f for f in events]
 	if not on_prod and "welcome_messages" in events:
@@ -37,7 +37,7 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 	global loaded_commands
 	loaded_commands = []
 
-	files = [ f for f in os.listdir('bot/extensions/commands') if f != '__pycache__']
+	files = [ f for f in os.listdir('src/extensions/commands') if f != '__pycache__']
 	commands = [f.replace('.py', '') for f in files]
 	commands = [None if len(f) < 0 or f.startswith(".") else f for f in commands]
 

@@ -81,7 +81,7 @@ class Frame:
 async def render_textbox(text: str | None,
                          starting_face: Face | None,
                          animated: bool = True) -> tuple[list[Image.Image], list[float]] | Image.Image:
-	background = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal.png")))
+	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
 	if text:
 		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	if starting_face:
@@ -202,7 +202,7 @@ async def render_textbox_frames(
 		all_durations.extend(durations)
 
 		# make the ending thing
-		arrow = Image.open(await cached_get(Path("bot/data/images/textbox/backgrounds/", "normal_arrow.png")))
+		arrow = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal_arrow.png")))
 		arrow_rgba = arrow.convert('RGBA')
 		last_frame = all_images[-1]
 		all_durations[-1] = frame.options.end_delay
