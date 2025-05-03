@@ -13,6 +13,10 @@ class Slot:
 	emoji: str
 	value: float
 
+	def __init__(self, emoji: str, value: float):
+		rounded = round(value * 100)
+		self.emoji = emoji.replace(":i:", f":{rounded if rounded > 0 else 'minus_'+str(0-rounded)}pts:")
+		self.value = value
 	def __eq__(self, other):
 		if isinstance(other, Slot):
 			return self.emoji == other.emoji and self.value == other.value
