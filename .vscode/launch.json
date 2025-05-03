@@ -8,7 +8,7 @@
       "name": "Run bot",
       "type": "debugpy",
       "request": "launch",
-      "program": "bot/main.py",
+      "program": "src/main.py",
       "console": "integratedTerminal"
     },
     {

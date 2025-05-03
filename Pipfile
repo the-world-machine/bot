@@ -1,5 +1,5 @@
 [scripts]
-bot = "python bot/main.py"
+bot = "python src/main.py"
 
 [requires]
 python_version = "3.13"
