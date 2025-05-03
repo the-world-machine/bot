@@ -75,7 +75,7 @@ class GambleCommands(Extension):
 			    ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD
 			)
 
-		# take the wool
+		# TAKE the wool
 		await user_data.update(wool=user_data.wool - bet)
 
 		rows = [random.sample(slots, len(slots)) for _ in range(3)]
@@ -174,6 +174,7 @@ class GambleCommands(Extension):
 		if win_amount < 0:
 			win_amount = 0
 
+		# EVIL line of code that either takes or gives the wool
 		await user_data.manage_wool(win_amount)
 		if win_amount > 0:
 			if additional_scoring > 1:
