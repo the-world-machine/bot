@@ -465,12 +465,12 @@ interact:
   interact:
   selected: "Выберете действие над [user]"
   selected_self: ""
-  no_path: "The action you tried to do no longer exists"
+  no_path: "Действие, которое вы хотели выполнить, уже не существует"
 
   options:
     - name: Тыкнуть
       messages:
-        - name: Basic
+        - name: Базово
           messages: 
             - "[user_one] тыкнул [user_two]"
         - name: Игриво
@@ -564,10 +564,10 @@ interact:
             - "[user_one] ударили [user_two], больно же."
         - name: Случайное комбо
           messages:
-            - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
-            - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
-            - "[user_one] goes full flurry mode on [user_two]!"
-        - name: Pillow
+            - "[user_one] прописывает [user_two] комбо из 1-2 ударов!"
+            - "[user_one] наносит три быстых удара, после чего делает прямой удар прямо в [user_two]!"
+            - "[user_one] включает режим берсерка на [user_two]!"
+        - name: Подушка
           messages:
             - "[user_one] ударяет сзади голову [user_two] мягкой подушкой!"
             - "[user_one] запускает шквал подушек на [user_two]! Все перья разлетелись!"
@@ -598,7 +598,7 @@ treasure:
     [treasures]
 
   tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
-  tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
+
 
 # ---------------------------------------------------------------
 
@@ -608,8 +608,7 @@ nikogotchi:
   loading: "[ Загрузка Никоготчи... [emoji:loading] ]"
   invalid: "[ Вы не имеете Никоготчи! ]"
   tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
-  invalid: "[ Вы не имеете Никоготчи! ]"
-  tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
+
 
 
   name:
