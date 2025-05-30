@@ -62,7 +62,7 @@ class SettingsCommands(Extension):
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def enabled(self, ctx: SlashContext, value):
+	async def enabled_(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
 		if not loc:
 			return
