@@ -5,7 +5,6 @@ bot = "python src/main.py"
 python_version = "3.13"
 
 [packages]
-"interactions.py" = {git = "https://github.com/interactions-py/interactions.py.git", ref = "components_v2"}
 termcolor = "*"
 pyyaml = "*"
 watchdog = "*"
@@ -21,6 +20,7 @@ psutil = "*"
 jellyfish = "*"
 grapheme = "*"
 apng = "*"
+"interactions.py" = "*"
 
 [dev-packages]
 yapf = "*"
