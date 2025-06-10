@@ -43,7 +43,7 @@ class ReadyEvent(Extension):
 		if channel:
 			channel = await client.fetch_channel(channel)
 		if not channel:
-			print("No logging channel specified")
+			return print("No logging channel specified")
 		ready_delta: timedelta = client.ready_at - client.started_at
 		if get_config("dev.send-startup-message"):
 			message = await channel.send(
