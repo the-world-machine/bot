@@ -15,7 +15,7 @@ async def execute_loc_command(message: Message):
 	if not message.content:
 		return
 
-	if str(message.author.id) not in list(chain(*get_config("localization.whitelist").values())):
+	if str(message.author.id) not in list(chain(*get_config("localization.whitelist", as_str=False).values())):
 		return
 
 	prefix = get_config('dev.command-marker').split('.')
@@ -38,7 +38,7 @@ async def execute_loc_command(message: Message):
 			locale = attachment.filename.split(".yml")[0]
 			if not locale or not attachment.filename.endswith(".yml"):
 				return await message.reply("`[ Invalid filename ]`")
-			if str(message.author.id) not in get_config(f"localizations.whitelist.{locale.strip('.[]')}"):
+			if str(message.author.id) not in get_config(f"localizations.whitelist.{locale.strip('.[]')}", as_str=False):
 				return await message.reply("`[ You are not whitelisted for this locale ]`")
 			try:
 				async with aiohttp.ClientSession() as session:

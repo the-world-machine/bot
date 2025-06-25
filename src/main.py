@@ -31,13 +31,13 @@ client = Client(
     logger=createLogger("client")
 )
 client.started_at = datetime.now()
-if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
+if do_rolling := get_config("bot.rolling.avatar", as_str=False) or get_config("bot.rolling.status"):
 
-	@Task.create(IntervalTrigger(get_config("bot.rolling.interval")))
+	@Task.create(IntervalTrigger(get_config("bot.rolling.interval", as_str=False)))
 	async def roll():
-		if get_config("bot.rolling.status") == True:
+		if get_config("bot.rolling.status", as_str=False) == True:
 			await roll_status(client)
-		if get_config("bot.rolling.avatar") == True:
+		if get_config("bot.rolling.avatar", as_str=False) == True:
 			await roll_avatar(client)
 
 

@@ -90,10 +90,10 @@ async def _execute_dev_command(message: Message):
 	if not message.content:
 		return
 
-	if message.author.bot and str(message.author.id) not in get_config('dev.whitelist'):
+	if message.author.bot and str(message.author.id) not in get_config('dev.whitelist', as_str=False):
 		return
 
-	if str(message.author.id) not in get_config('dev.whitelist'):
+	if str(message.author.id) not in get_config('dev.whitelist', as_str=False):
 		return
 
 	prefix = command_marker.split('.')

@@ -261,8 +261,9 @@ def english_ordinal_for(n: int | float):
 
 	return suffix
 
-
-bot_id = decode_base64_padded(get_token().split('.')[0])
+token = get_token()
+print(token)
+bot_id = decode_base64_padded(token.split('.')[0])
 
 
 def assign_variables(

@@ -259,7 +259,7 @@ class SettingsCommands(Extension):
 		            style=TextStyles.PARAGRAPH,
 		            custom_id="text",
 		            placeholder=loc.l("settings.welcome.editor.placeholder"),
-		            max_length=get_config("textbox.max-text-length-per-frame", ignore_None=True) or 1423,
+		            max_length=get_config("textbox.max-text-length-per-frame", as_str=False, ignore_None=True) or 1423,
 		            required=False,
 		            value=server_data.welcome.message or loc.l("misc.welcome.placeholder_text")
 		        ),

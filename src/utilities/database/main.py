@@ -5,7 +5,7 @@ from pymongo.server_api import ServerApi
 from utilities.config import get_config
 from interactions import Snowflake
 import yaml
-if get_config("database.dns-fix", ignore_None=True):
+if get_config("database.dns-fix", as_str=False, ignore_None=True):
 	import dns.resolver
 	dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 	dns.resolver.default_resolver.nameservers = ['8.8.8.8']

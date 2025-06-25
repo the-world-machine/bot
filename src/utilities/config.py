@@ -13,14 +13,29 @@ except FileNotFoundError as e:
 	exit(1)
 
 
-def get_config(path: str, raise_on_not_found: bool | None = True, return_None: bool | None = False, ignore_None: bool = False):
-	if ignore_None:
+def get_config(
+    path: str,
+    raise_on_not_found: bool = True,
+    return_None: bool = False,
+    ignore_None: bool = False,
+    as_str: bool = True
+):
+	if ignore_None or return_None:
 		raise_on_not_found = False
 		return_None = True
-	return rabbit(config, path, raise_on_not_found=raise_on_not_found, return_None_on_not_found=return_None, _error_message="Configuration does not have [path]")
+	res = rabbit(
+	    config,
+	    path,
+	    raise_on_not_found=raise_on_not_found,
+	    return_None_on_not_found=return_None,
+	    _error_message="Configuration does not have [path]"
+	)
+	if res is None:
+		return None
+	return str(res) if as_str else res
 
 
-cl = get_config("config-check-level", ignore_None=True)
+cl = int(get_config("config-check-level", ignore_None=True))
 if cl is not None:
 	to_check: list[tuple[str, bool]] = [
 	    #   (key,                       required)
@@ -49,12 +64,12 @@ if cl is not None:
 			if cl <= 2:
 				exit(1)
 on_prod = get_current_branch() == get_config("bot.prod.branch", ignore_None=True)
-if get_config("bot.prod.override", ignore_None=True):
+if get_config("bot.prod.override", as_str=False, ignore_None=True):
 	on_prod = True
 if get_config("bot.prod.token", ignore_None=True) is None:
 	on_prod = False
-debug = not on_prod                   # 🔥✍️
-debug_override = get_config("bot.debug", ignore_None=True)
+debug = not on_prod  # 🔥✍️
+debug_override = get_config("bot.debug", as_str=False, ignore_None=True)
 
 
 def debugging():
@@ -67,4 +82,9 @@ def setd(value: bool):
 
 
 def get_token():
-	return get_config("bot.prod.token") if on_prod else get_config("bot.token")
+	if not on_prod:
+		return get_config("bot.token")
+	out = get_config("bot.prod.token", ignore_None=True)
+	if out is None:
+		out = get_config("bot.token")
+	return out

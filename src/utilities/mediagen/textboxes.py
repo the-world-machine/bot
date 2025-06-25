@@ -3,7 +3,7 @@ import io
 from pathlib import Path
 import textwrap
 from enum import Enum
-from typing import Literal
+from typing import Literal, Sequence
 from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
@@ -20,14 +20,14 @@ class BackgroundStyle():
 	def __init__(
 	    self,
 	    face_position: SupportedFacePositions = "right",
-	    color: str = None,
+	    color: str = "orange",
 	):
 		self.face_position = face_position
 		self.color = color
 
 
 class FrameOptions:
-	background: BackgroundStyle = None
+	background: BackgroundStyle | None = None
 	animated: bool = True
 	static_delay_override: int | None  # override for the amount of time you show the frame in the gif
 	end_delay: int  # time before the arrow shows up
@@ -36,14 +36,14 @@ class FrameOptions:
 
 	def __init__(
 	    self,
-	    background: BackgroundStyle = None,
+	    background: BackgroundStyle | None = None,
 	    animated: bool = True,
 	    end_delay: int = 150,
 	    end_arrow_bounces: int = 4,
 	    end_arrow_delay: int = 150,
 	    static_delay_override: int | None = None
 	):
-		self.background = background if background is not None else BackgroundStyle()
+		self.background = background or BackgroundStyle()
 		self.static_delay_override = static_delay_override
 		self.animated = animated
 
@@ -57,8 +57,8 @@ class FrameOptions:
 
 class Frame:
 	text: str | None
-	starting_character_id: Character | None
-	starting_face_name: Face | None
+	starting_character_id: str | None
+	starting_face_name: str | None
 	options: FrameOptions
 
 	def __init__(
@@ -66,7 +66,7 @@ class Frame:
 	    text: str | None = None,
 	    starting_character_id: str | None = None,
 	    starting_face_name: str | None = None,
-	    options: FrameOptions = None,
+	    options: FrameOptions | None = None,
 	):
 		self.text = text
 		self.starting_character_id = starting_character_id
@@ -80,7 +80,7 @@ class Frame:
 
 async def render_textbox(text: str | None,
                          starting_face: Face | None,
-                         animated: bool = True) -> tuple[list[Image.Image], list[float]] | Image.Image:
+                         animated: bool = True) -> tuple[list[Image.Image], list[int]]:
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
 	if text:
 		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
@@ -90,7 +90,7 @@ async def render_textbox(text: str | None,
 
 	text_x, text_y = 20, 17
 
-	def draw_frame(img: Image.Image = None, text: str = None) -> Image.Image:
+	def draw_frame(img: Image.Image, text: str | None = None) -> Image.Image:
 		if text:
 			d = ImageDraw.Draw(img)
 			y_offset = text_y
@@ -107,7 +107,7 @@ async def render_textbox(text: str | None,
 		return ([draw_frame(background.copy())], [100])
 
 	images: list[Image.Image] = []
-	durations: list[int] = []
+	durations: Sequence[int] = []
 
 	if animated and text:
 		cumulative_text = ""
@@ -121,14 +121,14 @@ async def render_textbox(text: str | None,
 				case ',' | '，':
 					duration = 40
 
-			cumulative_text += cluster
+			cumulative_text += cluster or ""
 			images.append(draw_frame(background.copy(), cumulative_text))
 			durations.append(duration)
 	else:
 		images.append(draw_frame(background.copy(), text))
 		durations.append(1000)
 
-	return images, durations
+	return (images, durations)
 
 
 # >>> bounce(2, 3)
@@ -164,7 +164,7 @@ async def render_textbox_frames(
 		if not frame_index:
 			print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 			frame_index = 0
-		frame = frames[frame_index]
+		frame = frames[str(frame_index)]
 		char = None
 		face = None
 		if frame.starting_character_id:

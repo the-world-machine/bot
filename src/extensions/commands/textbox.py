@@ -35,7 +35,7 @@ class State:
 	frames: dict[int, Frame]
 	options: StateOptions
 
-	def __init__(self, owner: int, frames: dict[int, Frame] | list[Frame] | Frame | None = None, options: StateOptions = None):
+	def __init__(self, owner: int, frames: dict[int, Frame] | list[Frame] | Frame = None, options: StateOptions = None):
 		self.options = options if options else StateOptions()
 		self.owner = owner
 		self.frames = {}
@@ -124,7 +124,7 @@ class TextboxCommands(Extension):
 			description='What you want the character to say?',
 			opt_type=OptionType.STRING,
 			required=False,
-			max_length=get_config("textbox.max-text-length-per-frame")
+			max_length=get_config("textbox.max-text-length-per-frame", as_str=False)
 	)
 	@slash_option(
 	    name='character',
@@ -388,7 +388,7 @@ class TextboxCommands(Extension):
 		        label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
 		        placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
 						min_length=0,
-		        max_length=get_config("textbox.max-text-length-per-frame")
+		        max_length=get_config("textbox.max-text-length-per-frame", as_str=False)
 		    ),
 		    custom_id=f'textbox update_text_finish {state_id} {frame_index}',
 		    title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
@@ -414,7 +414,7 @@ class TextboxCommands(Extension):
 			)
 		await self.respond(ctx, state_id, frame_index)
 
-	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list | None = None):
+	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list  = []):
 		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
 		if not loc:
 			return

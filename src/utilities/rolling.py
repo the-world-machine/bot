@@ -49,7 +49,7 @@ async def roll_avatar(client: Client, log=True, print=print) -> None:
 				print(f"...failure")
 
 
-statuses = get_config("bot.rolling.statuses", ignore_None=True)
+statuses = get_config("bot.rolling.statuses", as_str=False, ignore_None=True)
 
 
 async def roll_status(client: Client, log=True, print=print) -> None:

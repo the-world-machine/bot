@@ -3,7 +3,7 @@ from lavalink import DeferredAudioTrack, LoadResult, LoadType, PlaylistInfo, Sou
 from utilities.music.spotify_api import Spotify
 from utilities.config import get_config
 
-spotify_creds = get_config("music.spotify")
+spotify_creds = get_config("music.spotify", as_str=False)
 spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
 
@@ -29,7 +29,7 @@ class CustomAudioTrack(DeferredAudioTrack):
 		first_track = result.tracks[0] # Grab the first track from the results.
 		base64 = first_track.track     # Extract the base64 string from the track.
 		self.track = base64            # We'll store this for later, as it allows us to save making network requests
-		                                 # if this track is re-used (e.g. repeat).
+		# if this track is re-used (e.g. repeat).
 
 		return base64
 
