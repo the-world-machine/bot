@@ -12,15 +12,15 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 
 	type_descrim = {
 	    'times_shattered':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by shattering a lightbulb **{badge_data["requirement"]}** times!',
+            f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by shattering a lightbulb **{badge_data["requirement"]}** times!',
 	    'times_asked':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by bothering The World Machine **{badge_data["requirement"]}** times!',
+            f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by bothering The World Machine **{badge_data["requirement"]}** times!',
 	    'wool':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by earning over **{badge_data["requirement"]}** wool!',
+            f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by earning over **{badge_data["requirement"]}** wool!',
 	    'times_transmitted':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by transmitting **{badge_data["requirement"]}** times!',
+            f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by transmitting **{badge_data["requirement"]}** times!',
 	    'suns':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by giving/earning **{badge_data["requirement"]}** suns!'
+            f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by giving/earning **{badge_data["requirement"]}** suns!'
 	}
 
 	embed = Embed(
@@ -32,7 +32,7 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 	embed.set_footer('You can change this notification using "/settings badge_notifications"')
 
 	owned_badges = user_data.owned_badges
-	owned_badges.append(badge_name)
+	await owned_badges.append(badge_name)
 
 	await user_data.update(owned_badges=owned_badges)
 
