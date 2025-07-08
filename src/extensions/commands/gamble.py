@@ -166,7 +166,9 @@ class GambleCommands(Extension):
 		result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
 
 		additional_scoring = 1
+		jackpot = False
 		if all(x == slot_values[0] for x in slot_values):
+			jackpot = True
 			additional_scoring = 100
 
 		win_amount = int(sum(slot_values) * additional_scoring * (bet / 2))
@@ -189,7 +191,10 @@ class GambleCommands(Extension):
 					result_embed.set_footer(text=f"{ctx.author.username} won back {fnum(abs(win_amount))} wool!")
 		else:
 			result_embed.color = Colors.PURE_RED
-			result_embed.set_footer(text=f'{ctx.author.username} lost it all... better luck next time!')
+			result_embed.set_footer(
+			    text=f'{ctx.author.username} lost it all... better luck next time!'
+			    if not jackpot else f'JACKPOT! 🎉 {ctx.author.username} lost it all! Better luck next time!'
+			)
 
 		await ctx.edit(embed=result_embed)
 
