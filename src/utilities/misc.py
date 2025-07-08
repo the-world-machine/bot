@@ -73,7 +73,7 @@ async def fetch(url: str):
 				raise InvalidResponseError(f"{resp.status} website shittig!!")
 
 
-async def read_file(path: Path):
+async def read_file(path: Path | str):
 	async with aiofiles.open(path, "rb") as f:
 		return await f.read()
 
@@ -91,7 +91,7 @@ async def cached_get(location: str | Path, force: bool = False, raw: bool = Fals
 		raise ValueError("invalid url")
 
 	if force or loki not in cache:
-		cache[loki] = await read_file(location) if is_file else await fetch(loki)
+		cache[loki] = await read_file(Path(location)) if is_file else await fetch(loki)
 
 	return cache[loki] if raw else io.BytesIO(cache[loki])
 
@@ -112,7 +112,7 @@ def parse_path(raw_path: str):
 def rabbit(
     value: dict,
     path: str,
-    fallback_value: dict = None,
+    fallback_value: dict | None = None,
     _full_path: Optional[str] = None,
     return_None_on_not_found: bool = False,
     raise_on_not_found: bool = True,
@@ -141,7 +141,6 @@ def rabbit(
     - List elements are accessed using square brackets, e.g. "somearray[0]"
   """
 	raw_path = path
-	path = None
 	if return_None_on_not_found and raise_on_not_found:
 		raise StupidError("the passed arguments make total sense")
 	if not _error_message:
@@ -150,11 +149,11 @@ def rabbit(
 		_full_path = raw_path
 	if not raw_path:
 		return value
-	parsed_path = parse_path(raw_path)
 	went_through = []
 	key = None
 	index = None
 
+	parsed_path = parse_path(raw_path)
 	for path in parsed_path:
 		if '[' in path and ']' in path:
 			key, index = path.split('[')
@@ -259,7 +258,7 @@ async def set_avatar(client: Client, avatar: File | Path | str):
 	return await client.user.edit(avatar=avatar)
 
 
-def make_empty_select(loc, placeholder: str = None):
+def make_empty_select(loc, placeholder: str | None = None):
 	return StringSelectMenu(
 	    *[StringSelectOption(label=loc.l("general.select.empty"), value="423")], placeholder=placeholder, disabled=True
 	)

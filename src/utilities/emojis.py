@@ -5,7 +5,20 @@ from termcolor import colored
 from utilities.data_watcher import subscribe
 
 
-def flatten_emojis(data: dict, parent_key: str = ''):
+class ProgressBar(TypedDict):
+	empty: dict[Literal["start", "middle", "end"], str]
+	filled: dict[Literal["start", "middle", "end"], str]
+
+
+class Emojis(TypedDict):
+	icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"],
+	            str]
+	pancakes: dict[Literal["normal", "golden", "glitched"], str]
+	treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
+	progress_bars: dict[Literal["square", "round"], ProgressBar]
+
+
+def flatten_emojis(data: Emojis, parent_key: str = '') -> Emojis:
 	items = []
 	for k, v in data.items():
 		key = f"{parent_key}.{k}" if parent_key else k
@@ -27,25 +40,13 @@ def unflatten_emojis(flat_data: dict) -> dict:
 	return unflattened
 
 
-def minify_emoji_names(data):
+def minify_emoji_names(data) -> Emojis:
 	if isinstance(data, dict):
 		return { key: minify_emoji_names(value) for key, value in data.items() }
 	elif isinstance(data, str):
 		# replaces all names with "i" for more embed space
 		return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
 	return data
-
-
-class ProgressBar(TypedDict):
-	empty: dict[Literal["start", "middle", "end"], str]
-	filled: dict[Literal["start", "middle", "end"], str]
-
-
-class Emojis(TypedDict):
-	icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"], str]
-	pancakes: dict[Literal["normal", "golden", "glitched"], str]
-	treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
-	progress_bars: dict[Literal["square", "round"], ProgressBar]
 
 
 def make_url(emoji: str, size: int = 4096, quality: str = "lossless") -> str:
@@ -56,6 +57,7 @@ def make_url(emoji: str, size: int = 4096, quality: str = "lossless") -> str:
 	animated, emoji_id = match.groups()
 	base_url = "https://cdn.discordapp.com/emojis/"
 	return f"{base_url}{emoji_id}.{'gif' if animated else 'png'}?size={size}&quality={quality}"
+
 
 def load_emojis() -> Emojis:
 	with open("src/data/emojis.yml", "r") as f:
@@ -79,14 +81,14 @@ def on_emojis_update(callback):
 	return unsubscribe
 
 
-def update_emojis(flat_key, emoji_value=None, remove=False):
+def update_emojis(flat_key, emoji_value: str | None = None):
 	global emojis
 	keys = flat_key.split('.')
 	current_dict = emojis
 	for part in keys[:-1]:
 		current_dict = current_dict.setdefault(part, {})
 
-	if remove:
+	if emoji_value is None:
 		if keys[-1] in current_dict:
 			del current_dict[keys[-1]]
 	else:
@@ -105,7 +107,7 @@ def on_file_update(path):
 	for key in [ key for key in old_flat if key not in new_flat ]:
 		# removed
 		changes.append(f"-{key}")
-		update_emojis(key, remove=True)
+		update_emojis(key)
 	for key in [ key for key in new_flat if key not in old_flat ]:
 		# added
 		changes.append(f"+{key}")

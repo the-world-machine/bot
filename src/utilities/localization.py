@@ -5,7 +5,6 @@ import yaml as yaml
 from babel import Locale
 from pathlib import Path
 from termcolor import colored
-from typing import Literal, Union
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from babel.dates import format_timedelta
@@ -16,6 +15,8 @@ from utilities.database.schemas import UserData
 from utilities.misc import FrozenDict, decode_base64_padded, rabbit
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
+from typing import overload, Union, TypeVar, Any, Literal, Generic, Optional, Type
+from functools import wraps
 
 emoji_dict = {}
 
@@ -29,13 +30,13 @@ def edicted(emojis):
 edicted(emojis)
 on_emojis_update(edicted)
 
-_locales = {}
-debug: bool = get_config("localization.debug", ignore_None=True)
+_locales: dict[str, dict] = {}
+debug: bool = bool(get_config("localization.debug", ignore_None=True))
 if on_prod:
 	debug = False if debug is not True else True
 debug = debug if debug is not None else False
 
-fallback_locale: str = None
+fallback_locale: dict[str, dict]
 
 
 def local_override(locale: str, data: dict):
@@ -67,7 +68,7 @@ def on_file_update(filename):
 		print(ReadyEvent)
 		ReadyEvent.log(e)
 		return
-	_locales[name] = hello
+	_locales[locale] = hello
 	print(" ─ ─ ─ ")
 
 	if locale == get_config("localization.main-locale"):
@@ -76,6 +77,7 @@ def on_file_update(filename):
 
 class UnknownLanguageError(Exception):
 	...
+
 
 def parse_locale(locale):
 	if locale in _locales.keys():
@@ -94,6 +96,8 @@ def parse_locale(locale):
 	elif locale not in _locales.keys():
 		raise UnknownLanguageError(f"Language {locale} not found in {_locales.keys()}")
 	return locale
+
+
 def get_locale(locale):
 	return _locales[parse_locale(locale)]
 
@@ -125,11 +129,14 @@ if not debugging():
 else:
 	print(f"Done ({loaded})")
 
-if debug:
+if get_config("localization.main-locale") in _locales:
 	fallback_locale = get_locale(get_config("localization.main-locale"))
 
-
 trailing_dots_regex = re.compile(r"\.*$")
+
+T = TypeVar('T')
+
+
 @dataclass
 class Localization:
 	global debug
@@ -138,43 +145,54 @@ class Localization:
 	locale: str
 	prefix: str
 
-	def __init__(self, locale: str = None, prefix: str = ""):
-		if locale is not None:
+	def __init__(self, locale: str | None = None, prefix: str = ""):
+		final_locale: str
+		if locale is None:
+			final_locale = get_config("localization.main-locale")
+		else:
 			try:
-				locale = parse_locale(locale)
-			except:
-				locale = get_config("localization.main-locale")
-		self.locale = locale
+				final_locale = parse_locale(locale)
+			except UnknownLanguageError:
+				final_locale = get_config("localization.main-locale")
+		self.locale = final_locale
 		self.prefix = prefix
 
-	def l(self, path: str, **variables: dict[str, any]) -> Union[str, list[str], dict]:
-		path = f"{trailing_dots_regex.sub("", self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		return self.sl(path=path, locale=self.locale, **variables)
+	def l(self, path: str, typecheck: Optional[Type[T]] = None, **variables: Any) -> Union[str, list[str], dict, T]:
+		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
+		result = self.sl(path=path, locale=self.locale, **variables)
+
+		if typecheck is not None and not isinstance(result, typecheck):
+			raise TypeError(f"Expected {typecheck.__name__}, got {type(result).__name__} for path '{path}'")
+		return result
 
 	@staticmethod
-	def sl(path: str,
-	       locale: str,
-	       raise_on_not_found: bool = False,
-	       self=None,
-	       **variables: dict[str, any]) -> Union[str, list[str], dict]:
-		""" Static version of .l for single use (where making another Localization() makes it cluttery)"""
-		if locale == None:
+	def sl(
+	    path: str,
+	    locale: str | None = None,
+	    typecheck: Optional[Type[T]] = None,
+	    raise_on_not_found: bool = False,
+	    **variables: Any
+	) -> Union[str, list[str], dict, T]:
+		if locale is None:
 			raise ValueError("No locale provided")
+
 		value = get_locale(locale)
-		value = rabbit(
+		raw_result = rabbit(
 		    value,
 		    path,
-		    fallback_value=fallback_locale if fallback_locale else None,
+		    fallback_value=fallback_locale if 'fallback_locale' in globals() and fallback_locale else None,
 		    raise_on_not_found=raise_on_not_found,
 		    _error_message="[path] ([error])" if debug else "[path]"
 		)
 
-		return assign_variables(value, locale, **variables)
+		result = assign_variables(raw_result, locale, **variables)
+
+		if typecheck is not None and not isinstance(result, typecheck):
+			raise TypeError(f"Expected {typecheck.__name__}, got {type(result).__name__} for path '{path}'")
+		return result
 
 	@staticmethod
-	def sl_all(localization_path: str,
-	           raise_on_not_found: bool = False,
-	           **variables: str) -> dict[str, Union[str, list[str], dict]]:
+	def sl_all(localization_path: str, raise_on_not_found: bool = False, **variables: Any) -> dict[str, Any]:
 		results = {}
 
 		for locale in _locales.keys():
@@ -214,7 +232,7 @@ def ftime(
     minimum_unit: Literal["year", "month", "week", "day", "hour", "minute", "second"] = "second",
     **kwargs
 ) -> str:
-	locale = Locale.parse(locale, sep="-")
+	locale = Locale.parse(locale, sep="-").language
 
 	if isinstance(duration, (int, float)):
 		duration = timedelta(seconds=duration)
@@ -252,7 +270,7 @@ def ftime(
 
 def english_ordinal_for(n: int | float):
 	if isinstance(n, float):
-		n = str(n).split('.')[1][0]
+		n = int(str(n).split('.')[1][0])
 
 	if 10 <= int(n) % 100 <= 20:
 		suffix = 'th'
@@ -261,14 +279,12 @@ def english_ordinal_for(n: int | float):
 
 	return suffix
 
+
 token = get_token()
-print(token)
 bot_id = decode_base64_padded(token.split('.')[0])
 
 
-def assign_variables(
-    input: Union[str, list, dict], locale: str = get_config("localization.main-locale"), **variables: dict[str, any]
-):
+def assign_variables(input: Any, locale: str = get_config("localization.main-locale"), **variables: Any):
 	if isinstance(input, str):
 		result = input
 		for name, data in {
@@ -299,30 +315,41 @@ def assign_variables(
 	else:
 		return input
 
+
 limits = {
-	"treasure.tip": 5,
-	"nikogotchi.tipnvalid": 5,
-	"nikogotchi.found.renamenote": 5,
-	"wool.transfer.errors.note_nuf": -1,
-	"settings.errors.channel_lost_warn": -1,
-	"wool.transfer.to.bot.notefirmation": 10,
-	"settings.welcome.enabled.default_tip": 15,
-	"settings.welcome.editor.disabled_note": 15,
-	"nikogotchi.treasured.dialogues.senote": 25,
+    "treasure.tip": 5,
+    "nikogotchi.tipnvalid": 5,
+    "nikogotchi.found.renamenote": 5,
+    "wool.transfer.errors.note_nuf": -1,
+    "settings.errors.channel_lost_warn": -1,
+    "wool.transfer.to.bot.notefirmation": 10,
+    "settings.welcome.enabled.default_tip": 15,
+    "settings.welcome.editor.disabled_note": 15,
+    "nikogotchi.treasured.dialogues.senote": 25,
 }
-async def put_mini(loc: Localization, message: str, user_id: str | int = None, type: Literal["note", "tip", "warn", "err"] = "note", pre: str = "", markdown: bool = True) -> str:
+
+
+async def put_mini(
+    loc: Localization,
+    message: str,
+    user_id: str | int | None = None,
+    type: Literal["note", "tip", "warn", "err"] = "note",
+    pre: str = "",
+    markdown: bool = True
+) -> str:
 	if user_id:
 		user_data = await UserData(str(user_id)).fetch()
-		reacher = user_data.minis_shown[message] if hasattr(user_data.minis_shown, message) else 0
-		if limits[message] != -1 and limits[message] <= reacher:
+		reacher = user_data.minis_shown.get(message, 0)
+		if limits.get(message) != -1 and limits.get(message, 0) <= reacher:
 			return ""
 		asyncio.create_task(user_data.minis_shown.increment_key(message))
 	name = loc.l(f"general.minis.{type}")
 	msg = loc.l(message)
-	return f"{pre}{"-# " if markdown else ""}{name} {msg}"
+	return f"{pre}{'-# ' if markdown else ''}{name} {msg}"
+
 
 def amperjoin(items: list):
-	items = map(str, items)
+	items = list(map(str, items))
 	if len(items) == 0:
 		return ""
 	if len(items) == 1:

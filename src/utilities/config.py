@@ -1,4 +1,6 @@
-import yaml
+from datetime import date, datetime
+from typing import Any, Literal, TypeVar, Union, overload
+from yaml import safe_load as load_yml_file
 from pathlib import Path
 from termcolor import colored
 from utilities.misc import get_current_branch, rabbit
@@ -6,11 +8,46 @@ from utilities.misc import get_current_branch, rabbit
 bcpath = Path("bot-config.yml")
 try:
 	with open(bcpath, 'r') as f:
-		config = yaml.safe_load(f)
+		config = load_yml_file(f)
 		print("Loaded configuration")
 except FileNotFoundError as e:
-	print(colored(f"─ config file at '{bcpath.resolve()}' is missing.\nAre you sure you set it up correctly?", 'yellow'))
+	print(
+	    colored(f"─ config file at '{bcpath.resolve()}' is missing.\nAre you sure you set it up correctly?", 'yellow')
+	)
 	exit(1)
+
+
+@overload
+def get_config(
+    path: str,
+    raise_on_not_found: bool = True,
+    return_None: bool = False,
+    ignore_None: bool = False,
+    as_str: Literal[True] = True
+) -> str:
+	...
+
+
+@overload
+def get_config(
+    path: str,
+    raise_on_not_found: bool = True,
+    return_None: bool = False,
+    ignore_None: bool = False,
+    as_str: Literal[False] = False
+) -> Union[list[Any], dict[str, Any], int, bool, float, date, datetime, None]:
+	...
+
+
+@overload
+def get_config(
+    path: str,
+    raise_on_not_found: bool = True,
+    return_None: bool = False,
+    ignore_None: bool = False,
+    as_str: bool = True
+) -> Union[str, list[Any], dict[str, Any], int, bool, float, date, datetime, None]:
+	...
 
 
 def get_config(
@@ -19,7 +56,7 @@ def get_config(
     return_None: bool = False,
     ignore_None: bool = False,
     as_str: bool = True
-):
+) -> Union[str, list[Any], dict[str, Any], int, bool, float, date, datetime, None]:
 	if ignore_None or return_None:
 		raise_on_not_found = False
 		return_None = True
@@ -32,7 +69,9 @@ def get_config(
 	)
 	if res is None:
 		return None
-	return str(res) if as_str else res
+	if not as_str:
+		return res
+	return str(res)
 
 
 cl = int(get_config("config-check-level", ignore_None=True))
@@ -81,7 +120,8 @@ def setd(value: bool):
 	debug_override = value
 
 
-def get_token():
+def get_token() -> str:
+	out: str
 	if not on_prod:
 		return get_config("bot.token")
 	out = get_config("bot.prod.token", ignore_None=True)

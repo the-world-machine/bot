@@ -1,7 +1,8 @@
 import asyncio
 import random
-from interactions import *
 from dataclasses import dataclass
+
+from interactions import Embed, Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 from utilities.emojis import emojis
 from utilities.localization import Localization, fnum
 from utilities.database.schemas import UserData
@@ -17,6 +18,7 @@ class Slot:
 		rounded = round(value * 100)
 		self.emoji = emoji.replace(":i:", f":{rounded if rounded > 0 else 'minus_'+str(0-rounded)}pts:")
 		self.value = value
+
 	def __eq__(self, other):
 		if isinstance(other, Slot):
 			return self.emoji == other.emoji and self.value == other.value
@@ -83,7 +85,7 @@ class GambleCommands(Extension):
 		def img_all(*args):
 			return [slot.emoji for slot in args]
 
-		def generate_column(rows: list[list[Slot]], i: int):
+		def generate_column(rows: list[Slot], i: int):
 			slot_a = 0
 			slot_b = 0
 			slot_c = 0
@@ -151,7 +153,7 @@ class GambleCommands(Extension):
 
 		await ctx.edit(embed=generate_embed(0, -1, slot_images))
 
-		slot_values = [ 0, 0, 0 ]
+		slot_values = [ 0.0, 0.0, 0.0 ]
 
 		sleep_first_rotata_s = 3
 		for column in range(0, 3):
@@ -163,7 +165,8 @@ class GambleCommands(Extension):
 				await ctx.edit(embed=result_embed)
 				slot_values[column] = rows[column][i].value
 
-		result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
+		if result_embed.description is not None:
+			result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
 
 		additional_scoring = 1
 		jackpot = False
@@ -178,6 +181,7 @@ class GambleCommands(Extension):
 
 		# EVIL line of code that either takes or gives the wool
 		await user_data.manage_wool(win_amount)
+
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_embed.color = Colors.PURE_YELLOW

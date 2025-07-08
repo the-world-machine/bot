@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Literal
+from typing import Dict, List, Literal
 from utilities.emojis import emojis
-from interactions import Color, Message, BaseComponent, Modal, Embed
+from interactions import Color, Message, BaseComponent, Embed, ModalContext
 
 
 class Colors:
@@ -30,15 +30,15 @@ def timestamp_relative(datetime: datetime):
 
 async def fancy_message(
     ctx,
-    message: str = None,
+    message: str | None = None,
     edit: bool = False,
     edit_origin: bool = False,
-    content: str = None,
+    content: str | None = None,
     ephemeral=False,
-    components: list[BaseComponent] = None,
+    components: List[BaseComponent] | None = None,
     color: Color = Colors.DEFAULT,
-    embed: Embed = None,
-    embeds: list[Embed] = None
+    embed: Embed | Dict | None = None,
+    embeds: List[Embed | Dict] | None = None
 ):
 	if embeds is None:
 		embeds = []
@@ -53,8 +53,9 @@ async def fancy_message(
 	if edit and ctx:
 		return await ctx.edit(content=content, embeds=embeds, components=components)
 	if type(ctx) == Message:
-		return await ctx.reply(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
-	elif type(ctx) == Modal:
+		kwargs = { 'content': content, 'embeds': embeds, 'components': components, 'ephemeral': ephemeral}
+		return await ctx.reply(**kwargs)
+	elif type(ctx) == ModalContext:
 		return await ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 
 	return await ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)

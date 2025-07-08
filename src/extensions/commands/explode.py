@@ -1,5 +1,6 @@
-from interactions import *
+from interactions import Extension, slash_command
 from utilities.message_decorations import *
+from interactions import *
 import random
 import datetime
 import utilities.profile.badge_manager as bm
@@ -53,7 +54,7 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues = loc.l("explode.dialogue.why")
+			dialogues: list[str] = list(loc.l("explode.dialogue.why", typecheck=list[str]))
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
@@ -73,6 +74,6 @@ class ExplodeCommands(Extension):
 			embed.set_footer(loc.l("explode.YouKilledNiko"))
 
 		if not sad:
-			await bm.increment_value(ctx, 'times_shattered', 1, ctx.author)
+			await bm.increment_value(ctx, 'times_shattered', 1, ctx.user)
 
 		await ctx.send(embed=embed)
