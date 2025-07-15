@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Literal
+from typing import Any, Coroutine, Dict, List, Literal
 from utilities.emojis import emojis
 from interactions import Color, Message, BaseComponent, Embed, ModalContext
 
@@ -28,7 +28,7 @@ def timestamp_relative(datetime: datetime):
 	return f'<t:{round(datetime.timestamp())}:R>'
 
 
-async def fancy_message(
+def fancy_message(
     ctx,
     message: str | None = None,
     edit: bool = False,
@@ -49,16 +49,16 @@ async def fancy_message(
 	if len(embeds) == 0:
 		embeds = None
 	if edit_origin:
-		return await ctx.edit_origin(content=content, embeds=embeds, components=components)
+		return ctx.edit_origin(content=content, embeds=embeds, components=components)
 	if edit and ctx:
-		return await ctx.edit(content=content, embeds=embeds, components=components)
+		return ctx.edit(content=content, embeds=embeds, components=components)
 	if type(ctx) == Message:
 		kwargs = { 'content': content, 'embeds': embeds, 'components': components, 'ephemeral': ephemeral}
-		return await ctx.reply(**kwargs)
+		return ctx.reply(**kwargs)
 	elif type(ctx) == ModalContext:
-		return await ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
+		return ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 
-	return await ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)
+	return ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)
 
 
 def make_progress_bar(position: int, total: int, length: int, shape: Literal["square", "round"] = "square"):
