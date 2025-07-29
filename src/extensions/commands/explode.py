@@ -1,11 +1,10 @@
-from interactions import Extension, slash_command
-from utilities.message_decorations import *
-from interactions import *
 import random
-import datetime
+from datetime import datetime, timedelta
+from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
-from utilities.localization import Localization, fnum
 from utilities.database.schemas import UserData
+from utilities.localization import Localization, fnum
+from interactions import Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 
 
 class ExplodeCommands(Extension):
@@ -34,7 +33,7 @@ class ExplodeCommands(Extension):
 		uid = ctx.user.id
 		explosion_amount = (await UserData(_id=uid).fetch()).times_shattered
 		if uid in self.last_called:
-			if datetime.datetime.now() < self.last_called[uid]:
+			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 				    ctx,
 				    loc.l("general.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
@@ -42,7 +41,7 @@ class ExplodeCommands(Extension):
 				    color=Colors.RED
 				)
 		await ctx.defer(ephemeral=not public)
-		self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(seconds=20)
+		self.last_called[uid] = datetime.now() + timedelta(seconds=20)
 
 		random_number = random.randint(1, len(self.explosion_image)) - 1
 		random_sadness = random.randint(1, 100)

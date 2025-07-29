@@ -14,9 +14,9 @@ from utilities.localization import fnum
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 import utilities.database.schemas as schemas
+from utilities.extensions import load_commands  # used, actually
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.extensions import load_commands  # used, actually
 from utilities.shop.fetch_shop_data import reset_shop_data
 
 ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')

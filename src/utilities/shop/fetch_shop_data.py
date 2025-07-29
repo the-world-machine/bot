@@ -1,10 +1,10 @@
-from datetime import datetime
 import random
-
-from utilities.database.main import fetch_items, update_shop
-from utilities.config import get_config
-from utilities.localization import Localization
+from typing import Literal
+from datetime import datetime
 from dataclasses import dataclass
+from utilities.emojis import TreasureTypes
+from utilities.localization import Localization
+from utilities.database.main import fetch_items, update_shop
 
 
 @dataclass
@@ -19,17 +19,21 @@ class DictItem:
 class Item:
 	cost: int
 	image: int
-	id: str
+	id: Literal['pancakes', 'golden_pancakes', 'glitched_pancakes']
+
+
+@dataclass
+class StockData:
+	price: float
+	value: float
 
 
 @dataclass
 class ShopData:
-
 	last_updated: datetime
-	background_stock: list[DictItem]
-	treasure_stock: list[DictItem]
-	stock_price: float
-	stock_value: float
+	background_stock: list[str]
+	treasure_stock: list[TreasureTypes]
+	stock: StockData
 	motd: int
 
 
@@ -38,8 +42,8 @@ async def fetch_shop_data():
 	items = await fetch_items()
 
 	shop_data = ShopData(
-	    items['shop']['last_updated'], items['shop']['backgrounds'], items['shop']['treasures'], items['shop']['stock']['price'], items['shop']['stock']['value'],
-	    items['shop']['motd']
+	    items['shop']['last_updated'], items['shop']['backgrounds'], items['shop']['treasures'],
+	    StockData(items['shop']['stock']['price'], items['shop']['stock']['value']), items['shop']['motd']
 	)
 
 	return shop_data

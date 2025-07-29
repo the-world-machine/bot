@@ -1,5 +1,4 @@
 import time
-from pathlib import Path
 from typing import Callable
 from threading import Thread
 from watchdog.observers import Observer
@@ -8,7 +7,7 @@ from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
 Callback = Callable[[str], None]
 
-callbaques: list[tuple[Path, Callback]] = []
+callbaques: list[tuple[str, Callback]] = []
 
 
 class FileWatcher(FileSystemEventHandler):

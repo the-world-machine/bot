@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Any, Coroutine, Dict, List, Literal
 from utilities.emojis import emojis
+from typing import Any, Dict, Iterable, List, Literal
 from interactions import Color, Message, BaseComponent, Embed, ModalContext
 
 
@@ -11,7 +11,7 @@ class Colors:
 	ORANGE = WARN = WARNING = Color.from_hex("#D9732B")
 	YELLOW = Color.from_hex("#BFBF26")
 	GREEN = AWESOME = Color.from_hex("#26BF26")
-	TEAL = Color.from_hex("#008080")
+	SHOP = TEAL = Color.from_hex("#008080")
 
 	BLACK = Color.from_hex("#000000")
 	GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("#666666")
@@ -35,7 +35,8 @@ def fancy_message(
     edit_origin: bool = False,
     content: str | None = None,
     ephemeral=False,
-    components: List[BaseComponent] | None = None,
+    components: Iterable[Iterable[BaseComponent | dict[Any, Any]]] | Iterable[BaseComponent | dict[Any, Any]] |
+    BaseComponent | dict[Any, Any] | None = None,
     color: Color = Colors.DEFAULT,
     embed: Embed | Dict | None = None,
     embeds: List[Embed | Dict] | None = None

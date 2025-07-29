@@ -1,7 +1,7 @@
 import re
-from typing import Any, Literal, TypedDict
 from yaml import safe_load
 from termcolor import colored
+from typing import Any, Literal, TypedDict
 from utilities.data_watcher import subscribe
 
 
@@ -10,11 +10,15 @@ class ProgressBar(TypedDict):
 	filled: dict[Literal["start", "middle", "end"], str]
 
 
+Icons = Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"]
+PancakeTypes = Literal["normal", "golden", "glitched"]
+TreasureTypes = Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"]
+
+
 class Emojis(TypedDict):
-	icons: dict[Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"],
-	            str]
-	pancakes: dict[Literal["normal", "golden", "glitched"], str]
-	treasures: dict[Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"], str]
+	icons: dict[Icons, str]
+	pancakes: dict[PancakeTypes, str]
+	treasures: dict[TreasureTypes, str]
 	progress_bars: dict[Literal["square", "round"], ProgressBar]
 
 

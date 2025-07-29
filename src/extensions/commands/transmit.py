@@ -1,16 +1,14 @@
-from typing import Literal
 import uuid
 import asyncio
-
-from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle, ChannelType, Embed, Extension, Guild, Member, Message, SlashContext, Snowflake, User, contexts, integration_types, listen, slash_command, TYPE_MESSAGEABLE_CHANNEL
+from typing import Literal
 from utilities.emojis import emojis
 from utilities.database.schemas import ServerData
 from utilities.localization import Localization, ftime
-from utilities.message_decorations import Colors, fancy_message
 from utilities.profile.badge_manager import increment_value
 from interactions.api.events import MessageCreate, Component
-
+from utilities.message_decorations import Colors, fancy_message
 from utilities.transmission_connection_manager import Connection, Transmission, available_initial_connections, check_if_connected, connect_to_transmission, connection_alive, create_connection, get_transmission, remove_connection
+from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle, ChannelType, Embed, Extension, Guild, Member, Message, SlashContext, Snowflake, User, contexts, integration_types, listen, slash_command, TYPE_MESSAGEABLE_CHANNEL
 
 
 class TransmissionCommands(Extension):
@@ -250,7 +248,7 @@ class TransmissionCommands(Extension):
 		known_servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-                                                                                                                        guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+                                                                                                                              guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable

@@ -25,9 +25,14 @@ class InteractCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def interaction_context(self, ctx: ContextMenuContext):
-		await self.start_interaction(ctx, ctx.target)
+		target = ctx.target
+		if not isinstance(target, (Member, User)):
+			return
+		if isinstance(target, Member):
+			target = target.user
+		await self.start_interaction(ctx, target)
 
-	async def start_interaction(self, ctx: SlashContext, who: User):
+	async def start_interaction(self, ctx: ContextMenuContext | SlashContext, who: User):
 		loc = Localization(ctx.locale)
 		await fancy_message(ctx, loc.l('nikogotchi.loading'))
 

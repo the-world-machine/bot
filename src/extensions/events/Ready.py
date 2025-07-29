@@ -1,8 +1,8 @@
 from asyncio import sleep
 from datetime import datetime, timedelta
 from typing import Any, Callable
-from interactions import *
-from interactions.api.events import Ready, Startup
+from interactions import Embed, Extension, Message, TYPE_MESSAGEABLE_CHANNEL, listen
+from interactions.api.events import Ready
 from utilities.config import get_config
 from utilities.message_decorations import Colors
 from utilities.misc import get_git_hash
@@ -17,7 +17,6 @@ class ReadyEvent(Extension):
 	def log(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Any, error: bool = True):
 		print(thing, stuff['queue'])
 		stuff['queue'].append({ "thing": thing, "error": error})
-		pass
 
 	@staticmethod
 	async def followup(timestamp: datetime):
@@ -37,7 +36,7 @@ class ReadyEvent(Extension):
 			return
 		client = event.client
 		client.ready_at = datetime.now()  # type: ignore
-		self.ready_at = client.ready_at
+		self.ready_at = client.ready_at  # type: ignore
 		from utilities.localization import fnum
 
 		client = event.client
@@ -76,7 +75,7 @@ class ReadyEvent(Extension):
 			loadup_delta: timedelta = client.followup_at - client.started_at  # type: ignore
 			if get_config("dev.send-startup-message", typecheck=bool):
 				embed = message.embeds[0]
-
+				assert embed.description is not None
 				embed.description = embed.description.replace(
 				    " " + emojis['icons']['loading'], f", loading took **{fnum(loadup_delta.total_seconds())}**s."
 				).replace(" :i:", f", loading took **{fnum(loadup_delta.total_seconds())}**s.")

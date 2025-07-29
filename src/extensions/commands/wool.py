@@ -1,11 +1,12 @@
 import random
 import asyncio
-from interactions import *
-from utilities.emojis import emojis, make_url
 from datetime import datetime, timedelta
+from utilities.emojis import emojis, make_url
 from utilities.database.schemas import UserData
 from utilities.localization import Localization, fnum, put_mini
 from utilities.message_decorations import Colors, fancy_message
+from interactions import Button, ButtonStyle, Embed, EmbedAttachment, Extension, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
+
 # yapf: disable
 wool_finds = {
   10: [ "devoted", "positive_major"   ],
@@ -41,7 +42,7 @@ class WoolCommands(Extension):
 	    name="public",
 	    opt_type=OptionType.BOOLEAN
 	)
-	async def balance(self, ctx: SlashContext, of: User = None, public: bool = False):
+	async def balance(self, ctx: SlashContext, of: User | None = None, public: bool = False):
 		await ctx.defer(ephemeral=not public)
 		loc = Localization(ctx.locale)
 		if of is None:
@@ -172,9 +173,10 @@ class WoolCommands(Extension):
 
 		await ctx.send(
 		    embed=Embed(
-		        thumbnail=make_url(emojis["treasures"]["die"]),
+		        thumbnail=EmbedAttachment(make_url(emojis["treasures"]["die"])),
 		        title=loc.l("wool.pray.title"),
-		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " + loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
+		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " +
+		        loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
 		        color=Colors.GREEN if amount > 0 else Colors.BAD
 		    )
 		)

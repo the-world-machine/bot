@@ -15,7 +15,7 @@ from utilities.database.schemas import UserData
 from utilities.misc import FrozenDict, decode_base64_padded, rabbit
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
-from typing import overload, Union, TypeVar, Any, Literal, Generic, Optional, Type
+from typing import Dict, overload, Union, TypeVar, Any, Literal, Generic, Optional, Type
 from functools import wraps
 
 emoji_dict = {}
@@ -158,27 +158,21 @@ class Localization:
 		self.prefix = prefix
 
 	@overload
+	def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T:
+		...
+
+	@overload
 	def l(self, path: str, **variables: Any) -> str:
 		...
 
-	@overload
-	def l(self, path: str, typecheck: Type[T], **variables: Any) -> T:
-		...
-
-	def l(self, path: str, typecheck: Type = str, **variables: Any) -> Any:
+	def l(self, path: str, *, typecheck: Type = str, **variables: Any) -> Any:
 		"""
 		Retrieves a localized string or object.
-		By default (or with typecheck=str), it returns a string and errors if the value is not a string.
+		`typecheck` must be a keyword-only argument.
 		"""
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		result = self.sl(path=path, locale=self.locale, **variables, typecheck=typecheck)
+		result = self.sl(path=path, locale=self.locale, typecheck=typecheck, **variables)
 		return result
-
-	@staticmethod
-	@staticmethod
-	@overload
-	def sl(path: str, locale: str | None, *, raise_on_not_found: bool = False, **variables: Any) -> str:
-		...
 
 	@staticmethod
 	@overload
@@ -188,9 +182,15 @@ class Localization:
 		...
 
 	@staticmethod
+	@overload
+	def sl(path: str, locale: str | None, **variables: Any) -> str:
+		...
+
+	@staticmethod
 	def sl(
 	    path: str,
 	    locale: str | None = None,
+	    *,  # ← makes all next args only accepted as keyword arguments
 	    typecheck: Type = str,
 	    raise_on_not_found: bool = False,
 	    **variables: Any

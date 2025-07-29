@@ -1,8 +1,8 @@
-from interactions import *
-from utilities.config import debugging, get_config
 from utilities.database.schemas import ServerData
+from utilities.config import debugging, get_config
 from utilities.localization import Localization, put_mini
 from utilities.message_decorations import Colors, fancy_message
+from interactions import AutocompleteContext, Embed, Extension, Guild, GuildText, InputText, MessageableMixin, Modal, ModalContext, OptionType, Permissions, SlashContext, TextStyles, contexts, integration_types, modal_callback, slash_command, slash_option
 
 
 class SettingsCommands(Extension):
@@ -14,6 +14,7 @@ class SettingsCommands(Extension):
 		pass
 
 	async def channel_permission_check(self, loc, ctx: SlashContext, channel: GuildText) -> bool:
+		assert ctx.guild is not None
 		if not isinstance(channel, MessageableMixin):
 			await fancy_message(
 			    ctx,
@@ -32,7 +33,9 @@ class SettingsCommands(Extension):
 			)
 		return True
 
-	async def botmember_permission_check(self, loc, ctx: SlashContext):
+	async def botmember_permission_check(self, loc, ctx: ModalContext | SlashContext):
+		assert ctx.guild is not None
+		assert ctx.member is not None
 		member = ctx.guild.get_member(ctx.user.id)
 		if not member:
 			await fancy_message(ctx, loc.l("settings.errors.weird_edgecase_number_0"), color=Colors.BAD, ephemeral=True)
@@ -44,7 +47,10 @@ class SettingsCommands(Extension):
 
 		return True
 
-	async def basic(self, ctx: SlashContext, defer: bool = True) -> tuple[Localization, ServerData]:
+	async def basic(self,
+	                ctx: ModalContext | SlashContext,
+	                defer: bool = True) -> tuple[Localization | None, ServerData | None]:
+		assert ctx.guild is not None
 		loc = Localization(ctx.locale)
 		if not await self.botmember_permission_check(loc, ctx):
 			return (None, None)
@@ -64,7 +70,7 @@ class SettingsCommands(Extension):
 	)
 	async def enabled_(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 		await server_data.transmissions.update(disabled=not value)
 
@@ -78,9 +84,9 @@ class SettingsCommands(Extension):
 	    name="channel",
 	    opt_type=OptionType.CHANNEL,
 	)
-	async def channel(self, ctx: SlashContext, channel: GuildText = None):
+	async def channel(self, ctx: SlashContext, channel: GuildText | None = None):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		if channel is None:
@@ -104,7 +110,7 @@ class SettingsCommands(Extension):
 	)
 	async def images(self, ctx: SlashContext, value: bool):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		await server_data.transmissions.update(allow_images=value)
@@ -124,7 +130,7 @@ class SettingsCommands(Extension):
 	)
 	async def anonymous(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		await server_data.transmissions.update(anonymous=value)
@@ -141,21 +147,24 @@ class SettingsCommands(Extension):
 	    required=True,
 	    autocomplete=True,
 	)
-	async def block(self, ctx: SlashContext, server: str = None):
+	async def block(self, ctx: SlashContext, server: str):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		blocklist = server_data.transmissions.blocked_servers
 
 		try:
-			server_id = int(server)
+			server_id = int(
+			    server
+			)  # this int() checks whether the input was a proper integer (we could use the string in get_guild too)
 			guild = ctx.client.get_guild(server_id)
 		except ValueError:
-			return await ctx.reply(
+			return await fancy_message(
+			    ctx,
 			    embed=Embed(
-			        description=loc.l("settings.errors.invalid_server_id") + "\n-# " +
-			        loc.l("settings.errors.get_server_id"),
+			        description=
+			        f'{loc.l("settings.errors.invalid_server_id")}\n-# {loc.l("settings.errors.get_server_id")}',
 			        color=Colors.BAD,
 			    )
 			)
@@ -175,7 +184,7 @@ class SettingsCommands(Extension):
 
 	@block.autocomplete("server")
 	async def block_server_autocomplete(self, ctx: AutocompleteContext):
-		server_data: ServerData = await ServerData(_id=ctx.guild_id).fetch()
+		server_data: ServerData = await ServerData(_id=str(ctx.guild_id)).fetch()
 		loc = Localization(ctx.locale)
 		guilds = [
 		    await ctx.client.fetch_guild(id) or id
@@ -213,7 +222,7 @@ class SettingsCommands(Extension):
 	)
 	async def enabled(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		error = "" if not server_data.welcome.errored else await put_mini(
@@ -234,7 +243,7 @@ class SettingsCommands(Extension):
 	)
 	async def ping(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		error = "" if not server_data.welcome.errored else await put_mini(
@@ -249,7 +258,7 @@ class SettingsCommands(Extension):
 	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
 	async def edit(self, ctx: SlashContext):
 		loc, server_data = await self.basic(ctx, defer=False)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		return await ctx.send_modal(
@@ -271,7 +280,7 @@ class SettingsCommands(Extension):
 	@modal_callback("welcome_message_editor")
 	async def welcome_message_editor(self, ctx: ModalContext, text: str):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		if not loc or not server_data:
 			return
 
 		config = server_data.welcome
@@ -302,15 +311,17 @@ class SettingsCommands(Extension):
 	    name="channel",
 	    opt_type=OptionType.CHANNEL,
 	)
-	async def channel(self, ctx: SlashContext, channel: GuildText = None):
+	async def _channel(self, ctx: SlashContext, channel: GuildText | None = None):
 		loc, server_data = await self.basic(ctx)
-		if not loc:
+		assert ctx.guild is not None
+		if not loc or not server_data:
 			return
 		config = server_data.welcome
 
-		if not (
-		    await self.channel_permission_check(loc, ctx, channel)
-		    or await self.channel_permission_check(loc, ctx, ctx.guild.system_channel)
+		if channel and not await self.channel_permission_check(loc, ctx, channel):
+			return
+		if not channel and ctx.guild.system_channel and not await self.channel_permission_check(
+		    loc, ctx, ctx.guild.system_channel
 		):
 			return
 
