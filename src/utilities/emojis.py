@@ -49,7 +49,7 @@ def minify_emoji_names(data) -> Emojis:
 	return data
 
 
-def make_url(emoji: str, size: int = 4096, quality: str = "lossless") -> str:
+def make_url(emoji: str, size: int | None = 4096, quality: str = "lossless") -> str:
 	match = re.match(r'<(a?):[a-zA-Z0-9_]+:([0-9]+)>', emoji)
 	if not match:
 		raise ValueError("Invalid emoji")

@@ -58,11 +58,11 @@ class ReadyEvent(Extension):
 			return print("erorrrrrrr: extended logs channel id is not of messageable type")
 		ready_delta: timedelta = client.ready_at - client.started_at  # type: ignore
 		message: Message | None
-		if get_config("dev.send-startup-message", as_str=False):
+		if get_config("dev.send-startup-message", typecheck=bool):
 			message = await channel.send(
 			    embed=Embed(
 			        description=
-			        f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>"
+			        f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>"  # type: ignore
 			        +  # type: ignore
 			        f"(Ready: **{fnum(ready_delta.total_seconds())}**s {emojis['icons']['loading']})" + "\n" +
 			        f"Git hash: {get_git_hash()}"
@@ -74,7 +74,7 @@ class ReadyEvent(Extension):
 				return
 			client.followup_at = timestamp  # type: ignore
 			loadup_delta: timedelta = client.followup_at - client.started_at  # type: ignore
-			if get_config("dev.send-startup-message", as_str=False):
+			if get_config("dev.send-startup-message", typecheck=bool):
 				embed = message.embeds[0]
 
 				embed.description = embed.description.replace(

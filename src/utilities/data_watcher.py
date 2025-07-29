@@ -16,7 +16,7 @@ class FileWatcher(FileSystemEventHandler):
 	def on_modified(self, event: FileModifiedEvent):
 		if not isinstance(event, FileModifiedEvent):
 			return
-		if str(event.src_path).endswith("4913") and get_config("watcher.ignore-4913", as_str=False):
+		if str(event.src_path).endswith("4913") and get_config("watcher.ignore-4913", typecheck=bool):
 			return
 		event.src_path = str(event.src_path).replace("\\", "/")
 		for callback in callbaques:

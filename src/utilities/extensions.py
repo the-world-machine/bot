@@ -41,7 +41,7 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 	commands = [f.replace('.py', '') for f in files]
 	commands = [None if len(f) < 0 or f.startswith(".") else f for f in commands]
 
-	if not get_config("music.enabled", as_str=False) and 'music' in commands:
+	if not get_config("music.enabled", typecheck=bool) and 'music' in commands:
 		commands.remove("music")
 
 	if debugging():

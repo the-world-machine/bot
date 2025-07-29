@@ -157,22 +157,44 @@ class Localization:
 		self.locale = final_locale
 		self.prefix = prefix
 
-	def l(self, path: str, typecheck: Optional[Type[T]] = None, **variables: Any) -> Union[str, list[str], dict, T]:
-		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		result = self.sl(path=path, locale=self.locale, **variables)
+	@overload
+	def l(self, path: str, **variables: Any) -> str:
+		...
 
-		if typecheck is not None and not isinstance(result, typecheck):
-			raise TypeError(f"Expected {typecheck.__name__}, got {type(result).__name__} for path '{path}'")
+	@overload
+	def l(self, path: str, typecheck: Type[T], **variables: Any) -> T:
+		...
+
+	def l(self, path: str, typecheck: Type = str, **variables: Any) -> Any:
+		"""
+		Retrieves a localized string or object.
+		By default (or with typecheck=str), it returns a string and errors if the value is not a string.
+		"""
+		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
+		result = self.sl(path=path, locale=self.locale, **variables, typecheck=typecheck)
 		return result
+
+	@staticmethod
+	@staticmethod
+	@overload
+	def sl(path: str, locale: str | None, *, raise_on_not_found: bool = False, **variables: Any) -> str:
+		...
+
+	@staticmethod
+	@overload
+	def sl(
+	    path: str, locale: str | None, *, typecheck: Type[T], raise_on_not_found: bool = False, **variables: Any
+	) -> T:
+		...
 
 	@staticmethod
 	def sl(
 	    path: str,
 	    locale: str | None = None,
-	    typecheck: Optional[Type[T]] = None,
+	    typecheck: Type = str,
 	    raise_on_not_found: bool = False,
 	    **variables: Any
-	) -> Union[str, list[str], dict, T]:
+	) -> Any:
 		if locale is None:
 			raise ValueError("No locale provided")
 
@@ -187,7 +209,8 @@ class Localization:
 
 		result = assign_variables(raw_result, locale, **variables)
 
-		if typecheck is not None and not isinstance(result, typecheck):
+		if not isinstance(result, typecheck):
+			# Using .__name__ gives a cleaner error message (e.g. "str" instead of "<class 'str'>")
 			raise TypeError(f"Expected {typecheck.__name__}, got {type(result).__name__} for path '{path}'")
 		return result
 

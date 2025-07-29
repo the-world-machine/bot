@@ -3,7 +3,7 @@ from lavalink import DeferredAudioTrack, LoadResult, LoadType, PlaylistInfo, Sou
 from utilities.music.spotify_api import Spotify
 from utilities.config import get_config
 
-spotify_creds = get_config("music.spotify", as_str=False)
+spotify_creds: dict = get_config("music.spotify", typecheck=dict)
 spotify = Spotify(client_id=spotify_creds['id'], secret=spotify_creds['secret'])
 
 

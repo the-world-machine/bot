@@ -49,11 +49,14 @@ async def roll_avatar(client: Client, log=True, print=print) -> None:
 				print(f"...failure")
 
 
-statuses = get_config("bot.rolling.statuses", as_str=False, ignore_None=True)
+statuses = get_config("bot.rolling.statuses", typecheck=list, ignore_None=True)
 
 
 async def roll_status(client: Client, log=True, print=print) -> None:
-	status = (statuses if isinstance(statuses, str) else random.choice(statuses if statuses is not None else [None]))
+	status = (
+	    statuses if isinstance(statuses, str) else
+	    random.choice(statuses if statuses is not None else [None]) if isinstance(statuses, list) else None
+	)
 	if log:
 		if not debugging():
 			print(f"Rolled status: {await set_status(client, status)}")

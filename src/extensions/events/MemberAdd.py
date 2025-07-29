@@ -1,7 +1,7 @@
 import io
 import traceback as tb
-from interactions import *
-from utilities.mediagen.textboxes import render_textbox
+from interactions import TYPE_MESSAGEABLE_CHANNEL, AllowedMentions, Extension, File, listen
+from utilities.textbox.mediagen import render_textbox
 from interactions.api.events import MemberAdd
 from utilities.database.schemas import ServerData
 from utilities.textbox.characters import get_character
@@ -36,19 +36,20 @@ class MemberAddEvent(Extension):
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)
 		buffer = io.BytesIO()
-		(await render_textbox(message,
-		                      get_character("The World Machine").get_face("Pancakes"),
-		                      False))[0].save(buffer, format="PNG")
+		renders = await render_textbox(str(message), get_character("The World Machine").get_face("Pancakes"), False)
+		renders[0][0].save(buffer, format="PNG")
 		buffer.seek(0)
 		try:
-			print(
-			    f"Trying to send welcome message for server {event.guild.id} in channel <#{event.guild.system_channel.id}>"
-			)
-			await target_channel.send(
-			    content=f"-# {event.member.mention}",
-			    files=File(file=buffer, file_name=f"welcome textbox.png"),
-			    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
-			)
+			if not event.guild.system_channel:
+				return
+			print(f"Trying to send welcome message for server {event.guild.id} in channel {event.guild.system_channel}")
+			if isinstance(target_channel, TYPE_MESSAGEABLE_CHANNEL):
+				await target_channel.send(
+				    content=f"-# {event.member.mention}",
+				    files=File(file=buffer, file_name=f"welcome textbox.png"),
+				    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
+				)
+			raise TypeError("tried to send message in a channel where i can't send messages :mumawomp:")
 		except Exception as e:
 			print("Failed to send welcome message. {guild.id}/{target_channel.id}")
 			print(tb.format_exc(chain=True))

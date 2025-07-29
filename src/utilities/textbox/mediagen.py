@@ -3,7 +3,7 @@ import io
 from pathlib import Path
 import textwrap
 from enum import Enum
-from typing import Literal, Sequence
+from typing import Any, Literal, Sequence
 from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
@@ -17,6 +17,7 @@ SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 class BackgroundStyle():
 	face_position: SupportedFacePositions = "right"
 	color: str = "orange"
+
 	def __init__(
 	    self,
 	    face_position: SupportedFacePositions = "right",
@@ -152,7 +153,7 @@ def bounce(times, height=3):
 
 
 async def render_textbox_frames(
-    frames: dict[str, Frame],
+    frames: dict[int, Frame],
     quality: int = 80,
     filetype: SupportedFiletypes = "WEBP",
     frame_index: int | None = None
@@ -164,7 +165,7 @@ async def render_textbox_frames(
 		if not frame_index:
 			print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 			frame_index = 0
-		frame = frames[str(frame_index)]
+		frame = frames[int(frame_index)]
 		char = None
 		face = None
 		if frame.starting_character_id:

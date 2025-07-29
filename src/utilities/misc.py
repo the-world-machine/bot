@@ -17,7 +17,12 @@ class FrozenDict(dict):
 	def __init__(self, data):
 		if not isinstance(data, (dict, list, tuple)):
 			raise ValueError(f"Value must be a dict, list or a tuple. Received {type(data)}")
-		frozen_data = { k: self._freeze(v) for k, v in data.items() }
+		if isinstance(data, dict):
+			frozen_data = { k: self._freeze(v) for k, v in data.items() }
+		elif isinstance(data, list):
+			frozen_data = { i: self._freeze(item) for i, item in enumerate(data) }
+		elif isinstance(data, tuple):
+			frozen_data = { i: self._freeze(item) for i, item in enumerate(data) }
 		super().__init__(frozen_data)
 
 	def _freeze(self, value):
@@ -163,21 +168,21 @@ def rabbit(
 			index = None
 		try:
 			if key is not None and index is not None:
-				value = value[key][index]
+				value = value[key][index]  # type: ignore
 				if fallback_value:
-					fallback_value = fallback_value[key][index]
+					fallback_value = fallback_value[key][index]  # type: ignore
 			elif isinstance(value, dict):
 				if key in value:
 					value = value[key]
 				else:
-					value = None
+					value = None  # type: ignore
 				if fallback_value:
-					fallback_value = fallback_value[key]
+					fallback_value = fallback_value[key]  # type: ignore
 			else:
 				raise KeyError(f"{key} not found")
 
 			if value == None:
-				value = fallback_value
+				value = fallback_value  # type: ignore
 			if value == None:
 				raise KeyError(f"{key} not found")
 			if len(parsed_path) > len(went_through) + 1:
@@ -241,13 +246,13 @@ def get_current_branch() -> str:
 	return exec([ 'git', 'branch', '--show-current']).strip()
 
 
-async def set_status(client: Client, text: str | list):
+async def set_status(client: Client, text: str | list | None):
 	from utilities.localization import assign_variables
 	if text is not None:
 		status = str(
 		    assign_variables(
 		        input=text,
-		        shard_count=1 if not hasattr(client, "shards") else len(client.shards),
+		        shard_count=len(client.shards) if hasattr(client, "shards") else 1,  # type: ignore
 		        guild_count=len(client.guilds),
 		        token=client.token
 		    )

@@ -85,6 +85,8 @@ class NikogotchiCommands(Extension):
 	) -> List[Embed] | Embed:
 
 		metadata = await fetch_nikogotchi_metadata(n.nid)
+		if not metadata:
+			raise ValueError("Invalid Nikogotchi")
 		owner = await ctx.client.fetch_user(n._id)
 		loc = Localization(ctx.locale)
 

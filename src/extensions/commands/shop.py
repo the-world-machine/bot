@@ -23,7 +23,7 @@ def pancake_id_to_emoji_index_please_rename_them_in_db(pancake_id):
 		return 'glitched'
 
 
-daily_shop: ShopData = None
+daily_shop: ShopData | None = None
 
 
 class ShopCommands(Extension):
@@ -387,7 +387,7 @@ class ShopCommands(Extension):
 
 	## EMBED MANAGER ---------------------------------------------------------------
 
-	async def embed_manager(self, ctx: SlashContext, category: str, **kwargs):
+	async def embed_manager(self, ctx: SlashContext | ComponentContext, category: str, **kwargs):
 		global daily_shop
 
 		await self.load_shop()
@@ -449,9 +449,6 @@ class ShopCommands(Extension):
 			        custom_id='Treasures'
 			    )
 			]
-
-			return embed, buttons
-
 		elif category == 'capsules':
 
 			nikogotchi: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
@@ -492,8 +489,6 @@ class ShopCommands(Extension):
 			description = loc.l('shop.nikogotchi.main', cost=cost, user_wool=user_wool)
 
 			embed = Embed(title=title, description=description, thumbnail=magpie, color=Colors.TEAL)
-
-			return embed, buttons
 		elif category == 'pancakes':
 
 			pancake_data = await fetch_item()
@@ -534,9 +529,6 @@ class ShopCommands(Extension):
 			description = loc.l('shop.pancakes.main', items=pancake_text, user_wool=user_wool)
 
 			embed = Embed(title=title, description=description, thumbnail=magpie, color=Colors.TEAL)
-
-			return embed, buttons
-
 		elif category == 'Backgrounds':
 
 			bg_page = kwargs['page']
@@ -582,9 +574,6 @@ class ShopCommands(Extension):
 				buy_button.label = b_owned
 
 			buttons[1] = buy_button
-
-			return embed, buttons
-
 		elif category == 'Treasures':
 
 			selected_treasure = kwargs.get('selected_treasure', None)
@@ -724,9 +713,6 @@ class ShopCommands(Extension):
 				)
 
 			components = [ActionRow(select_menu), ActionRow(*buttons)]
-
-			return embed, components
-
 		elif category == 'Sell_Treasures':
 			go_back = Button(label=loc.l('shop.buttons.go_back'), style=ButtonStyle.GRAY, custom_id='Treasures')
 			selected_treasure = kwargs['selected_treasure']
@@ -790,8 +776,16 @@ class ShopCommands(Extension):
 				treasure_id = selected_treasure
 
 				buttons = [
-				    Button(label=loc.l('shop.buttons.sell'), custom_id=f'treasure_sell_{treasure_id}_one', style=ButtonStyle.GREEN),
-				    Button(label=loc.l('shop.buttons.sell_all'), custom_id=f'treasure_sell_{treasure_id}_all', style=ButtonStyle.GREEN)
+				    Button(
+				        label=loc.l('shop.buttons.sell'),
+				        custom_id=f'treasure_sell_{treasure_id}_one',
+				        style=ButtonStyle.GREEN
+				    ),
+				    Button(
+				        label=loc.l('shop.buttons.sell_all'),
+				        custom_id=f'treasure_sell_{treasure_id}_all',
+				        style=ButtonStyle.GREEN
+				    )
 				]
 			else:
 				treasure_id = 0
@@ -800,7 +794,12 @@ class ShopCommands(Extension):
 
 			embed = Embed(
 			    title=loc.l('shop.treasures.sell.title'),
-			    description=loc.l('shop.treasures.sell.message', stock_market=stock, selected_treasure=treasure_details, user_wool=user_wool),
+			    description=loc.l(
+			        'shop.treasures.sell.message',
+			        stock_market=stock,
+			        selected_treasure=treasure_details,
+			        user_wool=user_wool
+			    ),
 			    thumbnail=magpie,
 			    color=Colors.TEAL
 			)
@@ -814,12 +813,16 @@ class ShopCommands(Extension):
 				    custom_id=f'select_treasure_sell',
 				)
 			else:
-				select_menu = StringSelectMenu('💥💥💥💥💥💥💥💥💥💥💥💥', placeholder=loc.l('shop.treasures.sell.no_treasures'), custom_id=f'select_treasure_sell', disabled=True)
+				select_menu = StringSelectMenu(
+				    '💥💥💥💥💥💥💥💥💥💥💥💥',
+				    placeholder=loc.l('shop.treasures.sell.no_treasures'),
+				    custom_id=f'select_treasure_sell',
+				    disabled=True
+				)
 
 			components = [ActionRow(select_menu), ActionRow(*buttons)]
 
-			return embed, components
-
+		return (embed, components)
 	@slash_command(description="Open the Shop")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
