@@ -250,6 +250,8 @@ async def _execute_dev_command(message: Message):
 					return await handle_reply(runtime, result)
 		case "shop":
 			items = await main.fetch_items()
+			if not items:
+				return await message.reply("`[ Failed to fetch shop from database ]`")
 			shop = items['shop']
 
 			match args[1]:
@@ -272,33 +274,33 @@ async def _execute_dev_command(message: Message):
 
 						matches = re.findall(pattern, command_content)
 
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 						str_data = matches[0]
 
 						data = json.loads(str_data)
 
-						collection = await get_collection(collection, _id).fetch()
+						collection = await get_collection(collection_name, _id).fetch()
 
 						await collection.update(**data)
 
 						return await message.reply('`[ Successfully updated ]`')
 					case "view":
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 						value = args[4]
 
-						if collection == 'shop':
-							collection = await get_collection(collection, 0)
+						if collection_name == 'shop':
+							collection = await get_collection(collection_name, "0")
 						else:
-							collection = await get_collection(collection, _id).fetch()
+							collection = await get_collection(collection_name, _id).fetch()
 
 						return await message.reply(f'`[ The value of {value} is {str(collection.__dict__[value])} ]`')
 					case "view_all":
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 
-						collection = await get_collection(collection, _id).fetch()
+						collection = await get_collection(collection_name, _id).fetch()
 
 						return await message.reply(f"```yml\n{yaml.dump(main.to_dict(collection), default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 					case "wool":

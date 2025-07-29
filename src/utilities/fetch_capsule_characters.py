@@ -17,7 +17,7 @@ class Rarity(Enum):
 @dataclass
 class NikogotchiInformation:
 	name: str
-	emoji: int
+	emoji: str
 	rarity: Rarity
 
 

@@ -1,5 +1,5 @@
 import re
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 from yaml import safe_load
 from termcolor import colored
 from utilities.data_watcher import subscribe
@@ -18,33 +18,35 @@ class Emojis(TypedDict):
 	progress_bars: dict[Literal["square", "round"], ProgressBar]
 
 
-def flatten_emojis(data: Emojis, parent_key: str = '') -> Emojis:
-	items = []
+def flatten_emojis(data: dict[str, Any], parent_key: str = '') -> dict[str, str]:
+	items: list[tuple[str, str]] = []
 	for k, v in data.items():
 		key = f"{parent_key}.{k}" if parent_key else k
 		if isinstance(v, dict):
 			items.extend(flatten_emojis(v, key).items())
-		else:
+		elif isinstance(v, str):
 			items.append((key, v))
 	return dict(items)
 
 
-def unflatten_emojis(flat_data: dict) -> dict:
-	unflattened = {}
+def unflatten_emojis(flat_data: dict[str, str]) -> dict[str, Any]:
+	unflattened: dict[str, Any] = {}
 	for flat_key, value in flat_data.items():
 		keys = flat_key.split(".")
 		d = unflattened
 		for key in keys[:-1]:
-			d = d.setdefault(key, {})
+			if key not in d:
+				d[key] = {}
+			d = d[key]
 		d[keys[-1]] = value
 	return unflattened
 
 
-def minify_emoji_names(data) -> Emojis:
+def minify_emoji_names(data: Any) -> Any:
 	if isinstance(data, dict):
 		return { key: minify_emoji_names(value) for key, value in data.items() }
 	elif isinstance(data, str):
-		# replaces all names with "i" for more embed space
+		# replaces all names with "i" for more message content space
 		return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
 	return data
 
@@ -101,8 +103,8 @@ def on_file_update(path):
 	old_emojis = emojis
 	new_emojis = load_emojis()
 
-	old_flat = flatten_emojis(old_emojis)
-	new_flat = flatten_emojis(new_emojis)
+	old_flat = flatten_emojis(dict(old_emojis))
+	new_flat = flatten_emojis(dict(new_emojis))
 	changes = []
 	for key in [ key for key in old_flat if key not in new_flat ]:
 		# removed
