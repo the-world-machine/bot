@@ -15,7 +15,7 @@ async def execute_loc_command(message: Message):
 	if not message.content:
 		return
 
-	if str(message.author.id) not in list(chain(*get_config("localization.whitelist", typecheck=list).values())):
+	if str(message.author.id) not in list(chain(*get_config("localization.whitelist", typecheck=dict).values())):
 		return
 
 	prefix = get_config('dev.command-marker').split('.')
