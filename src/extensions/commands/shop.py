@@ -41,12 +41,12 @@ class ShopCommands(Extension):
 	async def load_shop(self):
 		global daily_shop
 		data = await fetch_shop_data()
-		if datetime.now() > data.last_updated + timedelta(days=1):
+		if daily_shop.last_updated.year == 2000:
+			daily_shop = data
+		elif datetime.now() > data.last_updated + timedelta(days=1):
 			print("Resetting daily shop")
 			daily_shop = await reset_shop_data()
-		elif daily_shop is None:
-			print("Setting daily shop")
-			daily_shop = data
+		print("Got daily_shop")
 
 	@component_callback('select_treasure_sell')
 	async def select_treasure_sell_callback(self, ctx: ComponentContext):
@@ -255,7 +255,9 @@ class ShopCommands(Extension):
 		else:
 			await owned_backgrounds.append(bg_id)
 
-			embeds[0].description = loc.l('shop.backgrounds.newly_owned', user_wool=loc.l('shop.user_wool', wool=user.wool))
+			embeds[0].description = loc.l(
+			    'shop.backgrounds.newly_owned', user_wool=loc.l('shop.user_wool', wool=user.wool)
+			)
 			await user.manage_wool(-get_background['price'])
 			embeds[0].set_footer(loc.l('shop.backgrounds.traded'))
 		await ctx.send(embeds=embeds, components=components, ephemeral=True)
@@ -423,7 +425,14 @@ class ShopCommands(Extension):
 
 			motd = motds[daily_shop.motd]
 
-			embeds.append(Embed(title=loc.l('shop.main_title'), description=loc.l('shop.main', motd=motd, user_wool=user_wool), thumbnail=magpie_image, color=Colors.SHOP))
+			embeds.append(
+			    Embed(
+			        title=loc.l('shop.main_title'),
+			        description=loc.l('shop.main', motd=motd, user_wool=user_wool),
+			        thumbnail=magpie_image,
+			        color=Colors.SHOP
+			    )
+			)
 
 			buttons = [
 			    Button(
@@ -451,6 +460,7 @@ class ShopCommands(Extension):
 			        custom_id='Treasures'
 			    )
 			]
+			components = [ActionRow(*buttons)]
 		elif category == 'capsules':
 
 			nikogotchi: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
@@ -491,6 +501,7 @@ class ShopCommands(Extension):
 			description = loc.l('shop.nikogotchi.main', cost=cost, user_wool=user_wool)
 
 			embeds.append(Embed(title=title, description=description, thumbnail=magpie_image, color=Colors.SHOP))
+			components.append(ActionRow(*buttons))
 		elif category == 'pancakes':
 
 			pancake_data = await fetch_item()
@@ -531,10 +542,11 @@ class ShopCommands(Extension):
 			description = loc.l('shop.pancakes.main', items=pancake_text, user_wool=user_wool)
 
 			embeds.append(Embed(title=title, description=description, thumbnail=magpie_image, color=Colors.SHOP))
+			components.append(ActionRow(*buttons))
 		elif category == 'Backgrounds':
 
 			bg_page = kwargs['page']
-
+			print(daily_shop)
 			background = daily_shop.background_stock[bg_page]
 			all_bgs = await fetch_background()
 			fetched_background = all_bgs[background]
@@ -577,6 +589,7 @@ class ShopCommands(Extension):
 				buy_button.label = b_owned
 
 			buttons[1] = buy_button
+			components.append(ActionRow(*buttons))
 		elif category == 'Treasures':
 
 			selected_treasure = kwargs.get('selected_treasure', None)
