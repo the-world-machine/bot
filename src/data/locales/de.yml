@@ -455,121 +455,121 @@ interact:
 
   options:
     - name: Boop
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] booped [user_two]"
         - name: Playful
-          messages:
+          phrases:
             - "[user_one] sticht in die Nase von[user_two]!"
             - "[user_one] reicht und boops [user_two]!"
             - "[user_one] Gefühlt silly und booped [user_two]!"
             - "[user_one] playfully boops [user_two]!"
         - name: Delicate
-          messages:
+          phrases:
             - "[user_one] zart boops und streichelt die nase von [user_two]"
             - "[user_one] delivers a dainty boop to [user_two]"
             - "[user_one] gently taps [user_two]'s nose"
             - "[user_one] places a delicate boop on [user_two]'s nose"
         - name: Frustrated
-          messages:
+          phrases:
             - "[user_one] aggressiv booped [user_two]"
             - "[user_one] booped [user_two] out of frustration"
             - "[user_one] huffs and boops [user_two] in irritation"
             - "[user_one] lets out their frustration with a firm boop on [user_two]"
         - name: Irresistible
-          messages:
+          phrases:
             - "[user_one] fühlte das Bedürfnis zu geben [user_two] ein boop!"
             - "[user_one] Wollte nur [user_two] ein boop geben!"
             - "[user_one] konnte nicht widerstehen booping [user_two]"
             - "[user_one] gives in to the urge and boops [user_two]"
         - name: Confused
-          messages:
+          phrases:
             - "[user_one] hatte [user_two] in Verwirrung gelassen über ein boop!"
             - "[user_one] gibt [user_two] ein unerwarteter boop!"
             - "[user_one] lasst [user_two] sprachlos mit einen post-boop!"
             - "[user_one] leaves [user_two] wondering why they were booped"
         - name: They're Cute
-          messages:
+          phrases:
             - "[user_one] gives [user_two] the cutest little boop!"
             - "[user_one] boops [user_two]'s nose and giggles cutely!"
             - "[user_one] can't handle how adorable [user_two] is and boops them!"
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Schlagen
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] hat [user_two] geschlagen, wahrscheinlich verdient."
     - name: Streichlen
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] streichelt [user_two]!"
     - name: Kopf streichel
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] gibt [user_two] ein Kopf streicheln!"
     - name: Kitzeln
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] startet [user_two] zu kitzel!"
             - "[user_one] gibt [user_two] ein Überraschung kitzel!"
             - "[user_one] kitzelte [user_two] und startete ein kitzel kämpf!"
             - "[user_one] went for a tickle attack towards [user_two]!"
     - name: Umarmung
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] Umarmte [user_two]!"
     - name: kuscheln
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] kuschelte mit [user_two]!"
     - name: Küssen
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] hat [user_two] geküsst! ❤️"
         - name: Warm
-          messages:
+          phrases:
             - "[user_one] gibt [user_two] ein warmes küssen ❤️"
         - name: Romantic
-          messages:
+          phrases:
             - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
         - name: Cheek Kiss
-          messages:
+          phrases:
             - "[user_one] plants a sweet peck on [user_two]'s cheek"
             - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
     - name: Attack
-      messages:
+      phrases:
         - name: Basic Punch
-          messages:
+          phrases:
             - "[user_one] Schlägte [user_two], das würd ein blaues fleck lassen."
         - name: Random Combo
-          messages:
+          phrases:
             - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
             - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
             - "[user_one] goes full flurry mode on [user_two]!"
         - name: Pillow
-          messages:
+          phrases:
             - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
             - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
-      messages:
+      phrases:
         - name: Small Rock
-          messages:
+          phrases:
             - "[user_one] threw a small rock at [user_two]!"
         - name: Molotov
-          messages:
+          phrases:
             - "[user_one] wirft eine Molotov Cocktail in Richtung [user_two] ‼️"
         - name: Empty Bottle (ow)
           #type: bottle
           #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages:
+          phrases:
             - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------

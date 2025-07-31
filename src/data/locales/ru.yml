@@ -464,121 +464,121 @@ interact:
 
   options:
     - name: Тыкнуть
-      messages:
+      phrases:
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] тыкнул [user_two]"
         - name: Playful
-          messages:
+          phrases:
             - "[user_one] тыкнул нос [user_two]!"
             - "[user_one] протянул руку и тыкнул [user_two]!"
             - "[user_one] с ничего тыкнул [user_two]!"
             - "[user_one] playfully boops [user_two]!"
         - name: Delicate
-          messages:
+          phrases:
             - "[user_one] нежно тыкнул и погладил нос [user_two]"
             - "[user_one] delivers a dainty boop to [user_two]"
             - "[user_one] gently taps [user_two]'s nose"
             - "[user_one] places a delicate boop on [user_two]'s nose"
         - name: Frustrated
-          messages:
+          phrases:
             - "[user_one] агрессивно тыкнул [user_two]"
             - "[user_one] booped [user_two] out of frustration"
             - "[user_one] huffs and boops [user_two] in irritation"
             - "[user_one] lets out their frustration with a firm boop on [user_two]"
         - name: Irresistible
-          messages: 
+          phrases: 
             - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
             - "[user_one] просто захотел тыкнуть [user_two]!"
             - "[user_one] не смог удержаться и тыкнул [user_two]!"
             - "[user_one] gives in to the urge and boops [user_two]"
         - name: Confused
-          messages:
+          phrases:
             - "[user_one] оставил в недоразумении [user_two] тыком в нос!"
             - "[user_one] неожиданно тыкнул [user_two]!"
             - "[user_two] без слов после тычка в нос от [user_one]!"
             - "[user_one] leaves [user_two] wondering why they were booped"
         - name: They're Cute
-          messages:
+          phrases:
             - "[user_one] gives [user_two] the cutest little boop!"
             - "[user_one] boops [user_two]'s nose and giggles cutely!"
             - "[user_one] can't handle how adorable [user_two] is and boops them!"
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Дать Пощёчину
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] дали пощёчину [user_two], вероятно заслужили."
     - name: Погладить
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] погладил [user_two]!"
     - name: Потрепать
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] потрепал [user_two] по голове!"
     - name: Пощекотать
-      messages:
+      phrases:
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] неожиданно для [user_two] защекотал!"
             - "[user_one] неожиданно защекотал [user_two]!"
             - "[user_one] защекотал [user_two], чем разжёг щекоточную войну!"
             - "[user_one] атаковал щекоткой [user_two]!"
     - name: Обнять
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] обнял [user_two]!"
     - name: Нежно обнять
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] нежно обнали [user_two]!" # <- obnaly
     - name: Поцеловать
-      messages: 
+      phrases: 
         - name: Basic
-          messages: 
+          phrases: 
             - "[user_one] поцеловал [user_two]! ❤️"
         - name: Warm
-          messages: 
+          phrases: 
             - "[user_one] тепло поцеловал [user_two] ❤️"
         - name: Romantic
-          messages:
+          phrases:
             - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
         - name: Cheek Kiss
-          messages:
+          phrases:
             - "[user_one] plants a sweet peck on [user_two]'s cheek"
             - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
     - name: Attack
-      messages:
+      phrases:
         - name: Ударить
-          messages: 
+          phrases: 
             - "[user_one] ударили [user_two], больно же."
         - name: Random Combo
-          messages:
+          phrases:
             - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
             - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
             - "[user_one] goes full flurry mode on [user_two]!"
         - name: Pillow
-          messages:
+          phrases:
             - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
             - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
-      messages: 
+      phrases: 
         - name: Small Rock
-          messages: 
+          phrases: 
             - "[user_one] threw a small rock at [user_two]!"
         - name: Molotov
-          messages: 
+          phrases: 
             "[user_one] бросил бутылку с коктелем Молотова в [user_two] ‼️"
         - name: Empty Bottle (ow)
           #type: bottle
           #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages: 
+          phrases: 
             - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------
