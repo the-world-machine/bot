@@ -6,7 +6,7 @@ from datetime import datetime
 from PIL import Image
 from pathlib import Path
 from termcolor import colored
-from utilities.emojis import make_url
+from utilities.emojis import make_emoji_cdn_url
 from utilities.misc import cached_get
 from interactions import PartialEmoji
 from utilities.config import debugging
@@ -31,7 +31,7 @@ class Face:
 			loc = None
 		return Image.open(
 		    self._custom if self.
-		    _custom else await cached_get(loc if loc else make_url(f"<:i:{self.icon}>", size=size))
+		    _custom else await cached_get(loc if loc else make_emoji_cdn_url(f"<:i:{self.icon}>", size=size))
 		)
 
 	def __init__(self, icon: str | None = None):

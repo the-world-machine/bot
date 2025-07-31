@@ -4,7 +4,7 @@ import aiohttp
 import platform
 from datetime import datetime, timezone
 from utilities.misc import get_git_hash
-from utilities.emojis import emojis, make_url
+from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization import Localization, fnum, ftime
 from utilities.message_decorations import Colors, fancy_message
 from interactions import Embed, EmbedAttachment, Extension, Message, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
@@ -28,12 +28,14 @@ class MiscellaneousCommands(Extension):
 	@contexts(bot_dm=True)
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx.locale)
-		checkpoint = datetime.now(timezone.utc)  # timezone :aware: date
+		checkpoint = datetime.now()  # timezone :aware: date
 		_ = await fancy_message(ctx, loc.l("general.loading_hint"), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 		checkpoint2 = datetime.fromtimestamp(_.created_at.timestamp()) - checkpoint  # time it took to reply
-		checkpoint = checkpoint - ctx.id.created_at  # time it took to receive the command
+		checkpoint = checkpoint - datetime.fromtimestamp(
+		    ctx.id.created_at.timestamp()
+		)  # time it took to receive the command
 		host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
 		total_servers = len(ctx.client.guilds)
 		team = ctx.client.app.team
@@ -157,7 +159,7 @@ class MiscellaneousCommands(Extension):
 		await ctx.send(
 		    embeds=Embed(
 		        color=Colors.DEFAULT,
-		        thumbnail=EmbedAttachment(url=make_url(emojis["treasures"]["die"])),
+		        thumbnail=EmbedAttachment(url=make_emoji_cdn_url(emojis["treasures"]["die"])),
 		        title=loc.l("misc.roll.title", amount=amount, sides=sides),
 		        description=description
 		    ),

@@ -1,7 +1,7 @@
 import random
 import asyncio
 from datetime import datetime, timedelta
-from utilities.emojis import emojis, make_url
+from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.database.schemas import UserData
 from utilities.localization import Localization, fnum, put_mini
 from utilities.message_decorations import Colors, fancy_message
@@ -173,7 +173,7 @@ class WoolCommands(Extension):
 
 		await ctx.send(
 		    embed=Embed(
-		        thumbnail=EmbedAttachment(make_url(emojis["treasures"]["die"])),
+		        thumbnail=EmbedAttachment(make_emoji_cdn_url(emojis["treasures"]["die"])),
 		        title=loc.l("wool.pray.title"),
 		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " +
 		        loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
