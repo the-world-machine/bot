@@ -53,7 +53,7 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues: list[str] = list(loc.l("explode.dialogue.why", typecheck=list[str]))
+			dialogues: tuple[str] = loc.l("explode.dialogue.why", typecheck=tuple)
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):

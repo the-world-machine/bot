@@ -7,7 +7,7 @@ import datetime
 import subprocess
 from pathlib import Path
 from base64 import b64decode
-from typing import TypedDict, Union, Optional
+from typing import Any, TypedDict, Union, Optional, get_args, get_origin
 from jellyfish import jaro_winkler_similarity, levenshtein_distance
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
 
@@ -124,7 +124,7 @@ def rabbit(
     _error_message: str | None = None,
     simple_error: bool = False,
     deepcopy: bool = False,
-) -> Union[str, list, dict, int, bool, float, None, datetime.date, datetime.datetime]:
+) -> Union[str, tuple, dict, int, bool, float, None, datetime.date, datetime.datetime]:
 	"""
   Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
 
@@ -187,7 +187,8 @@ def rabbit(
 				raise KeyError(f"{key} not found")
 			if len(parsed_path) > len(went_through) + 1:
 				if not isinstance(value,
-				                  (dict, list)) and not (fallback_value and isinstance(fallback_value, (dict, list))):
+				                  (dict,
+				                   tuple)) and not (fallback_value and isinstance(fallback_value, (dict, tuple))):
 					error_msg = f"expected nested structure, found {type(value).__name__}"
 					if not fallback_value and not simple_error:
 						error_msg += f", no fallback passed"
@@ -222,7 +223,7 @@ def rabbit(
 
 		went_through.append(path)
 
-	if deepcopy and isinstance(value, (dict, list)):
+	if deepcopy and isinstance(value, (dict, tuple)):
 		return copy.deepcopy(value)
 
 	return value
@@ -316,3 +317,9 @@ def optionSearch(query: str, options: list[Option]) -> list[dict[str, str]]:
 	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
 
 	return top + matches
+
+def format_type_hint(type_hint: Any) -> str:
+	"""Formats a type hint for clean error messages."""
+	if hasattr(type_hint, '__name__'):
+		return type_hint.__name__
+	return str(type_hint)

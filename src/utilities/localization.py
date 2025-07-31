@@ -1,6 +1,5 @@
 import re
 import asyncio
-import yaml.parser
 import yaml as yaml
 from babel import Locale
 from pathlib import Path
@@ -12,11 +11,10 @@ from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
 from extensions.events.Ready import ReadyEvent
 from utilities.database.schemas import UserData
-from utilities.misc import FrozenDict, decode_base64_padded, rabbit
+from typing import overload, TypeVar, Any, Literal, Type
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
-from typing import Dict, overload, Union, TypeVar, Any, Literal, Generic, Optional, Type
-from functools import wraps
+from utilities.misc import FrozenDict, format_type_hint, decode_base64_padded, rabbit
 
 emoji_dict = {}
 
@@ -165,11 +163,7 @@ class Localization:
 	def l(self, path: str, **variables: Any) -> str:
 		...
 
-	def l(self, path: str, *, typecheck: Type = str, **variables: Any) -> Any:
-		"""
-		Retrieves a localized string or object.
-		`typecheck` must be a keyword-only argument.
-		"""
+	def l(self, path: str, *, typecheck: Any = str, **variables: Any) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
 		result = self.sl(path=path, locale=self.locale, typecheck=typecheck, **variables)
 		return result
@@ -191,7 +185,7 @@ class Localization:
 	    path: str,
 	    locale: str | None = None,
 	    *,  # ← makes all next args only accepted as keyword arguments
-	    typecheck: Type = str,
+	    typecheck: Any = str,
 	    raise_on_not_found: bool = False,
 	    **variables: Any
 	) -> Any:
@@ -209,9 +203,10 @@ class Localization:
 
 		result = assign_variables(raw_result, locale, **variables)
 
-		if not isinstance(result, typecheck):
-			# Using .__name__ gives a cleaner error message (e.g. "str" instead of "<class 'str'>")
-			raise TypeError(f"Expected {typecheck.__name__}, got {type(result).__name__} for path '{path}'")
+		if not typecheck == Any and not isinstance(result, typecheck):
+			raise TypeError(
+			    f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
+			)
 		return result
 
 	@staticmethod
@@ -325,11 +320,8 @@ def assign_variables(input: Any, locale: str = get_config("localization.main-loc
 
 			result = result.replace(f'[{name}]', data)
 		return result
-	elif isinstance(input, list):
-		processed = []
-		for elem in input:
-			processed.append(assign_variables(elem, locale, **variables))
-		return processed
+	elif isinstance(input, tuple):
+		return tuple(assign_variables(elem, locale, **variables) for elem in input)
 	elif isinstance(input, dict):
 		new_dict = {}
 		for key, value in input.items():
