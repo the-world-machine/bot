@@ -1,3 +1,4 @@
+import os
 from utilities.config import debugging, get_config
 import logging
 import time
@@ -9,7 +10,8 @@ class IgnoreFilter(logging.Filter):
 
 	def filter(self, message):
 		return not any(ignored_msg in message.getMessage() for ignored_msg in self.ignored)
-
+logs_path = "./logs"
+os.makedirs(logs_path, exist_ok=True)
 ignored = [
     "❤ Gateway is sending a Heartbeat", "❤ Received heartbeat acknowledgement from gateway",
     "Sending data to websocket: {\"op\": 1, \"d\": 18}"
@@ -22,7 +24,7 @@ def createLogger(name):
 
 	formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-	for handler in [logging.FileHandler(f'logs/{time.strftime("%Y.%m.%d")}.log', mode="a", encoding='utf-8'), logging.StreamHandler()]:
+	for handler in [logging.FileHandler(f'{logs_path}/{time.strftime("%Y.%m.%d")}.log', mode="a", encoding='utf-8'), logging.StreamHandler()]:
 		handler.setLevel(loggingLevel)
 		handler.addFilter(IgnoreFilter(ignored))
 		handler.setFormatter(formatter)
