@@ -1,7 +1,10 @@
+import asyncio
 import io
 import textwrap
+from typing import Any
 from termcolor import colored
 from interactions import File, User
+from utilities.emojis import make_emoji_cdn_url, emojis
 from utilities.message_decorations import Colors
 from utilities.database.schemas import UserData
 from utilities.misc import cached_get, pretty_user
@@ -9,14 +12,15 @@ from utilities.config import debugging, get_config
 from utilities.localization import Localization, fnum
 from utilities.shop.fetch_items import fetch_background, fetch_badge
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
+from PIL.ImageFont import FreeTypeFont
 
-icons = []
-shop_icons = []
+icons: list[Image.Image] = []
+shop_icons: list[Image.Image] = []
 
-wool_icon = None
-sun_icon = None
-badges = {}
-font = None
+wool_icon: Image.Image | None = None
+sun_icon: Image.Image | None = None
+badges: dict[str, Any] = {}
+font: FreeTypeFont | None = None
 
 
 async def load_profile_assets():
@@ -43,23 +47,25 @@ async def load_profile_assets():
 		raise e
 	badges = await fetch_badge()
 
-	for _, badge in badges.items():
-		badge
-		img = Image.open(
-		    await cached_get(f'https://cdn.discordapp.com/emojis/{badge["emoji"]}.png?size=128&quality=lossless')
-		)
+	async def fetch_and_process_emoji(badge):
+		nonlocal assets
+		img = Image.open(await cached_get(make_emoji_cdn_url(f'<:i:{badge["emoji"]}>', size=128)))
 		img = img.convert('RGBA')
-		img = img.resize((35, 35), Image.NEAREST)
+		img = img.resize((35, 35), Image.Resampling.NEAREST)
+		assets += 1
 		if debugging():
 			print("| Badge id:", badge["id"])
-		icons.append(img)
-		assets += 1
+		return img
 
-	wool_icon = Image.open(await cached_get('https://i.postimg.cc/zXnhRLQb/1044668364422918176.png'))
+	emoji_tasks = [fetch_and_process_emoji(badge) for badge in badges.values()]
+	print(len(emoji_tasks))
+	icons.extend(await asyncio.gather(*emoji_tasks))
+
+	wool_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis['icons']['wool'], size=32)))
 	if debugging():
 		print(f"| Wool icon")
 	assets += 1
-	sun_icon = Image.open(await cached_get('https://i.postimg.cc/J49XsNKW/1026207773559619644.png'))
+	sun_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis['icons']['sun'], size=32)))
 	if debugging():
 		print(f"| Sun icon")
 	assets += 1
@@ -70,9 +76,15 @@ async def load_profile_assets():
 		print(f"Done ({assets})")
 
 
-async def draw_profile(user: User, filename: str, alt: str = None, loc: Localization = Localization()) -> File:
-	if wool_icon is None:
+async def draw_profile(user: User, filename: str, alt: str | None = None, loc: Localization = Localization()) -> File:
+	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()
+	assert isinstance(wool_icon, Image.Image) \
+                                     and isinstance(sun_icon, Image.Image) \
+                                     and isinstance(font, FreeTypeFont)\
+                                     and isinstance(badges, dict)\
+                                     and all(isinstance(icon, Image.Image) for icon in icons)\
+                                     and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
 	user_id = user.id
 	user_pfp_url = user.display_avatar._url
 	animated = user.display_avatar.animated
