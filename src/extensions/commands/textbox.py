@@ -258,13 +258,13 @@ class TextboxCommands(Extension):
 			await fancy_message(
 			    ctx, loc.l("textbox.errors.unknown_state", id=state_id, discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
 			)  # TODO: move discord invite to bot config
-			return (True, loc, None, None)
+			return (loc, None, None)
 		try:
 			frame_data: Frame = state.frames[int(frame_index)]
 		except KeyError as e:
 			frame_data = Frame(starting_character_id=state.frames[int(frame_index)-1].starting_character_id)
 			state.frames[int(frame_index)] = frame_data
-		return (False, loc, state, frame_data)
+		return (loc, state, frame_data)
 
 	handle_components_regex = re.compile(
 	    r"textbox (?P<method>refresh|render|update_(char|face|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
