@@ -503,6 +503,8 @@ interact:
         - name: Basic
           phrases:
             - "[user_one] slapped [user_two], probably deserved."
+            - "[user_one] slaps [user_two]!"
+            - "[user_two] received a sudden slap from [user_one]!"
     - name: Pet
       phrases:
         - name: Basic
@@ -563,9 +565,10 @@ interact:
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
       phrases:
-        - name: Small Rock
+        - name: Rocks
           phrases:
             - "[user_one] threw a small rock at [user_two]!"
+            - "[user_one] threw a bunch of pebbles at [user_two]!"
         - name: Molotov
           phrases:
             - "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
@@ -576,10 +579,10 @@ interact:
         - name: Piece of Wool
           phrases:
             - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"
-            - "[user_one] released a tiny 🤏 piece of wool above [user_two]'s head"
+            - "[user_one] released a tiny 🤏 pinch of wool above [user_two]'s head"
             - "[user_one] rubbed [user_two]'s face with a big clump of wool"
             - "[user_one] tickled [user_two]'s ear with a small piece of wool"
-          modifiers: bottle
+          modifiers: wool
   modifiers:
     no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
 # ---------------------------------------------------------------
