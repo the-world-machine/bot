@@ -451,9 +451,12 @@ items:
 interact:
   selected: "Wahl eine Action zum durchführen an [user]"
   selected_self: "Choose an action to perform"
-  no_path: "The action you tried to do no longer exists"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
-  options:
+  phrases:
     - name: Boop
       phrases:
         - name: Basic

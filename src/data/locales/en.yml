@@ -454,9 +454,12 @@ items:
 interact:
   selected: "What should [user_one] do to [user_one]?"
   selected_self: "Choose an action to perform on [user_two]"
-  no_path: "The action you tried to do no longer exists"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
-  options:
+  phrases:
     - name: Boop
       phrases:
         - name: Basic
@@ -500,39 +503,27 @@ interact:
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Slap
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] slapped [user_two], probably deserved."
-            - "[user_one] slaps [user_two]!"
-            - "[user_two] received a sudden slap from [user_one]!"
+        - "[user_one] slapped [user_two], probably deserved."
+        - "[user_one] slaps [user_two]!"
+        - "[user_two] received a sudden slap from [user_one]!"
     - name: Pet
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] pet [user_two]!"
+        - "[user_one] pet [user_two]!"
     - name: Head Pat
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] gave [user_two] a headpat!"
+        - "[user_one] gave [user_two] a headpat!"
     - name: Tickle
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] started tickling [user_two] a surprise tickle!"
-            - "[user_one] gave [user_two] a surprise tickle!"
-            - "[user_one] tickled [user_two] and sparked a tickle fight!"
-            - "[user_one] went for a tickle attack at [user_two]!"
+        - "[user_one] started tickling [user_two] a surprise tickle!"
+        - "[user_one] gave [user_two] a surprise tickle!"
+        - "[user_one] tickled [user_two] and sparked a tickle fight!"
+        - "[user_one] went for a tickle attack at [user_two]!"
     - name: Hug
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] hugged [user_two]!"
+        - "[user_one] hugged [user_two]!"
     - name: Cuddle
       phrases:
-        - name: Basic
-          phrases:
-            - "[user_one] cuddled with [user_two]!"
+        - "[user_one] cuddled with [user_two]!"
     - name: Kiss
       phrases:
         - name: Basic
@@ -575,7 +566,7 @@ interact:
         - name: Empty Bottle (ow)
           phrases:
             - "[user_one] threw an empty bottle at [user_two]'s head"
-          modifiers: bottle
+          flags: bottle
         - name: Piece of Wool
           phrases:
             - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"

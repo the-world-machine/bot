@@ -496,9 +496,12 @@ items:
 interact:
   selected: "Оберіть дію, яку ви хочете виконати над [user]"
   selected_self: "Оберіть дію, яку ви хочете виконати"
-  no_path: "Дія, яку ви брали, більше не існує"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
-  options:
+  phrases:
     - name: Тикнути
       phrases:
         - name: Базове
