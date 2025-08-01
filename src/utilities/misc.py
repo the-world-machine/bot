@@ -101,133 +101,126 @@ async def cached_get(location: str | Path, force: bool = False, raw: bool = Fals
 	return cache[loki] if raw else io.BytesIO(cache[loki])
 
 
-def parse_path(raw_path: str):
-	pattern = r'([\'"])(.*?)\1|([^./]+)'  # haven't tested quotes with quotes inside (i dont rememebr the regex for backslash escaping)
+def parse_path(raw_path: str) -> list[Union[str, int]]:
+	"""
+    Parses a path string into a list of keys and indices.
+    e.g., 'interactions.phrases[0]["user-key"][1]' -> ['interactions', 'phrases', 0, 'user-key', 1]
+    """
+	if not raw_path:
+		return []
+	pattern = r"[\w-]+|\[\d+\]|\[['\"].*?['\"]\]"
+	raw_parts = re.findall(pattern, raw_path)
 
-	parts = []
-	for match in re.finditer(pattern, raw_path):
-		if match.group(1):  # quoted group
-			parts.append(match.group(2))  # content inside quotes
-		else:  # normal group
-			parts.append(match.group(3))
-
-	return parts
+	cleaned_parts = []
+	for part in raw_parts:
+		if part.startswith('[') and part.endswith(']'):
+			content = part[1:-1]
+			if content.isdigit() or (content.startswith('-') and content[1:].isdigit()):
+				cleaned_parts.append(int(content))
+			else:
+				cleaned_parts.append(content[1:-1])
+		else:
+			cleaned_parts.append(part)
+	return cleaned_parts
 
 
 def rabbit(
     value: dict,
     path: str,
-    fallback_value: dict | None = None,
+    fallback_value: Optional[dict] = None,
     _full_path: Optional[str] = None,
     return_None_on_not_found: bool = False,
     raise_on_not_found: bool = True,
-    _error_message: str | None = None,
+    _error_message: Optional[str] = None,
     simple_error: bool = False,
     deepcopy: bool = False,
-) -> Union[str, tuple, dict, int, bool, float, None, datetime.date, datetime.datetime]:
+) -> Any:
 	"""
-  Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
+    Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
 
-  It either returns the found value itself, or an error message as the value. You can customize the error message with the `_error_message` argument
+    It either returns the found value itself, or an error message as the value. You can customize the error message with the `_error_message` argument.
 
-  :param value: The dictionary to search within
-  :param raw_path: A dot-separated path string, where each segment represents a key at a deeper level. Can support list indices like "somearray[0]"
-  :param raise_on_not_found: If `True`, raises a `ValueError` if a key in `raw_path` is not found. If `False`, returns the error message as str
-  :param _error_message: A custom error message template for missing keys. Use `[path]` to insert the full path in the error message, and `[error]` to get the specific error message
-  
-  :param _full_path: do not pass this thanks
+    :param value: The dictionary to search within.
+    :param path: A dot-separated path string. Supports list indices ("list[0]"), nested indices ("list[0][1]"), and quoted keys ("dict['key-name']").
+    :param fallback_value: A secondary dictionary to search in if a value is None at any point in the path.
+    :param return_None_on_not_found: If True, returns None if any part of the path is not found. Overrides raise_on_not_found.
+    :param raise_on_not_found: If True, raises a ValueError if a key/index in `path` is not found.
+    :param _error_message: A custom error message template. Use `[path]` for the full path and `[error]` for the specific error.
+    :param simple_error: If True, returns a simplified error string showing the path.
+    :param deepcopy: If True, returns a deep copy of the found value if it's a dict, list, or tuple.
+    :param _full_path: (Internal use) The original full path for error messages.
 
-  :returns: The value the rabbit ended up on
-
-  :raises ValueError: If `raise_on_not_found` is `True` and a key in `raw_path` is not found in `value`
-
-  :notes: 
-    - If `raw_path` is empty, the function returns `value` as is
-    - List elements are accessed using square brackets, e.g. "somearray[0]"
-  """
+    :return: The value at the specified path, None, or an error string.
+    :raises ValueError: If `raise_on_not_found` is True and a key/index is not found.
+    :raises StupidError: If `return_None_on_not_found` and `raise_on_not_found` are both True.
+    """
 	raw_path = path
 	if return_None_on_not_found and raise_on_not_found:
-		raise StupidError("the passed arguments make total sense")
-	if not _error_message:
-		_error_message = "Rabbit fail [path] ([error])"
-	if not _full_path:
-		_full_path = raw_path
-	if not raw_path:
-		return value
-	went_through = []
-	key = None
-	index = None
+		raise StupidError("return_None_on_not_found and raise_on_not_found cannot both be True.")
+
+	_error_message = _error_message or "Rabbit fail [path] ([error])"
+	_full_path = _full_path or raw_path
 
 	parsed_path = parse_path(raw_path)
-	for path in parsed_path:
-		if '[' in path and ']' in path:
-			key, index = path.split('[')
-			index = int(index[:-1])
-		else:
-			key = path
-			index = None
+	if not parsed_path:
+		return value
+
+	current_value = value
+	current_fallback = fallback_value
+
+	for i, part in enumerate(parsed_path):
 		try:
-			if key is not None and index is not None:
-				value = value[key][index]  # type: ignore
-				if fallback_value:
-					fallback_value = fallback_value[key][index]  # type: ignore
-			elif isinstance(value, dict):
-				if key in value:
-					value = value[key]
-				else:
-					value = None  # type: ignore
-				if fallback_value:
-					fallback_value = fallback_value[key]  # type: ignore
+			if isinstance(part, int):
+				current_value = current_value[part]
 			else:
-				raise KeyError(f"{key} not found")
+				current_value = current_value[part]
 
-			if value == None:
-				value = fallback_value  # type: ignore
-			if value == None:
-				raise KeyError(f"{key} not found")
-			if len(parsed_path) > len(went_through) + 1:
-				if not isinstance(value,
-				                  (dict,
-				                   tuple)) and not (fallback_value and isinstance(fallback_value, (dict, tuple))):
-					error_msg = f"expected nested structure, found {type(value).__name__}"
-					if not fallback_value and not simple_error:
-						error_msg += f", no fallback passed"
-					if fallback_value:
-						error_msg += f", {type(fallback_value).__name__} in fallback"
-					raise TypeError(error_msg)
+			if current_fallback is not None:
+				try:
+					if isinstance(part, int):
+						current_fallback = current_fallback[part]
+					else:
+						current_fallback = current_fallback[part]
+				except (KeyError, IndexError, TypeError):
+					current_fallback = None
 
-		except (KeyError, IndexError, ValueError, TypeError, StupidError) as e:
-			if return_None_on_not_found and not raise_on_not_found:
+			if current_value is None and current_fallback is not None:
+				current_value = current_fallback
+
+			if current_value is None and i < len(parsed_path) - 1:
+				raise KeyError(f"Path leads to None at '{part}' before reaching the end")
+
+		except (KeyError, IndexError, TypeError) as e:
+			if return_None_on_not_found:
 				return None
-			failed_part = parsed_path[len(went_through)]
 
-			before_failed = '.'.join(parsed_path[:len(went_through)])
-			after_failed = '.'.join(parsed_path[len(went_through) + 1:])
+			def format_part_for_error(p: Union[str, int], is_first: bool = False) -> str:
+				if isinstance(p, int):
+					return f"[{p}]"
+				return str(p) if is_first else f".{p}"
+
+			path_parts_str = [format_part_for_error(p, i == 0) for i, p in enumerate(parsed_path)]
+
+			before_path = "".join(path_parts_str[:i])
+			failed_part_str = path_parts_str[i].lstrip('.')
+			after_path = "".join(path_parts_str[i + 1:])
 
 			if simple_error:
-				error_message = f"{before_failed}.{failed_part}{'.' + after_failed if after_failed else ''}"
+				error_message = f"{before_path}{failed_part_str}{after_path}"
 			else:
-				if before_failed:
-					full_error_path = f"`{before_failed}.`**`{failed_part}`**"
-				else:
-					full_error_path = f"**`{failed_part}`**"
-
-				if after_failed:
-					full_error_path += f"`.{after_failed}`"
-
+				full_error_path = f"`{before_path}`**`{failed_part_str}`**"
+				if after_path:
+					full_error_path += f"`{after_path}`"
 				error_message = _error_message.replace("[path]", full_error_path).replace("[error]", str(e))
 
 			if raise_on_not_found:
-				raise ValueError(error_message)
+				raise ValueError(error_message) from e
 			return error_message
 
-		went_through.append(path)
+	if deepcopy and isinstance(current_value, (dict, list, tuple)):
+		return copy.deepcopy(current_value)
 
-	if deepcopy and isinstance(value, (dict, tuple)):
-		return copy.deepcopy(value)
-
-	return value
-
+	return current_value
 
 def exec(command: list) -> str:
 	return subprocess.run(
