@@ -216,7 +216,7 @@ class InteractCommands(Extension):
 		user_one, user_two = await self.parse_args(ctx, user_one, user_two)
 		try:
 			interaction_raw = loc.l(f"interact{path}", typecheck=Any)
-			assert not isinstance(interaction_raw, str)
+			assert not isinstance(interaction_raw, str), "Assertion failed: " + interaction_raw
 			interaction = InteractionEntry(interaction_raw['name'], phrases=interaction_raw['phrases']) if isinstance(
 			    interaction_raw, dict
 			) else InteractionEntry(None, interaction_raw)
@@ -247,78 +247,92 @@ class InteractCommands(Extension):
 		) else InteractionEntry(None, interaction_raw)
 		phrases = interaction.phrases
 		all_buttons: list[Button] = []
+		path_prefix = f"{path}.phrases" if isinstance(interaction_raw, dict) else path
 		for i in range(len(phrases)):
 			phrase = phrases[i]
 			if isinstance(phrase, str):
 				return await ctx.send(embeds=Embed(description=f"[ {loc.l('interact.errors.500')} ]", color=Colors.BAD))
-
-			button = Button(style=ButtonStyle.GRAY, label=phrase.name, custom_id=f"interact {page} {path}[{i}]")
+			new_path = f"{path_prefix}[{i}]"
+			button = Button(style=ButtonStyle.GRAY, label=phrase.name, custom_id=f"interact {page} {new_path}")
 			if not self.ie_only_basic(phrase.phrases):
 				button.style = ButtonStyle.BLURPLE
 				button.emoji = PartialEmoji(name="🔢")
-			else:
-				if interaction.name is not None:
-					button.custom_id = f"interact {page} {path}.phrases[{i}]"
 			all_buttons.append(button)
 
 		all_buttons = sorted(
 		    all_buttons,
 		    key=lambda button: ((button.emoji.name != "🔢" if button.emoji is not None else True), button.label)
 		)
-		buttons: list[Button | None] = []
-		buttons_per_page = 25
 
+		MAX_BUTTONS = 25
+		MAX_PER_ROW = 5
+
+		start_idx = 0
+		if page > 0:
+			temp_page_size = MAX_BUTTONS - 1
+			if interaction.name:
+				temp_page_size -= 1
+			if len(all_buttons) + (1 if interaction.name else 0) > MAX_BUTTONS:
+				temp_page_size -= 2
+			start_idx = temp_page_size + (page - 1) * (temp_page_size - 1)
+
+		free_slots = MAX_BUTTONS
+		if interaction.name:
+			free_slots -= 1
+		if page > 0:
+			free_slots -= 1
+
+		paging_active = (len(all_buttons) + (1 if interaction.name else 0)) > MAX_BUTTONS
+		if paging_active:
+			free_slots -= 1
+
+		end_idx = start_idx + free_slots
+		page_actions = all_buttons[start_idx:end_idx]
+
+		has_next_page = (start_idx + len(page_actions)) < len(all_buttons)
+		if has_next_page:
+			page_actions.pop()
+
+		# assembly
+		rows: list[ActionRow] = []
+		first_row: list[Button] = []
+
+		if page > 0:
+			first_row.append(Button(custom_id=f"interact {page-1} {path}", style=ButtonStyle.BLURPLE, emoji="⬅️"))
 		if interaction.name is not None:
 			out = path.rpartition('[')
-			buttons_per_page -= 2
-			buttons.append(
+			first_row.append(Button(style=ButtonStyle.BLURPLE, emoji="⬆️", custom_id=f"interact 0 {out[0]}"))
+
+		end_controls: list[Button] = []
+		if paging_active:
+			end_controls.append(
 			    Button(
-			        label=interaction.name,
-			        style=ButtonStyle.BLURPLE,
-			        disabled=True,
-			        emoji=PartialEmoji(name="🔢"),
-			        custom_id=f"unused",
-			    )
-			)
-			buttons.append(
-			    Button(
-			        style=ButtonStyle.BLURPLE,
-			        disabled=False,
-			        emoji=PartialEmoji(name="⬆️"),
-			        custom_id=f"interact {page} {out[0]}",
-			    )
-			)
-		paging = len(all_buttons) > buttons_per_page
-		if paging:
-			buttons_per_page -= 1
-			buttons.insert(
-			    0,
-			    Button(
-			        label=replace_numbers_with_emojis(str(page)),
+			        label=replace_numbers_with_emojis(str(page + 1)),
 			        style=ButtonStyle.GRAY,
 			        disabled=True,
-			        emoji=PartialEmoji(name="🔢"),
-			        custom_id=f"unused",
+			        custom_id="unused"
 			    )
 			)
-			buttons_per_page -= 1  # next button
-			if page > 0 and page < len(all_buttons) / buttons_per_page:
-				buttons_per_page -= 1  # prev button
-		buttons.extend(all_buttons[page:page + 1 + buttons_per_page])
-		if paging and page != 0:
-			buttons = fill_with_none(buttons, 5)
-			buttons.insert(0, Button(custom_id=f"interact {page-1} {path}", style=ButtonStyle.BLURPLE, emoji="⬅️"))
-		if paging and page < len(all_buttons) / buttons_per_page:
-			buttons.insert(4, Button(custom_id=f"interact {page+1} {path}", style=ButtonStyle.BLURPLE, emoji="➡️"))
+		if has_next_page:
+			end_controls.append(Button(custom_id=f"interact {page+1} {path}", style=ButtonStyle.BLURPLE, emoji="➡️"))
 
-		rows = [ActionRow(*[ btn for btn in buttons[i:i + 5] if btn is not None ]) for i in range(0, len(buttons), 5)]
+		actions_to_add = min(len(page_actions), MAX_PER_ROW - len(first_row) - len(end_controls))
+		first_row.extend(page_actions[:actions_to_add])
+		page_actions = page_actions[actions_to_add:]
+
+		first_row.extend(end_controls)
+		if first_row:
+			rows.append(ActionRow(*first_row))
+
+		for i in range(0, len(page_actions), MAX_PER_ROW):
+			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
+
 		return await ctx.edit(
 		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
 		    embeds=[],
 		    components=rows,
 		    allowed_mentions=none_allowed
 		)
-
 	async def send_phrase(
 	    self, cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
 	    state: tuple[str, str | User, str | User]
