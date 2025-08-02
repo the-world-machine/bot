@@ -43,13 +43,6 @@ def fill_with_none(arr, target_index):
 def replace_numbers_with_emojis(text: str) -> str:
 	return re.sub(r'\d', lambda m: m.group() + chr(0xFE0F) + chr(0x20E3), text)
 
-
-# Example usage
-text = "I have 3 apples and 15 oranges, but only 0.5 bananas."
-emoji_text = replace_numbers_with_emojis(text)
-print(emoji_text)
-
-
 class InteractCommands(Extension):
 
 	@user_context_menu('💡 interact...')
