@@ -93,7 +93,11 @@ class ProfileCommands(Extension):
 
 	@profile.subcommand(sub_cmd_description='Edit your profile')
 	async def edit(self, ctx: SlashContext):
-		components = Button(style=ButtonStyle.URL, label=Localization(ctx.locale).l('general.buttons._open_site'), url="https://theworldmachine.xyz/profile")
+		components = Button(
+		    style=ButtonStyle.URL,
+		    label=Localization(ctx.locale).l('general.buttons.open_site'),
+		    url="https://theworldmachine.xyz/profile"
+		)
 		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)
 
 	choices = [

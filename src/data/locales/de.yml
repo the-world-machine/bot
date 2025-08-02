@@ -4,17 +4,17 @@ general:
   command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Ja"
-    _no: "Nein"
-    _done: "Fertig"
-    _cancel: "Stornieren"
-    _back: "Wieder"
-    _forwards: "Vorwärts"
-    _continue: "Weiter"
-    _next: "Nächste"
-    _previous: "Zurück"
-    _open_site: "Seite öffene"
-    _dont_show_again: "Don't Show Again"
+    yes: "Ja"
+    no: "Nein"
+    done: "Fertig"
+    cancel: "Stornieren"
+    back: "Wieder"
+    forwards: "Vorwärts"
+    continue: "Weiter"
+    next: "Nächste"
+    previous: "Zurück"
+    open_site: "Seite öffene"
+    dont_show_again: "Don't Show Again"
 
   minis:
     note: "❕ Notierung(en):"

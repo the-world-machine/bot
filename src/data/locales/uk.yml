@@ -4,17 +4,17 @@ general:
   command_cooldown: "[ Будь ласка, не спамте цю команду. Ви зможете використати її [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Так"
-    _no: "Ні"
-    _done: "Готово"
-    _cancel: "Скасувати"
-    _back: "Назад"
-    _forwards: "Вперед"
-    _continue: "Далі"
-    _next: "Наступне"
-    _previous: "Попереднє"
-    _open_site: "Відкрити Cайт"
-    _dont_show_again: "Більше не показувати"
+    yes: "Так"
+    no: "Ні"
+    done: "Готово"
+    cancel: "Скасувати"
+    back: "Назад"
+    forwards: "Вперед"
+    continue: "Далі"
+    next: "Наступне"
+    previous: "Попереднє"
+    open_site: "Відкрити Cайт"
+    dont_show_again: "Більше не показувати"
   
   minis:
     note: "❕ нотатка:"

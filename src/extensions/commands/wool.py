@@ -85,8 +85,8 @@ class WoolCommands(Extension):
 
 		if to.bot and not (amount <= 0):
 			buttons = [
-			    Button(style=ButtonStyle.RED, label=loc.l('general.buttons._yes'), custom_id=f'yes'),
-			    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._no'), custom_id=f'no')
+			    Button(style=ButtonStyle.RED, label=loc.l('general.buttons.yes'), custom_id=f'yes'),
+			    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons.no'), custom_id=f'no')
 			]
 
 			confirmation_m = await fancy_message(

@@ -299,9 +299,7 @@ class NikogotchiCommands(Extension):
 			        label=loc.l('nikogotchi.other.renaming.button'),
 			        custom_id=f'rename {ctx.id}'
 			    ),
-			    Button(
-			        style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'continue {ctx.id}'
-			    )
+			    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons.continue'), custom_id=f'continue {ctx.id}')
 			]
 			await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True, edit_origin=True)
 			try:
@@ -610,8 +608,8 @@ class NikogotchiCommands(Extension):
 		name = nikogotchi.name
 
 		buttons: list[BaseComponent | dict] = [
-		    Button(style=ButtonStyle.RED, label=loc.l('general.buttons._yes'), custom_id=f'rehome'),
-		    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._cancel'), custom_id=f'cancel')
+		    Button(style=ButtonStyle.RED, label=loc.l('general.buttons.yes'), custom_id=f'rehome'),
+		    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons.cancel'), custom_id=f'cancel')
 		]
 
 		await ctx.send(
@@ -676,7 +674,7 @@ class NikogotchiCommands(Extension):
 			components.append(
 			    Button(
 			        style=ButtonStyle.GRAY,
-			        label=loc.l('general.buttons._continue'),
+			        label=loc.l('general.buttons.continue'),
 			        custom_id=f'action_refresh_{ctx.author_id}'
 			    )
 			)
@@ -735,8 +733,8 @@ class NikogotchiCommands(Extension):
         uid = user.id
 
         buttons = [
-            Button(style=ButtonStyle.SUCCESS, label=loc.l('general.buttons._yes'), custom_id=f'trade {ctx.author.id} {uid}'),
-            Button(style=ButtonStyle.DANGER, label=loc.l('general.buttons._no'), custom_id=f'decline {ctx.author.id} {uid}')
+            Button(style=ButtonStyle.SUCCESS, label=loc.l('general.buttons.yes'), custom_id=f'trade {ctx.author.id} {uid}'),
+            Button(style=ButtonStyle.DANGER, label=loc.l('general.buttons.no'), custom_id=f'decline {ctx.author.id} {uid}')
         ]
 
         await user.send(

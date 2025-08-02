@@ -2,13 +2,13 @@ general:
   loading: "[ Загрузка... [emoji:loading] ]"
 
   buttons:
-    _yes: "Да"
-    _no: "Нет"
-    _cancel: "Отмена"
-    _back: "Назад"
-    _continue: "Продолжить"
-    _open_site: "Открыть Сайт"
-    _dont_show_again: "Не Показывать Снова"
+    yes: "Да"
+    no: "Нет"
+    cancel: "Отмена"
+    back: "Назад"
+    continue: "Продолжить"
+    open_site: "Открыть Сайт"
+    dont_show_again: "Не Показывать Снова"
   
   minis:
     note: "❕ заметка:"
