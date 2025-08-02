@@ -15,8 +15,10 @@ global:
     previous: "Предыдущий"
     open_site: "Открыть Сайт"
     dont_show_again: "Не Показывать Снова"
-    beginning: "To The Beginning"
-    start: "To The Start"
+    up: "Верх"
+    top: "В Самый Верх"
+    down: "Низ"
+    bottom: "В Самый Низ"
 
   minis:
     note: "❕ заметка:"
@@ -358,7 +360,7 @@ shop:
         [stock_market]
         [selected_treasure]
         [user_wool]
-      #not_selected: "*You haven't selected any treasures to trade in...*"
+      #not_selected: "*Вы ещё не выбрали ни одного сокровища на обмен...*"
       placeholder: Выберет сокровища для обмена...
       no_treasures: У вас нету никаких сокровищ.
       option: '"[name]" (x[amount])'
@@ -457,57 +459,57 @@ interact:
   twm_is_fed_up_with_you: "[ *вздох* Ты не можешь взаймодействовать с собою, [user]. ]"
 
   errors:
-    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
-    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
-    fail: Failed to send the interaction
+    no_path: "Невозможно найти взаимодействие, попробуйте использовать команду ещё раз. Если ошибка останется, пожалуйста, сообщите об этом на нашем сервере сообщества (вы можете найти его в /about)"
+    500: "Непредвиденная ошибка, попробуйте использовать команду ещё раз. Если ошибка останется, пожалуйста, сообщите об этом на нашем сервере сообщества (приглашение на него в /about)"
+    fail: Не удалось произвести взаимодействие
 
   phrases:
-    - name: Тыкнуть
+    - name: Буп (Тыкнуть)
       phrases:
         - name: Обычно
           phrases:
             - "[user_one] тыкнул [user_two]"
         - name: Игриво
           phrases:
-            - "[user_one] тыкнул нос [user_two]!"
-            - "[user_one] протянул руку и тыкнул [user_two]!"
-            - "[user_one] с ничего тыкнул [user_two]!"
-            - "[user_one] игриво тыкнул [user_two]!"
+            - "[user_one] бупает нос [user_two]!"
+            - "[user_one] протянул руку и бупает [user_two]!"
+            - "[user_one] с ничего бупает [user_two]!"
+            - "[user_one] игриво бупнул [user_two]!"
         - name: Деликатно
           phrases:
-            - "[user_one] нежно тыкнул и погладил нос [user_two]"
-            - "[user_one] изящно доставляет тык [user_two]"
+            - "[user_one] нежно бупнул и погладил нос [user_two]"
+            - "[user_one] изящно доставляет буп [user_two]"
             - "[user_one] нежно нажимает на нос [user_two]"
-            - "[user_one] деликатно тыкнул нос [user_two]"
+            - "[user_one] деликатно бупнул нос [user_two]"
         - name: Недовольно
           phrases:
-            - "[user_one] агрессивно тыкнул [user_two]"
-            - "[user_one] booped [user_two] out of frustration"
-            - "[user_one] huffs and boops [user_two] in irritation"
-            - "[user_one] lets out their frustration with a firm boop on [user_two]"
+            - "[user_one] агрессивно бупнул [user_two]"
+            - "[user_one] срывается на [user_two] и бупает"
+            - "[user_one] фыркнув, бупает [user_two] в раздражении"
+            - "[user_one] выпускает свой пар на [user_two] твёрдым бупом"
         - name: Неудержимо
           phrases:
-            - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
-            - "[user_one] просто захотел тыкнуть [user_two]!"
-            - "[user_one] не смог удержаться и тыкнул [user_two]!"
-            - "[user_one] gives in to the urge and boops [user_two]"
+            - "[user_one] почувствовал, что нужно бупнуть [user_two]!"
+            - "[user_one] просто захотел бупнуть [user_two]!"
+            - "[user_one] не смог удержаться и бупнул [user_two]!"
+            - "[user_one] поддаётся желанию и бупает [user_two]"
         - name: Неожиданно
           phrases:
-            - "[user_one] оставил в недоразумении [user_two] тыком в нос!"
-            - "[user_one] неожиданно тыкнул [user_two]!"
+            - "[user_one] оставил в недоразумении [user_two] бупом в нос!"
+            - "[user_one] неожиданно бупнул [user_two]!"
             - "[user_two] без слов после тычка в нос от [user_one]!"
-            - "[user_one] leaves [user_two] wondering why they were booped"
+            - "[user_one] оставляет [user_two] в недоразумении бупом"
         - name: С Умиления
           phrases:
-            - "[user_one] делает [user_two] милейший маленький тычок!"
-            - "[user_one] тыкает нос [user_two], мило хихикая!"
-            - "[user_one] не может смириться с милотой [user_two] после чего тыкает!"
-            - "[user_one] с улыбкой доставляет трогательный до дрожи тык [user_two]!"
+            - "[user_one] делает [user_two] милейший маленький буп!"
+            - "[user_one] бупает нос [user_two], мило хихикая!"
+            - "[user_one] не может смириться с милотой [user_two] после чего бупает!"
+            - "[user_one] с улыбкой доставляет трогательный до дрожи буп [user_two]!"
     - name: Дать Пощёчину
       phrases:
-        - "[user_one] дали пощёчину [user_two], вероятно заслужили."
-        - "[user_one] slaps [user_two]!"
-        - "[user_two] received a sudden slap from [user_one]!"
+        - "[user_one] дали пощёчину [user_two], вероятно заслужено."
+        - "[user_one] даёт пощёчину [user_two]!"
+        - "[user_two] получает неожиданно пощёчину от [user_one]!"
     - name: Погладить
       phrases:
         - "[user_one] погладил [user_two]!"
@@ -561,25 +563,25 @@ interact:
         - name: Rocks
           phrases:
             - "[user_one] кинул камешек в [user_two]!"
-            - "[user_one] threw a bunch of pebbles at [user_two]!"
-            - "[user_one] unearthed a giant rock out of the ground and launched it at [user_two] using brain power"
+            - "[user_one] кидает кучку камушков в [user_two]!"
+            - "[user_one] выгребает огромный булыжник прямо из земли и пуляет в [user_two] силой мысли"
         - name: Молотов
           phrases:
             - "[user_one] бросил бутылку с коктелем Молотова в [user_two] ‼️"
         - name: Пустая Бутылка (ай)
-          phrases: # VIOLENCE
+          phrases: # месево :fire:
             - "[user_one] кинул пустую бутылку на голову [user_two]"
-            - "[user_one] shattered a bottle on [user_two]'s head"
+            - "[user_one] раскалывает бутылку об голову [user_two]"
           flags: bottle # do not translate
-        - name: Piece of Wool
+        - name: Кусочек Шерсти
           phrases:
-            - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"
-            - "[user_one] released a tiny 🤏 pinch of wool above [user_two]'s head"
-            - "[user_one] rubbed [user_two]'s face with a big clump of wool"
-            - "[user_one] tickled [user_two]'s ear with a small piece of wool"
+            - "[user_one] кидает шерстинку в [user_two], но она упала на землю на пол. пути"
+            - "[user_one] выпускает малюсенькую 🤏 шерстинку прямо над головой [user_two]"
+            - "[user_one] трёт лицо [user_two] большим комком шерсти"
+            - "[user_one] щекотит ушко [user_two] комочком шерсти"
           flags: wool # do not translate
   modifiers:
-    no_item: "[user_one] ran out of [item] to throw at [user_two]!"
+    no_item: "У [user_one] кончились все [item] для кидания в [user_two]!"
 # ---------------------------------------------------------------
 
 treasure:
@@ -590,7 +592,7 @@ treasure:
 
     [treasures]
 
-  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some! # tip:
+  tip: вы можете получить больше сокровищ торговлей в магазине или отправкой Никоготчи на поиски таковых! # tip:
 
 # ---------------------------------------------------------------
 
@@ -598,7 +600,7 @@ nikogotchi:
   owned: Принадлежит [user]
   loading: "[ Загрузка Никоготчи... [emoji:loading] ]"
   invalid: "[ Вы не имеете Никоготчи! ]"
-  tipnvalid: "you can buy a capsule with one in the shop" # tip:
+  tipnvalid: "вы можете купить капсулу с Никоготчи в магазине" # tip:
 
   name:
     niko: Нико
@@ -667,8 +669,8 @@ nikogotchi:
     normal: "👍 Пока-что всё хорошо."
     normal-rare: "🙂 Ждёте пока что-то произойдёт?"
     pet: "🥺 [name] хочет внимания!"
-    dirty: "🛀 [name] хочет быть чистым!"
-    hungry: "🥞 [name] голоден..."
+    dirty: "🛀 [name] хочет сверкать от чистоты!"
+    hungry: "🥞 [name] хочет кушать..."
     treasure: "🎒 [name] ищет сокровища!"
     danger: 🚨 У [name] низкое здоровье! Используйте Золотые Оладушки чтобы востановить их здоровье!
 
@@ -693,13 +695,13 @@ nikogotchi:
   died:
     title: "🪦 [name] ушёл из жизни..."
     description: >
-      [name] lived a full life which lasted for: [age].
+      [name] удалось прожить всю жизнь, которая длилась: [age].
 
 
-      - Time since last taken care of: **[time_difference]**
+      - Время с последнего ухода за ними: **[time_difference]**
 
 
-      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
+      Никоготчи полагаются на вашу любовь и внимание, поэтому старайтесь следить за ними как можно лучше!
 
 
       R.I.P....
@@ -878,22 +880,22 @@ nikogotchi:
 
 textbox:
   errors:
-    no_chars: No characters found...
-    no_char: Character not found...
-    no_faces: No faces found...
-    no_faces_for_char: Faces not found for this character...
-    failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
-    unknown_state: "This textbox builder has expired. Run the command again, or report this in our [support discord server]([discord_invite]) if it keeps happening. (state id: [id])"
-    unknown_frame: "Frame №[index] not found. Total frames: [total]"
-    invalid_character: The character "[character_name]" doesn't exist
-    invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
-    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
-    failed_to_send: "[ Failed to send for some reason :[ ]"
-    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
+    no_chars: Ни одного персонажа найдено...
+    no_char: Персонаж не найден...
+    no_faces: Ни одного лица не найдено...
+    no_faces_for_char: Не найдено лиц под этого персонажа...
+    failed_to_render: "[ У меня не получилось отрендерить эту картинку, пожалуйста, сообщите в наш [дискорд сервер поддержки]([discord_invite]). ID Состояния: [sid] ]"
+    unknown_state: "Время на создание текстбокса истекло. Введите команду заново или сообщите об этом в наш [дискорд сервер поддержки]([discord_invite]) если это будет повторяться. (ID Состояния: [id])"
+    unknown_frame: "Кадр №[index] не найден. Всего кадров: [total]"
+    invalid_character: Персонаж "[character_name]" не существует
+    invalid_face: У персонажа "[character_name]" нет лица "[face_name]"
+    cutoff: "Этот текст был укорочен из-за лимитаций дискорда." # TODO: implemen
+    failed_to_send: "[ Не удалось отправить по некой причине :[ ]"
+    failed_to_send_dm: "[ Не удалось отправить сообщение в лс, открыт ли у вас лс или [добавили ли меня](https://discord.com/oauth2/authorize?client_id=[app:id])? ]"
     apng_preview_warn: | # warn:
-      Discord doesn't show or let you download `.png`s as APNG.
-      You can open the attachment in the browser, and it should animate (if there's any animation).
-    ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
+      Дискорд не показывает и не даёт вам скачать `.png`s как APNG.
+      Вы можете открыть вложение в браузере, после чего оно должно анимироваться (если есть что анимировать).
+    ephemeral_warnote: Если вы хотите добавить это в ⭐ Избранное - убедитесь, что вы скачали это как файл и отправили где-нибудь. Файлы из эфемерных сообщений (те, что видите только вы) показываются непродолжительно - дискорд удаляет их в районе 15 минут. Так что скачайте или оно будет отображатся как синий квадрат в вашем списке избранного # warn:
 
   filetypes:
     GIF: gif
@@ -904,50 +906,50 @@ textbox:
     JPEG: jpeg
     # ↑ those show up ↓ there
   button:
-    render: Render [type]
-    "render&send": "Render [type] & Send"
+    render: Рендер [type]
+    "render&send": "Рендер [type] & Отправка"
     text:
-      edit: Edit Text
-      add: Add Text
+      edit: Изменить Текст
+      add: Добавить Текст
     frame:
-      next: Next Frame
-      add: Add Frame
-      previous: Previous Frame
-      manual: Input Frame
+      next: След. Кадр
+      add: Добавить Кадр
+      previous: Пред. Кадр
+      manual: Входной Кадр
 
-  frame_position: "editing frame [current] of [total] total"
+  frame_position: "сейчас редактируется кадр [current]/ [total]"
 
   select:
-    chars: Characters...
-    faces: Faces...
-    styles: Styles...
+    chars: Персонажи...
+    faces: Лица...
+    styles: Стили...
 
   modal:
     edit_text:
-      title: "Editing text for frame #[index]!"
+      title: "Редактируется текст для кадра #[index]!"
       input:
-        label: Text
-        placeholder: Text probably goes here
+        label: Текст
+        placeholder: Текст наверняка идёт здесь
       response: > # only shows up while debugging
-        Text changed!
+        Текст изменён!
 
-        New text: [new_text]
+        Новый текст: [new_text]
 
-        Old text: [old_text]
+        Старый текст: [old_text]
 
   monologue:
-    char: "[ Pick a character for the textbox ]"
-    face: "[ Pick a face ]"
-    press_notext: "[ Make sure you put some text... if you want ]"
-    press: "[ Press the green button whenever you're ready ]"
-    rendering: "[ [emoji:loading] Rendering... ]"
-    sending: "[ [emoji:loading] Sending... ]"
-    done: "[ Done ]"
+    char: "[ Выберите персонажа для текстбокса ]"
+    face: "[ Выберите лицо ]"
+    press_notext: "[ Убедитесь, что вы добавили текст... Если нужно ]"
+    press: "[ Нажмите на зелёную кнопку когда будете готовы ]"
+    rendering: "[ [emoji:loading] Рендер... ]"
+    sending: "[ [emoji:loading] Отправка... ]"
+    done: "[ Готово ]"
 
-    debug: "(Took: **[time]**ms., Sid: **[sid]**)"
+    debug: "(Заняло: **[time]**мс., Sid: **[sid]**)"
 
   alt:
     single_frame:
-      filename: "TWM textbox ([character], [face], [timestamp])"
+      filename: "Текстбокс TWM ([character], [face], [timestamp])"
     multi_frame:
-      filename: "TWM textbox ([frames], [timestamp])"
+      filename: "Текстбокс TWM ([frames], [timestamp])"
