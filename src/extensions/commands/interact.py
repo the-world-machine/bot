@@ -151,7 +151,7 @@ class InteractCommands(Extension):
 
 	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
 		loc = Localization(ctx.locale)
-		await ctx.respond(content=loc.l('general.loading'), ephemeral=True)
+		await ctx.respond(content=loc.l('global.loading'), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
@@ -188,7 +188,7 @@ class InteractCommands(Extension):
 		"""
 		return await self.respond((ctx, loc), (0, ".phrases", user_one, user_two))
 
-	handle_components_regex = re.compile(r"interact (?P<page>.+) (?P<path>.+)$")
+	handle_components_regex = re.compile(r"interact (?P<page>\d+)(?: (?P<path>.+))?$")
 
 	@component_callback(handle_components_regex)
 	async def handle_components(self, ctx: ComponentContext):
@@ -204,7 +204,8 @@ class InteractCommands(Extension):
 		)
 		match = self.handle_components_regex.match(ctx.custom_id)
 		if match:
-			page, path = match.group("page", "path")
+			page = match.group("page")
+			path = match.group("path") or ".phrases"
 		assert isinstance(page, str) and isinstance(path, str)
 
 		user_one = stuff[0][2:-1]
@@ -327,12 +328,16 @@ class InteractCommands(Extension):
 		for i in range(0, len(page_actions), MAX_PER_ROW):
 			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
 
+		if len(rows) == 0:
+			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("global.buttons.start"))))
+
 		return await ctx.edit(
 		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
 		    embeds=[],
 		    components=rows,
 		    allowed_mentions=none_allowed
 		)
+
 	async def send_phrase(
 	    self, cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
 	    state: tuple[str, str | User, str | User]
