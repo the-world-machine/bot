@@ -15,14 +15,17 @@ global:
     previous: "Предыдущий"
     open_site: "Открыть Сайт"
     dont_show_again: "Не Показывать Снова"
-  
+    beginning: "To The Beginning"
+    start: "To The Start"
+
   minis:
     note: "❕ заметка:"
     tip: "❔ совет:"
     warn: "⚠️ предупреждение:"
     err: "‼️ ошибка:"
+
   select:
-    empty: йоу, русский перевод по-большей части сделал @mr._saturn 
+    empty: йоу, русский перевод по-большей части сделал @mr._saturn
     multiple: ([current]/[total])
 
   responses:
@@ -31,8 +34,8 @@ global:
 
 # ---------------------------------------------------------------
 
-music: 
-  loading: 
+music:
+  loading:
     search: "[ Поиск... [emoji:loading] ]"
     file: "[ Загрузка вашего файла... [emoji:loading] ]"
 
@@ -43,7 +46,7 @@ misc:
     title: "Вы нашли..."
     finding:
       noik: Нико!
-      footer: Шанс 1 на сто! Повезло!
+      note: Шанс 1 на сто! Повезло!
       cat: кота!
 
   stats:
@@ -51,22 +54,21 @@ misc:
       👑 [owners]
 
       [description]
-    names: 
+    names:
       shards: "Шарды"
-      avg_ping: "Средний пинг" # untitle case'd for consistency with other ones
+      avg_ping: "Средний пинг"
       latency: "Задержка ответа"
-      commit_hash: "Хеш коммита"     #
+      commit_hash: "Хеш коммита"
       server_count: "Количество серверов"
-      user_installs: "Пользовательские установки" #
-      host: "Хост"                   #
+      user_installs: "Пользовательские установки"
+      host: "Хост"
       music_listeners: "Слушателей музыки"
-      played_time: "Играет" # literal: "plays x time" 
+      played_time: "Играет"
       played_songs: "Проиграно песен"
       cpu_usg: "Нагрузка ЦП"
       mem_usg: "Загруженность ОЗУ"
       uptime: "Время работы"
     values:
-
       time: "**[sec]** сек."
       percent: "**[num]**%"
       failed_commit_hash: "N/A"
@@ -80,10 +82,10 @@ misc:
     placeholder_text: "[ Добро пожаловать на [server_name], [user_name]! Теперь здесь [member_count] участников! ]"
 
   wikipedia: "[ [Вот]([link]) случайная статья из Википедии. Кажется, она о [title]... ]"
-     
+
 # ---------------------------------------------------------------
 
-wool: 
+wool:
   balance:
     you:
       none: "[ У вас нет **[emoji:wool]Шерсти** ]"
@@ -94,7 +96,7 @@ wool:
     bot:
       none: |
         [ Боты обычно не взаимодействуют со мной, хотя они даже не могут,
-        
+
         так что у [mention] нету [emoji:wool]**Шерсти** ]
       some: |
         [ Боты обычно не взаимодействуют со мной, хотя они даже не могут, но...
@@ -134,7 +136,6 @@ wool:
       gain: "вы также получили [emoji:wool]**[amount]** шерсти!"
       loss: "вы также потеряли [emoji:wool]**[amount]** шерсти..."
 
-
 # ---------------------------------------------------------------
 
 transmit:
@@ -146,12 +147,12 @@ transmit:
 settings:
   errors:
     weird_edgecase_number_0: Вы или [app:mention] не находитесь на сервере. Если вы настройщик сервера, пожалуйста, добавьте [app:mention] заново на сервер.
-    missing_permissions: "[ Вы должны иметь право \"Управлять сервером\" для изменения настроек ]"
+    missing_permissions: '[ Вы должны иметь право "Управлять сервером" для изменения настроек ]'
     channel_not_messageable: "[ Я не могу отправлять сообщения в данный канал ]"
     channel_insufficient_perms: "[ У меня недостаточно прав для этого канала. Удостоверитесь, что у меня есть права на: **Отправка Сообщений**, **Просмотр Канала** и **Прикрепление Файлов**. ]"
     invalid_server_id: "[ Неверный ID сервера. ]"
     uncached_server: "-# не найдено имя сервера (меня в нём нет)"
-    get_server_id: "(Настройки Discord -> Расширенные -> включите \"Режим разработчика\", затем посмотрите на нижнюю часть контекстного меню сервера)"
+    get_server_id: '(Настройки Discord -> Расширенные -> включите "Режим разработчика", затем посмотрите на нижнюю часть контекстного меню сервера)'
     channel_lost_warn: "Что-то сломалось в предыдущий раз после отправки мною сообщения о приветствии в выбранный вами канал. Убедитесь, что у меня достаточно прав и выбранный канал существует. Вы можете поменять канал через `/settings welcome channel`, или же через Настройки Сервера -> Вовлечённость -> ᴋᴀнᴀл cиcᴛᴇмныx ᴄᴏᴏбщᴇний"
   welcome:
     enabled:
@@ -169,7 +170,7 @@ settings:
       input: "Сообщение о приветствии"
       placeholder: "Вы можете использовать переменные: [user_name] [server_name] [member_count]"
       done: "[ Успешно обновлено сообщение о приветствии ]" # todo: string changed
-      debug: | 
+      debug: |
         Предыдущий: [old_text]
 
         Новый (current): [new_text]
@@ -194,13 +195,13 @@ settings:
 # ---------------------------------------------------------------
 
 profile:
-  view: 
+  view:
     message: Показывается профиль [usermention]
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редактировать Свой Профиль"
     bots: "[ У ботов нету профилей! ]"
     loading: "[ Загрузка профиля [user]... [emoji:loading] ]"
 
-    image: 
+    image:
       alt_nodescription: "На изображение изображен профиль [username] в системе Мировой Машины. У них есть: [suns] шт Солнц, [wool] Шерсти"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use [alt_nodescription] at all if you do)
@@ -208,9 +209,9 @@ profile:
       name: "[userid] профиль"
       title: "Профиль [username]"
       unlocked:
-        stamps: "Разблокированые Штампы:" 
-  edit: 
-    text: "Вы можете изменить свой профиль на сайте!" 
+        stamps: "Разблокированые Штампы:"
+  edit:
+    text: "Вы можете изменить свой профиль на сайте!"
 
 # ---------------------------------------------------------------
 
@@ -269,7 +270,7 @@ shop:
     - "Мудрые слова друга: Если ты покупаешь дорого и продаёшь дёшево, тебя ждёт удача! Не проверяй это!"
     - Мои бедные безделушки и сокровища смыло... может быть, ты сможешь найти мне ещё?
     - Ты спрашиваешь о том, что случилось с тем торговцем до меня? Я не знаю. *Я бы вообще ничего не знал...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
-    - "Тебе нравится моя коллекция бутылок? Мне нравится моя коллекция бутылок. Что ты имеешь в виду под \"Крепкий алкоголь\"? Это там написано?" # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
+    - 'Тебе нравится моя коллекция бутылок? Мне нравится моя коллекция бутылок. Что ты имеешь в виду под "Крепкий алкоголь"? Это там написано?' # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
   traded: '> Успешно обменяно "[item_name]" за [amount]!' #FIXME: this string needs reconstruction with price of pancake
   traded_sell: '> Успешно продано "[item_name]" за [amount] Шерсти!'
@@ -281,7 +282,6 @@ shop:
     Курс Акций: [price]```
 
   nikogotchi:
-
     title: Капсулы
 
     main: >
@@ -300,19 +300,18 @@ shop:
 
 
       *Имейте в виду, что можно иметь только **одну капсулу** на одного Никоготчи.*
-    
+
 
       [user_wool]
 
     result: >
       > Вы дали Мегпаю [amount] Шерсти, затем он проворачивает гасяпон-машину и-и-и...
 
-      > Он дaл тебе [capsule_name]! 
+      > Он дaл тебе [capsule_name]!
 
     result_footer: Используйте [ /nikogotchi check ] чтобы увидеть свой новый Никоготчи!
 
   pancakes:
-
     title: Оладушки # please kill me
 
     main: >
@@ -320,12 +319,11 @@ shop:
 
 
       [items]
-    
+
 
       [user_wool]
 
   backgrounds:
-
     title: Фоны
 
     main: >
@@ -334,7 +332,7 @@ shop:
 
       [user_wool]
 
-    newly_owned: > 
+    newly_owned: >
       Спасибо! Теперь вы являетесь гордым обладателем этого фона.
 
 
@@ -342,7 +340,6 @@ shop:
     traded: "> Успешно обменяно на этот фон!"
 
   treasures:
-
     buy:
       title: Сокровища
       message: >
@@ -399,14 +396,14 @@ items:
       name: Таинственный Журнал
       description: Она написана на неизвестном языке.
     pen:
-      name: Светящееся Перо 
-      description: Длинное и тонкое перо со светящимися краями. 
+      name: Светящееся Перо
+      description: Длинное и тонкое перо со светящимися краями.
     shirt:
       name: Новая Рубашка
       description: '"Я пас баранов, и все, что я получил, - это эта паршивая футболка!"'
     sun:
       name: Солнце
-      description: Большая ламочка. Это - солнце. 
+      description: Большая ламочка. Это - солнце.
 
   pancakes:
     normal:
@@ -417,7 +414,7 @@ items:
         *+25 🥞*
 
         *+1 ❤️*
-    
+
     golden:
       name: Золотые Оладушки
       description: >
@@ -426,9 +423,9 @@ items:
         *МАКС. 🥞*
 
         *+25 ❤️*
-    
+
     glitched:
-      name: '???'
+      name: "???"
       description: Я даже не знаю, как это здесь оказалось.
 
   capsules:
@@ -455,46 +452,155 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "[ Выберите действие, которое нужно выполнить на [user]. ]"
-  placeholder: Взаймодействия...
-
   twm_not_being_very_happy: "[ [user], не трогай меня. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ [user], вы не можете полностью взаимодействовать с ботами. ]" # unused 
+  twm_questioning_if_youre_stupid_or_not: "[ [user], вы не можете полностью взаимодействовать с ботами. ]" # unused
   twm_is_fed_up_with_you: "[ *вздох* Ты не можешь взаймодействовать с собою, [user]. ]"
 
   interact:
   selected: "Выберите действие над [user]"
   selected_self: "Choose an action to perform"
-  no_path: "Действие, которое вы хотели выполнить, уже не существует"
   errors:
     no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
     500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
     fail: Failed to send the interaction
 
+  phrases:
+    - name: Тыкнуть
+      phrases:
+        - name: Обычно
+          phrases:
+            - "[user_one] тыкнул [user_two]"
+        - name: Игриво
+          phrases:
+            - "[user_one] тыкнул нос [user_two]!"
+            - "[user_one] протянул руку и тыкнул [user_two]!"
+            - "[user_one] с ничего тыкнул [user_two]!"
+            - "[user_one] игриво тыкнул [user_two]!"
+        - name: Деликатно
+          phrases:
+            - "[user_one] нежно тыкнул и погладил нос [user_two]"
+            - "[user_one] изящно доставляет тык [user_two]"
+            - "[user_one] нежно нажимает на нос [user_two]"
+            - "[user_one] деликатно тыкнул нос [user_two]"
+        - name: Недовольно
+          phrases:
+            - "[user_one] агрессивно тыкнул [user_two]"
+            - "[user_one] booped [user_two] out of frustration"
+            - "[user_one] huffs and boops [user_two] in irritation"
+            - "[user_one] lets out their frustration with a firm boop on [user_two]"
+        - name: Неудержимо
+          phrases:
+            - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
+            - "[user_one] просто захотел тыкнуть [user_two]!"
+            - "[user_one] не смог удержаться и тыкнул [user_two]!"
+            - "[user_one] gives in to the urge and boops [user_two]"
+        - name: Неожиданно
+          phrases:
+            - "[user_one] оставил в недоразумении [user_two] тыком в нос!"
+            - "[user_one] неожиданно тыкнул [user_two]!"
+            - "[user_two] без слов после тычка в нос от [user_one]!"
+            - "[user_one] leaves [user_two] wondering why they were booped"
+        - name: С Умиления
+          phrases:
+            - "[user_one] делает [user_two] милейший маленький тычок!"
+            - "[user_one] тыкает нос [user_two], мило хихикая!"
+            - "[user_one] не может смириться с милотой [user_two] после чего тыкает!"
+            - "[user_one] с улыбкой доставляет трогательный до дрожи тык [user_two]!"
+    - name: Дать Пощёчину
+      phrases:
+        - "[user_one] дали пощёчину [user_two], вероятно заслужили."
+        - "[user_one] slaps [user_two]!"
+        - "[user_two] received a sudden slap from [user_one]!"
+    - name: Погладить
+      phrases:
+        - "[user_one] погладил [user_two]!"
+    - name: Потрепать
+      phrases:
+        - "[user_one] потрепал [user_two] по голове!"
+    - name: Пощекотать
+      phrases:
+        - "[user_one] неожиданно для [user_two] защекотал!"
+        - "[user_one] неожиданно защекотал [user_two]!"
+        - "[user_one] защекотал [user_two], чем разжёг щекоточную войну!"
+        - "[user_one] атаковал щекоткой [user_two]!"
+    - name: Обнять
+      phrases:
+        - "[user_one] обнял [user_two]!"
+    - name: Нежно обнять
+      phrases:
+        - "[user_one] нежно обнял [user_two]!"
+    - name: Поцеловать
+      phrases:
+        - name: Обычно
+          phrases:
+            - "[user_one] поцеловал [user_two]! ❤️"
+        - name: Тепло
+          phrases:
+            - "[user_one] тепло поцеловал [user_two] ❤️"
+        - name: Романтично
+          phrases:
+            - "[user_one] тянет к себе [user_two] поближе, после чего разделяет медленный, нежный поцелуй"
+        - name: В Щёчку
+          phrases:
+            - "[user_one] нежно чмокает щёку [user_two]"
+            - "[user_one] заставляет [user_two] краснеть от любящего поцелуя в щёчку!"
+    - name: Атаковать
+      phrases:
+        - name: Ударить
+          phrases:
+            - "[user_one] ударили [user_two], больно же."
+        - name: Случайное комбо
+          phrases:
+            - "[user_one] прописывает [user_two] комбо из нескольких ударов!"
+            - "[user_one] наносит три быстых удара, после чего делает прямой удар прямо в [user_two]!"
+            - "[user_one] включает режим берсерка на [user_two]!"
+        - name: Подушка
+          phrases:
+            - "[user_one] ударяет сзади голову [user_two] мягкой подушкой!"
+            - "[user_one] запускает шквал подушек на [user_two]! Все перья разлетелись!"
+            - "[user_one] замахивается подушкой на [user_two] в мягкой атаке!"
+    - name: 🔥
+      phrases:
+        - name: Rocks
+          phrases:
+            - "[user_one] кинул камешек в [user_two]!"
+            - "[user_one] threw a bunch of pebbles at [user_two]!"
+            - "[user_one] unearthed a giant rock out of the ground and launched it at [user_two] using brain power"
+        - name: Молотов
+          phrases:
+            - "[user_one] бросил бутылку с коктелем Молотова в [user_two] ‼️"
+        - name: Пустая Бутылка (ай)
+          phrases: # VIOLENCE
+            - "[user_one] кинул пустую бутылку на голову [user_two]"
+          flags: bottle # do not translate
+        - name: Piece of Wool
+          phrases:
+            - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"
+            - "[user_one] released a tiny 🤏 pinch of wool above [user_two]'s head"
+            - "[user_one] rubbed [user_two]'s face with a big clump of wool"
+            - "[user_one] tickled [user_two]'s ear with a small piece of wool"
+          flags: wool # do not translate
+  modifiers:
+    no_item: "[user_one] ran out of [item] to throw at [user_two]!"
 # ---------------------------------------------------------------
 
 treasure:
   bots: "[ [bot] не имеет никаких сокровищ. ]"
   item: "**`[amount]`** [icon] [name]"
-  item: "**`[amount]`** [icon] [name]"
   message: >
     ### Сокровища [user]
-    
+
     [treasures]
 
-  tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
-
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some! # tip:
 
 # ---------------------------------------------------------------
 
 nikogotchi:
   owned: Принадлежит [user]
-  owned: Принадлежит [user]
   loading: "[ Загрузка Никоготчи... [emoji:loading] ]"
   invalid: "[ Вы не имеете Никоготчи! ]"
-  tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
-
-
+  tipnvalid: "you can buy a capsule with one in the shop" # tip:
 
   name:
     niko: Нико
@@ -518,36 +624,36 @@ nikogotchi:
     other_invalid: "[ У этого человека нету Никоготчи. ]"
     rename_you_invalid: "[ У вас нет Никоготчи. Что вы делаете...? ]"
     error:
-      description: > 
+      description: > # Kelvin was a nikogotchi before
         [ Ваш Никоготчи (`[id]`) больше не существует. Вы можете получить нового с той же редкостью или избавиться от них. ]
-        
+
 
         [ Что вы выберете? ]
-      buttons: 
+      buttons:
         send_away: Избавиться
         rotate: Крутить
-        
+
     send_away:
       description: "[ Вы точно хотите избавиться от [name], чтобы вы могли получить нового Никоготчи? ]"
       success: "[Вы успешно избавились от [name]. Наслаждайтесь своим будущим Никоготчи! ]"
 
     renaming:
       title: Дайте своему Никоготчи новое имя!
-      input: 
+      input:
         label: Имя
         placeholder: Введите новое имя для своего Никоготчи....
       button: Переименовать # used when you use a nikogotchi capsule
-      response: > 
+      response: >
         Никоготчи успешно переименован!
         "[old_name]" → "[new_name]"
 
     trade:
       request: >
         ### **[user]** предлагает обменять своего Никоготчи ([name_one]) на вашего!
-        
+
         Вы хотите обменятся своим Никоготчи ([name_two]) с ними?
 
-      waiting: "[ Торговое предложение было отправлено [user]-у! Ожидание ответа... [emoji:loading] ]"
+      waiting: "[ Торговое предложение было отправлено [user]! Ожидание ответа... [emoji:loading] ]"
       declined: "[ Ваше торговое предложение было отклонено... ]"
       success_decline: "[ Предложение успешно отклонено. ]"
       success: "[ Торговля с [user] прошла успешно! Поздоровайтесь с **[name]**! ]"
@@ -555,7 +661,7 @@ nikogotchi:
   found:
     title: Вы нашли [name]!
     description: "Хотите дать Никоготчи новое имя?"
-    renamenote: вы всегда можете сделать это командой `/nikogotchi rename`  # note:
+    renamenote: вы всегда можете сделать это командой `/nikogotchi rename` # note:
 
   status:
     template: "*[status]*"
@@ -576,7 +682,7 @@ nikogotchi:
 
     feed:
       placeholder: "Выберет еду для кормления..."
-      
+
       pancakes: Скормить (x[amount]) Оладушков
       golden_pancakes: Скормить (x[amount]) Золотых Оладушков
       glitched_pancakes: Скормить (x[amount]) ???
@@ -586,34 +692,31 @@ nikogotchi:
       no_food: "Пусто... Вы можете купить еды в магазине!"
       invalid: Вы не можете скормить это вашему Никоготчи! Пожалуйста обновите кнопкой "↻"!
 
-
   died:
     title: "🪦 [name] ушёл из жизни..."
     description: >
-      [name] жил полной жизнью [age]-.
+      [name] lived a full life which lasted for: [age].
 
 
-      - Часов с момента последнего ухода: **[time_difference]** 
+      - Time since last taken care of: **[time_difference]**
 
 
+      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
 
-      Никоготчи рассчитывают на вашу любовь и внимание, поэтому старайтесь обеспечить им наилучший уход!
 
-
-      Покойся с миром....
-    # todo: string changed
-  treasured: 
+      R.I.P....
+  treasured:
     title: 🎉 Ваш Никоготчи нашёл сокровища!
-    message: > 
+    message: >
       [treasures]
+
       Итого: **[total]**
+
       Заняло часов: **[time]**.
-      
+
     dialogues:
       sent: "Вы отправили вашего Никоготчи искать сокровища!"
-      senote: "их статистика будет снижаться быстрее, чем обычно, поэтому не забывайте вовремя позвать их обратно"
-      sent: "Вы отправили вашего Никоготчи искать сокровища!"
-      senote: "их статистика будет снижаться быстрее, чем обычно, поэтому не забывайте вовремя позвать их обратно"
+      senote: "их статистика будет снижаться быстрее, чем обычно, поэтому не забывайте вовремя позвать их обратно" # note:
       none_found: "Ваш Никоготчи не нашел никаких сокровищ... Может быть, вам стоит дать им больше времени?"
 
   levelupped:
@@ -781,24 +884,30 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
-    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
+    unknown_state: "This textbox builder has expired. Run the command again, or report this in our [support discord server]([discord_invite]) if it keeps happening. (state id: [id])"
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
-    invalid_character: The character "[character_name]" is not real
-    invalid_face: The face "[face_name]" is not real for "[character_name]"
+    invalid_character: The character "[character_name]" doesn't exist
+    invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
-    
-  filetypes:
-    gif: GIF
-    webp: WEBP
-    apng: APNG
-    
-    png: PNG
-    jpg: JPG
+    failed_to_send: "[ Failed to send for some reason :[ ]"
+    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
+    apng_preview_warn: | # warn:
+      Discord doesn't show or let you download `.png`s as APNG.
+      You can open the attachment in the browser, and it should animate (if there's any animation).
+    ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
 
-  button: 
+  filetypes:
+    GIF: gif
+    WEBP: webp
+    APNG: apng
+
+    PNG: png
+    JPEG: jpeg
+    # ↑ those show up ↓ there
+  button:
     render: Render [type]
-    'render&send': "Render [type] & Send"
+    "render&send": "Render [type] & Send"
     text:
       edit: Edit Text
       add: Add Text
@@ -807,9 +916,8 @@ textbox:
       add: Add Frame
       previous: Previous Frame
       manual: Input Frame
-  
-  frame_position: "editing frame [current] of [total] total"
 
+  frame_position: "editing frame [current] of [total] total"
 
   select:
     chars: Characters...
@@ -819,10 +927,10 @@ textbox:
   modal:
     edit_text:
       title: "Editing text for frame #[index]!"
-      input: 
+      input:
         label: Text
-        placeholder: Text goes here i think
-      response: > 
+        placeholder: Text probably goes here
+      response: > # only shows up while debugging
         Text changed!
 
         New text: [new_text]
@@ -832,7 +940,7 @@ textbox:
   monologue:
     char: "[ Pick a character for the textbox ]"
     face: "[ Pick a face ]"
-    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press_notext: "[ Make sure you put some text... if you want ]"
     press: "[ Press the green button whenever you're ready ]"
     rendering: "[ [emoji:loading] Rendering... ]"
     sending: "[ [emoji:loading] Sending... ]"
@@ -842,76 +950,6 @@ textbox:
 
   alt:
     single_frame:
-      filename: "TWM textbox ([character].[face].[timestamp])"
-      
-      character_only:
-        left: "[background_description] with [character_description] on the left"
-        right: "[background_description] with [character_description] on the right"
-      
-      with_text:
-        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
-        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
-      
-      text_only: "[background_description] containing: [text_with_effects]"
-
+      filename: "TWM textbox ([character], [face], [timestamp])"
     multi_frame:
-      filename: "TWM textbox ([frames].[timestamp])"
-      intro: "A sequence of OneShot-style dialogue boxes"
-      
-      frame:
-        normal: "[character_description] says: [text_with_effects]"
-        no_text: "[character_description] is silent[action_marker]"
-        no_character: "Text reads: [text_with_effects]"
-        empty: "Empty textbox"
-        
-        transition:
-          normal: "[previous_frame]; then [next_frame]"
-          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
-          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
-      
-      sequence_builder:
-        start: "First, [first_frame]"
-        middle: "[previous_sequence], [next_frame]"
-        end: "[full_sequence]."
-
-    character_description:
-      default: "[character] ([face])"
-      no_char: "([face])"
-      default_face: "[character]"
-      avatar: "user [username]'s avatar"
-      custom: "[custom_name]"
-
-    background_description:
-      default: "A OneShot-style textbox"
-      default_empty: "An empty OneShot-style textbox"
-      custom: 'A textbox with a style called "[name]"'
-
-    text_effects:
-      full:
-        bold: "(all of the text is in bold)"
-        italic: "(all of the text is in italics)"
-        color: "([color] text)"
-        shake: "(text shaking)"
-        wave: "(text is wavy)"
-        combination: "([effects_list] throughout)"
-
-      partial:
-        wrap_template: "[text] (with [effects] from here)"
-        end_template: "(regular text now)"
-        combination: "[effect1] and [effect2]"
-        
-        individual:
-          bold: "bold"
-          italic: "italics"
-          color: "[color]"
-          shake: "shaking"
-          wave: "wavy movement"
-          
-    action_markers:
-      pause: " (pause)"
-      long_pause: " (long pause)"
-      disappears: " (disappears)"
-
-    error:
-      cutoff: "(text continues beyond visible area)"
-      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."
+      filename: "TWM textbox ([frames], [timestamp])"

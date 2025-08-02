@@ -454,8 +454,10 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "What should [user_one] do to [user_one]?"
-  selected_self: "Choose an action to perform on [user_two]"
+  twm_not_being_very_happy: "[ Don't touch me, [user]. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ [user], you can't really interact with bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
+
   errors:
     no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
     500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
@@ -562,22 +564,24 @@ interact:
           phrases:
             - "[user_one] threw a small rock at [user_two]!"
             - "[user_one] threw a bunch of pebbles at [user_two]!"
+            - "[user_one] unearthed a giant rock out of the ground and launched it at [user_two] using brain power"
         - name: Molotov
           phrases:
             - "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
         - name: Empty Bottle (ow)
-          phrases:
+          phrases: # VIOLENCE
             - "[user_one] threw an empty bottle at [user_two]'s head"
-          flags: bottle
+            - "[user_one] shattered a bottle on [user_two]'s head"
+          flags: bottle # do not translate
         - name: Piece of Wool
           phrases:
             - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"
             - "[user_one] released a tiny 🤏 pinch of wool above [user_two]'s head"
             - "[user_one] rubbed [user_two]'s face with a big clump of wool"
             - "[user_one] tickled [user_two]'s ear with a small piece of wool"
-          modifiers: wool
+          flags: wool # do not translate
   modifiers:
-    no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
+    no_item: "[user_one] ran out of [item] to throw at [user_two]!"
 # ---------------------------------------------------------------
 
 treasure:
@@ -889,7 +893,7 @@ textbox:
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
     failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
-    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists.
+    unknown_state: "This textbox builder has expired. Run the command again, or report this in our [support discord server]([discord_invite]) if it keeps happening. (state id: [id])"
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" doesn't exist
     invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
@@ -899,6 +903,7 @@ textbox:
     apng_preview_warn: | # warn:
       Discord doesn't show or let you download `.png`s as APNG.
       You can open the attachment in the browser, and it should animate (if there's any animation).
+    ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
 
   filetypes:
     GIF: gif
@@ -907,11 +912,10 @@ textbox:
 
     PNG: png
     JPEG: jpeg
-
+    # ↑ those show up ↓ there
   button:
     render: Render [type]
     "render&send": "Render [type] & Send"
-    opts: Options
     text:
       edit: Edit Text
       add: Add Text
@@ -933,8 +937,8 @@ textbox:
       title: "Editing text for frame #[index]!"
       input:
         label: Text
-        placeholder: Text goes here i think
-      response: >
+        placeholder: Text probably goes here
+      response: > # only shows up while debugging
         Text changed!
 
         New text: [new_text]
@@ -944,7 +948,7 @@ textbox:
   monologue:
     char: "[ Pick a character for the textbox ]"
     face: "[ Pick a face ]"
-    press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
+    press_notext: "[ Make sure you put some text... if you want ]"
     press: "[ Press the green button whenever you're ready ]"
     rendering: "[ [emoji:loading] Rendering... ]"
     sending: "[ [emoji:loading] Sending... ]"
@@ -955,76 +959,5 @@ textbox:
   alt:
     single_frame:
       filename: "TWM textbox ([character], [face], [timestamp])"
-
-      character_only:
-        left: "[background_description] with [character_description] on the left"
-        right: "[background_description] with [character_description] on the right"
-
-      with_text:
-        left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
-        right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
-
-      text_only: "[background_description] containing: [text_with_effects]"
-
     multi_frame:
       filename: "TWM textbox ([frames], [timestamp])"
-      intro: "A sequence of OneShot-style dialogue boxes"
-
-      frame:
-        normal: "[character_description] says: [text_with_effects]"
-        no_text: "[character_description] is silent[action_marker]"
-        no_character: "Text reads: [text_with_effects]"
-        empty: "Empty textbox"
-
-        transition:
-          normal: "[previous_frame]; then [next_frame]"
-          style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
-          action_continuation: "[previous_frame][action_marker]; then [next_frame]"
-
-      sequence_builder:
-        start: "First, [first_frame]"
-        middle: "[previous_sequence], [next_frame]"
-        end: "[full_sequence]."
-
-    character_description:
-      default: "[character] ([face])"
-      no_char: "([face])"
-      default_face: "[character]"
-      avatar: "user [username]'s avatar"
-      custom: "[custom_name]"
-
-    background_description:
-      default: "A OneShot-style textbox"
-      default_empty: "An empty OneShot-style textbox"
-      custom: 'A textbox with a style called "[name]"'
-      custom_color: 'A [color] textbox with a style called "[name]"'
-
-    text_effects:
-      full:
-        bold: "(all of the text is in bold)"
-        italic: "(all of the text is in italics)"
-        color: "([color] text)"
-        shake: "(text shaking)"
-        wave: "(text is wavy)"
-        combination: "([effects_list] throughout)"
-
-      partial:
-        wrap_template: "[text] (with [effects] from here)"
-        end_template: "(regular text now)"
-        combination: "[effect1] and [effect2]"
-
-        individual:
-          bold: "bold"
-          italic: "italics"
-          color: "[color]"
-          shake: "shaking"
-          wave: "wavy movement"
-
-    actions:
-      pause: " (pause)"
-      long_pause: " (long pause)"
-      disappears: " (disappears)"
-
-    error:
-      cutoff: "(text continues beyond visible area)" # TODO: make it scroll
-      remaining_frames: "Due to Discord's limitations, this text has been truncated."

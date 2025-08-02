@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import io
 import copy
 import re
@@ -7,9 +8,9 @@ import datetime
 import subprocess
 from pathlib import Path
 from base64 import b64decode
-from typing import Any, TypedDict, Union, Optional, get_args, get_origin
+from typing import Any, Iterable, TypedDict, Union, Optional, get_args, get_origin
 from jellyfish import jaro_winkler_similarity, levenshtein_distance
-from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User
+from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User, SlashCommandChoice
 
 
 class FrozenDict(dict):
@@ -222,6 +223,7 @@ def rabbit(
 
 	return current_value
 
+
 def exec(command: list) -> str:
 	return subprocess.run(
 	    command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
@@ -276,13 +278,19 @@ def decode_base64_padded(s):
 	return b64decode(s).decode("utf-8")
 
 
-class Option(TypedDict):
-	names: Optional[list[str]]
+@dataclass
+class SortOption(dict):
+	names: list[str] | None
 	picked_name: str
 	value: str
 
+	def __init__(self, picked_name: str, value: str, names: list[str] | None = None):
+		self.picked_name = picked_name
+		self.value = value
+		self.names = names
 
-def optionSearch(query: str, options: list[Option]) -> list[dict[str, str]]:
+
+def optionSearch(query: str, options: Iterable[SortOption]) -> Iterable[SlashCommandChoice]:
 	matches = []
 	top = []
 
@@ -309,7 +317,7 @@ def optionSearch(query: str, options: list[Option]) -> list[dict[str, str]]:
 
 	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
 
-	return top + matches
+	return map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), top + matches)
 
 def format_type_hint(type_hint: Any) -> str:
 	"""Formats a type hint for clean error messages."""

@@ -2,14 +2,14 @@ import asyncio
 from datetime import datetime
 import re
 from typing import Literal, get_args
-from interactions import ActionRow, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, Extension, File, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, StringSelectMenu, StringSelectOption, component_callback, contexts, integration_types, modal_callback, slash_command, slash_option
+from interactions import ActionRow, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, Extension, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, StringSelectMenu, StringSelectOption, component_callback, contexts, integration_types, modal_callback, slash_command, slash_option, AllowedMentions
 from utilities.config import debugging, get_config
 from utilities.textbox.mediagen import Frame, render_textbox_frames
-from utilities.localization import Localization
+from utilities.localization import Localization, put_mini
 from utilities.message_decorations import Colors, fancy_message
-from utilities.misc import make_empty_select, optionSearch
+from utilities.misc import SortOption, make_empty_select, optionSearch
 from utilities.textbox.characters import get_character, get_characters
-
+nomentions = AllowedMentions(parse=[])
 states = {}
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 class StateOptions:
@@ -30,33 +30,46 @@ class StateOptions:
 
 class State:
 	owner: int
-	frames: dict[int, Frame]
+	frames: list[Frame]
 	options: StateOptions
 
-	def __init__(self, owner: int, frames: dict[int, Frame] | list[Frame] | Frame | None = None, options: StateOptions | None = None):
+	def __init__(self, owner: int, frames: list[Frame] | Frame | None = None, options: StateOptions | None = None):
 		self.options = options if options else StateOptions()
 		self.owner = owner
-		self.frames = {}
+		self.frames = []
 		if not frames:
 			return
 		if isinstance(frames, Frame):
-			self.frames[0] = frames
+			self.frames = [frames]
 			return
-		for i in range(0, len(frames)):
-			if not isinstance(frames[i], Frame):
-				raise ValueError(f"Frame {i} is not of type Frame.\n{frames[i]}")
-			self.frames[i] = frames[i]
+		if isinstance(frames, list):
+			i = 0
+			for frame in frames:
+				i+=1
+				if not isinstance(frame, Frame):
+					raise ValueError(f"Frame {i} is not of type Frame.\n{frame}")
+				self.frames.append(frame)
 
 	def __repr__(self):
 		return (
 			f"State(\n"+
 			f"  owner={self.owner},\n"+
 			f"  frames: len()={len(self.frames)}; [\n"+
-			f"{",\n".join(f"      {repr(frame)}" for index, frame in self.frames.items())}\n"+
+			f"{',\n'.join(f'      {repr(frame)}' for frame in self.frames)}\n"+
 			f"  ]\n"+
 			f"  {self.options}\n"
 			f")"
 		)
+			
+	def get_frame(self, index: int):
+		if index < len(self.frames):
+			return self.frames[index]
+		elif index == len(self.frames):
+			frame = Frame()
+			self.frames.append(frame)
+			return frame
+		else:
+			raise IndexError(f"Frame #{index} is out of bounds. The state only has {len(self.frames)} frames")
 
 
 class TextboxCommands(Extension):
@@ -231,7 +244,6 @@ class TextboxCommands(Extension):
 
 		if send_to != 1 and character_id and face_name:
 			# if user specified enough params to send the textbox right after the /command...
-			ctx.edit_origin = ctx.edit
 			await self.send_output(ctx, state_id, 0)
 
 		await self.respond(ctx, state_id, 0, edit=not erored)
@@ -240,43 +252,45 @@ class TextboxCommands(Extension):
 	async def character_autocomplete(self, ctx: AutocompleteContext):
 		loc = Localization(ctx.locale)
 		characters = get_characters()
-		
-		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name, char in characters]))
+		choices = optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name, char in characters])
+		return await ctx.send(choices)
 	
 	@create.autocomplete("face")
 	async def face_autocomplete(self, ctx: AutocompleteContext):
 		loc = Localization(ctx.locale)
 		character = get_character(ctx.kwargs["character"] if "character" in ctx.kwargs else "Other")
 
-		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name in character.get_face_list()]))
+		return await ctx.send(choices=optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name in character.get_face_list()]))
 	
-	async def basic(self, ctx, state_id: str, frame_index: int):
+	async def basic(self, ctx, state_id: str | int, frame_index: str | int):
 		loc = Localization(ctx.locale)
 		try:
-			state: State = states[state_id]
+			state: State = states[str(state_id)]
 		except KeyError as e:
 			await fancy_message(
-			    ctx, loc.l("textbox.errors.unknown_state", id=state_id, discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
+			    ctx, loc.l("textbox.errors.unknown_state", id=str(state_id), discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
 			)  # TODO: move discord invite to bot config
-			return (loc, None, None)
+			return (True, None, None, None)
 		try:
-			frame_data: Frame = state.frames[int(frame_index)]
-		except KeyError as e:
+			frame_data: Frame = state.get_frame(int(frame_index))
+		except IndexError as e:
 			frame_data = Frame(starting_character_id=state.frames[int(frame_index)-1].starting_character_id)
-			state.frames[int(frame_index)] = frame_data
-		return (loc, state, frame_data)
+			state.frames.append(frame_data) # scary scary scary scary
+		return (False, loc, state, frame_data)
 
 	handle_components_regex = re.compile(
-	    r"textbox (?P<method>refresh|render|update_(char|face|text|animated)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
+	    r"textbox (?P<method>refresh|render|update_(char|face|text)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
 	)
 
 	@component_callback(handle_components_regex)
 	async def handle_components(self, ctx: ComponentContext):
 		match = self.handle_components_regex.match(ctx.custom_id)
-		if len(match.groups()) <= 3:
+		if match == None or len(match.groups()) <= 3:
 			return ctx.edit_origin()
 		method, state_id, frame_index = match.group("method", "state_id", "frame_index")
-		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if err or loc == None or state == None or frame_data == None:
+			return
 		if not loc:
 			return
 		match method:
@@ -287,19 +301,19 @@ class TextboxCommands(Extension):
 				frame_data.starting_face_name = ctx.values[0]
 			case "update_text":
 				return await self.init_update_text_flow(ctx, state_id, frame_index)
-			case "update_animated":
-				frame_data.animated = not frame_data.animated
 			case "render":
-				await self.send_output(ctx, state_id, frame_index)
+				await self.send_output(ctx, state_id, int(frame_index))
 				
-		await self.respond(ctx, state_id, frame_index)
+		await self.respond(ctx, state_id, int(frame_index))
 
 	async def send_output(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: int):
-		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if err or loc == None or state == None or frame_data == None:
+			return
 		pos = ""
 		if len(state.frames) > 2 or frame_index != 0:
 			pos = "\n\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
-		await ctx.edit_origin(
+		await (ctx.edit if isinstance(ctx, SlashContext) else ctx.edit_origin)(
 				embed=Embed(description=loc.l("textbox.monologue.rendering")+pos, color=Colors.DARKER_WHITE)
 		)
 
@@ -308,39 +322,40 @@ class TextboxCommands(Extension):
 		end=datetime.now()
 		took=start-end
 
-		mention = { 'users': [] }
+		asyncio.create_task(ctx.edit(embed=Embed(description=loc.l("textbox.monologue.sending")+pos, color=Colors.DARKER_WHITE)))
 		content = f"-# [ {ctx.user.mention} ]"
+		
 		try:
 			if state.options.send_to == 3:
 				if ctx.guild:
-					await ctx.channel.send(
-						content=content, files=file, allowed_mentions=mention
+					sent_message = await ctx.channel.send(
+						content=content, files=file, allowed_mentions=nomentions
 					)
 				else:
-					await ctx.send(content=content, files=file, allowed_mentions=mention)
+					sent_message = await ctx.send(content=content, files=file, allowed_mentions=nomentions)
 			elif state.options.send_to == 2:
-				await ctx.author.send(files=file)
+				sent_message = await ctx.author.send(files=file)
 			elif state.options.send_to == 1:
-				await ctx.send(content=content, files=file, allowed_mentions=mention, ephemeral=True)
+				sent_message = await ctx.send(content=content, files=file, allowed_mentions=nomentions, ephemeral=True)
 		except: # when it fails to send a dm or a followup to an ephemeral message with a non-ephemeral message
-			asyncio.create_task(
-					ctx.edit(embed=Embed(description=loc.l("textbox.errors.failed_to_send"+("_dm" if state.options.send_to == 3 else "")), color=Colors.DARKER_WHITE))
-			)
-		asyncio.create_task(
-				ctx.edit(embed=Embed(description=loc.l("textbox.monologue.sending")+pos, color=Colors.DARKER_WHITE))
-		)
+			return await ctx.edit(embed=Embed(description=loc.l("textbox.errors.failed_to_send"+("_dm" if state.options.send_to == 3 else "")), color=Colors.DARKER_WHITE))
 		desc = loc.l("textbox.monologue.done")
 		if debugging():
 			desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
+		if state.options.out_filetype in ("WEBP", "GIF", "APNG") and sent_message and MessageFlags.EPHEMERAL in sent_message.flags:
+			mini = await put_mini(loc, "textbox.errors.ephemeral_warnote", ctx.user.id, type="warn")
+			if mini != "":
+				await ctx.edit(message=sent_message, content=f"{sent_message.content}\n{mini}", allowed_mentions=nomentions)
+		return await ctx.edit(embed=Embed(description=desc+pos, color=Colors.DEFAULT))
 
-		await ctx.edit(embed=Embed(description=desc+pos, color=Colors.DEFAULT))
-
-	async def render_to_file(self, ctx: ComponentContext|SlashContext|ModalContext, state: State, frame_preview_index: int = None) -> File:
+	async def render_to_file(self, ctx: ComponentContext|SlashContext|ModalContext, state: State, frame_preview_index: int | None = None) -> File:
 		# you do alt text here later dont unabstract this
 		loc = Localization(ctx.locale)
 
-		if frame_preview_index is not None:
+		frames = state.frames
+		if frame_preview_index != None:
 			frame = state.frames[int(frame_preview_index)]
+			frames = [state.frames[int(frame_preview_index)]]
 			char = None
 			face = None
 			if frame.starting_character_id:
@@ -355,7 +370,7 @@ class TextboxCommands(Extension):
 		else: # NOT render button
 			filename = loc.l("textbox.alt.multi_frame.filename", frames=len(state.frames),timestamp=str(round(datetime.now().timestamp())))
 			#alt_accum = ""
-			for frame in state.frames.values():
+			for frame in state.frames:
 				char = None
 				face = None
 				if frame.starting_character_id:
@@ -367,8 +382,7 @@ class TextboxCommands(Extension):
 
 			#	alt_accum = loc.l("textbox.multi.alt.frame" +("" if frame.text else "_nothing"), character=frame.character_id, face=frame.face_name, text=frame.text)
 			#alt_text = loc.l("textbox.multi.alt.beginning", frames=alt_accum)
-
-		buffer = await render_textbox_frames(state.frames, state.options.quality, state.options.out_filetype if frame_preview_index is None else "PNG")
+		buffer = await render_textbox_frames(frames, state.options.quality, state.options.out_filetype if frame_preview_index is None else "PNG")
 		_filetype="."+state.options.out_filetype
 		if frame_preview_index is not None:
 			_filetype = ".PNG"
@@ -379,8 +393,8 @@ class TextboxCommands(Extension):
 		return File(file=buffer, file_name=filename)#, description=alt_text if alt_text else frame.text)
 
 	async def init_update_text_flow(self, ctx: ComponentContext | SlashContext, state_id: str, frame_index: str):
-		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
-		if not loc:
+		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if err or loc == None or state == None or frame_data == None:
 			return
 		modal = Modal(
 		    ParagraphText(
@@ -402,10 +416,13 @@ class TextboxCommands(Extension):
 	@modal_callback(handle_modal_regex)
 	async def handle_modals(self, ctx: ModalContext, new_text: str):
 		match = self.handle_modal_regex.match(ctx.custom_id)
-		if len(match.groups()) < 2:
-			return ctx.edit_origin()
+		assert ctx.message is not None
+		if match == None or len(match.groups()) < 2:
+			return ctx.edit(message=ctx.message)
 		state_id, frame_index = match.group("state_id", "frame_index")
-		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if err or loc == None or state == None or frame_data == None:
+			return
 		if not loc:
 			return
 		old_text = frame_data.text
@@ -414,15 +431,14 @@ class TextboxCommands(Extension):
 			await fancy_message(
 					ctx, loc.l('textbox.modal.edit_text.response', new_text=new_text, old_text=old_text), ephemeral=True
 			)
-		await self.respond(ctx, state_id, frame_index)
+		await self.respond(ctx, state_id, int(frame_index))
 
 	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list  = []):
 		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
-		if err or not state or not loc or not frame_data:
+		if err or state == None or loc == None or frame_data == None:
 			return
 		if warnings is None:
 			warnings = []
-		files = [await self.render_to_file(ctx, state, frame_preview_index=frame_index)]
 		pos = ""
 		if len(state.frames) > 2 or frame_index != 0:
 			pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
@@ -459,6 +475,11 @@ class TextboxCommands(Extension):
 					disabled=int(frame_index) - 1 < 0
 				),
 				Button(
+					style=ButtonStyle.GREEN,
+					label=loc.l("textbox.button.render"+("&send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.out_filetype}")),
+					custom_id=f"textbox render {state_id} {frame_index}"
+				),
+				Button(
 					style=ButtonStyle.GRAY if frame_data.text else ButtonStyle.GREEN,
 					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
 					custom_id=f"textbox update_text {state_id} {frame_index}"
@@ -468,30 +489,19 @@ class TextboxCommands(Extension):
 					label=loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
 					custom_id=f"textbox refresh {state_id} {int(frame_index)+1}"
 				),
-			),
-			ActionRow(
-				Button(
-					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.render"+("&send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.out_filetype}")),
-					custom_id=f"textbox render {state_id} {frame_index}"
-				),
-				Button(
-					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.opts"),
-					custom_id=f"textbox opts {state_id} {frame_index}"
-				)
 			)
 		]
+		preview = await self.render_to_file(ctx, state, frame_preview_index=int(frame_index))
 		if not edit:
-			return await ctx.send(embed=embed, components=components, files=files, ephemeral=True)
+			return await ctx.send(embed=embed, components=components, file=preview, ephemeral=True)
 		elif isinstance(ctx, ComponentContext):
-			return await ctx.edit_origin(embed=embed, components=components, files=files)
+			return await ctx.edit_origin(embed=embed, components=components, file=preview)
 		else:
 			return await ctx.edit(
 			    message=ctx.message_id if isinstance(ctx, ModalContext) else "@original",
 			    embed=embed,
 			    components=components,
-			    files=files
+			    file=preview
 			)
 	
 

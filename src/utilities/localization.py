@@ -336,6 +336,7 @@ limits = {
     "nikogotchi.tipnvalid": 5,
     "nikogotchi.found.renamenote": 5,
     "wool.transfer.errors.note_nuf": -1,
+    "textbox.errors.ephemeral_warnote": 9,
     "settings.errors.channel_lost_warn": -1,
     "wool.transfer.to.bot.notefirmation": 10,
     "settings.welcome.enabled.default_tip": 15,

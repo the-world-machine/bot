@@ -153,7 +153,7 @@ def bounce(times, height=3):
 
 
 async def render_textbox_frames(
-    frames: dict[int, Frame],
+    frames: list[Frame],
     quality: int = 80,
     filetype: SupportedFiletypes = "WEBP",
     frame_index: int | None = None
@@ -190,7 +190,7 @@ async def render_textbox_frames(
 			)
 		return buffer
 
-	for frame in frames.values():
+	for frame in frames:
 		char = None
 		face = None
 		if frame.starting_character_id:
