@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Literal
 from utilities.emojis import emojis
-from interactions import Color, Message, BaseComponent, Modal, Embed
+from typing import Any, Dict, Iterable, List, Literal
+from interactions import Color, Message, BaseComponent, Embed, ModalContext
 
 
 class Colors:
@@ -11,7 +11,7 @@ class Colors:
 	ORANGE = WARN = WARNING = Color.from_hex("#D9732B")
 	YELLOW = Color.from_hex("#BFBF26")
 	GREEN = AWESOME = Color.from_hex("#26BF26")
-	TEAL = Color.from_hex("#008080")
+	SHOP = TEAL = Color.from_hex("#008080")
 
 	BLACK = Color.from_hex("#000000")
 	GRAY = GREY = DARKER_WHITE = LIGHTER_BLACK = Color.from_hex("#666666")
@@ -28,17 +28,18 @@ def timestamp_relative(datetime: datetime):
 	return f'<t:{round(datetime.timestamp())}:R>'
 
 
-async def fancy_message(
+def fancy_message(
     ctx,
-    message: str = None,
+    message: str | None = None,
     edit: bool = False,
     edit_origin: bool = False,
-    content: str = None,
+    content: str | None = None,
     ephemeral=False,
-    components: list[BaseComponent] = None,
+    components: Iterable[Iterable[BaseComponent | dict[Any, Any]]] | Iterable[BaseComponent | dict[Any, Any]] |
+    BaseComponent | dict[Any, Any] | None = None,
     color: Color = Colors.DEFAULT,
-    embed: Embed = None,
-    embeds: list[Embed] = None
+    embed: Embed | Dict | None = None,
+    embeds: List[Embed | Dict] | None = None
 ):
 	if embeds is None:
 		embeds = []
@@ -49,15 +50,16 @@ async def fancy_message(
 	if len(embeds) == 0:
 		embeds = None
 	if edit_origin:
-		return await ctx.edit_origin(content=content, embeds=embeds, components=components)
+		return ctx.edit_origin(content=content, embeds=embeds, components=components)
 	if edit and ctx:
-		return await ctx.edit(content=content, embeds=embeds, components=components)
+		return ctx.edit(content=content, embeds=embeds, components=components)
 	if type(ctx) == Message:
-		return await ctx.reply(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
-	elif type(ctx) == Modal:
-		return await ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
+		kwargs = { 'content': content, 'embeds': embeds, 'components': components, 'ephemeral': ephemeral}
+		return ctx.reply(**kwargs)
+	elif type(ctx) == ModalContext:
+		return ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
 
-	return await ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)
+	return ctx.send(content=content, embeds=embeds, ephemeral=ephemeral, components=components)
 
 
 def make_progress_bar(position: int, total: int, length: int, shape: Literal["square", "round"] = "square"):

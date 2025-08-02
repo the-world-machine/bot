@@ -1,51 +1,52 @@
 import math
 import re
 import random
-from interactions import *
 from collections import Counter
 from asyncio import TimeoutError
 from dataclasses import dataclass
-from utilities.emojis import emojis
+from utilities.emojis import PancakeTypes, TreasureTypes, emojis
 from typing import Dict, List, Union
 from datetime import datetime, timedelta
 from utilities.misc import make_empty_select
-from utilities.nikogotchi_metadata import *
 from interactions.api.events import Component
+from utilities.nikogotchi_metadata import NikogotchiMetadata, fetch_nikogotchi_metadata, pick_random_nikogotchi
 from utilities.shop.fetch_items import fetch_treasure
 from utilities.localization import Localization, fnum, ftime, put_mini
 from utilities.message_decorations import Colors, fancy_message, make_progress_bar
 from utilities.database.schemas import StatUpdate, UserData, Nikogotchi
+from extensions.commands.shop import pancake_id_to_emoji_index_please_rename_them_in_db
+from interactions import ActionRow, BaseComponent, Button, ButtonStyle, ComponentContext, Embed, Extension, InteractionContext, Modal, ModalContext, OptionType, ShortText, SlashContext, StringSelectMenu, StringSelectOption, User, component_callback, contexts, integration_types, modal_callback, slash_command, slash_option
 
 
 @dataclass
 class TreasureSeekResults:
-	found_treasure: Dict[str, int]
+	found_treasure: Dict[TreasureTypes, int]
 	total_treasure: int
 	time_spent: timedelta
 
 
 class NikogotchiCommands(Extension):
 
-	async def get_nikogotchi(self, uid: int) -> Union[Nikogotchi, None]:
-		data: Nikogotchi = await Nikogotchi(uid).fetch()
+	async def get_nikogotchi(self, uid: str) -> Union[Nikogotchi, None]:
+		data: Nikogotchi = await Nikogotchi(str(uid)).fetch()
 
 		if data.status > -1:
 			return data
 		else:
 			return None
 
-	async def save_nikogotchi(self, nikogotchi: Nikogotchi, uid: int):
-		nikogotchi_data: Nikogotchi = await Nikogotchi(uid).fetch()
+	async def save_nikogotchi(self, nikogotchi: Nikogotchi, uid: str):
+		nikogotchi_data: Nikogotchi = await Nikogotchi(str(uid)).fetch()
 
 		await nikogotchi_data.update(**nikogotchi.__dict__)
 
-	async def delete_nikogotchi(self, uid: int):
+	async def delete_nikogotchi(self, uid: str):
 
-		nikogotchi_data = await Nikogotchi(uid).fetch()
+		nikogotchi_data = await Nikogotchi(str(uid)).fetch()
 
 		await nikogotchi_data.update(available=False, status=-1, nid="?")
 
-	def nikogotchi_buttons(self, ctx, owner_id: int):
+	def nikogotchi_buttons(self, ctx, owner_id: str):
 		prefix = 'action_'
 		suffix = f'_{owner_id}'
 
@@ -69,7 +70,7 @@ class NikogotchiCommands(Extension):
 		    Button(style=ButtonStyle.DANGER, label='X', custom_id=f'{prefix}exit{suffix}')
 		]
 
-	async def get_nikogotchi_age(self, uid: int):
+	async def get_nikogotchi_age(self, uid: str):
 		nikogotchi_data: Nikogotchi = await Nikogotchi(uid).fetch()
 
 		return datetime.now() - nikogotchi_data.hatched
@@ -78,14 +79,18 @@ class NikogotchiCommands(Extension):
 	    self,
 	    ctx: InteractionContext,
 	    n: Nikogotchi,
-	    dialogue: str = None,
-	    treasure_seek_results: TreasureSeekResults = None,
-	    stats_update: List[StatUpdate] = None,
+	    dialogue: str | None = None,
+	    treasure_seek_results: TreasureSeekResults | None = None,
+	    stats_update: List[StatUpdate] | None = None,
 	    preview: bool = False,
 	) -> List[Embed] | Embed:
 
 		metadata = await fetch_nikogotchi_metadata(n.nid)
+		if not metadata:
+			raise ValueError("Invalid Nikogotchi")
 		owner = await ctx.client.fetch_user(n._id)
+		if not owner:
+			raise ValueError("Failed to fetch owner of Nikogotchi")
 		loc = Localization(ctx.locale)
 
 		nikogotchi_status = loc.l('nikogotchi.status.normal')
@@ -148,7 +153,7 @@ class NikogotchiCommands(Extension):
 
 		# crafting embeds - - -
 		embeds = []
-		age = ftime(await self.get_nikogotchi_age(n._id), minimum_unit="minute")
+		age = ftime(await self.get_nikogotchi_age(str(n._id)), minimum_unit="minute")
 		age = f"  •  ⏰  {age}" if len(age) != 0 else ""
 
 		def make_pb(current, maximum) -> str:
@@ -212,7 +217,7 @@ class NikogotchiCommands(Extension):
 		else:
 			if not metadata and nikogotchi.nid != "?":
 
-				buttons = [
+				buttons: list[BaseComponent | dict] = [
 				    Button(
 				        style=ButtonStyle.GREEN,
 				        label=loc.l('nikogotchi.other.error.buttons.rotate'),
@@ -237,7 +242,7 @@ class NikogotchiCommands(Extension):
 				custom_id = button_ctx.custom_id
 
 				if custom_id == '_rehome':
-					await self.delete_nikogotchi(ctx.author.id)
+					await self.delete_nikogotchi(str(ctx.author.id))
 					return await ctx.edit(
 					    embed=Embed(
 					        description=loc.l('nikogotchi.other.send_away.success', name=nikogotchi.name),
@@ -294,9 +299,7 @@ class NikogotchiCommands(Extension):
 			        label=loc.l('nikogotchi.other.renaming.button'),
 			        custom_id=f'rename {ctx.id}'
 			    ),
-			    Button(
-			        style=ButtonStyle.GRAY, label=loc.l('general.buttons._continue'), custom_id=f'continue {ctx.id}'
-			    )
+			    Button(style=ButtonStyle.GRAY, label=loc.l('global.buttons.continue'), custom_id=f'continue {ctx.id}')
 			]
 			await ctx.send(embed=hatched_embed, components=buttons, ephemeral=True, edit_origin=True)
 			try:
@@ -307,7 +310,7 @@ class NikogotchiCommands(Extension):
 				return await self.check(ctx)
 		await self.nikogotchi_interaction(ctx)
 
-	async def calculate_treasure_seek(self, uid: int, time_taken: timedelta) -> TreasureSeekResults | None:
+	async def calculate_treasure_seek(self, uid: str, time_taken: timedelta) -> TreasureSeekResults | None:
 		user_data: UserData = await UserData(_id=uid).fetch()
 
 		amount = math.floor(time_taken.total_seconds() / 3600)
@@ -349,12 +352,12 @@ class NikogotchiCommands(Extension):
 				return
 
 			custom_id = match.group(1)
-			uid = int(match.group(2))
+			uid = match.group(2)
 
-			if ctx.author.id != uid:
+			if str(ctx.author.id) != uid:
 				return
 		except:
-			uid = ctx.author.id
+			uid = str(ctx.author.id)
 			custom_id = 'refresh'
 
 		if custom_id == 'exit':
@@ -362,7 +365,7 @@ class NikogotchiCommands(Extension):
 
 		loc = Localization(ctx.locale)
 
-		nikogotchi = await self.get_nikogotchi(uid)
+		nikogotchi = await self.get_nikogotchi(str(uid))
 
 		if nikogotchi is None:
 			return await ctx.edit_origin(
@@ -383,7 +386,7 @@ class NikogotchiCommands(Extension):
 
 		time_difference = (current_time - last_interacted).total_seconds() / 3600
 
-		age = await self.get_nikogotchi_age(int(ctx.author.id))
+		age = await self.get_nikogotchi_age(str(ctx.author.id))
 
 		await nikogotchi.update(last_interacted=current_time)
 
@@ -422,7 +425,7 @@ class NikogotchiCommands(Extension):
 			    )
 			)
 
-			await self.delete_nikogotchi(uid)
+			await self.delete_nikogotchi(str(uid))
 
 			try:
 				await ctx.edit_origin(embed=embed, components=[])
@@ -432,7 +435,7 @@ class NikogotchiCommands(Extension):
 
 		dialogue = ''
 		treasures_found = None
-		buttons = self.nikogotchi_buttons(ctx, uid)
+		buttons = self.nikogotchi_buttons(ctx, str(uid))
 		select = await self.make_food_select(loc, nikogotchi, f'feed_food {ctx.user.id}')
 
 		if nikogotchi.status == 2:
@@ -455,7 +458,7 @@ class NikogotchiCommands(Extension):
 
 		if custom_id == 'callback' and nikogotchi.status == 3:
 			treasures_found = await self.calculate_treasure_seek(
-			    uid,
+			    str(uid),
 			    datetime.now() - nikogotchi.started_finding_treasure_at
 			)
 			nikogotchi.status = 2
@@ -485,11 +488,12 @@ class NikogotchiCommands(Extension):
 			await ctx.edit_origin(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
 		except:
 			await ctx.edit(embeds=embeds, components=[ActionRow(select), ActionRow(*buttons)])
-		await self.save_nikogotchi(nikogotchi, ctx.author.id)
+		await self.save_nikogotchi(nikogotchi, str(ctx.author.id))
 
 	async def make_food_select(self, loc, data: Nikogotchi, custom_id: str):
 		if all(getattr(data, attr) <= 0 for attr in [ "glitched_pancakes", "golden_pancakes", "pancakes"]):
 			return make_empty_select(loc, placeholder=loc.l('nikogotchi.components.feed.no_food'))
+
 		name_map = {  #TODO: rm this when db fix
 		    "glitched_pancakes": "glitched",
 		    "golden_pancakes": "golden",
@@ -498,15 +502,16 @@ class NikogotchiCommands(Extension):
 		select = StringSelectMenu(
 		    custom_id=custom_id, placeholder=loc.l('nikogotchi.components.feed.placeholder', name=data.name)
 		)
-		for pancake in [ "glitched_pancakes", "golden_pancakes", "pancakes"]:
+		for pancake in ("glitched_pancakes", "golden_pancakes", "pancakes"):
+			updated_name: PancakeTypes = pancake_id_to_emoji_index_please_rename_them_in_db(pancake)
 			amount = getattr(data, pancake)
 			if amount <= 0:
 				continue
 			select.options.append(
 			    StringSelectOption(
 			        label=loc.l(f'nikogotchi.components.feed.{pancake}', amount=amount),
-			        emoji=emojis['pancakes'][name_map[pancake]],
-			        value=name_map[pancake]
+			        emoji=emojis['pancakes'][updated_name],
+			        value=updated_name
 			    )
 			)
 		return select
@@ -519,12 +524,16 @@ class NikogotchiCommands(Extension):
 		await ctx.defer(edit_origin=True)
 
 		match = self.ff.match(ctx.custom_id)
+		if not match:
+			return
 		uid = int(match.group(1))
 
 		if ctx.author.id != uid:
 			return await ctx.edit()
 
-		nikogotchi: Nikogotchi = await self.get_nikogotchi(uid)
+		nikogotchi: Nikogotchi | None = await self.get_nikogotchi(str(uid))
+		if not nikogotchi:
+			return
 		pancake_type = ctx.values[0]
 
 		normal_pancakes = nikogotchi.pancakes
@@ -577,9 +586,9 @@ class NikogotchiCommands(Extension):
 		nikogotchi.hunger = min(nikogotchi.max_hunger, nikogotchi.hunger + hunger_increase)
 		nikogotchi.health = min(nikogotchi.max_health, nikogotchi.health + health_increase)
 
-		await self.save_nikogotchi(nikogotchi, ctx.author.id)
+		await self.save_nikogotchi(nikogotchi, str(ctx.author.id))
 
-		buttons = self.nikogotchi_buttons(ctx, ctx.author.id)
+		buttons = self.nikogotchi_buttons(ctx, str(ctx.author.id))
 		select = await self.make_food_select(loc, nikogotchi, f'feed_food {ctx.user.id}')
 
 		embeds = await self.get_main_embeds(ctx, nikogotchi, dialogue, stats_update=updated_stats)
@@ -591,16 +600,16 @@ class NikogotchiCommands(Extension):
 
 		loc = Localization(ctx.locale)
 
-		nikogotchi = await self.get_nikogotchi(ctx.author.id)
+		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 
 		if nikogotchi is None:
 			return await fancy_message(ctx, loc.l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD)
 
 		name = nikogotchi.name
 
-		buttons = [
-		    Button(style=ButtonStyle.RED, label=loc.l('general.buttons._yes'), custom_id=f'rehome'),
-		    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._cancel'), custom_id=f'cancel')
+		buttons: list[BaseComponent | dict] = [
+		    Button(style=ButtonStyle.RED, label=loc.l('global.buttons.yes'), custom_id=f'rehome'),
+		    Button(style=ButtonStyle.GRAY, label=loc.l('global.buttons.cancel'), custom_id=f'cancel')
 		]
 
 		await ctx.send(
@@ -615,7 +624,7 @@ class NikogotchiCommands(Extension):
 		custom_id = button_ctx.custom_id
 
 		if custom_id == f'rehome':
-			await self.delete_nikogotchi(ctx.author.id)
+			await self.delete_nikogotchi(str(ctx.author.id))
 			await ctx.edit(
 			    embed=Embed(description=loc.l('nikogotchi.other.send_away.success', name=name), color=Colors.GREEN),
 			    components=[]
@@ -648,7 +657,7 @@ class NikogotchiCommands(Extension):
 			await ctx.defer(edit_origin=True)
 		else:
 			await ctx.defer(ephemeral=True)
-		nikogotchi = await self.get_nikogotchi(ctx.author.id)
+		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 		if nikogotchi is None:
 			return await fancy_message(
 			    ctx,
@@ -659,13 +668,13 @@ class NikogotchiCommands(Extension):
 
 		old_name = nikogotchi.name
 		nikogotchi.name = name
-		await self.save_nikogotchi(nikogotchi, ctx.author.id)
+		await self.save_nikogotchi(nikogotchi, str(ctx.author.id))
 		components = []
 		if ctx.custom_id.endswith("continue"):
 			components.append(
 			    Button(
 			        style=ButtonStyle.GRAY,
-			        label=loc.l('general.buttons._continue'),
+			        label=loc.l('global.buttons.continue'),
 			        custom_id=f'action_refresh_{ctx.author_id}'
 			    )
 			)
@@ -678,7 +687,7 @@ class NikogotchiCommands(Extension):
 
 	@nikogotchi.subcommand(sub_cmd_description='Rename your Nikogotchi')
 	async def rename(self, ctx: SlashContext):
-		nikogotchi = await self.get_nikogotchi(ctx.author.id)
+		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 
 		if nikogotchi is None:
 			return await fancy_message(
@@ -689,17 +698,17 @@ class NikogotchiCommands(Extension):
 
 	@nikogotchi.subcommand(sub_cmd_description="Show off a nikogotchi in chat")
 	@slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
-	async def show(self, ctx: SlashContext, user: User = None):
+	async def show(self, ctx: SlashContext, user: User | None = None):
 		loc = Localization(ctx.locale)
 		if user is None:
 			user = ctx.user
 
-		nikogotchi = await self.get_nikogotchi(user.id)
+		nikogotchi = await self.get_nikogotchi(str(user.id))
 
 		if nikogotchi is None:
 			return await fancy_message(ctx, loc.l('nikogotchi.other.other_invalid'), ephemeral=True, color=Colors.BAD)
 
-		await ctx.send(embed=await self.get_main_embeds(ctx, nikogotchi, preview=True))
+		await ctx.send(embeds=await self.get_main_embeds(ctx, nikogotchi, preview=True))
 
 	"""@nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
     @slash_option('user', description='The user to trade with.', opt_type=OptionType.USER, required=True)
@@ -724,8 +733,8 @@ class NikogotchiCommands(Extension):
         uid = user.id
 
         buttons = [
-            Button(style=ButtonStyle.SUCCESS, label=loc.l('general.buttons._yes'), custom_id=f'trade {ctx.author.id} {uid}'),
-            Button(style=ButtonStyle.DANGER, label=loc.l('general.buttons._no'), custom_id=f'decline {ctx.author.id} {uid}')
+            Button(style=ButtonStyle.SUCCESS, label=loc.l('global.buttons.yes'), custom_id=f'trade {ctx.author.id} {uid}'),
+            Button(style=ButtonStyle.DANGER, label=loc.l('global.buttons.no'), custom_id=f'decline {ctx.author.id} {uid}')
         ]
 
         await user.send(
@@ -787,7 +796,7 @@ class NikogotchiCommands(Extension):
 	    name="public",
 	    opt_type=OptionType.BOOLEAN
 	)
-	async def treasures(self, ctx: SlashContext, user: User = None, public: bool = True):
+	async def treasures(self, ctx: SlashContext, user: User | None = None, public: bool = True):
 		loc = Localization(ctx.locale)
 		if user is None:
 			user = ctx.user
@@ -804,7 +813,7 @@ class NikogotchiCommands(Extension):
 
 		for treasure_nid, item in all_treasures.items():
 
-			treasure_loc: dict = loc.l(f'items.treasures')
+			treasure_loc: dict = loc.l(f'items.treasures', typecheck=dict)
 
 			name = treasure_loc[treasure_nid]['name']
 

@@ -1,11 +1,12 @@
 import random
 import asyncio
-from interactions import *
-from utilities.emojis import emojis, make_url
 from datetime import datetime, timedelta
+from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.database.schemas import UserData
 from utilities.localization import Localization, fnum, put_mini
 from utilities.message_decorations import Colors, fancy_message
+from interactions import Button, ButtonStyle, Embed, EmbedAttachment, Extension, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
+
 # yapf: disable
 wool_finds = {
   10: [ "devoted", "positive_major"   ],
@@ -41,7 +42,7 @@ class WoolCommands(Extension):
 	    name="public",
 	    opt_type=OptionType.BOOLEAN
 	)
-	async def balance(self, ctx: SlashContext, of: User = None, public: bool = False):
+	async def balance(self, ctx: SlashContext, of: User | None = None, public: bool = False):
 		await ctx.defer(ephemeral=not public)
 		loc = Localization(ctx.locale)
 		if of is None:
@@ -84,8 +85,8 @@ class WoolCommands(Extension):
 
 		if to.bot and not (amount <= 0):
 			buttons = [
-			    Button(style=ButtonStyle.RED, label=loc.l('general.buttons._yes'), custom_id=f'yes'),
-			    Button(style=ButtonStyle.GRAY, label=loc.l('general.buttons._no'), custom_id=f'no')
+			    Button(style=ButtonStyle.RED, label=loc.l('global.buttons.yes'), custom_id=f'yes'),
+			    Button(style=ButtonStyle.GRAY, label=loc.l('global.buttons.no'), custom_id=f'no')
 			]
 
 			confirmation_m = await fancy_message(
@@ -100,12 +101,12 @@ class WoolCommands(Extension):
 				await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0 * 1000)
 				await ctx.delete(confirmation_m)
 			except asyncio.TimeoutError:
-				await confirmation_m.edit(content=loc.l("general.responses.timeout.yn"), components=[])
+				await confirmation_m.edit(content=loc.l("global.responses.timeout.yn"), components=[])
 				await ctx.delete()
 				await asyncio.sleep(15)
 				await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, loc.l('general.loading'))
+		loading = await fancy_message(ctx, loc.l('global.loading'))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 
@@ -172,9 +173,10 @@ class WoolCommands(Extension):
 
 		await ctx.send(
 		    embed=Embed(
-		        thumbnail=make_url(emojis["treasures"]["die"]),
+		        thumbnail=EmbedAttachment(make_emoji_cdn_url(emojis["treasures"]["die"])),
 		        title=loc.l("wool.pray.title"),
-		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " + loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
+		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " +
+		        loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
 		        color=Colors.GREEN if amount > 0 else Colors.BAD
 		    )
 		)

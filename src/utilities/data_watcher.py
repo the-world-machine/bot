@@ -1,5 +1,4 @@
 import time
-from pathlib import Path
 from typing import Callable
 from threading import Thread
 from watchdog.observers import Observer
@@ -8,7 +7,7 @@ from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
 Callback = Callable[[str], None]
 
-callbaques: list[tuple[Path, Callback]] = []
+callbaques: list[tuple[str, Callback]] = []
 
 
 class FileWatcher(FileSystemEventHandler):
@@ -16,9 +15,9 @@ class FileWatcher(FileSystemEventHandler):
 	def on_modified(self, event: FileModifiedEvent):
 		if not isinstance(event, FileModifiedEvent):
 			return
-		if event.src_path.endswith("4913") and get_config("watcher.ignore-4913"):
+		if str(event.src_path).endswith("4913") and get_config("watcher.ignore-4913", typecheck=bool):
 			return
-		event.src_path = event.src_path.replace("\\", "/")
+		event.src_path = str(event.src_path).replace("\\", "/")
 		for callback in callbaques:
 			p = event.src_path.split("src/data/")[1]
 			if p.startswith(callback[0]):
@@ -26,7 +25,7 @@ class FileWatcher(FileSystemEventHandler):
 
 
 def subscribe(path: str, cb: Callback):
-	callbaques.append((path, cb))
+	callbaques.append((str(path), cb))
 
 
 def watch():

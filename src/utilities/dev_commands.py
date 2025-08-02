@@ -14,9 +14,9 @@ from utilities.localization import fnum
 from interactions import Embed, Message
 from asyncio import iscoroutinefunction
 import utilities.database.schemas as schemas
+from utilities.extensions import load_commands  # used, actually
 from utilities.config import get_config, on_prod
 from utilities.message_decorations import Colors
-from utilities.extensions import load_commands  # used, actually
 from utilities.shop.fetch_shop_data import reset_shop_data
 
 ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
@@ -90,10 +90,10 @@ async def _execute_dev_command(message: Message):
 	if not message.content:
 		return
 
-	if message.author.bot and str(message.author.id) not in get_config('dev.whitelist'):
+	if message.author.bot and str(message.author.id) not in get_config('dev.whitelist', typecheck=list):
 		return
 
-	if str(message.author.id) not in get_config('dev.whitelist'):
+	if str(message.author.id) not in get_config('dev.whitelist', typecheck=list):
 		return
 
 	prefix = command_marker.split('.')
@@ -250,6 +250,8 @@ async def _execute_dev_command(message: Message):
 					return await handle_reply(runtime, result)
 		case "shop":
 			items = await main.fetch_items()
+			if not items:
+				return await message.reply("`[ Failed to fetch shop from database ]`")
 			shop = items['shop']
 
 			match args[1]:
@@ -272,33 +274,33 @@ async def _execute_dev_command(message: Message):
 
 						matches = re.findall(pattern, command_content)
 
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 						str_data = matches[0]
 
 						data = json.loads(str_data)
 
-						collection = await get_collection(collection, _id).fetch()
+						collection = await get_collection(collection_name, _id).fetch()
 
 						await collection.update(**data)
 
 						return await message.reply('`[ Successfully updated ]`')
 					case "view":
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 						value = args[4]
 
-						if collection == 'shop':
-							collection = await get_collection(collection, 0)
+						if collection_name == 'shop':
+							collection = await get_collection(collection_name, "0")
 						else:
-							collection = await get_collection(collection, _id).fetch()
+							collection = await get_collection(collection_name, _id).fetch()
 
 						return await message.reply(f'`[ The value of {value} is {str(collection.__dict__[value])} ]`')
 					case "view_all":
-						collection = args[2]
+						collection_name = args[2]
 						_id = args[3]
 
-						collection = await get_collection(collection, _id).fetch()
+						collection = await get_collection(collection_name, _id).fetch()
 
 						return await message.reply(f"```yml\n{yaml.dump(main.to_dict(collection), default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 					case "wool":

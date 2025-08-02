@@ -2,11 +2,11 @@ import io
 import os
 import yaml
 import re
-import datetime
+from datetime import datetime
 from PIL import Image
 from pathlib import Path
 from termcolor import colored
-from utilities.emojis import make_url
+from utilities.emojis import make_emoji_cdn_url
 from utilities.misc import cached_get
 from interactions import PartialEmoji
 from utilities.config import debugging
@@ -16,22 +16,22 @@ icon_regex = re.compile(r"^\d+$")
 
 
 class Face:
-	icon: str = None
-	_custom: None | io.BytesIO = None
+	icon: str | None = None
+	_custom: io.BytesIO | bytes | None = None
 
 	async def set_custom_icon(self, loc: str | Path):
 		self._custom = await cached_get(loc)
 
-	def get_icon_emoji(self) -> PartialEmoji | None:
-		return PartialEmoji(id=self.icon) if self.icon else None
+	def get_icon_emoji(self) -> PartialEmoji:
+		return PartialEmoji(id=int(self.icon)) if self.icon else PartialEmoji(name="❔")
 
-	async def get_image(self, size: int | None) -> Image:
-		loc: str = f"src/data/images/textbox/{self.icon}.png"
+	async def get_image(self, size: int | None) -> Image.Image:
+		loc: str | None = f"src/data/images/textbox/{self.icon}.png"
 		if not os.path.exists(loc):
 			loc = None
 		return Image.open(
 		    self._custom if self.
-		    _custom else await cached_get(loc if loc else make_url(f"<:i:{self.icon}>", size=size))
+		    _custom else await cached_get(loc if loc else make_emoji_cdn_url(f"<:i:{self.icon}>", size=size))
 		)
 
 	def __init__(self, icon: str | None = None):
@@ -45,7 +45,7 @@ class Face:
 
 class Character:
 	faces: dict[str, Face]
-	icon: str
+	icon: str | None
 
 	def get_face(self, name):
 		if name not in self.faces:
@@ -53,10 +53,10 @@ class Character:
 		return self.faces[name]
 
 	def get_faces(self) -> list[tuple[str, Face]]:
-		return self.faces.items()
+		return list(self.faces.items())
 
 	def get_face_list(self) -> list[str]:
-		return self.faces.keys()
+		return list(self.faces.keys())
 
 	def has_face(self, name):
 		return hasattr(self.faces, name)
@@ -64,14 +64,14 @@ class Character:
 	def get_icon_emoji(self) -> PartialEmoji:
 		return (PartialEmoji(id=self.icon) if self.icon else self.faces["Normal"].get_icon_emoji())
 
-	def __init__(self, faces: dict[str, str | None | Face], icon: str | None = None):
+	def __init__(self, faces: dict[str, str], icon: str | None = None):
 		if icon and not icon_regex.match(icon):
 			raise ValueError(f"Invalid icon, got {icon}")
 		self.icon = icon
 
 		self.faces = {}
-		for name, icon in faces.items():
-			self.faces[name] = Face(icon)
+		for name, ic in faces.items():
+			self.faces[name] = Face(ic)
 
 	def __repr__(self):
 		facecount = len(self.faces)

@@ -1,7 +1,8 @@
 import asyncio
 import random
-from interactions import *
 from dataclasses import dataclass
+
+from interactions import Embed, Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 from utilities.emojis import emojis
 from utilities.localization import Localization, fnum
 from utilities.database.schemas import UserData
@@ -17,6 +18,7 @@ class Slot:
 		rounded = round(value * 100)
 		self.emoji = emoji.replace(":i:", f":{rounded if rounded > 0 else 'minus_'+str(0-rounded)}pts:")
 		self.value = value
+
 	def __eq__(self, other):
 		if isinstance(other, Slot):
 			return self.emoji == other.emoji and self.value == other.value
@@ -67,7 +69,7 @@ class GambleCommands(Extension):
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		loc = Localization(ctx.locale)
-		await fancy_message(ctx, loc.l('general.loading'))
+		await fancy_message(ctx, loc.l('global.loading'))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
@@ -83,7 +85,7 @@ class GambleCommands(Extension):
 		def img_all(*args):
 			return [slot.emoji for slot in args]
 
-		def generate_column(rows: list[list[Slot]], i: int):
+		def generate_column(rows: list[Slot], i: int):
 			slot_a = 0
 			slot_b = 0
 			slot_c = 0
@@ -151,7 +153,7 @@ class GambleCommands(Extension):
 
 		await ctx.edit(embed=generate_embed(0, -1, slot_images))
 
-		slot_values = [ 0, 0, 0 ]
+		slot_values = [ 0.0, 0.0, 0.0 ]
 
 		sleep_first_rotata_s = 3
 		for column in range(0, 3):
@@ -163,10 +165,13 @@ class GambleCommands(Extension):
 				await ctx.edit(embed=result_embed)
 				slot_values[column] = rows[column][i].value
 
-		result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
+		if result_embed.description is not None:
+			result_embed.description = result_embed.description.replace("⇦", "⇦ " + str(round(sum(slot_values) * 100)))
 
 		additional_scoring = 1
+		jackpot = False
 		if all(x == slot_values[0] for x in slot_values):
+			jackpot = True
 			additional_scoring = 100
 
 		win_amount = int(sum(slot_values) * additional_scoring * (bet / 2))
@@ -176,6 +181,7 @@ class GambleCommands(Extension):
 
 		# EVIL line of code that either takes or gives the wool
 		await user_data.manage_wool(win_amount)
+
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_embed.color = Colors.PURE_YELLOW
@@ -189,7 +195,10 @@ class GambleCommands(Extension):
 					result_embed.set_footer(text=f"{ctx.author.username} won back {fnum(abs(win_amount))} wool!")
 		else:
 			result_embed.color = Colors.PURE_RED
-			result_embed.set_footer(text=f'{ctx.author.username} lost it all... better luck next time!')
+			result_embed.set_footer(
+			    text=f'{ctx.author.username} lost it all... better luck next time!'
+			    if not jackpot else f'JACKPOT! 🎉 {ctx.author.username} lost it all! Better luck next time!'
+			)
 
 		await ctx.edit(embed=result_embed)
 

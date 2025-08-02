@@ -1,12 +1,14 @@
 from typing import Union
 
+from interactions import Snowflake
+
 
 class Connection:
 
 	def __init__(self, server_id, channel_id):
 		self.server_id = server_id
 		self.channel_id = channel_id
-		self.characters = [
+		self.characters = [ # TODO: import from textbox characters
 		    {
 		        "id": 0,
 		        "Image": 1019605517695463484,
@@ -55,20 +57,19 @@ class Transmission:
 transmissions: list[Transmission] = []
 
 
-def create_connection(server_id, channel_id):
-	connection = Connection(server_id, channel_id)
-	transmissions.append(Transmission(connection, None))
+def create_connection(server_id: Snowflake, channel_id: Snowflake) -> Transmission:
+	conn = Connection(server_id, channel_id)
+	trans = Transmission(conn, None)
+	transmissions.append(trans)
+	return trans
 
 
-def remove_connection(server_id):
-	for transmission in transmissions:
-		if transmission.connection_a:
-			if transmission.connection_a.server_id == server_id:
-				transmissions.remove(transmission)
-
-		if transmission.connection_b:
-			if transmission.connection_b.server_id == server_id:
-				transmissions.remove(transmission)
+def remove_connection(server_id: Snowflake | Transmission):
+	trans = get_transmission(server_id)
+	if trans is None:
+		return
+	trans.connection_b = None
+	transmissions.remove(trans)
 
 
 def connect_to_transmission(server_id, channel_id):
@@ -78,49 +79,34 @@ def connect_to_transmission(server_id, channel_id):
 			return
 
 
-def get_transmission(server_id):
+def get_transmission(server_id: Snowflake | Transmission) -> Transmission | None:
+	if isinstance(server_id, Transmission):
+		return server_id
 	for transmission in transmissions:
-		if transmission.connection_a.server_id == server_id:
-			return transmission
-
-		if transmission.connection_b.server_id == server_id:
-			return transmission
+		for connection in [transmission.connection_a, transmission.connection_b]:
+			if connection and connection.server_id == server_id:
+				return transmission
 
 
-def get_connection(server_id):
-	for transmission in transmissions:
-		if transmission.connection_a.server_id == server_id:
-			return transmission.connection_a
-
-		if transmission.connection_b.server_id == server_id:
-			return transmission.connection_b
-
-
-def connection_alive(server_id) -> bool:
-	for transmission in transmissions:
-		if transmission.connection_a.server_id == server_id:
-			if transmission.connection_b is not None:
-				return True
-
-		if transmission.connection_b is not None:
-			if transmission.connection_b.server_id == server_id:
-				return True
-
-	return False
+def connection_alive(transmission: Snowflake | Transmission) -> bool:
+	trans = get_transmission(transmission)
+	if trans is None:
+		return False
+	if trans.connection_b == None:
+		return False
+	return True
 
 
-def attempting_to_connect(server_id) -> bool:
-	for transmission in transmissions:
-		if transmission.connection_a.server_id == server_id:
-			return True
-	return False
+def attempting_to_connect(server_id: Snowflake | Transmission) -> bool:
+	trans = get_transmission(server_id)
+	if trans is None:
+		return False
+	return trans.connection_b is None
 
 
 def available_initial_connections(block_list) -> bool:
 	for transmission in transmissions:
-
 		if transmission.connection_b is None:
-
 			if transmission.connection_a.server_id in block_list:
 				continue
 
@@ -129,14 +115,13 @@ def available_initial_connections(block_list) -> bool:
 	return True
 
 
-def check_if_connected(server_id) -> bool:
-	for transmission in transmissions:
-		if transmission.connection_a.server_id == server_id:
-			return True
-
-		if transmission.connection_b is None:
-			return False
-		elif transmission.connection_b.server_id == server_id:
-			return True
+def check_if_connected(server_id: Snowflake | Transmission) -> bool:
+	trans = get_transmission(server_id)
+	if trans is None:
+		return False
+	if trans.connection_b is None:
+		return False
+	elif trans.connection_b.server_id == server_id:
+		return True
 
 	return False

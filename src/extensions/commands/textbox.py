@@ -1,25 +1,23 @@
 import asyncio
 from datetime import datetime
-import io
 import re
-from typing import Literal
-from interactions import *
+from typing import Literal, get_args
+from interactions import ActionRow, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, Extension, File, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, StringSelectMenu, StringSelectOption, component_callback, contexts, integration_types, modal_callback, slash_command, slash_option
 from utilities.config import debugging, get_config
-from utilities.emojis import emojis
-from utilities.mediagen.textboxes import Frame, BackgroundStyle, render_textbox, render_textbox_frames
+from utilities.textbox.mediagen import Frame, render_textbox_frames
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
-from utilities.misc import make_empty_select, optionSearch, pretty_user
-from utilities.textbox.characters import Character, Face, get_character, get_character_list, get_characters
+from utilities.misc import make_empty_select, optionSearch
+from utilities.textbox.characters import get_character, get_characters
 
 states = {}
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 class StateOptions:
 	out_filetype: SupportedFiletypes # TODO: m,ake this use an enum
-	send_to: 1 | 2 | 3 # TODO: m,ake this use an enum
+	send_to: Literal[1, 2, 3] # TODO: m,ake this use an enum
 	quality: int 
 
-	def __init__(self, filetype: SupportedFiletypes = "WEBP", send_to: 1 | 2 | 3 = 1, quality: int = 100):
+	def __init__(self, filetype: SupportedFiletypes = "WEBP", send_to: Literal[1, 2, 3] = 1, quality: int = 100):
 		self.out_filetype = filetype
 		self.send_to = send_to
 		self.quality = quality
@@ -35,17 +33,19 @@ class State:
 	frames: dict[int, Frame]
 	options: StateOptions
 
-	def __init__(self, owner: int, frames: dict[int, Frame] | list[Frame] | Frame | None = None, options: StateOptions = None):
+	def __init__(self, owner: int, frames: dict[int, Frame] | list[Frame] | Frame | None = None, options: StateOptions | None = None):
 		self.options = options if options else StateOptions()
 		self.owner = owner
 		self.frames = {}
 		if not frames:
 			return
 		if isinstance(frames, Frame):
-			self.frames[int(0)] = frames
+			self.frames[0] = frames
 			return
 		for i in range(0, len(frames)):
-			self.frames[int(i)] = Frame(frames[i])
+			if not isinstance(frames[i], Frame):
+				raise ValueError(f"Frame {i} is not of type Frame.\n{frames[i]}")
+			self.frames[i] = frames[i]
 
 	def __repr__(self):
 		return (
@@ -64,7 +64,7 @@ class TextboxCommands(Extension):
 
 	@staticmethod
 	def make_characters_select_menu(
-	    loc: Localization = Localization(), default: str = None, custom_id: str = "textbox update_char 0"
+	    loc: Localization = Localization(), default: str | None = None, custom_id: str = "textbox update_char 0"
 	):
 		characters = get_characters()
 
@@ -87,12 +87,12 @@ class TextboxCommands(Extension):
 	@staticmethod
 	def make_faces_select_menu(
 	    loc: Localization = Localization(),
-	    character_id: str = None,
+	    character_id: str | None = None,
 	    custom_id: str = "textbox update_face 0 0",
-	    default: str = None
+	    default: str | None = None
 	):
 		try:
-			character = get_character(character_id)
+			character = get_character(character_id) # type: ignore
 		except Exception:
 			return make_empty_select(loc=loc, placeholder=loc.l("textbox.errors.no_char"))
 
@@ -124,7 +124,7 @@ class TextboxCommands(Extension):
 			description='What you want the character to say?',
 			opt_type=OptionType.STRING,
 			required=False,
-			max_length=get_config("textbox.max-text-length-per-frame")
+			max_length=int(get_config("textbox.max-text-length-per-frame", typecheck=int))
 	)
 	@slash_option(
 	    name='character',
@@ -174,14 +174,14 @@ class TextboxCommands(Extension):
 	async def create(
 	    self,
 	    ctx: SlashContext,
-	    text: str = None,
-	    character_id: str = None,
-	    face_name: str = None,
-	    animated: bool = None,
-			filetype: str = None,
-	    send_to: 1 | 2 | 3 = 1
+	    text: str | None = None,
+	    character_id: str | None = None,
+	    face_name: str | None = None,
+	    animated: bool | None = None,
+			filetype: SupportedFiletypes | None = None,
+	    send_to: Literal[1, 2, 3] = 1
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx.locale).l("global.loading"), ephemeral=True)
 		state_id = str(ctx.id)  # state_id is the initial `/textbox create` interaction's id, need to save these between restarts later somehow
 		loc = Localization(ctx.locale)
 		erored = False
@@ -216,7 +216,9 @@ class TextboxCommands(Extension):
 			filetype = 'WEBP' if animated else 'PNG'
 		if not filetype:
 			filetype = 'WEBP'
-
+		# Correct version:
+		if filetype not in get_args(SupportedFiletypes):
+			return
 		# init state
 		states[state_id] = State(
 			owner=ctx.user.id,
@@ -248,7 +250,7 @@ class TextboxCommands(Extension):
 
 		return await ctx.send(optionSearch(ctx.input_text, [{"picked_name": name, "value": name} for name in character.get_face_list()]))
 	
-	async def basic(self, ctx, state_id: str, frame_index: str):
+	async def basic(self, ctx, state_id: str, frame_index: int):
 		loc = Localization(ctx.locale)
 		try:
 			state: State = states[state_id]
@@ -333,7 +335,7 @@ class TextboxCommands(Extension):
 
 		await ctx.edit(embed=Embed(description=desc+pos, color=Colors.DEFAULT))
 
-	async def render_to_file(self, ctx: ComponentContext|SlashContext, state: State, frame_preview_index: int = None) -> File:
+	async def render_to_file(self, ctx: ComponentContext|SlashContext|ModalContext, state: State, frame_preview_index: int = None) -> File:
 		# you do alt text here later dont unabstract this
 		loc = Localization(ctx.locale)
 
@@ -388,7 +390,7 @@ class TextboxCommands(Extension):
 		        label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
 		        placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
 						min_length=0,
-		        max_length=get_config("textbox.max-text-length-per-frame")
+		        max_length=get_config("textbox.max-text-length-per-frame", typecheck=int)
 		    ),
 		    custom_id=f'textbox update_text_finish {state_id} {frame_index}',
 		    title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
@@ -414,25 +416,25 @@ class TextboxCommands(Extension):
 			)
 		await self.respond(ctx, state_id, frame_index)
 
-	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list | None = None):
-		loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
-		if not loc:
+	async def respond(self, ctx: SlashContext | ComponentContext | ModalContext, state_id: str, frame_index: int, edit: bool=True, warnings: list  = []):
+		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
+		if err or not state or not loc or not frame_data:
 			return
 		if warnings is None:
 			warnings = []
 		files = [await self.render_to_file(ctx, state, frame_preview_index=frame_index)]
 		pos = ""
 		if len(state.frames) > 2 or frame_index != 0:
-			pos = "\n-# "+loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))
+			pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
 		if debugging():
 			pos += "\n-# **sid**: "+state_id
 		next_frame_exists = len(state.frames) != int(frame_index)+1
 		print(state)
 		embed = Embed(
 		    color=Colors.DEFAULT,
-		    description=(loc.l("textbox.monologue.char")
+		    description=f'{(loc.l("textbox.monologue.char")
 		    if frame_data.starting_character_id is None else loc.l("textbox.monologue.face") if frame_data.starting_face_name is None else
-		    loc.l("textbox.monologue.press") if frame_data.text else loc.l("textbox.monologue.press_notext"))+pos
+		    loc.l("textbox.monologue.press") if frame_data.text else loc.l("textbox.monologue.press_notext"))}{pos}'
 		)
 		components = [
 			ActionRow(
@@ -506,12 +508,12 @@ class TextboxCommands(Extension):
 	    ctx: SlashContext,
 	    search: str = "user:me!0:1"
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx.locale).l("global.loading"), ephemeral=True)
 		states2show: list[tuple[str, State]] = []
 		options = search.split("!")
 		filter = options[0]
 
-		states2show = states.items()
+		states2show = list(states.items())
 		match filter:
 			case "all":
 				pass
@@ -537,6 +539,7 @@ class TextboxCommands(Extension):
 		if len(states2show) > 0:
 			paging = options[1].split(":")
 			page = paging[0] if len(paging) > 0 else "0"
+			items_per_page = "10"
 			try:
 				page = int(page)
 			except:

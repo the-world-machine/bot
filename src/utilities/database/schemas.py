@@ -1,7 +1,9 @@
 import random
 from datetime import datetime
+from utilities.emojis import TreasureTypes
 from dataclasses import asdict, dataclass, field
 from utilities.database.main import DBDict, DBDynamicDict, DBList, Collection
+
 
 @dataclass
 class TransmitConfig(DBDict):
@@ -17,7 +19,7 @@ class TransmitConfig(DBDict):
 class WelcomeConfig(DBDict):
 	disabled: bool = True
 	ping: bool = False
-	channel_id: str = None
+	channel_id: str | None = None
 	#character: str = None
 	#face: str = None
 	#animated: bool = True
@@ -39,7 +41,7 @@ class UserData(Collection):
 	equipped_bg: str = 'Default'
 	profile_description: str = 'Hello World!'
 	badge_notifications: bool = True
-	owned_treasures: DBDynamicDict[str, int] = field(default_factory=lambda: { 'journal': 5})
+	owned_treasures: DBDynamicDict[TreasureTypes, int] = field(default_factory=lambda: DBDynamicDict({ 'journal': 5}))
 	owned_backgrounds: DBList[str] = field(
 	    default_factory=lambda: [ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink']
 	)

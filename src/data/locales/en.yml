@@ -1,20 +1,22 @@
-general:
+global:
   loading: "[ [emoji:loading] Loading... ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Yes"
-    _no: "No"
-    _done: "Done"
-    _cancel: "Cancel"
-    _back: "Back"
-    _forwards: "Forwards"
-    _continue: "Continue"
-    _next: "Next"
-    _previous: "Previous"
-    _open_site: "Open Website"
-    _dont_show_again: "Don't Show Again"
+    yes: "Yes"
+    no: "No"
+    done: "Done"
+    cancel: "Cancel"
+    back: "Back"
+    forwards: "Forwards"
+    continue: "Continue"
+    next: "Next"
+    previous: "Previous"
+    open_site: "Open Website"
+    dont_show_again: "Don't Show Again"
+    beginning: "To The Beginning"
+    start: "To The Start"
 
   minis:
     note: "❕ note:"
@@ -452,129 +454,130 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  selected: "Choose an action to perform on [user]"
-  selected_self: "Choose an action to perform"
-  no_path: "The action you tried to do no longer exists"
+  selected: "What should [user_one] do to [user_one]?"
+  selected_self: "Choose an action to perform on [user_two]"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
-  options:
+  phrases:
     - name: Boop
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] booped [user_two]"
         - name: Playful
-          messages:
+          phrases:
             - "[user_one] pokes the nose of [user_two]!"
             - "[user_one] reaches out and boops [user_two]!"
             - "[user_one] felt silly and booped [user_two]!"
             - "[user_one] playfully boops [user_two]!"
         - name: Delicate
-          messages:
+          phrases:
             - "[user_one] delicately boops and brushes the nose of [user_two]"
             - "[user_one] delivers a dainty boop to [user_two]"
             - "[user_one] gently taps [user_two]'s nose"
             - "[user_one] places a delicate boop on [user_two]'s nose"
         - name: Frustrated
-          messages:
+          phrases:
             - "[user_one] aggressively booped [user_two]"
             - "[user_one] booped [user_two] out of frustration"
             - "[user_one] huffs and boops [user_two] in irritation"
             - "[user_one] lets out their frustration with a firm boop on [user_two]"
         - name: Irresistible
-          messages:
+          phrases:
             - "[user_one] felt the need to give [user_two] a boop!"
             - "[user_one] just wanted to give [user_two] a boop!"
             - "[user_one] couldn't resist booping [user_two]"
             - "[user_one] gives in to the urge and boops [user_two]"
         - name: Confused
-          messages:
+          phrases:
             - "[user_one] leaves [user_two] in confusion via a boop!"
             - "[user_one] gives [user_two] an unexpected boop!"
             - "[user_one] left [user_two] speechless post-boop!"
             - "[user_one] leaves [user_two] wondering why they were booped"
-        - name: They're Cute
-          messages:
+        - name: Cute
+          phrases:
             - "[user_one] gives [user_two] the cutest little boop!"
             - "[user_one] boops [user_two]'s nose and giggles cutely!"
             - "[user_one] can't handle how adorable [user_two] is and boops them!"
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Slap
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] slapped [user_two], probably deserved."
+      phrases:
+        - "[user_one] slapped [user_two], probably deserved."
+        - "[user_one] slaps [user_two]!"
+        - "[user_two] received a sudden slap from [user_one]!"
     - name: Pet
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] pet [user_two]!"
+      phrases:
+        - "[user_one] pet [user_two]!"
     - name: Head Pat
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] gave [user_two] a headpat!"
+      phrases:
+        - "[user_one] gave [user_two] a headpat!"
     - name: Tickle
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] started tickling [user_two] a surprise tickle!"
-            - "[user_one] gave [user_two] a surprise tickle!"
-            - "[user_one] tickled [user_two] and sparked a tickle fight!"
-            - "[user_one] went for a tickle attack at [user_two]!"
+      phrases:
+        - "[user_one] started tickling [user_two] a surprise tickle!"
+        - "[user_one] gave [user_two] a surprise tickle!"
+        - "[user_one] tickled [user_two] and sparked a tickle fight!"
+        - "[user_one] went for a tickle attack at [user_two]!"
     - name: Hug
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] hugged [user_two]!"
+      phrases:
+        - "[user_one] hugged [user_two]!"
     - name: Cuddle
-      messages:
-        - name: Basic
-          messages:
-            - "[user_one] cuddled with [user_two]!"
+      phrases:
+        - "[user_one] cuddled with [user_two]!"
     - name: Kiss
-      messages:
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] kissed [user_two]! ❤️"
         - name: Warm
-          messages:
+          phrases:
             - "[user_one] gave [user_two] a warm kiss ❤️"
         - name: Romantic
-          messages:
+          phrases:
             - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
         - name: Cheek Kiss
-          messages:
+          phrases:
             - "[user_one] plants a sweet peck on [user_two]'s cheek"
             - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
     - name: Attack
-      messages:
+      phrases:
         - name: Basic Punch
-          messages:
+          phrases:
             - "[user_one] punched [user_two], that hurts."
         - name: Random Combo
-          messages:
+          phrases:
             - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
             - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
             - "[user_one] goes full flurry mode on [user_two]!"
         - name: Pillow
-          messages:
+          phrases:
             - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
             - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
-      messages:
-        - name: Small Rock
-          messages:
+      phrases:
+        - name: Rocks
+          phrases:
             - "[user_one] threw a small rock at [user_two]!"
+            - "[user_one] threw a bunch of pebbles at [user_two]!"
         - name: Molotov
-          messages:
+          phrases:
             - "[user_one] threw a Molotov Cocktail towards [user_two] ‼️"
         - name: Empty Bottle (ow)
-          #type: bottle
-          #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages:
+          phrases:
             - "[user_one] threw an empty bottle at [user_two]'s head"
-
+          flags: bottle
+        - name: Piece of Wool
+          phrases:
+            - "[user_one] threw a piece of wool at [user_two], and it fell on the ground mid-way"
+            - "[user_one] released a tiny 🤏 pinch of wool above [user_two]'s head"
+            - "[user_one] rubbed [user_two]'s face with a big clump of wool"
+            - "[user_one] tickled [user_two]'s ear with a small piece of wool"
+          modifiers: wool
+  modifiers:
+    no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
 # ---------------------------------------------------------------
 
 treasure:

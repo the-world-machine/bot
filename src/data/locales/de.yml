@@ -1,35 +1,34 @@
-general:
+global:
   loading: "[ Laden... [emoji:loading] ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Ja"
-    _no: "Nein"
-    _done: "Fertig"
-    _cancel: "Stornieren"
-    _back: "Wieder"
-    _forwards: "Vorwärts"
-    _continue: "Weiter"
-    _next: "Nächste"
-    _previous: "Zurück"
-    _open_site: "Seite öffene"
-    _dont_show_again: "Don't Show Again"
+    yes: "Ja"
+    no: "Nein"
+    done: "Fertig"
+    cancel: "Stornieren"
+    back: "Wieder"
+    forwards: "Vorwärts"
+    continue: "Weiter"
+    next: "Nächste"
+    previous: "Zurück"
+    open_site: "Seite öffene"
+    dont_show_again: "Don't Show Again"
 
-  select:
-    empty: hallo, english (original) übersetztung war gemacht bei @meqativ und @axiinyaa #  :3
-    _open_site: "Seite öffenen"
-    _dont_show_again: "Nicht nochmal zeigen"
-  
   minis:
     note: "❕ Notierung(en):"
     tip: "❔ tip:"
     warn: "⚠️ Warnung:"
     err: "‼️ Error:"
 
+  select:
+    empty: hallo, english (original) übersetztung war gemacht bei @meqativ und @axiinyaa #  :3
+    multiple: ([current]/[total])
+
   responses:
     timeout:
-      yn: "[ Du Nahm zu viel zeit zu antworten]"
+      yn: "[ Du Nahm zu viel zeit zu antworten ]"
 
 # ---------------------------------------------------------------
 
@@ -56,6 +55,7 @@ misc:
     names:
       shards: "Scherben"
       avg_ping: "Durchschnittlich ping"
+      latency: "Response latency"
       commit_hash: "Commit hash"
       server_count: "Server zahl"
       user_installs: "User installiert"
@@ -75,15 +75,15 @@ misc:
     desc: "...gerollt eine [result]."
     # adds on when more than 1 dice
     multi: "Insgesamt **[total]**."
-    
+
   welcome:
     placeholder_text: "[ Willkommen zu [server_name], [user_name]! hier sind jetzt [member_count] benutzern hier! ]"
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
 
 # ---------------------------------------------------------------
-      
-wool: 
+
+wool:
   balance:
     you:
       none: "[ Du hast **no[emoji:wool]Wool** ]"
@@ -94,7 +94,7 @@ wool:
     bot:
       none: |
         [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal.
-        
+
         so [mention] hat keine [emoji:wool]**Wool** ]
       some: |
         [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
@@ -130,7 +130,7 @@ wool:
     Change:
       gain: "Du also hast bekommen [emoji:wool]**[amount]** wool!"
       loss: "Du also hast verloren [emoji:wool]**[amount]** wool..."
-      
+
 # ---------------------------------------------------------------
 
 transmit:
@@ -142,45 +142,35 @@ transmit:
 settings:
   errors:
     weird_edgecase_number_0: Ober du bist [app:mention] nicht in der server. Wenn du bist der server Manager bitte nochmal [app:mention] zu dem Server einladen.
-    missing_permissions: "[ Du musst die \"Manage Server\" Erlaubnis haben bevor du die Einstellungen verändert]"
+    missing_permissions: '[ Du musst die "Manage Server" Erlaubnis haben bevor du die Einstellungen verändert]'
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
     channel_insufficient_perms: "[ Ich hab nicht genug erlaubnisse für diesem Kannal. stell doch sicher ich habe alle von diesem: **Send Messages**, **View Channel** und **Attach Files**. ]"
     invalid_server_id: "[ Invaliden server ID. ]"
     uncached_server: "-# Ich konnte nicht den server namen finden (ich bin nicht drin)"
     get_server_id: "(Discord Einstellungen -> Erweitert-> 'Entwicklermodus' aktivieren, dann guck unterm von der Server menü )"
     channel_lost_warn: "Etwas ist kaputt gegangen leste mal och probierte eine willkommen textbox in der Kanal du hast ausgewählt. stell fich sicher ich habe genug Erlaubnisse in dem Kanal und es existiert. Du kannst den Kanal verändern indem du benutzt `/settings welcome channel`, ober in den Server Einstellungen -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
-    
-server:
+
   welcome:
     enabled:
       yah: "[ Willkommen textboxen sind aktiviert ]"
       nah: "[ Willkommen textboxen sind Deaktiviert ]"
       default_tip: "du kannst die textbox message verändern mit `/settings welcome edit`" # tip:
-      editor:
-        title: "[ Du verändert die Willkommen Nachricht ... ]"
-        input: "Willkommen Nachricht"
-        placeholder: "Lass leer zum deaktivieren
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to [channel] ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+    editor:
+      title: "Du verändert die Willkommen Nachricht ..."
+      input: "Willkommen Nachricht"
+      placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
+      done: "[ Erfolgreich Verändert die Willkommen Nachricht ]"
+      debug: |
+        Previous: [old_text]
 
-        - Du kannst die Variablen benutzen: [user_name] [server_name]"
-        done: |
-          [ Erfolgreich Verändert die Willkommen Nachricht]
-        # new message shows up right after this
-  channel:
-    auto: "[ Welcome textboxes channel has been reset ]"
-    Changed: "[ Welcome textboxes channel has been set to [channel] ]"
-  ping:
-    yah: "[ Welcome textboxes should now ping the newcomers ]"
-    nah: "[ Welcome textboxes will no longer ping the newcomers ]"
-  editor:
-    title: "Du verändert die Willkommen Nachricht ..."
-    input: "Willkommen Nachricht"
-    placeholder: "Du kannst die Variablen benutzen: [user_name] [server_name] [member_count]"
-    done: "[ Erfolgreich Verändert die Willkommen Nachricht ]"
-    debug: | 
-      Previous: [old_text]
-
-      New (current): [new_text]
-    disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
+        New (current): [new_text]
+      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
@@ -235,7 +225,7 @@ explode:
       [ Das reicht jetzt, wie in der Gottes grüne welt hast du dieser nummer erreicht?! Verstehst du wie viele Welten hast du zerstört?! ]
 
       ⚠️ warnung: Unglaublich von dir.
-      
+
   info: "Shatter zahl: [amount]"
   YouKilledNiko: "[ Du hast Niko getötet. ]"
 
@@ -289,7 +279,6 @@ shop:
     Stock Preis: [price]```
 
   nikogotchi:
-
     title: Kapseln
 
     main: >
@@ -320,7 +309,6 @@ shop:
     result_footer: Benutz [ /nikogotchi check ] um dein neuen Nikogotchi zu sehen
 
   pancakes:
-
     title: Pfannkuchen
 
     main: >
@@ -333,7 +321,6 @@ shop:
       [user_wool]
 
   backgrounds:
-
     title: Hintergründe
 
     main: >
@@ -350,7 +337,6 @@ shop:
     traded: "> Erfolgreich diese Hintergrund gekauft!"
 
   treasures:
-
     buy:
       title: Schätze
       message: >
@@ -436,7 +422,7 @@ items:
         *+25 ❤️*
 
     glitched:
-      name: '???'
+      name: "???"
       description: Ich weiß nicht was das ist und wie es ist gekommen.
 
   capsules:
@@ -465,125 +451,128 @@ items:
 interact:
   selected: "Wahl eine Action zum durchführen an [user]"
   selected_self: "Choose an action to perform"
-  no_path: "The action you tried to do no longer exists"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
-  options:
+  phrases:
     - name: Boop
-      messages:
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] booped [user_two]"
         - name: Playful
-          messages:
+          phrases:
             - "[user_one] sticht in die Nase von[user_two]!"
             - "[user_one] reicht und boops [user_two]!"
             - "[user_one] Gefühlt silly und booped [user_two]!"
             - "[user_one] playfully boops [user_two]!"
         - name: Delicate
-          messages:
+          phrases:
             - "[user_one] zart boops und streichelt die nase von [user_two]"
             - "[user_one] delivers a dainty boop to [user_two]"
             - "[user_one] gently taps [user_two]'s nose"
             - "[user_one] places a delicate boop on [user_two]'s nose"
         - name: Frustrated
-          messages:
+          phrases:
             - "[user_one] aggressiv booped [user_two]"
             - "[user_one] booped [user_two] out of frustration"
             - "[user_one] huffs and boops [user_two] in irritation"
             - "[user_one] lets out their frustration with a firm boop on [user_two]"
         - name: Irresistible
-          messages: 
+          phrases:
             - "[user_one] fühlte das Bedürfnis zu geben [user_two] ein boop!"
             - "[user_one] Wollte nur [user_two] ein boop geben!"
             - "[user_one] konnte nicht widerstehen booping [user_two]"
             - "[user_one] gives in to the urge and boops [user_two]"
         - name: Confused
-          messages:
+          phrases:
             - "[user_one] hatte [user_two] in Verwirrung gelassen über ein boop!"
             - "[user_one] gibt [user_two] ein unerwarteter boop!"
             - "[user_one] lasst [user_two] sprachlos mit einen post-boop!"
             - "[user_one] leaves [user_two] wondering why they were booped"
         - name: They're Cute
-          messages:
+          phrases:
             - "[user_one] gives [user_two] the cutest little boop!"
             - "[user_one] boops [user_two]'s nose and giggles cutely!"
             - "[user_one] can't handle how adorable [user_two] is and boops them!"
             - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
     - name: Schlagen
-      messages: 
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] hat [user_two] geschlagen, wahrscheinlich verdient."
     - name: Streichlen
-      messages: 
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] streichelt [user_two]!"
     - name: Kopf streichel
-      messages: 
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] gibt [user_two] ein Kopf streicheln!"
     - name: Kitzeln
-      messages:
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] startet [user_two] zu kitzel!"
             - "[user_one] gibt [user_two] ein Überraschung kitzel!"
             - "[user_one] kitzelte [user_two] und startete ein kitzel kämpf!"
             - "[user_one] went for a tickle attack towards [user_two]!"
     - name: Umarmung
-      messages: 
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] Umarmte [user_two]!"
     - name: kuscheln
-      messages: 
+      phrases:
         - name: Basic
-          messages: 
+          phrases:
             - "[user_one] kuschelte mit [user_two]!"
     - name: Küssen
-      messages: 
+      phrases:
         - name: Basic
-          messages:
+          phrases:
             - "[user_one] hat [user_two] geküsst! ❤️"
         - name: Warm
-          messages: 
+          phrases:
             - "[user_one] gibt [user_two] ein warmes küssen ❤️"
         - name: Romantic
-          messages:
+          phrases:
             - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
         - name: Cheek Kiss
-          messages:
+          phrases:
             - "[user_one] plants a sweet peck on [user_two]'s cheek"
             - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
     - name: Attack
-      messages:
+      phrases:
         - name: Basic Punch
-          messages: 
+          phrases:
             - "[user_one] Schlägte [user_two], das würd ein blaues fleck lassen."
         - name: Random Combo
-          messages:
+          phrases:
             - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
             - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
             - "[user_one] goes full flurry mode on [user_two]!"
         - name: Pillow
-          messages:
+          phrases:
             - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
             - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
             - "[user_one] swings a cushion at [user_two] in a soft attack!"
     - name: 🔥
-      messages: 
+      phrases:
         - name: Small Rock
-          messages: 
+          phrases:
             - "[user_one] threw a small rock at [user_two]!"
         - name: Molotov
-          messages: 
+          phrases:
             - "[user_one] wirft eine Molotov Cocktail in Richtung [user_two] ‼️"
         - name: Empty Bottle (ow)
           #type: bottle
           #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages: 
+          phrases:
             - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------
@@ -604,7 +593,6 @@ nikogotchi:
   loading: "[ Laden Nikogotchi... [emoji:loading] ]"
   invalid: "[ Du hast kein Nikogotchi! ]"
   tipnvalid: "du kannst eine Kapsel kaufen von den laden un entsperrt eine" # tip:
-
 
   name:
     niko: Niko
@@ -666,7 +654,7 @@ nikogotchi:
   found:
     title: Du hast gefunden [name]!
     description: Willst du ihnen eine andere name geben?
-    renamenote: du kann immer sie umbenennen mit `/nikogotchi rename`  # note:
+    renamenote: du kann immer sie umbenennen mit `/nikogotchi rename` # note:
 
   status:
     template: "*[status]*"
@@ -696,7 +684,6 @@ nikogotchi:
 
       no_food: "Kein essen... Du kannst welche kaufen in den Laden!"
       invalid: Du kannst nicht dein Nikogotchi futtern dass! bitte aktualisieren mit [emojis:refresh]!
-
 
   died:
     title: "🪦 [name] ist gestorben..."
@@ -897,24 +884,30 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: '[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]'
-    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists. 
+    failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
+    unknown_state: State [id] not found. Please try again, or report this in our [support discord server]([discord_invite]) if the issue persists.
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" is not real
     invalid_face: The face "[face_name]" is not real for "[character_name]"
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
-    
-  filetypes:
-    gif: GIF
-    webp: WEBP
-    apng: APNG
-    
-    png: PNG
-    jpg: JPG
+    failed_to_send: "[ Failed to send for some reason :[ ]"
+    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
+    apng_preview_warn: | # warn:
+      Discord doesn't show or let you download `.png`s as APNG.
+      You can open the attachment in the browser, and it should animate (if there's any animation).
 
-  button: 
+  filetypes:
+    GIF: gif
+    WEBP: webp
+    APNG: apng
+
+    PNG: png
+    JPEG: jpeg
+
+  button:
     render: Render [type]
-    'render&send': "Render [type] & Send"
+    "render&send": "Render [type] & Send"
+    opts: Options
     text:
       edit: Edit Text
       add: Add Text
@@ -923,9 +916,8 @@ textbox:
       add: Add Frame
       previous: Previous Frame
       manual: Input Frame
-  
-  frame_position: "editing frame [current] of [total] total"
 
+  frame_position: "editing frame [current] of [total] total"
 
   select:
     chars: Characters...
@@ -935,10 +927,10 @@ textbox:
   modal:
     edit_text:
       title: "Editing text for frame #[index]!"
-      input: 
+      input:
         label: Text
         placeholder: Text goes here i think
-      response: > 
+      response: >
         Text changed!
 
         New text: [new_text]
@@ -958,33 +950,33 @@ textbox:
 
   alt:
     single_frame:
-      filename: "TWM textbox ([character].[face].[timestamp])"
-      
+      filename: "TWM textbox ([character], [face], [timestamp])"
+
       character_only:
         left: "[background_description] with [character_description] on the left"
         right: "[background_description] with [character_description] on the right"
-      
+
       with_text:
         left: "[background_description] with [character_description] on the left saying: [text_with_effects]"
         right: "[background_description] with [character_description] on the right saying: [text_with_effects]"
-      
+
       text_only: "[background_description] containing: [text_with_effects]"
 
     multi_frame:
-      filename: "TWM textbox ([frames].[timestamp])"
+      filename: "TWM textbox ([frames], [timestamp])"
       intro: "A sequence of OneShot-style dialogue boxes"
-      
+
       frame:
         normal: "[character_description] says: [text_with_effects]"
         no_text: "[character_description] is silent[action_marker]"
         no_character: "Text reads: [text_with_effects]"
         empty: "Empty textbox"
-        
+
         transition:
           normal: "[previous_frame]; then [next_frame]"
           style_change: "[previous_frame]; then style changes to [new_style] textbox showing [next_frame]"
           action_continuation: "[previous_frame][action_marker]; then [next_frame]"
-      
+
       sequence_builder:
         start: "First, [first_frame]"
         middle: "[previous_sequence], [next_frame]"
@@ -1001,6 +993,7 @@ textbox:
       default: "A OneShot-style textbox"
       default_empty: "An empty OneShot-style textbox"
       custom: 'A textbox with a style called "[name]"'
+      custom_color: 'A [color] textbox with a style called "[name]"'
 
     text_effects:
       full:
@@ -1015,19 +1008,19 @@ textbox:
         wrap_template: "[text] (with [effects] from here)"
         end_template: "(regular text now)"
         combination: "[effect1] and [effect2]"
-        
+
         individual:
           bold: "bold"
           italic: "italics"
           color: "[color]"
           shake: "shaking"
           wave: "wavy movement"
-          
-    action_markers:
+
+    actions:
       pause: " (pause)"
       long_pause: " (long pause)"
       disappears: " (disappears)"
 
     error:
-      cutoff: "(text continues beyond visible area)"
-      remaining_frames: "Due to Discord's limitations, press the alt-text button under this message to see the rest."
+      cutoff: "(text continues beyond visible area)" # TODO: make it scroll
+      remaining_frames: "Due to Discord's limitations, this text has been truncated."

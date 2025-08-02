@@ -1,6 +1,5 @@
-from utilities.database.main import to_dict
 from utilities.database.schemas import UserData
-from interactions import *
+from interactions import Embed, PartialEmoji, SlashContext, User
 from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge
 
@@ -32,7 +31,7 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 	embed.set_footer('You can change this notification using "/settings badge_notifications"')
 
 	owned_badges = user_data.owned_badges
-	owned_badges.append(badge_name)
+	await owned_badges.append(badge_name)
 
 	await user_data.update(owned_badges=owned_badges)
 
@@ -40,20 +39,15 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 		return await ctx.send(embeds=embed)
 
 
-async def increment_value(ctx: SlashContext, value_to_increment: str, amount: int = 1, target: User = None):
+async def increment_value(ctx: SlashContext, value_to_increment: str, amount: int = 1, target: User | None = None):
 	badges = await fetch_badge()
-
-	if target:
-		user = target
-	else:
-		user = ctx.author
+	user = target or ctx.user
 
 	user_data = await UserData(_id=user.id).fetch()
-	user_dict = to_dict(user_data)
 
 	await user_data.increment_key(value_to_increment, amount)
 
-	get_value = user_dict[value_to_increment] + amount
+	get_value = user_data.__getattribute__(value_to_increment) + amount
 
 	for badge, data in badges.items():
 		if data['type'] == value_to_increment:

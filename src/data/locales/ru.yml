@@ -1,20 +1,20 @@
-general:
+global:
   loading: "[ Загрузка... [emoji:loading] ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Пожалуйста, не спамьте этой командой. Вы можете использовать её через [timestamp_relative]. ]"
 
   buttons:
-    _yes: "Да"
-    _no: "Нет"
-    _done: "Готово"
-    _cancel: "Отмена"
-    _back: "Назад"
-    _forwards: "Вперёд"
-    _continue: "Продолжить"
-    _next: "Следущий"
-    _previous: "Предыдущий"
-    _open_site: "Открыть Сайт"
-    _dont_show_again: "Не Показывать Снова"
+    yes: "Да"
+    no: "Нет"
+    done: "Готово"
+    cancel: "Отмена"
+    back: "Назад"
+    forwards: "Вперёд"
+    continue: "Продолжить"
+    next: "Следущий"
+    previous: "Предыдущий"
+    open_site: "Открыть Сайт"
+    dont_show_again: "Не Показывать Снова"
   
   minis:
     note: "❕ заметка:"
@@ -463,128 +463,13 @@ interact:
   twm_is_fed_up_with_you: "[ *вздох* Ты не можешь взаймодействовать с собою, [user]. ]"
 
   interact:
-  selected: "Выберете действие над [user]"
-  selected_self: ""
+  selected: "Выберите действие над [user]"
+  selected_self: "Choose an action to perform"
   no_path: "Действие, которое вы хотели выполнить, уже не существует"
-
-  options:
-    - name: Тыкнуть
-      messages:
-        - name: Обычно
-          messages: 
-            - "[user_one] тыкнул [user_two]"
-        - name: Игриво
-          messages:
-            - "[user_one] тыкнул нос [user_two]!"
-            - "[user_one] протянул руку и тыкнул [user_two]!"
-            - "[user_one] с ничего тыкнул [user_two]!"
-            - "[user_one] игриво тыкнул [user_two]!"
-        - name: Деликатно
-          messages:
-            - "[user_one] нежно тыкнул и погладил нос [user_two]"
-            - "[user_one] изящно доставляет тык [user_two]"
-            - "[user_one] нежно нажимает на нос [user_two]"
-            - "[user_one] деликатно тыкнул нос [user_two]"
-        - name: Недовольно
-          messages:
-            - "[user_one] агрессивно тыкнул [user_two]"
-            - "[user_one] booped [user_two] out of frustration"
-            - "[user_one] huffs and boops [user_two] in irritation"
-            - "[user_one] lets out their frustration with a firm boop on [user_two]"
-        - name: Неудержимо
-          messages: 
-            - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
-            - "[user_one] просто захотел тыкнуть [user_two]!"
-            - "[user_one] не смог удержаться и тыкнул [user_two]!"
-            - "[user_one] gives in to the urge and boops [user_two]"
-        - name: Неожиданно
-          messages:
-            - "[user_one] оставил в недоразумении [user_two] тыком в нос!"
-            - "[user_one] неожиданно тыкнул [user_two]!"
-            - "[user_two] без слов после тычка в нос от [user_one]!"
-            - "[user_one] leaves [user_two] wondering why they were booped"
-        - name: С Умиления
-          messages:
-            - "[user_one] делает [user_two] милейший маленький тычок!"
-            - "[user_one] тыкает нос [user_two], мило хихикая!"
-            - "[user_one] не может смириться с милотой [user_two] после чего тыкает!"
-            - "[user_one] с улыбкой доставляет трогательный до дрожи тык [user_two]!"
-    - name: Дать Пощёчину
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] дали пощёчину [user_two], вероятно заслужили."
-    - name: Погладить
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] погладил [user_two]!"
-    - name: Потрепать
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] потрепал [user_two] по голове!"
-    - name: Пощекотать
-      messages:
-        - name: Обычно
-          messages: 
-            - "[user_one] неожиданно для [user_two] защекотал!"
-            - "[user_one] неожиданно защекотал [user_two]!"
-            - "[user_one] защекотал [user_two], чем разжёг щекоточную войну!"
-            - "[user_one] атаковал щекоткой [user_two]!"
-    - name: Обнять
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] обнял [user_two]!"
-    - name: Нежно обнять
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] нежно обнял [user_two]!" 
-    - name: Поцеловать
-      messages: 
-        - name: Обычно
-          messages: 
-            - "[user_one] поцеловал [user_two]! ❤️"
-        - name: Тепло
-          messages: 
-            - "[user_one] тепло поцеловал [user_two] ❤️"
-        - name: Романтично
-          messages:
-            - "[user_one] тянет к себе [user_two] поближе, после чего разделяет медленный, нежный поцелуй"
-        - name: В Щёчку
-          messages:
-            - "[user_one] нежно чмокает щёку [user_two]"
-            - "[user_one] заставляет [user_two] краснеть от любящего поцелуя в щёчку!"
-    - name: Атаковать
-      messages:
-        - name: Ударить
-          messages: 
-            - "[user_one] ударили [user_two], больно же."
-        - name: Случайное комбо
-          messages:
-            - "[user_one] прописывает [user_two] комбо из нескольких ударов!"
-            - "[user_one] наносит три быстых удара, после чего делает прямой удар прямо в [user_two]!"
-            - "[user_one] включает режим берсерка на [user_two]!"
-        - name: Подушка
-          messages:
-            - "[user_one] ударяет сзади голову [user_two] мягкой подушкой!"
-            - "[user_one] запускает шквал подушек на [user_two]! Все перья разлетелись!"
-            - "[user_one] замахивается подушкой на [user_two] в мягкой атаке!"
-    - name: 🔥
-      messages: 
-        - name: Камушек
-          messages: 
-            - "[user_one] кинул камешек в [user_two]!"
-        - name: Молотов
-          messages: 
-            "[user_one] бросил бутылку с коктелем Молотова в [user_two] ‼️"
-        - name: Пустая Бутылка (ай)
-          #type: bottle
-          #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          messages: 
-            - "[user_one] кинул пустую бутылку на голову [user_two]"
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    fail: Failed to send the interaction
 
 # ---------------------------------------------------------------
 

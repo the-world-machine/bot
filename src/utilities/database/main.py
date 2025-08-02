@@ -1,11 +1,11 @@
-from dataclasses import dataclass, fields, is_dataclass, InitVar
-from typing import Any, Generic, get_type_hints, TypeVar
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.server_api import ServerApi
-from utilities.config import get_config
-from interactions import Snowflake
 import yaml
-if get_config("database.dns-fix", ignore_None=True):
+from interactions import Snowflake
+from utilities.config import get_config
+from pymongo.server_api import ServerApi
+from motor.motor_asyncio import AsyncIOMotorClient
+from typing import Any, Generic, get_type_hints, TypeVar
+from dataclasses import dataclass, fields, is_dataclass, InitVar
+if get_config("database.dns-fix", typecheck=bool, ignore_None=True):
 	import dns.resolver
 	dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 	dns.resolver.default_resolver.nameservers = ['8.8.8.8']
@@ -39,7 +39,7 @@ TCollection = TypeVar('T', bound='Collection')
 
 @dataclass
 class Collection:
-	_id: str | Snowflake | None
+	_id: str | Snowflake
 
 	async def update(self, **kwargs):
 		'''Update the current collection with the given kwargs.'''
@@ -54,7 +54,7 @@ class Collection:
 
 		db = get_database()
 
-		result = await db.get_collection(self.__class__.__name__).find_one({ '_id': self._id})
+		result = await db.get_collection(self.__class__.__name__).find_one({ '_id': str(self._id)})
 
 		if result is None:
 			await new_entry(self)
@@ -66,7 +66,10 @@ class Collection:
 
 	async def update_array(self, field: str, operator: str, value: Any):
 		db = get_database()
-		await db.get_collection(self.__class__.__name__).update_one({ '_id': self._id}, { operator: { field: value}})
+		await db.get_collection(self.__class__.__name__
+		                       ).update_one({ '_id': str(self._id)}, { operator: {
+		                           field: value
+		                       }})
 
 	async def increment_key(self, key: str, by: int = 1):
 
@@ -225,15 +228,15 @@ async def new_entry(collection: Collection):
 	db = get_database()
 
 	await db.get_collection(collection.__class__.__name__
-	                       ).update_one({ '_id': collection._id}, { '$set': to_dict(collection)}, upsert=True)
+	                       ).update_one({ '_id': str(collection._id)}, { '$set': to_dict(collection)}, upsert=True)
 
 
 async def update_in_database(collection: TCollection, **kwargs) -> TCollection:
 	db = get_database()
 	existing_data = to_dict(collection)
-	updated_data = { **existing_data, **kwargs }
+	updated_data = { **existing_data, **kwargs }  # pyright: ignore[reportGeneralTypeIssues]
 	await db.get_collection(collection.__class__.__name__
-	                       ).update_one({ '_id': collection._id}, { '$set': updated_data}, upsert=True)
+	                       ).update_one({ '_id': str(collection._id)}, { '$set': updated_data}, upsert=True)
 	return collection.__class__(**updated_data)
 
 

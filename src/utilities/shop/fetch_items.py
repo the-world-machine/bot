@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from utilities.database.main import fetch_items
-import asyncio
 
 
 async def fetch_item():

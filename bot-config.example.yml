@@ -30,6 +30,7 @@ dev:
   guild-id: ~ # server id, in ""
   channels:
     logs: ~ # channel id, in ""
+    more: ~ # channel id, in ""
   send-startup-message: true
 
   command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^

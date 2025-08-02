@@ -1,7 +1,5 @@
-from interactions import *
-from utilities.message_decorations import *
-import utilities.profile.badge_manager as badge_manager
-from utilities.emojis import emojis
+from interactions import Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
+from utilities.message_decorations import fancy_message
 
 
 class _Module(Extension):
@@ -11,4 +9,4 @@ class _Module(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def hello(self, ctx: SlashContext, option_name: str):
-		await fancy_message(ctx, "Hello, " + option_name)
+		return await fancy_message(ctx, "Hello, " + option_name)

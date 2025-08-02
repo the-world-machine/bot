@@ -1,6 +1,6 @@
+import json
 from enum import Enum
 from dataclasses import dataclass
-import json
 
 # ! DEPRECATED. ALL NIKOGOTCHI DATA IS NOW ON THE DATABASE THIS IS JUST FOR RECOVERY !
 
@@ -17,7 +17,7 @@ class Rarity(Enum):
 @dataclass
 class NikogotchiInformation:
 	name: str
-	emoji: int
+	emoji: str
 	rarity: Rarity
 
 

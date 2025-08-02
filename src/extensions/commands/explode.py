@@ -1,10 +1,10 @@
-from interactions import *
-from utilities.message_decorations import *
 import random
-import datetime
+from datetime import datetime, timedelta
+from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
-from utilities.localization import Localization, fnum
 from utilities.database.schemas import UserData
+from utilities.localization import Localization, fnum
+from interactions import Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 
 
 class ExplodeCommands(Extension):
@@ -33,15 +33,15 @@ class ExplodeCommands(Extension):
 		uid = ctx.user.id
 		explosion_amount = (await UserData(_id=uid).fetch()).times_shattered
 		if uid in self.last_called:
-			if datetime.datetime.now() < self.last_called[uid]:
+			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 				    ctx,
-				    loc.l("general.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
+				    loc.l("global.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
 				    ephemeral=True,
 				    color=Colors.RED
 				)
 		await ctx.defer(ephemeral=not public)
-		self.last_called[uid] = datetime.datetime.now() + datetime.timedelta(seconds=20)
+		self.last_called[uid] = datetime.now() + timedelta(seconds=20)
 
 		random_number = random.randint(1, len(self.explosion_image)) - 1
 		random_sadness = random.randint(1, 100)
@@ -53,7 +53,7 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues = loc.l("explode.dialogue.why")
+			dialogues: tuple[str] = loc.l("explode.dialogue.why", typecheck=tuple)
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
@@ -73,6 +73,6 @@ class ExplodeCommands(Extension):
 			embed.set_footer(loc.l("explode.YouKilledNiko"))
 
 		if not sad:
-			await bm.increment_value(ctx, 'times_shattered', 1, ctx.author)
+			await bm.increment_value(ctx, 'times_shattered', 1, ctx.user)
 
 		await ctx.send(embed=embed)

@@ -8,7 +8,7 @@ print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
 from utilities.config import get_config, get_token
 
-from interactions import *
+from interactions import Client, Intents, IntervalTrigger, Task, listen
 # from utilities.misc import set_status
 from utilities.extensions import load_commands, assign_events
 from utilities.database.main import connect_to_db
@@ -30,14 +30,14 @@ client = Client(
     sync_ext=False,
     logger=createLogger("client")
 )
-client.started_at = datetime.now()
-if do_rolling := get_config("bot.rolling.avatar") or get_config("bot.rolling.status"):
+client.started_at: datetime = datetime.now()  # type: ignore
+if do_rolling := get_config("bot.rolling.avatar", typecheck=bool) or get_config("bot.rolling.status"):
 
-	@Task.create(IntervalTrigger(get_config("bot.rolling.interval")))
+	@Task.create(IntervalTrigger(get_config("bot.rolling.interval", typecheck=int)))
 	async def roll():
-		if get_config("bot.rolling.status") == True:
+		if get_config("bot.rolling.status", typecheck=bool) == True:
 			await roll_status(client)
-		if get_config("bot.rolling.avatar") == True:
+		if get_config("bot.rolling.avatar", typecheck=bool) == True:
 			await roll_avatar(client)
 
 

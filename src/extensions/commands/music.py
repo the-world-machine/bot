@@ -1,3 +1,4 @@
+# type:ignore
 import asyncio
 import random
 import time
@@ -20,7 +21,7 @@ from utilities.message_decorations import *
 from utilities.music.spotify_api import Spotify
 from utilities.config import get_config
 
-spotify_creds = get_config("music.spotify")
+spotify_creds: dict = get_config("music.spotify", typecheck=dict)
 spotify = Spotify(client_id=spotify_creds["id"], secret=spotify_creds["secret"])
 
 
@@ -47,7 +48,7 @@ class MusicCommands(Extension):
 		self.assign_node()
 
 	def assign_node(self):
-		node_information: dict = get_config("music.lavalink")
+		node_information: dict = get_config("music.lavalink", typecheck=dict)
 
 		if self.lavalink is None:
 			assert "Unable to grab Lavalink Object."

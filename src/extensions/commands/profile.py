@@ -1,12 +1,12 @@
 import time
-from interactions import *
-from utilities.database.schemas import UserData
 from utilities.config import debugging
 from datetime import datetime, timedelta
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
+from utilities.database.schemas import UserData
 from utilities.localization import Localization, fnum
+from interactions import Button, ButtonStyle, Extension, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
 
 class ProfileCommands(Extension):
@@ -40,21 +40,28 @@ class ProfileCommands(Extension):
 
 		if now < last_reset_time:
 			time_unix = last_reset_time.timestamp()
-			return await fancy_message(ctx, f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]", ephemeral=True, color=Colors.BAD)
+			return await fancy_message(
+			    ctx,
+			    f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]",
+			    ephemeral=True,
+			    color=Colors.BAD
+			)
 
 		# reset the limit if it is a new day
 		if now >= last_reset_time:
 			reset_time = now + timedelta(days=1)
 			await user_data.update(daily_sun_timestamp=reset_time)
-
-		await bm.increment_value(ctx, 'suns', target=ctx.author)
+		_ = ctx.author
+		if isinstance(_, Member):
+			_ = _.user
+		await bm.increment_value(ctx, 'suns', target=_)  # TODO: is it supposed to give suns to both?
 		await bm.increment_value(ctx, 'suns', target=who)
 
 		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
 
 	@profile.subcommand(sub_cmd_description='View a profile')
 	@slash_option(description="Person you want to see the profile of", name='user', opt_type=OptionType.USER)
-	async def view(self, ctx: SlashContext, user: User = None):
+	async def view(self, ctx: SlashContext, user: User | None = None):
 		url = "https://theworldmachine.xyz/profile"
 
 		loc = Localization(ctx.locale)
@@ -86,7 +93,11 @@ class ProfileCommands(Extension):
 
 	@profile.subcommand(sub_cmd_description='Edit your profile')
 	async def edit(self, ctx: SlashContext):
-		components = Button(style=ButtonStyle.URL, label=Localization(ctx.locale).l('general.buttons._open_site'), url="https://theworldmachine.xyz/profile")
+		components = Button(
+		    style=ButtonStyle.URL,
+		    label=Localization(ctx.locale).l('global.buttons.open_site'),
+		    url="https://theworldmachine.xyz/profile"
+		)
 		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)
 
 	choices = [
