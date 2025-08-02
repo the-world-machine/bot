@@ -497,7 +497,7 @@ interact:
           phrases:
             - "[user_one] оставил в недоразумении [user_two] бупом в нос!"
             - "[user_one] неожиданно бупнул [user_two]!"
-            - "[user_two] без слов после тычка в нос от [user_one]!"
+            - "[user_two] без слов после бупа в нос от [user_one]!"
             - "[user_one] оставляет [user_two] в недоразумении бупом"
         - name: С Умиления
           phrases:
