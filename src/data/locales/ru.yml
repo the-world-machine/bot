@@ -456,9 +456,6 @@ interact:
   twm_questioning_if_youre_stupid_or_not: "[ [user], вы не можете полностью взаимодействовать с ботами. ]" # unused
   twm_is_fed_up_with_you: "[ *вздох* Ты не можешь взаймодействовать с собою, [user]. ]"
 
-  interact:
-  selected: "Выберите действие над [user]"
-  selected_self: "Choose an action to perform"
   errors:
     no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
     500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
@@ -572,6 +569,7 @@ interact:
         - name: Пустая Бутылка (ай)
           phrases: # VIOLENCE
             - "[user_one] кинул пустую бутылку на голову [user_two]"
+            - "[user_one] shattered a bottle on [user_two]'s head"
           flags: bottle # do not translate
         - name: Piece of Wool
           phrases:
