@@ -15,8 +15,10 @@ global:
     previous: "Previous"
     open_site: "Open Website"
     dont_show_again: "Don't Show Again"
-    beginning: "To The Beginning"
-    start: "To The Start"
+    up: "Up"
+    top: "To the Top"
+    down: "Down"
+    bottom: "To the Bottom"
 
   minis:
     note: "❕ note:"

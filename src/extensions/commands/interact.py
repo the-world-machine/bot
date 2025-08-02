@@ -322,7 +322,7 @@ class InteractCommands(Extension):
 			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
 
 		if len(rows) == 0:
-			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("global.buttons.start"))))
+			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("global.buttons.top"))))
 
 		return await ctx.edit(
 		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
