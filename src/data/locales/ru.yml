@@ -1,12 +1,18 @@
 global:
   loading: "[ Загрузка... [emoji:loading] ]"
+  loading_hint: "[ [emoji:loading] ]"
+  command_cooldown: "[ Пожалуйста, не спамьте этой командой. Вы можете использовать её через [timestamp_relative]. ]"
 
   buttons:
     yes: "Да"
     no: "Нет"
+    done: "Готово"
     cancel: "Отмена"
     back: "Назад"
+    forwards: "Вперёд"
     continue: "Продолжить"
+    next: "Следущий"
+    previous: "Предыдущий"
     open_site: "Открыть Сайт"
     dont_show_again: "Не Показывать Снова"
   
@@ -15,6 +21,9 @@ global:
     tip: "❔ совет:"
     warn: "⚠️ предупреждение:"
     err: "‼️ ошибка:"
+  select:
+    empty: йоу, русский перевод по-большей части сделал @mr._saturn 
+    multiple: ([current]/[total])
 
   responses:
     timeout:
@@ -45,6 +54,7 @@ misc:
     names: 
       shards: "Шарды"
       avg_ping: "Средний пинг" # untitle case'd for consistency with other ones
+      latency: "Задержка ответа"
       commit_hash: "Хеш коммита"     #
       server_count: "Количество серверов"
       user_installs: "Пользовательские установки" #
@@ -105,8 +115,6 @@ wool:
         some: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], как щедро..."
         confirmation: "[ Вы точно хотите дать шерсть... боту?]"
         notefirmation: "вы потом не сможете вернуть её..." # note:
-        confirmation: "[ Вы точно хотите дать шерсть... боту?]"
-        notefirmation: "вы потом не сможете вернуть её..." # note:
       user:
         none: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], в конце концов не так уж и щедро..."
         some: "[user_one] дал [emoji:wool]**[amount]** пользователю [user_two], как щедро!"
@@ -144,7 +152,7 @@ settings:
     invalid_server_id: "[ Неверный ID сервера. ]"
     uncached_server: "-# не найдено имя сервера (меня в нём нет)"
     get_server_id: "(Настройки Discord -> Расширенные -> включите \"Режим разработчика\", затем посмотрите на нижнюю часть контекстного меню сервера)"
-  
+    channel_lost_warn: "Что-то сломалось в предыдущий раз после отправки мною сообщения о приветствии в выбранный вами канал. Убедитесь, что у меня достаточно прав и выбранный канал существует. Вы можете поменять канал через `/settings welcome channel`, или же через Настройки Сервера -> Вовлечённость -> ᴋᴀнᴀл cиcᴛᴇмныx ᴄᴏᴏбщᴇний"
   welcome:
     enabled:
       yah: "[ Сообщения о приветствии включены ]"
@@ -220,10 +228,7 @@ explode:
       [ Хватит. Как ты, '#####', вообще добрался до этого числа?! Ты хоть знаешь сколько миров ты уничтожил? ]
 
       ⚠️ warning: Это просто отвратительно.
-    nineninenineninenine: |
-      [ Хватит. Как ты, '#####', вообще добрался до этого числа?! Ты хоть знаешь сколько миров ты уничтожил? ]
 
-      ⚠️ warning: Это просто отвратительно.
   info: "Количество раз, сколько вы ломали Солнце: [amount]"
   YouKilledNiko: "[ Вы убили Нико. ]"
 
@@ -458,131 +463,13 @@ interact:
   twm_is_fed_up_with_you: "[ *вздох* Ты не можешь взаймодействовать с собою, [user]. ]"
 
   interact:
-  selected: "Choose an action to perform on [user]"
+  selected: "Выберите действие над [user]"
   selected_self: "Choose an action to perform"
+  no_path: "Действие, которое вы хотели выполнить, уже не существует"
   errors:
     no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
     500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
     fail: Failed to send the interaction
-
-  phrases:
-    - name: Тыкнуть
-      phrases:
-        - name: Basic
-          phrases: 
-            - "[user_one] тыкнул [user_two]"
-        - name: Playful
-          phrases:
-            - "[user_one] тыкнул нос [user_two]!"
-            - "[user_one] протянул руку и тыкнул [user_two]!"
-            - "[user_one] с ничего тыкнул [user_two]!"
-            - "[user_one] playfully boops [user_two]!"
-        - name: Delicate
-          phrases:
-            - "[user_one] нежно тыкнул и погладил нос [user_two]"
-            - "[user_one] delivers a dainty boop to [user_two]"
-            - "[user_one] gently taps [user_two]'s nose"
-            - "[user_one] places a delicate boop on [user_two]'s nose"
-        - name: Frustrated
-          phrases:
-            - "[user_one] агрессивно тыкнул [user_two]"
-            - "[user_one] booped [user_two] out of frustration"
-            - "[user_one] huffs and boops [user_two] in irritation"
-            - "[user_one] lets out their frustration with a firm boop on [user_two]"
-        - name: Irresistible
-          phrases: 
-            - "[user_one] почувствовал, что нужно тыкнуть [user_two]!"
-            - "[user_one] просто захотел тыкнуть [user_two]!"
-            - "[user_one] не смог удержаться и тыкнул [user_two]!"
-            - "[user_one] gives in to the urge and boops [user_two]"
-        - name: Confused
-          phrases:
-            - "[user_one] оставил в недоразумении [user_two] тыком в нос!"
-            - "[user_one] неожиданно тыкнул [user_two]!"
-            - "[user_two] без слов после тычка в нос от [user_one]!"
-            - "[user_one] leaves [user_two] wondering why they were booped"
-        - name: They're Cute
-          phrases:
-            - "[user_one] gives [user_two] the cutest little boop!"
-            - "[user_one] boops [user_two]'s nose and giggles cutely!"
-            - "[user_one] can't handle how adorable [user_two] is and boops them!"
-            - "[user_one] with a smile, delivers a heart-melting boop to [user_two]!"
-    - name: Дать Пощёчину
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] дали пощёчину [user_two], вероятно заслужили."
-    - name: Погладить
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] погладил [user_two]!"
-    - name: Потрепать
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] потрепал [user_two] по голове!"
-    - name: Пощекотать
-      phrases:
-        - name: Basic
-          phrases: 
-            - "[user_one] неожиданно для [user_two] защекотал!"
-            - "[user_one] неожиданно защекотал [user_two]!"
-            - "[user_one] защекотал [user_two], чем разжёг щекоточную войну!"
-            - "[user_one] атаковал щекоткой [user_two]!"
-    - name: Обнять
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] обнял [user_two]!"
-    - name: Нежно обнять
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] нежно обнали [user_two]!" # <- obnaly
-    - name: Поцеловать
-      phrases: 
-        - name: Basic
-          phrases: 
-            - "[user_one] поцеловал [user_two]! ❤️"
-        - name: Warm
-          phrases: 
-            - "[user_one] тепло поцеловал [user_two] ❤️"
-        - name: Romantic
-          phrases:
-            - "[user_one] pulls [user_two] close and shares a slow, tender kiss"
-        - name: Cheek Kiss
-          phrases:
-            - "[user_one] plants a sweet peck on [user_two]'s cheek"
-            - "[user_one] leaves [user_two] blushing with an affectionate cheek kiss!"
-    - name: Attack
-      phrases:
-        - name: Ударить
-          phrases: 
-            - "[user_one] ударили [user_two], больно же."
-        - name: Random Combo
-          phrases:
-            - "[user_one] delivers a rapid 1-2 punch combo to [user_two]!"
-            - "[user_one] lands three quick jabs followed by an overhand right on [user_two]!"
-            - "[user_one] goes full flurry mode on [user_two]!"
-        - name: Pillow
-          phrases:
-            - "[user_one] hits [user_two] behind their head with a fluffy pillow!"
-            - "[user_one] launches a pillow barrage at [user_two]! No feathers left!"
-            - "[user_one] swings a cushion at [user_two] in a soft attack!"
-    - name: 🔥
-      phrases: 
-        - name: Small Rock
-          phrases: 
-            - "[user_one] threw a small rock at [user_two]!"
-        - name: Molotov
-          phrases: 
-            "[user_one] бросил бутылку с коктелем Молотова в [user_two] ‼️"
-        - name: Empty Bottle (ow)
-          #type: bottle
-          #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
-          phrases: 
-            - "[user_one] threw an empty bottle at [user_two]'s head"
 
 # ---------------------------------------------------------------
 
@@ -596,7 +483,7 @@ treasure:
     [treasures]
 
   tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
-  tip: вы можете заработать больше сокровищ, торгуя в магазине или используя Никоготчи!  # todo: string changed
+
 
 # ---------------------------------------------------------------
 
@@ -606,8 +493,7 @@ nikogotchi:
   loading: "[ Загрузка Никоготчи... [emoji:loading] ]"
   invalid: "[ Вы не имеете Никоготчи! ]"
   tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
-  invalid: "[ Вы не имеете Никоготчи! ]"
-  tipnvalid: "вы можете купить капсулу в магазине, чтобы разблокировать случайную" # todo: string changed
+
 
 
   name:
@@ -671,9 +557,6 @@ nikogotchi:
     description: "Хотите дать Никоготчи новое имя?"
     renamenote: вы всегда можете сделать это командой `/nikogotchi rename`  # note:
 
-    description: "Хотите дать Никоготчи новое имя?"
-    renamenote: вы всегда можете сделать это командой `/nikogotchi rename`  # note:
-
   status:
     template: "*[status]*"
 
@@ -711,14 +594,13 @@ nikogotchi:
 
 
       - Часов с момента последнего ухода: **[time_difference]** 
-      - Часов с момента последнего ухода: **[time_difference]** 
+
 
 
       Никоготчи рассчитывают на вашу любовь и внимание, поэтому старайтесь обеспечить им наилучший уход!
 
 
-      R.I.P....
-    # todo: string changed
+      Покойся с миром....
     # todo: string changed
   treasured: 
     title: 🎉 Ваш Никоготчи нашёл сокровища!
