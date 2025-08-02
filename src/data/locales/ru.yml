@@ -1,4 +1,4 @@
-general:
+global:
   loading: "[ Загрузка... [emoji:loading] ]"
 
   buttons:

@@ -181,7 +181,7 @@ class TextboxCommands(Extension):
 			filetype: SupportedFiletypes | None = None,
 	    send_to: Literal[1, 2, 3] = 1
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx.locale).l("global.loading"), ephemeral=True)
 		state_id = str(ctx.id)  # state_id is the initial `/textbox create` interaction's id, need to save these between restarts later somehow
 		loc = Localization(ctx.locale)
 		erored = False
@@ -508,7 +508,7 @@ class TextboxCommands(Extension):
 	    ctx: SlashContext,
 	    search: str = "user:me!0:1"
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("general.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx.locale).l("global.loading"), ephemeral=True)
 		states2show: list[tuple[str, State]] = []
 		options = search.split("!")
 		filter = options[0]

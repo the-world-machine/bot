@@ -95,7 +95,7 @@ class ProfileCommands(Extension):
 	async def edit(self, ctx: SlashContext):
 		components = Button(
 		    style=ButtonStyle.URL,
-		    label=Localization(ctx.locale).l('general.buttons.open_site'),
+		    label=Localization(ctx.locale).l('global.buttons.open_site'),
 		    url="https://theworldmachine.xyz/profile"
 		)
 		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)

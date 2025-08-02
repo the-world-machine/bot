@@ -1,4 +1,4 @@
-general:
+global:
   loading: "[ Завантаження... [emoji:loading] ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Будь ласка, не спамте цю команду. Ви зможете використати її [timestamp_relative]. ]"

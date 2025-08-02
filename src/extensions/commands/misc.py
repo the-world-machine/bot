@@ -29,7 +29,7 @@ class MiscellaneousCommands(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx.locale)
 		checkpoint = datetime.now()  # timezone :aware: date
-		_ = await fancy_message(ctx, loc.l("general.loading_hint"), ephemeral=not public)
+		_ = await fancy_message(ctx, loc.l("global.loading_hint"), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 		checkpoint2 = datetime.fromtimestamp(_.created_at.timestamp()) - checkpoint  # time it took to reply
