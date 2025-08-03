@@ -36,7 +36,7 @@ class ExplodeCommands(Extension):
 			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 				    ctx,
-				    loc.l("global.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
+				    loc.l("generic.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
 				    ephemeral=True,
 				    color=Colors.RED
 				)

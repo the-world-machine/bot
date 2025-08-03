@@ -85,8 +85,8 @@ class WoolCommands(Extension):
 
 		if to.bot and not (amount <= 0):
 			buttons = [
-			    Button(style=ButtonStyle.RED, label=loc.l('global.buttons.yes'), custom_id=f'yes'),
-			    Button(style=ButtonStyle.GRAY, label=loc.l('global.buttons.no'), custom_id=f'no')
+			    Button(style=ButtonStyle.RED, label=loc.l('generic.buttons.yes'), custom_id=f'yes'),
+			    Button(style=ButtonStyle.GRAY, label=loc.l('generic.buttons.no'), custom_id=f'no')
 			]
 
 			confirmation_m = await fancy_message(
@@ -101,12 +101,12 @@ class WoolCommands(Extension):
 				await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0 * 1000)
 				await ctx.delete(confirmation_m)
 			except asyncio.TimeoutError:
-				await confirmation_m.edit(content=loc.l("global.responses.timeout.yn"), components=[])
+				await confirmation_m.edit(content=loc.l("generic.responses.timeout.yn"), components=[])
 				await ctx.delete()
 				await asyncio.sleep(15)
 				await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, loc.l('global.loading'))
+		loading = await fancy_message(ctx, loc.l('generic.loading'))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 

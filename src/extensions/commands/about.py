@@ -12,7 +12,7 @@ try:
 	print(f"Found git hash: {commit_hash}")
 except Exception as e:
 	print(f"Error retrieving git hash: {e}")
-	
+
 class AboutCommand(Extension):
 	@slash_command(description='About the bot (ping, stats)')
 	@slash_option(
@@ -25,7 +25,7 @@ class AboutCommand(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx.locale)
 		checkpoint = datetime.now()  # timezone :aware: date
-		_ = await fancy_message(ctx, loc.l("global.loading_hint"), ephemeral=not public)
+		_ = await fancy_message(ctx, loc.l("generic.loading_hint"), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 		checkpoint2 = datetime.fromtimestamp(_.created_at.timestamp()) - checkpoint  # time it took to reply

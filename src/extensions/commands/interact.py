@@ -144,7 +144,7 @@ class InteractCommands(Extension):
 
 	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
 		loc = Localization(ctx.locale)
-		await ctx.respond(content=loc.l('global.loading'), ephemeral=True)
+		await ctx.respond(content=loc.l('generic.loading'), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
@@ -322,7 +322,7 @@ class InteractCommands(Extension):
 			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
 
 		if len(rows) == 0:
-			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("global.buttons.top"))))
+			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("generic.buttons.top"))))
 
 		return await ctx.edit(
 		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",

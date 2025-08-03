@@ -1,4 +1,4 @@
-global:
+generic:
   loading: "[ Laden... [emoji:loading] ]"
   loading_hint: "[ [emoji:loading] ]"
   command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"

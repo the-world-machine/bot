@@ -263,7 +263,7 @@ async def set_avatar(client: Client, avatar: File | Path | str):
 
 def make_empty_select(loc, placeholder: str | None = None):
 	return StringSelectMenu(
-	    *[StringSelectOption(label=loc.l("global.select.empty"), value="423")], placeholder=placeholder, disabled=True
+	    *[StringSelectOption(label=loc.l("generic.select.empty"), value="423")], placeholder=placeholder, disabled=True
 	)
 
 
