@@ -34,7 +34,7 @@ def init_things(self):
 	return self
 
 
-TCollection = TypeVar('T', bound='Collection')
+TCollection = TypeVar('TCollection', bound='Collection')
 
 
 @dataclass
@@ -52,7 +52,7 @@ class Collection:
 		'''Fetch the current collection using id.'''
 		self._id = str(self._id)
 
-		db = get_database()
+		db = await get_database()
 
 		result = await db.get_collection(self.__class__.__name__).find_one({ '_id': str(self._id)})
 
@@ -65,13 +65,13 @@ class Collection:
 		init_things(self)
 
 	async def update_array(self, field: str, operator: str, value: Any):
-		db = get_database()
+		db = await get_database()
 		await db.get_collection(self.__class__.__name__
 		                       ).update_one({ '_id': str(self._id)}, { operator: {
 		                           field: value
 		                       }})
 
-	async def increment_key(self, key: str, by: int = 1):
+	async def increment_key(self, key: str, by: int | float = 1):
 
 		value = getattr(self, key, 0)
 
@@ -86,7 +86,7 @@ class DBDict(dict):
 	_parent: InitVar[Collection] = None
 	_parent_field: InitVar[str] = None
 
-	def __post_init__(self, _parent=None, _parent_field=None):
+	def __post_init__(self, _parent: Collection = None, _parent_field: str = None):
 		self._parent = _parent
 		self._parent_field = _parent_field
 
@@ -166,19 +166,19 @@ class DBDynamicDict(dict[K, V], Generic[K, V]):
 	_parent: InitVar[Collection] = None
 	_parent_field: InitVar[str] = None
 
-	def __init__(self, *args, _parent=None, _parent_field=None, **kwargs):
+	def __init__(self, *args, _parent: Collection | None = None, _parent_field: str | None = None, **kwargs):
 		super().__init__(*args, **kwargs)
 		self._parent = _parent
 		self._parent_field = _parent_field
 
 	async def __setitem__(self, key, value):
-		if self._parent is not None:
+		if self._parent is not None and self._parent_field is not None:
 			update_fields = {self._parent_field: dict(self, **{ key: value})}
 			await self._parent.update(**update_fields)
 		super().__setitem__(key, value)
 
 	async def update(self, **kwargs):
-		if self._parent is None:
+		if self._parent is None or self._parent_field is None:
 			raise Exception("Parent not set for nested update.")
 
 		update_fields = {self._parent_field: dict(self, **kwargs)}
@@ -215,24 +215,25 @@ async def connect_to_db():
 		print(f'Failed to connect to database: {e}')
 
 
-def get_database():
+async def get_database():
 
 	if connection is None:
-		connect_to_db()
+		await connect_to_db()
+	assert connection != None
 
 	return connection.get_database('TheWorldMachine')
 
 
 async def new_entry(collection: Collection):
 
-	db = get_database()
+	db = await get_database()
 
 	await db.get_collection(collection.__class__.__name__
 	                       ).update_one({ '_id': str(collection._id)}, { '$set': to_dict(collection)}, upsert=True)
 
 
 async def update_in_database(collection: TCollection, **kwargs) -> TCollection:
-	db = get_database()
+	db = await get_database()
 	existing_data = to_dict(collection)
 	updated_data = { **existing_data, **kwargs }  # pyright: ignore[reportGeneralTypeIssues]
 	await db.get_collection(collection.__class__.__name__
@@ -241,7 +242,7 @@ async def update_in_database(collection: TCollection, **kwargs) -> TCollection:
 
 
 async def fetch_items():
-	db = get_database()
+	db = await get_database()
 
 	data = await db.get_collection('ItemData').find_one({ "access": 'ItemData'})
 
@@ -249,7 +250,7 @@ async def fetch_items():
 
 
 async def update_shop(data: dict):
-	db = get_database()
+	db = await get_database()
 
 	await db.get_collection('ItemData').update_one({ "access": 'ItemData'}, { "$set": { "shop": data}})
 

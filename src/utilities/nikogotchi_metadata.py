@@ -25,10 +25,10 @@ def convert_to_class(data: dict, nid: str):
 
 
 async def fetch_nikogotchi_metadata(nid: str) -> NikogotchiMetadata | None:
-	db = get_database()
+	db = await get_database()
 
 	result = await db.get_collection('NikogotchiFeatures')\
-                    .find_one(
+                       .find_one(
 	  { "key": "NikogotchiFeatures"},
 	  { "_id": 0, "nikogotchi": 1}
 	 )
@@ -42,10 +42,10 @@ async def fetch_nikogotchi_metadata(nid: str) -> NikogotchiMetadata | None:
 
 
 async def pick_random_nikogotchi(rarity: int):
-	db = get_database()
+	db = await get_database()
 
 	result = await db.get_collection('NikogotchiFeatures')\
-             .find_one(
+                .find_one(
 	 { "key": "NikogotchiFeatures"},
 	 { "_id": 0, "nikogotchi": 1}
 	)

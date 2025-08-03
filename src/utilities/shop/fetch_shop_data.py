@@ -40,6 +40,7 @@ class ShopData:
 async def fetch_shop_data():
 
 	items = await fetch_items()
+	assert items is not None
 
 	shop_data = ShopData(
 	    items['shop']['last_updated'], items['shop']['backgrounds'], items['shop']['treasures'],
@@ -52,6 +53,7 @@ async def fetch_shop_data():
 async def reset_shop_data():
 
 	items = await fetch_items()
+	assert items is not None
 	data = items['shop']
 
 	all_bgs = items['backgrounds']
