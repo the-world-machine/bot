@@ -894,7 +894,7 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: "[ I failed to render the image, please report this in our [support discord server]([discord_invite]). State ID: [sid] ]"
+    failed_to_render: "[ I failed to render the image, please report this in our [community discord server]([discord_invite]). State ID: [sid] ]"
     unknown_state: "This textbox builder has expired. Run the command again, or report this in our [support discord server]([discord_invite]) if it keeps happening. (state id: [id])"
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" doesn't exist
@@ -904,7 +904,7 @@ textbox:
     failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
     apng_preview_warn: | # warn:
       Discord doesn't show or let you download `.png`s as APNG.
-      You can open the attachment in the browser, and it should animate (if there's any animation).
+      You can download the file, add .png to its name, open it in the browser and it should animate.
     ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
 
   filetypes:
