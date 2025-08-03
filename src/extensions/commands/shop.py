@@ -766,20 +766,23 @@ class ShopCommands(Extension):
 
 			treasure_selection = []
 
-			for treasure_nid, amount in owned.items():
+			for key, amount in owned.items():
+				if key not in get_args(TreasureTypes):
+					raise ValueError(f"Unknown treasure type: {key}")
+				treasure_id: TreasureTypes = key  # type:ignore
 
 				if amount <= 0:
 					continue
-				treasure = all_treasures[treasure_nid]
+				treasure = all_treasures[treasure_id]
 
-				treasure_loc = loc.l(f'items.treasures.{treasure_nid}', typecheck=dict)
+				treasure_loc = loc.l(f'items.treasures.{treasure_id}', typecheck=dict)
 
 				treasure_selection.append(
 				    StringSelectOption(
 				        label=f'{treasure_loc["name"]} (x{amount})',
-				        value=treasure_nid,
+				        value=treasure_id,
 				        description=treasure_loc['description'],
-				        emoji=emojis['treasures'][treasure_nid],
+				        emoji=emojis['treasures'][treasure_id],
 				    )
 				)
 
@@ -802,8 +805,6 @@ class ShopCommands(Extension):
 				        style=ButtonStyle.GREEN
 				    )
 				]
-			else:
-				treasure_id = 0
 
 			buttons.append(go_back)
 

@@ -169,9 +169,9 @@ class SettingsCommands(Extension):
 			    )
 			)
 		if server_id in blocklist:
-			await blocklist.remove(server_id)
+			await blocklist.remove(str(server_id))
 		else:
-			await blocklist.append(server_id)
+			await blocklist.append(str(server_id))
 
 		return await fancy_message(
 		    ctx,

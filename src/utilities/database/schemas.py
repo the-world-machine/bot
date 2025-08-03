@@ -11,8 +11,8 @@ class TransmitConfig(DBDict):
 	channel_id: str | None = None
 	anonymous: bool = False
 	allow_images: bool = True
-	blocked_servers: DBList[str] = field(default_factory=DBList)
-	known_servers: DBList[str] = field(default_factory=DBList)
+	blocked_servers: DBList[str] = field(default_factory=lambda: DBList())
+	known_servers: DBList[str] = field(default_factory=lambda: DBList())
 
 
 @dataclass
@@ -35,7 +35,7 @@ class ServerData(Collection):
 
 @dataclass
 class UserData(Collection):
-	minis_shown: DBDynamicDict[str, int] = field(default_factory=DBDynamicDict)
+	minis_shown: DBDynamicDict[str, int] = field(default_factory=lambda: DBDynamicDict())
 	wool: int = 0
 	suns: int = 0
 	equipped_bg: str = 'Default'
@@ -43,9 +43,9 @@ class UserData(Collection):
 	badge_notifications: bool = True
 	owned_treasures: DBDynamicDict[TreasureTypes, int] = field(default_factory=lambda: DBDynamicDict({ 'journal': 5}))
 	owned_backgrounds: DBList[str] = field(
-	    default_factory=lambda: [ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink']
+	    default_factory=lambda: DBList([ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink'])
 	)
-	owned_badges: DBList[str] = field(default_factory=DBList)
+	owned_badges: DBList[str] = field(default_factory=lambda: DBList())
 	ask_limit: int = 14
 	last_asked: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
 	daily_wool_timestamp: datetime = field(default_factory=lambda: datetime(2000, 1, 1, 0, 0, 0))
@@ -72,6 +72,7 @@ class StatUpdate:
 	icon: str
 	old_value: int
 	new_value: int
+
 
 @dataclass
 class Nikogotchi(Collection):
