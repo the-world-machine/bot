@@ -41,17 +41,29 @@ class AboutCommand(Extension):
 			members = [member.user for member in team.members]
 
 		description = ""
-		buttons = []
+		buttons: list[Button] = []
+		strbuttons: list[str] = []
+		processed_lines: list[str] = []
 		if ctx.client.app.description:
 			for line in ctx.client.app.description.splitlines():
 				try:
-					if ': http' in line and not (len(buttons) > 25):
+					if ': http' in line:
 						name, url = line.split(':', 1)
-						buttons.append(Button(style=ButtonStyle.LINK, label=name.strip(), url=url.strip()))
+						name = name.strip()
+
+						loc_name = loc.l(f"about.buttons.{name.lower()}")
+						if not loc_name.startswith("`"):
+							name = loc_name
+
+						if len(buttons) < 25:
+							buttons.append(Button(style=ButtonStyle.LINK, label=name, url=url.strip()))
+						else:
+							strbuttons.append(f"[{name}]({url})")
 					else:
-						description += "\n" + line
+						processed_lines.append(line)
 				except ValueError:
-					description += "\n" + line
+					processed_lines.append(line)
+		description += "\n".join(processed_lines)
 
 		embed = Embed(
 		    description=loc.l("about.layout", owners=" & ".join(map(str, members)), description=description.strip()),
