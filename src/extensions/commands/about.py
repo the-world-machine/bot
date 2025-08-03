@@ -51,7 +51,7 @@ class AboutCommand(Extension):
 						name, url = line.split(':', 1)
 						name = name.strip()
 
-						loc_name = loc.l(f"about.buttons.{name.lower()}")
+						loc_name = loc.l(f"about.buttons['{name.lower()}']")
 						if not loc_name.startswith("`"):
 							name = loc_name
 
