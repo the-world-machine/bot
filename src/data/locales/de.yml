@@ -47,29 +47,6 @@ misc:
       footer: 1 in 100 chance! Glückwunsch!
       cat: Eine Katze!
 
-  stats:
-    layout: |
-      👑 [owners]
-
-      [description]
-    names:
-      shards: "Scherben"
-      avg_ping: "Durchschnittlich ping"
-      latency: "Response latency"
-      commit_hash: "Commit hash"
-      server_count: "Server zahl"
-      user_installs: "User installiert"
-      host: "Gastgeber"
-      music_listeners: "Musik Mithörer"
-      played_time: "Gespielt für"
-      played_songs: "Gespielte songs"
-      cpu_usg: "CPU Verwendung"
-      mem_usg: "Memory Verwendung"
-      uptime: "Betriebzeit"
-    values:
-      time: "**[sec]** sek."
-      percent: "**[num]**%"
-      failed_commit_hash: "N/A"
   roll:
     title: Rollen [amount]d[sides]...
     desc: "...gerollt eine [result]."
@@ -80,6 +57,45 @@ misc:
     placeholder_text: "[ Willkommen zu [server_name], [user_name]! hier sind jetzt [member_count] benutzern hier! ]"
 
   wikipedia: "[ [Hier]([link]) ist deine randomisierte wikipedia Artikel. es ist über [title]... ich denke ... ]"
+
+# ---------------------------------------------------------------
+
+about:
+  layout: |
+    👑 [owners]
+
+    [description]
+
+  names:
+    shards: "Scherben"
+    avg_ping: "Durchschnittlich ping"
+    latency: "Response latency"
+    commit_hash: "Commit hash"
+    server_count: "Server zahl"
+    user_installs: "User installiert"
+    host: "Gastgeber"
+    music_listeners: "Musik Mithörer"
+    played_time: "Gespielt für"
+    played_songs: "Gespielte songs"
+    cpu_usg: "CPU Verwendung"
+    mem_usg: "Memory Verwendung"
+    uptime: "Betriebzeit"
+
+  values:
+    time: "**[sec]** sek."
+    percent: "**[num]**%"
+    failed_commit_hash: "N/A"
+
+  buttons:
+    dev server: Dev Server
+    community: Community
+    community server: Community Server
+    support: Support
+    support server: Support Server
+    translate: Translate
+    website: Website
+    weblate: Weblate
+    Discord: Discord
 
 # ---------------------------------------------------------------
 

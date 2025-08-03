@@ -51,29 +51,6 @@ misc:
       note: a 1% chance! Lucky!
       cat: a cat!
 
-  stats:
-    layout: |
-      👑 [owners]
-
-      [description]
-    names:
-      shards: "Shards"
-      avg_ping: "Average ping"
-      latency: "Response latency"
-      commit_hash: "Commit hash"
-      server_count: "Server count"
-      user_installs: "User installs"
-      host: "Host"
-      music_listeners: "Music Listeners"
-      played_time: "Played for"
-      played_songs: "Played songs"
-      cpu_usg: "CPU usage"
-      mem_usg: "Memory usage"
-      uptime: "Uptime"
-    values:
-      time: "**[sec]** s."
-      percent: "**[num]**%"
-      failed_commit_hash: "N/A"
   roll:
     title: Rolling [amount]d[sides]...
     desc: "...got [result]."
@@ -84,6 +61,45 @@ misc:
     placeholder_text: "[ Welcome to [server_name], [user_name]! There is now [member_count] users here! ]"
 
   wikipedia: "[ [Here]([link]) is your random wikipedia article. It's about [title]... I think... ]"
+
+# ---------------------------------------------------------------
+
+about:
+  layout: |
+    👑 [owners]
+
+    [description]
+
+  names:
+    shards: "Shards"
+    avg_ping: "Average ping"
+    latency: "Response latency"
+    commit_hash: "Commit hash"
+    server_count: "Server count"
+    user_installs: "User installs"
+    host: "Host"
+    music_listeners: "Music Listeners"
+    played_time: "Played for"
+    played_songs: "Played songs"
+    cpu_usg: "CPU usage"
+    mem_usg: "Memory usage"
+    uptime: "Uptime"
+
+  values:
+    time: "**[sec]** s."
+    percent: "**[num]**%"
+    failed_commit_hash: "N/A"
+
+  buttons:
+    dev server: Dev Server
+    community: Community
+    community server: Community Server
+    support: Support
+    support server: Support Server
+    translate: Translate
+    website: Website
+    weblate: Weblate
+    Discord: Discord
 
 # ---------------------------------------------------------------
 
