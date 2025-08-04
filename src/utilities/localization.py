@@ -364,7 +364,7 @@ async def put_mini(
 	return f"{pre}{'-# ' if markdown else ''}{name} {msg}"
 
 
-def amperjoin(items: list):
+def amperjoin(items: list[str]):
 	items = list(map(str, items))
 	if len(items) == 0:
 		return ""

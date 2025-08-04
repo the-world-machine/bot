@@ -2,7 +2,7 @@ import psutil
 import platform
 from datetime import datetime, timezone
 from utilities.misc import get_git_hash
-from utilities.localization import Localization, fnum, ftime
+from utilities.localization import Localization, amperjoin, fnum, ftime
 from utilities.message_decorations import Colors, fancy_message
 from interactions import ActionRow, Button, ButtonStyle, Embed, EmbedField, Extension, Message, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
@@ -36,15 +36,13 @@ class AboutCommand(Extension):
 
 		host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
 
-		team = ctx.client.app.team
-		members: list[User] = [ctx.client.app.owner]
-		if team:
-			members = [member.user for member in team.members]
+		def users_to_mentions(users: list[User], detail: bool = False) -> list[str]:
+			return list(map(lambda user: f"<@{user.id}>" + (f" (@{user.username})" if detail else ""), users))
 
-		description = ""
 		buttons: list[Button] = []
 		strbuttons: list[str] = []
 		processed_lines: list[str] = []
+		_first_processed: bool = False
 		if ctx.client.app.description:
 			for line in ctx.client.app.description.splitlines():
 				try:
@@ -61,19 +59,40 @@ class AboutCommand(Extension):
 						else:
 							strbuttons.append(f"[{name}]({url})")
 					else:
+						if not _first_processed:
+							_first_processed = True
+							original_lines = loc.l(
+							    "about.me's",
+							)
+							translated_lines = Localization().l("about.me's")
+
+							for i in range(0, len(original_lines)):
+								if not (len(translated_lines) > i) and original_lines[i] == line:
+									line = translated_lines[i]
 						processed_lines.append(line)
 				except ValueError:
 					processed_lines.append(line)
-		description += "\n".join(processed_lines)
 
-		embed = Embed(
-		    description=loc.l(
-		        "about.layout",
-		        owners=" & ".join(map(lambda member: f"<@{member.id}> (@{member.username})", members)),
-		        description=description.strip()
-		    ),
-		    color=Colors.DEFAULT
+		team = ctx.client.app.team
+		developers: list[User] = [ctx.client.app.owner]
+		if team:
+			developers = [member.user for member in team.members]
+		contributors: list[User] = []
+		translators: list[User] = []
+		donators: list[User] = []
+		# TODO: fetch those from config.yml role ids
+		description = '\n'.join(
+		    [
+		        s for s in (
+		            f"👑 {amperjoin(users_to_mentions(developers, detail=True))}",
+		            f"🧑‍💻 {amperjoin(users_to_mentions(contributors))}" if len(contributors) > 0 else None,
+		            f"✍️ {amperjoin(users_to_mentions(translators))}" if len(translators) > 0 else None,
+		            f"💸 {amperjoin(users_to_mentions(donators))}" if len(donators) > 0 else None, "",
+		            "\n".join(processed_lines)
+		        ) if s is not None
+		    ]
 		)
+		embed = Embed(description=description, color=Colors.DEFAULT)
 		embed.add_fields(
 		    EmbedField(
 		        name=loc.l("about.names.avg_ping"),

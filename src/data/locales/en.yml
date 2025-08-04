@@ -65,11 +65,6 @@ misc:
 # ---------------------------------------------------------------
 
 about:
-  layout: |
-    👑 [owners]
-
-    [description]
-
   names:
     shards: "Shards"
     avg_ping: "Average ping"
@@ -100,6 +95,10 @@ about:
     website: Website
     weblate: Weblate
     Discord: Discord
+
+  mes:
+    - "a discord bot based off oneshot"
+    - "a testing build for The World Machine, do not invite this bot if you want The World Machine in your server"
 
 # ---------------------------------------------------------------
 
