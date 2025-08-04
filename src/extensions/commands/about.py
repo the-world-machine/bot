@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from utilities.misc import get_git_hash
 from utilities.localization import Localization, fnum, ftime
 from utilities.message_decorations import Colors, fancy_message
-from interactions import ActionRow, Button, ButtonStyle, Embed, EmbedField, Extension, Message, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
+from interactions import ActionRow, Button, ButtonStyle, Embed, EmbedField, Extension, Message, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
 try:
 	commit_hash = get_git_hash()
@@ -14,6 +14,7 @@ except Exception as e:
 
 
 class AboutCommand(Extension):
+
 	@slash_command(description='About the bot (ping, stats)')
 	@slash_option(
 	    description="Whether you want the response to be visible for others in the channel",
@@ -36,7 +37,7 @@ class AboutCommand(Extension):
 		host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
 
 		team = ctx.client.app.team
-		members = [ctx.client.app.owner]
+		members: list[User] = [ctx.client.app.owner]
 		if team:
 			members = [member.user for member in team.members]
 
@@ -66,7 +67,11 @@ class AboutCommand(Extension):
 		description += "\n".join(processed_lines)
 
 		embed = Embed(
-		    description=loc.l("about.layout", owners=" & ".join(map(str, members)), description=description.strip()),
+		    description=loc.l(
+		        "about.layout",
+		        owners=" & ".join(map(lambda member: f"<@{member.id}> (@{member.username})", members)),
+		        description=description.strip()
+		    ),
 		    color=Colors.DEFAULT
 		)
 		embed.add_fields(
