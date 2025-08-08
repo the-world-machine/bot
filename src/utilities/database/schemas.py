@@ -5,7 +5,6 @@ from dataclasses import asdict, dataclass, field
 from utilities.database.main import DBDict, DBDynamicDict, DBList, Collection
 
 
-@dataclass
 class TransmitConfig(DBDict):
 	disabled: bool = False
 	channel_id: str | None = None
@@ -15,7 +14,6 @@ class TransmitConfig(DBDict):
 	known_servers: DBList[str] = field(default_factory=lambda: DBList())
 
 
-@dataclass
 class WelcomeConfig(DBDict):
 	disabled: bool = True
 	ping: bool = False

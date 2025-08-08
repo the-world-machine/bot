@@ -3,7 +3,7 @@ from interactions import Snowflake
 from utilities.config import get_config
 from pymongo.server_api import ServerApi
 from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Any, Generic, Iterable, get_origin, get_type_hints, TypeVar, overload
+from typing import Any, Generic, Iterable, MutableMapping, get_origin, get_type_hints, TypeVar, overload
 from dataclasses import dataclass, fields, is_dataclass, InitVar
 if get_config("database.dns-fix", typecheck=bool, ignore_None=True):
 	import dns.resolver
@@ -83,47 +83,81 @@ class Collection:
 		return await self.update(**{ key: value + by})
 
 
-class DBDict(dict):
+# In main.py
+
+
+class DBDict(MutableMapping):
 	_parent: Collection | None
 	_parent_field: str | None
 
 	def __init__(self, *args, _parent: Collection | None = None, _parent_field: str | None = None, **kwargs):
-		super().__init__(*args, **kwargs)
-
 		self._parent = _parent
 		self._parent_field = _parent_field
 
-	def __repr__(self):
-		return f"DB{super().__repr__()}"
+		initial_data = dict(*args, **kwargs)
+		for key, value in initial_data.items():
+			setattr(self, key, value)
 
-	async def update(self, **kwargs):
+	def __setitem__(self, key, value):
+		setattr(self, key, value)
+
+	def __getitem__(self, key):
+		try:
+			return getattr(self, key)
+		except AttributeError:
+			raise KeyError(key)
+
+	def __delitem__(self, key):
+		try:
+			delattr(self, key)
+		except AttributeError:
+			raise KeyError(key)
+
+	def __iter__(self):
+		return (key for key in self.__dict__ if not key.startswith('_'))
+
+	def __len__(self):
+		return len(list(self.__iter__()))
+
+	def __repr__(self):
+		contents = { k: v for k, v in self.items() }
+		return f"DB{repr(contents)}"
+
+	async def sync_to_db(self):
+		"""Helper method to sync the entire current state to the database."""
 		if self._parent is None or self._parent_field is None:
 			raise Exception("Parent not set for nested update.")
 
-		current_state = to_dict(self)
-		updated_state = { **current_state, **kwargs }
-		update_fields = {self._parent_field: updated_state}
+		update_fields = {self._parent_field: to_dict(self)}
 		await self._parent.update(**update_fields)
 
-		super().update(kwargs)
+	async def update(self, *args, **kwargs):
+		"""Updates local attributes and then syncs the entire object to the database."""
+		update_data = dict(*args, **kwargs)
+		for key, value in update_data.items():
+			self[key] = value
+
+		await self.sync_to_db()
 
 	async def increment_key(self, key: str, by: int | float = 1):
 		value = self.get(key, 0)
 		if isinstance(value, float):
 			by = float(by)
-		await self.update(**{ key: value + by})
+
+		self[key] = value + by
+
+		await self.sync_to_db()
 
 	async def update_array(self, field: str, operator: str, value: Any):
 		if self._parent is None or self._parent_field is None:
 			raise Exception("Parent not set for nested update.")
 		await self._parent.update_array(f"{self._parent_field}.{field}", operator, value)
 
-	async def fetch(self) -> Collection:
+	async def fetch(self) -> 'Collection':
 		if self._parent is None or self._parent_field is None:
 			raise Exception("Parent not set for nested fetch.")
-		# This might need adjustment based on what _parent.fetch() returns
 		parent_data = await self._parent.fetch()
-		return parent_data.__getattribute__(self._parent_field)
+		return getattr(parent_data, self._parent_field)
 
 
 TItem = TypeVar("TItem")
@@ -189,37 +223,64 @@ TKey = TypeVar("TKey")
 TValue = TypeVar("TValue")
 
 
-class DBDynamicDict(dict, Generic[TKey, TValue]):
+class DBDynamicDict(MutableMapping, Generic[TKey, TValue]):
 	_parent: Collection | None
 	_parent_field: str | None
 
 	def __init__(self, *args: Any, _parent: Collection | None = None, _parent_field: str | None = None, **kwargs: Any):
-		super().__init__(*args, **kwargs)
-
 		self._parent = _parent
 		self._parent_field = _parent_field
 
-	async def __setitem__(self, key: TKey, value: Any) -> None:
-		if self._parent is not None and self._parent_field is not None:
-			updated_dict_state = dict(self)
-			updated_dict_state[key] = value
+		initial_data = dict(*args, **kwargs)
+		for key, value in initial_data.items():
+			setattr(self, str(key), value)
 
-			update_fields = {self._parent_field: updated_dict_state}
-			await self._parent.update(**update_fields)
+	def __setitem__(self, key: TKey, value: TValue) -> None:
+		setattr(self, str(key), value)
 
-		super().__setitem__(key, value)
+	def __getitem__(self, key: TKey) -> TValue:
+		try:
+			return getattr(self, str(key))
+		except AttributeError:
+			raise KeyError(key)
 
-	async def update(self, *args: Any, **kwargs: Any) -> None:
+	def __delitem__(self, key: TKey) -> None:
+		try:
+			delattr(self, str(key))
+		except AttributeError:
+			raise KeyError(key)
+
+	def __iter__(self) -> TKey:
+		return (key for key in self.__dict__ if not key.startswith('_'))  # type: ignore
+
+	def __len__(self) -> int:
+		return len(list(self.__iter__()))  # type: ignore
+
+	def __repr__(self) -> str:
+		contents = { k: v for k, v in self.items() }
+		return f"DBD{repr(contents)}"
+
+	async def sync_to_db(self):
+		"""Helper method to sync the entire current state to the database."""
 		if self._parent is None or self._parent_field is None:
 			raise Exception("Parent not set for nested update.")
 
-		updated_dict_state = dict(self)
-		updated_dict_state.update(*args, **kwargs)
-
-		update_fields = {self._parent_field: updated_dict_state}
+		update_fields = {self._parent_field: to_dict(self)}
 		await self._parent.update(**update_fields)
 
-		super().update(*args, **kwargs)
+	async def set_and_sync(self, key: TKey, value: TValue):
+		"""Sets a key/value pair locally and then syncs to the database."""
+		self[key] = value
+
+		await self.sync_to_db()
+
+	async def update(self, *args: Any, **kwargs: Any) -> None:
+		"""Updates from another dictionary or kwargs and syncs to the database."""
+		update_data = dict(*args, **kwargs)
+		for key, value in update_data.items():
+			self[key] = value  # type: ignore
+
+		await self.sync_to_db()
 
 	async def increment_key(self, key: TKey, by: int | float = 1) -> None:
 		current_value = self.get(key, 0)
@@ -227,11 +288,7 @@ class DBDynamicDict(dict, Generic[TKey, TValue]):
 		if not isinstance(current_value, (int, float)):
 			current_value = 0
 
-		await self.__setitem__(key, current_value + by)
-
-	def __repr__(self) -> str:
-		return f"DBD{super().__repr__()}"
-
+		await self.set_and_sync(key, (current_value + by))  # type: ignore
 
 connection = None
 
