@@ -12,8 +12,6 @@ class MemberAddEvent(Extension):
 
 	@listen(MemberAdd, delay_until_ready=True)
 	async def handler(self, event: MemberAdd):
-		if event.member.bot:
-			return
 		guild = event.guild
 		loc = Localization(guild.preferred_locale)
 		server_data: ServerData = await ServerData(_id=guild.id).fetch()
@@ -44,13 +42,13 @@ class MemberAddEvent(Extension):
 				return
 			print(f"Trying to send welcome message for server {event.guild.id} in channel {event.guild.system_channel}")
 			if isinstance(target_channel, TYPE_MESSAGEABLE_CHANNEL):
-				await target_channel.send(
+				return await target_channel.send(
 				    content=f"-# {event.member.mention}",
 				    files=File(file=buffer, file_name=f"welcome textbox.png"),
 				    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
 				)
 			raise TypeError("tried to send message in a channel where i can't send messages :mumawomp:")
 		except Exception as e:
-			print("Failed to send welcome message. {guild.id}/{target_channel.id}")
+			print(f"Failed to send welcome message. {guild.id}/{target_channel.id}")
 			print(tb.format_exc(chain=True))
-			await config.update(enabled=False, errored=True)
+			await config.update(diabled=True, errored=True)
