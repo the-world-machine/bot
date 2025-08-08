@@ -26,6 +26,13 @@ bot:
       - "[ Do I really have to do things for these users? ]"
       - "[ No thoughts right now. ]"
 
+  main:
+    guild-id: "1017531963000754247" # server id, in "", the main community server for the bot
+    invite: ""
+    roles:
+      contributor-id: "1054832328729427988"
+      translator-id: "1337522400367218758"
+      supporter-id: "1044343502353481788"
 dev:
   guild-id: ~ # server id, in ""
   channels:
