@@ -932,7 +932,7 @@ textbox:
     # ↑ those show up ↓ there
   button:
     render: Render [type]
-    "render&send": "Render [type] & Send"
+    rendersend: "Render [type] & Send"
     text:
       edit: Edit Text
       add: Add Text
@@ -941,6 +941,7 @@ textbox:
       add: Add Frame
       previous: Previous Frame
       manual: Input Frame
+      delete: Delete
 
   frame_position: "editing frame [current] of [total] total"
 

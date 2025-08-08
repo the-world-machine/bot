@@ -922,7 +922,7 @@ textbox:
     # ↑ those show up ↓ there
   button:
     render: Рендер [type]
-    "render&send": "Рендер [type] и Отправка"
+    rendersend: "Рендер [type] и Отправка"
     text:
       edit: Изменить Текст
       add: Добавить Текст

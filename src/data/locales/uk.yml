@@ -933,7 +933,7 @@ textbox:
     # ↑ those show up ↓ there
   button:
     render: Відрендерити [type]
-    "render&send": "Відрендерити [type] та Відправити"
+    rendersend: "Відрендерити [type] та Відправити"
     text:
       edit: Редагувати Текст
       add: Додати Текст

@@ -279,7 +279,7 @@ class TextboxCommands(Extension):
 		return (False, loc, state, frame_data)
 
 	handle_components_regex = re.compile(
-	    r"textbox (?P<method>refresh|render|update_(char|face|text)) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
+	    r"textbox (?P<method>refresh|render|update_(char|face|text)|delete_frame) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
 	)
 
 	@component_callback(handle_components_regex)
@@ -301,6 +301,8 @@ class TextboxCommands(Extension):
 				frame_data.starting_face_name = ctx.values[0]
 			case "update_text":
 				return await self.init_update_text_flow(ctx, state_id, frame_index)
+			case "delete_frame":
+				del state.frames[int(frame_index)]
 			case "render":
 				await self.send_output(ctx, state_id, int(frame_index))
 				
@@ -439,7 +441,7 @@ class TextboxCommands(Extension):
 		if warnings is None:
 			warnings = []
 		pos = ""
-		if len(state.frames) > 2 or frame_index != 0:
+		if len(state.frames) > 1 or frame_index != 0:
 			pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
 		if debugging():
 			pos += "\n-# **sid**: "+state_id
@@ -475,13 +477,18 @@ class TextboxCommands(Extension):
 				),
 				Button(
 					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.render"+("&send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.out_filetype}")),
+					label=loc.l("textbox.button.render"+("send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.out_filetype}")),
 					custom_id=f"textbox render {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.GRAY if frame_data.text else ButtonStyle.GREEN,
 					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
 					custom_id=f"textbox update_text {state_id} {frame_index}"
+				),
+				Button(
+					style=ButtonStyle.DANGER if frame_data.text else ButtonStyle.GRAY,
+					label=loc.l(f'textbox.button.frame.delete'),
+					custom_id=f"textbox delete_frame {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.GRAY,

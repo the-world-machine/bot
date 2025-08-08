@@ -921,7 +921,7 @@ textbox:
 
   button:
     render: Render [type]
-    "render&send": "Render [type] & Send"
+    rendersend: "Render [type] & Send"
     opts: Options
     text:
       edit: Edit Text
