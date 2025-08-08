@@ -416,9 +416,8 @@ class TextboxCommands(Extension):
 	@modal_callback(handle_modal_regex)
 	async def handle_modals(self, ctx: ModalContext, new_text: str):
 		match = self.handle_modal_regex.match(ctx.custom_id)
-		assert ctx.message is not None
 		if match == None or len(match.groups()) < 2:
-			return ctx.edit(message=ctx.message)
+			return
 		state_id, frame_index = match.group("state_id", "frame_index")
 		err, loc, state, frame_data = await self.basic(ctx, state_id, frame_index)
 		if err or loc == None or state == None or frame_data == None:
