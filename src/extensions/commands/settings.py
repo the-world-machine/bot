@@ -61,14 +61,16 @@ class SettingsCommands(Extension):
 
 	transmissions = settings.group(name="transmissions")
 
-	@transmissions.subcommand(sub_cmd_description="Toggle this server's ability to receive calls")
+	@transmissions.subcommand(
+	    sub_cmd_name="enabled", sub_cmd_description="Toggle this server's ability to receive calls"
+	)
 	@slash_option(
 	    description="default: True",
 	    name="value",
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def enabled_(self, ctx: SlashContext, value):
+	async def transmissions_enabled(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -78,13 +80,15 @@ class SettingsCommands(Extension):
 		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
 		)
 
-	@transmissions.subcommand(sub_cmd_description="Channel to be used by default when accepting calls")
+	@transmissions.subcommand(
+	    sub_cmd_name="channel", sub_cmd_description="Channel to be used by default when accepting calls"
+	)
 	@slash_option(
 	    description="(omit option to reset) default: Current",
 	    name="channel",
 	    opt_type=OptionType.CHANNEL,
 	)
-	async def channel(self, ctx: SlashContext, channel: GuildText | None = None):
+	async def transmissions_channel(self, ctx: SlashContext, channel: GuildText | None = None):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -101,14 +105,14 @@ class SettingsCommands(Extension):
 		    ctx, loc.l("settings.transmissions.channel.Changed", channel=channel.mention), ephemeral=True
 		)
 
-	@transmissions.subcommand(sub_cmd_description="Toggle embedding images when transmitting")
+	@transmissions.subcommand(sub_cmd_name="images", sub_cmd_description="Toggle embedding images when transmitting")
 	@slash_option(
 	    description="default: True",
 	    name="value",
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def images(self, ctx: SlashContext, value: bool):
+	async def transmissions_images(self, ctx: SlashContext, value: bool):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -119,6 +123,7 @@ class SettingsCommands(Extension):
 		)
 
 	@transmissions.subcommand(
+	    sub_cmd_name="anonymous",
 	    sub_cmd_description=
 	    "Whether transmission receivers are shown Oneshot characters instead of actual people from the server"
 	)
@@ -128,7 +133,7 @@ class SettingsCommands(Extension):
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def anonymous(self, ctx: SlashContext, value):
+	async def transmissions_anonymous(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -139,7 +144,9 @@ class SettingsCommands(Extension):
 		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
 		)
 
-	@transmissions.subcommand(sub_cmd_description="Toggle blocking a server from being able to call")
+	@transmissions.subcommand(
+	    sub_cmd_name="block", sub_cmd_description="Toggle blocking a server from being able to call"
+	)
 	@slash_option(
 	    description="The server's ID",
 	    name="server",
@@ -147,7 +154,7 @@ class SettingsCommands(Extension):
 	    required=True,
 	    autocomplete=True,
 	)
-	async def block(self, ctx: SlashContext, server: str):
+	async def transmissions_block(self, ctx: SlashContext, server: str):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -182,7 +189,7 @@ class SettingsCommands(Extension):
 		    ephemeral=True
 		)
 
-	@block.autocomplete("server")
+	@transmissions_block.autocomplete("server")
 	async def block_server_autocomplete(self, ctx: AutocompleteContext):
 		server_data: ServerData = await ServerData(_id=str(ctx.guild_id)).fetch()
 		loc = Localization(ctx)
@@ -213,14 +220,16 @@ class SettingsCommands(Extension):
 
 	welcome = settings.group(name="welcome")
 
-	@welcome.subcommand(sub_cmd_description="Whether to send the welcome textbox when someone joins")
+	@welcome.subcommand(
+	    sub_cmd_name="enabled", sub_cmd_description="Whether to send the welcome textbox when someone joins"
+	)
 	@slash_option(
 	    description="default: False",
 	    name="value",
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def enabled(self, ctx: SlashContext, value):
+	async def welcome_enabled(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -234,14 +243,16 @@ class SettingsCommands(Extension):
 		    ctx, loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}") + error, ephemeral=True
 		)
 
-	@welcome.subcommand(sub_cmd_description="Whether to ping the newcomers (shows the @mention regardless)")
+	@welcome.subcommand(
+	    sub_cmd_name="ping", sub_cmd_description="Whether to ping the newcomers (shows the @mention regardless)"
+	)
 	@slash_option(
 	    description="default: False",
 	    name="value",
 	    opt_type=OptionType.BOOLEAN,
 	    required=True,
 	)
-	async def ping(self, ctx: SlashContext, value):
+	async def welcome_ping(self, ctx: SlashContext, value):
 		loc, server_data = await self.basic(ctx)
 		if not loc or not server_data:
 			return
@@ -255,8 +266,8 @@ class SettingsCommands(Extension):
 		    ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}") + error, ephemeral=True
 		)
 
-	@welcome.subcommand(sub_cmd_description="Edit this server's welcome message")
-	async def edit(self, ctx: SlashContext):
+	@welcome.subcommand(sub_cmd_name="edit", sub_cmd_description="Edit this server's welcome message")
+	async def welcome_edit(self, ctx: SlashContext):
 		loc, server_data = await self.basic(ctx, defer=False)
 		if not loc or not server_data:
 			return
@@ -305,13 +316,13 @@ class SettingsCommands(Extension):
 
 		await fancy_message(ctx, loc.l("settings.welcome.editor.done") + debug + warn + error, ephemeral=True)
 
-	@welcome.subcommand(sub_cmd_description="Where to send the welcome textboxes to")
+	@welcome.subcommand(sub_cmd_name="channel", sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(
 	    description="(omit option to reset) default: Server Settings -> System Messages channel",
 	    name="channel",
 	    opt_type=OptionType.CHANNEL,
 	)
-	async def _channel(self, ctx: SlashContext, channel: GuildText | None = None):
+	async def welcome_channel(self, ctx: SlashContext, channel: GuildText | None = None):
 		loc, server_data = await self.basic(ctx)
 		assert ctx.guild is not None
 		if not loc or not server_data:
