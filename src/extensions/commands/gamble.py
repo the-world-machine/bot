@@ -68,7 +68,7 @@ class GambleCommands(Extension):
 	    min_value=100
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		await fancy_message(ctx, loc.l('generic.loading'))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 

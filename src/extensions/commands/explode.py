@@ -29,7 +29,7 @@ class ExplodeCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def explode(self, ctx: SlashContext, public=True):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		uid = ctx.user.id
 		explosion_amount = (await UserData(_id=uid).fetch()).times_shattered
 		if uid in self.last_called:

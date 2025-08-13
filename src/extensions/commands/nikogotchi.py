@@ -50,7 +50,7 @@ class NikogotchiCommands(Extension):
 		prefix = 'action_'
 		suffix = f'_{owner_id}'
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		return [
 		    Button(
@@ -91,7 +91,7 @@ class NikogotchiCommands(Extension):
 		owner = await ctx.client.fetch_user(n._id)
 		if not owner:
 			raise ValueError("Failed to fetch owner of Nikogotchi")
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		nikogotchi_status = loc.l('nikogotchi.status.normal')
 
@@ -207,7 +207,7 @@ class NikogotchiCommands(Extension):
 	async def check(self, ctx: SlashContext):
 
 		uid = ctx.author.id
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		nikogotchi: Nikogotchi = await Nikogotchi(uid).fetch()
 
@@ -363,7 +363,7 @@ class NikogotchiCommands(Extension):
 		if custom_id == 'exit':
 			await ctx.delete()
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		nikogotchi = await self.get_nikogotchi(str(uid))
 
@@ -545,7 +545,7 @@ class NikogotchiCommands(Extension):
 
 		updated_stats = []
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		match pancake_type:
 			case 'golden':
@@ -598,7 +598,7 @@ class NikogotchiCommands(Extension):
 	@nikogotchi.subcommand(sub_cmd_description='Part ways with your Nikogotchi')
 	async def send_away(self, ctx: SlashContext):
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 
@@ -633,7 +633,7 @@ class NikogotchiCommands(Extension):
 			await ctx.delete()
 
 	async def init_rename_flow(self, ctx: ComponentContext | SlashContext, old_name: str, cont: bool = False):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		modal = Modal(
 		    ShortText(
 		        custom_id='name',
@@ -651,7 +651,7 @@ class NikogotchiCommands(Extension):
 
 	@modal_callback(re.compile(r'rename_nikogotchi?.+'))
 	async def on_rename_answer(self, ctx: ModalContext, name: str):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		if ctx.custom_id.endswith("continue"):
 			await ctx.defer(edit_origin=True)
@@ -661,7 +661,7 @@ class NikogotchiCommands(Extension):
 		if nikogotchi is None:
 			return await fancy_message(
 			    ctx,
-			    Localization(ctx.locale).l('nikogotchi.other.rename_you_invalid'),
+			    Localization(ctx).l('nikogotchi.other.rename_you_invalid'),
 			    ephemeral=True,
 			    color=Colors.BAD
 			)
@@ -691,7 +691,7 @@ class NikogotchiCommands(Extension):
 
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx, Localization(ctx.locale).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD
 			)
 
 		return await self.init_rename_flow(ctx, nikogotchi.name)
@@ -699,7 +699,7 @@ class NikogotchiCommands(Extension):
 	@nikogotchi.subcommand(sub_cmd_description="Show off a nikogotchi in chat")
 	@slash_option('user', description="Who's nikogotchi would you like to see?", opt_type=OptionType.USER)
 	async def show(self, ctx: SlashContext, user: User | None = None):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if user is None:
 			user = ctx.user
 
@@ -713,7 +713,7 @@ class NikogotchiCommands(Extension):
 	"""@nikogotchi.subcommand(sub_cmd_description='Trade your Nikogotchi with someone else!')
     @slash_option('user', description='The user to trade with.', opt_type=OptionType.USER, required=True)
     async def trade(self, ctx: SlashContext, user: User):
-        loc = Localization(ctx.locale)
+        loc = Localization(ctx)
 
         nikogotchi_one = await self.get_nikogotchi(ctx.author.id)
         nikogotchi_two = await self.get_nikogotchi(user.id)
@@ -797,7 +797,7 @@ class NikogotchiCommands(Extension):
 	    opt_type=OptionType.BOOLEAN
 	)
 	async def treasures(self, ctx: SlashContext, user: User | None = None, public: bool = True):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if user is None:
 			user = ctx.user
 		if user.bot:

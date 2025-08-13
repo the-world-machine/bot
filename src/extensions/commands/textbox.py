@@ -194,9 +194,9 @@ class TextboxCommands(Extension):
 			filetype: SupportedFiletypes | None = None,
 	    send_to: Literal[1, 2, 3] = 1
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("generic.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx).l("generic.loading"), ephemeral=True)
 		state_id = str(ctx.id)  # state_id is the initial `/textbox create` interaction's id, need to save these between restarts later somehow
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		erored = False
 
 		if not character_id and face_name:
@@ -250,26 +250,26 @@ class TextboxCommands(Extension):
 
 	@create.autocomplete("character")
 	async def character_autocomplete(self, ctx: AutocompleteContext):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		characters = get_characters()
 		choices = optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name, char in characters])
 		return await ctx.send(choices)
 	
 	@create.autocomplete("face")
 	async def face_autocomplete(self, ctx: AutocompleteContext):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		character = get_character(ctx.kwargs["character"] if "character" in ctx.kwargs else "Other")
 
 		return await ctx.send(choices=optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name in character.get_face_list()]))
 	
 	async def basic(self, ctx, state_id: str | int, frame_index: str | int):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		try:
 			state: State = states[str(state_id)]
 		except KeyError as e:
 			await fancy_message(
-			    ctx, loc.l("textbox.errors.unknown_state", id=str(state_id), discord_invite="https://discord.gg/SXzqfhBtkk"), ephemeral=True
-			)  # TODO: move discord invite to bot config
+			    ctx, loc.l("textbox.errors.unknown_state", id=str(state_id)), ephemeral=True
+			)
 			return (True, None, None, None)
 		try:
 			frame_data: Frame = state.get_frame(int(frame_index))
@@ -352,7 +352,7 @@ class TextboxCommands(Extension):
 
 	async def render_to_file(self, ctx: ComponentContext|SlashContext|ModalContext, state: State, frame_preview_index: int | None = None) -> File:
 		# you do alt text here later dont unabstract this
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		frames = state.frames
 		if frame_preview_index != None:
@@ -524,7 +524,7 @@ class TextboxCommands(Extension):
 	    ctx: SlashContext,
 	    search: str = "user:me!0:1"
 	):
-		await fancy_message(ctx, Localization(ctx.locale).l("generic.loading"), ephemeral=True)
+		await fancy_message(ctx, Localization(ctx).l("generic.loading"), ephemeral=True)
 		states2show: list[tuple[str, State]] = []
 		options = search.split("!")
 		filter = options[0]

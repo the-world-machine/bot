@@ -11,7 +11,7 @@ from humanfriendly import format_timespan
 from utilities.data_watcher import subscribe
 from extensions.events.Ready import ReadyEvent
 from utilities.database.schemas import UserData
-from typing import overload, TypeVar, Any, Literal, Type
+from typing import overload, TypeVar, Any, Literal, Type, Match
 from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
 from utilities.misc import FrozenDict, format_type_hint, decode_base64_padded, rabbit
@@ -142,16 +142,29 @@ class Localization:
 	global _locales
 	locale: str
 	prefix: str
+	ctx: Any
 
-	def __init__(self, locale: str | None = None, prefix: str = ""):
+	def __init__(self, source: str | Any | None = None, prefix: str = ""):
+		self.ctx: Any = None
+		raw_locale: str | None
+
+		if source is not None and not isinstance(source, str):
+			# It's likely a context object
+			self.ctx = source
+			raw_locale = getattr(self.ctx, 'locale', None)
+		else:
+			raw_locale = source
+
 		final_locale: str
-		if locale is None:
+		if raw_locale is None:
 			final_locale = get_config("localization.main-locale")
 		else:
 			try:
-				final_locale = parse_locale(locale)
+				# It might be a discord.Locale object, so we stringify it
+				final_locale = parse_locale(str(raw_locale))
 			except UnknownLanguageError:
 				final_locale = get_config("localization.main-locale")
+
 		self.locale = final_locale
 		self.prefix = prefix
 
@@ -165,19 +178,25 @@ class Localization:
 
 	def l(self, path: str, *, typecheck: Any = str, **variables: Any) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		result = self.sl(path=path, locale=self.locale, typecheck=typecheck, **variables)
+		result = self.sl(path=path, locale=self.locale, typecheck=typecheck, ctx=self.ctx, **variables)
 		return result
 
 	@staticmethod
 	@overload
 	def sl(
-	    path: str, locale: str | None, *, typecheck: Type[T], raise_on_not_found: bool = False, **variables: Any
+	    path: str,
+	    locale: str | None,
+	    *,
+	    typecheck: Type[T],
+	    raise_on_not_found: bool = False,
+	    ctx: Any = None,
+	    **variables: Any
 	) -> T:
 		...
 
 	@staticmethod
 	@overload
-	def sl(path: str, locale: str | None, **variables: Any) -> str:
+	def sl(path: str, locale: str | None, *, ctx: Any = None, **variables: Any) -> str:
 		...
 
 	@staticmethod
@@ -187,6 +206,7 @@ class Localization:
 	    *,  # ← makes all next args only accepted as keyword arguments
 	    typecheck: Any = str,
 	    raise_on_not_found: bool = False,
+	    ctx: Any = None,
 	    **variables: Any
 	) -> Any:
 		if locale is None:
@@ -201,7 +221,7 @@ class Localization:
 		    _error_message="[path] ([error])" if debug else "[path]"
 		)
 
-		result = assign_variables(raw_result, locale, **variables)
+		result = assign_variables(raw_result, locale, ctx=ctx, **variables)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
 			raise TypeError(
@@ -302,9 +322,26 @@ token = get_token()
 bot_id = decode_base64_padded(token.split('.')[0])
 
 
-def assign_variables(input: Any, locale: str = get_config("localization.main-locale"), **variables: Any):
+def assign_variables(
+    input: Any, locale: str = get_config("localization.main-locale"), *, ctx: Any = None, **variables: Any
+):
 	if isinstance(input, str):
 		result = input
+
+		# command mentions like [/command]
+		if ctx:
+
+			def get_command_mention(match: Match[str]) -> str:
+				command_name = match.group(1)
+				if hasattr(ctx, "client") and hasattr(ctx.client, "_interaction_lookup"):
+					command = ctx.client._interaction_lookup.get(command_name)
+					if command:
+						return command.mention()
+				return f"</{command_name}:0>"
+
+			result = re.sub(r"\[/(.+?)\]", get_command_mention, result)
+
+		# variables like [variable] and [emoji:name]
 		for name, data in {
 		    **variables,
 		    **emoji_dict,
@@ -321,11 +358,11 @@ def assign_variables(input: Any, locale: str = get_config("localization.main-loc
 			result = result.replace(f'[{name}]', data)
 		return result
 	elif isinstance(input, tuple):
-		return tuple(assign_variables(elem, locale, **variables) for elem in input)
+		return tuple(assign_variables(elem, locale, ctx=ctx, **variables) for elem in input)
 	elif isinstance(input, dict):
 		new_dict = {}
 		for key, value in input.items():
-			new_dict[key] = assign_variables(value, locale, **variables)
+			new_dict[key] = assign_variables(value, locale, ctx=ctx, **variables)
 		return new_dict
 	else:
 		return input

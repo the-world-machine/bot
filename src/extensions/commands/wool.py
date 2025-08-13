@@ -44,7 +44,7 @@ class WoolCommands(Extension):
 	)
 	async def balance(self, ctx: SlashContext, of: User | None = None, public: bool = False):
 		await ctx.defer(ephemeral=not public)
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if of is None:
 			of = ctx.user
 
@@ -77,7 +77,7 @@ class WoolCommands(Extension):
 	    min_value=-1
 	)
 	async def give(self, ctx: SlashContext, to: User, amount: int):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if to.id == ctx.author.id:
 			return await fancy_message(
 			    ctx, loc.l("wool.transfer.errors.self_transfer"), ephemeral=True, color=Colors.BAD
@@ -142,7 +142,7 @@ class WoolCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def pray(self, ctx: SlashContext):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 		reset_timestamp = user_data.daily_wool_timestamp

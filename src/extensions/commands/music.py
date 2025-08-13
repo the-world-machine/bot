@@ -189,7 +189,7 @@ class MusicCommands(Extension):
 	    autocomplete=True,
 	)
 	async def play(self, ctx: SlashContext, song: str):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		# Getting user's voice state
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
@@ -254,7 +254,9 @@ class MusicCommands(Extension):
 		add_to_queue_embed.set_author(name=f"Requested by {ctx.member.username}", icon_url=ctx.member.avatar.url)
 
 		add_to_queue_embed.set_thumbnail(self.get_cover_image(track.identifier))
-		add_to_queue_embed.set_footer(text="Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song.")
+		add_to_queue_embed.set_footer(
+		    text="Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song."
+		)
 
 		return add_to_queue_embed
 
@@ -266,7 +268,7 @@ class MusicCommands(Extension):
 	    required=True,
 	)
 	async def file(self, ctx: SlashContext, file: Attachment):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		# Getting user's voice state
 		voice_state = ctx.member.voice
 

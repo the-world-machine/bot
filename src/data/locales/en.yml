@@ -476,8 +476,8 @@ interact:
   twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, [user]. ]"
 
   errors:
-    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my support server (you can find it in /about)"
-    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (an invite to it is in /about)"
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my community server (you can an invite to it in [/about])"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (you can find an invite to it in [/about])"
     fail: Failed to send the interaction
 
   phrases:
@@ -909,8 +909,8 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: "[ I failed to render the image, please report this in our [community discord server]([discord_invite]). State ID: [sid] ]"
-    unknown_state: "This textbox builder has expired. Run the command again, or report this in our [support discord server]([discord_invite]) if it keeps happening. (state id: [id])"
+    failed_to_render: "[ I failed to render the image, please report this in our community discord server. (you can find an invite to it in [/about], state ID: [sid]) ]"
+    unknown_state: "This textbox builder has expired. Run the command again, or report this in our community discord server if it keeps happening. (you can find an invite to it in [/about], state ID: [id])"
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" doesn't exist
     invalid_face: Character "[character_name]" doesn't have the "[face_name]" face

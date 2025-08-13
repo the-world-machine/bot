@@ -51,7 +51,7 @@ class SettingsCommands(Extension):
 	                ctx: ModalContext | SlashContext,
 	                defer: bool = True) -> tuple[Localization | None, ServerData | None]:
 		assert ctx.guild is not None
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if not await self.botmember_permission_check(loc, ctx):
 			return (None, None)
 		if defer:
@@ -185,7 +185,7 @@ class SettingsCommands(Extension):
 	@block.autocomplete("server")
 	async def block_server_autocomplete(self, ctx: AutocompleteContext):
 		server_data: ServerData = await ServerData(_id=str(ctx.guild_id)).fetch()
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		guilds = [
 		    await ctx.client.fetch_guild(id) or id
 		    for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))

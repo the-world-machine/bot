@@ -64,7 +64,7 @@ class ProfileCommands(Extension):
 	async def view(self, ctx: SlashContext, user: User | None = None):
 		url = "https://theworldmachine.xyz/profile"
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		if user is None:
 			user = ctx.user
 		if user.bot and ctx.client.user != user:
@@ -77,11 +77,13 @@ class ProfileCommands(Extension):
 		runtime = (time.perf_counter() - start_time) * 1000
 		components = []
 		if user == ctx.user:
-			components.append(Button(
-			    style=ButtonStyle.URL,
-			    url=url,
-			    label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
-			))
+			components.append(
+			    Button(
+			        style=ButtonStyle.URL,
+			        url=url,
+			        label=loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
+			    )
+			)
 		content = loc.l("profile.view.message", usermention=user.mention)
 		await ctx.edit(
 		    content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
@@ -95,10 +97,12 @@ class ProfileCommands(Extension):
 	async def edit(self, ctx: SlashContext):
 		components = Button(
 		    style=ButtonStyle.URL,
-		    label=Localization(ctx.locale).l('generic.buttons.open_site'),
+		    label=Localization(ctx).l('generic.buttons.open_site'),
 		    url="https://theworldmachine.xyz/profile"
 		)
-		await fancy_message(ctx, message=Localization(ctx.locale).l('profile.edit.text'), ephemeral=True, components=components)
+		await fancy_message(
+		    ctx, message=Localization(ctx).l('profile.edit.text'), ephemeral=True, components=components
+		)
 
 	choices = [
 	    SlashCommandChoice(name='Sun Amount', value='suns'),

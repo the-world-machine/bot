@@ -20,7 +20,7 @@ class MiscellaneousCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def random_wikipedia(self, ctx: SlashContext, public: bool = False):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		await ctx.defer(ephemeral=not public)
 		async with aiohttp.ClientSession() as session:
 			async with session.get(f'https://en.wikipedia.org/api/rest_v1/page/random/summary') as resp:
@@ -71,7 +71,7 @@ class MiscellaneousCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def roll(self, ctx: SlashContext, sides: int, amount: int = 1, public: bool = False):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		rolls = [random.randint(1, sides) for _ in range(amount)]
 
@@ -102,7 +102,7 @@ class MiscellaneousCommands(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def cat(self, ctx: SlashContext, public: bool = False):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		embed = Embed(title=loc.l("misc.miaou.title"), color=Colors.DEFAULT)
 
 		if random.randint(0, 100) == 30 + 6 + 14:

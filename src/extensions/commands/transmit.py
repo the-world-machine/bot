@@ -220,7 +220,7 @@ class TransmissionCommands(Extension):
 		server_id = ctx.guild_id
 		if not server_id:
 			return
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		trans: Transmission | None = get_transmission(server_id)
 		if not trans:
 			return
@@ -248,7 +248,7 @@ class TransmissionCommands(Extension):
 		known_servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-                                                                                                                              guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+                                                                                                                                    guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable

@@ -93,7 +93,7 @@ class ShopCommands(Extension):
 
 		await ctx.defer(edit_origin=True)
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		await self.load_shop()
 
@@ -165,7 +165,7 @@ class ShopCommands(Extension):
 
 		await ctx.defer(edit_origin=True)
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		await self.load_shop()
 
@@ -229,7 +229,7 @@ class ShopCommands(Extension):
 
 	@component_callback(r_buy_bg)
 	async def buy_bg_callback(self, ctx: ComponentContext):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		await ctx.defer(edit_origin=True)
 
 		user: UserData = await UserData(_id=ctx.author.id).fetch()
@@ -267,7 +267,7 @@ class ShopCommands(Extension):
 
 		await ctx.defer(edit_origin=True)
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 		nikogotchi: Nikogotchi = await Nikogotchi(_id=ctx.author.id).fetch()
@@ -304,7 +304,7 @@ class ShopCommands(Extension):
 
 		await ctx.defer(edit_origin=True)
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 		nikogotchi_data: Nikogotchi = await Nikogotchi(_id=ctx.author.id).fetch()
@@ -398,7 +398,7 @@ class ShopCommands(Extension):
 
 		await self.load_shop()
 
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 

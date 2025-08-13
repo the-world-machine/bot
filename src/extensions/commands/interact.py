@@ -143,12 +143,12 @@ class InteractCommands(Extension):
 		return (user_one, user_two)
 
 	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		await ctx.respond(content=loc.l('generic.loading'), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
-			    Localization(ctx.locale).l('interact.twm_is_fed_up_with_you', user=ctx.author.mention),
+			    Localization(ctx).l('interact.twm_is_fed_up_with_you', user=ctx.author.mention),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
@@ -185,7 +185,7 @@ class InteractCommands(Extension):
 
 	@component_callback(handle_components_regex)
 	async def handle_components(self, ctx: ComponentContext):
-		loc = Localization(ctx.locale)
+		loc = Localization(ctx)
 		assert ctx.message is not None, "discorded"
 		content = ctx.message.content
 		content = content.replace("→ :i: →", "→ ❔ →")
