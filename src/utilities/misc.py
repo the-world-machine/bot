@@ -290,7 +290,7 @@ class SortOption(dict):
 		self.names = names
 
 
-def optionSearch(query: str, options: Iterable[SortOption]) -> Iterable[SlashCommandChoice]:
+def optionSearch(query: str, options: Iterable[SortOption]) -> list[SlashCommandChoice]:  # Changed return type to List
 	matches = []
 	top = []
 
@@ -317,8 +317,8 @@ def optionSearch(query: str, options: Iterable[SortOption]) -> Iterable[SlashCom
 
 	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
 
-	return map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), top + matches)
-
+	# Convert the map object to a list before returning
+	return list(map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), top + matches))
 def format_type_hint(type_hint: Any) -> str:
 	"""Formats a type hint for clean error messages."""
 	if hasattr(type_hint, '__name__'):

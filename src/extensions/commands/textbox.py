@@ -253,14 +253,16 @@ class TextboxCommands(Extension):
 		loc = Localization(ctx)
 		characters = get_characters()
 		choices = optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name, char in characters])
-		return await ctx.send(choices)
+
+		return await ctx.send(choices[:25])
 	
 	@create.autocomplete("face")
 	async def face_autocomplete(self, ctx: AutocompleteContext):
 		loc = Localization(ctx)
 		character = get_character(ctx.kwargs["character"] if "character" in ctx.kwargs else "Other")
-
-		return await ctx.send(choices=optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name in character.get_face_list()]))
+		choices = optionSearch(ctx.input_text, [SortOption(picked_name=name, value=name) for name in character.get_face_list()])
+		
+		return await ctx.send(choices[:25])
 	
 	async def basic(self, ctx, state_id: str | int, frame_index: str | int):
 		loc = Localization(ctx)
