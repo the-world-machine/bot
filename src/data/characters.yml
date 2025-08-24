@@ -232,6 +232,7 @@ Other:
     Green Gatekeeper: "1394487590631247973" # @oneshot/green_gatekeeper
     Red Gatekeeper: "1394487571442040883" # @oneshot/red_gatekeeper
 George:
+  icon: "1394389568882741358"
   faces:
     "1": "1394485332367376456" # @oneshot/george1
     "1 Hm": "1394389624314658940" # @oneshot/george1_hm
