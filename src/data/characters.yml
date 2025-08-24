@@ -231,3 +231,36 @@ Other:
     Blue Gatekeeper: "1394487609585045584" # @oneshot/blue_gatekeeper
     Green Gatekeeper: "1394487590631247973" # @oneshot/green_gatekeeper
     Red Gatekeeper: "1394487571442040883" # @oneshot/red_gatekeeper
+George:
+  faces:
+    "1": "1394485332367376456" # @oneshot/george1
+    "1 Hm": "1394389624314658940" # @oneshot/george1_hm
+    "1 Smile": "1394485329486151720" # @oneshot/george1_smile
+    "1 Smug": "1394389620430733424" # @oneshot/george1_smug
+    "2": "1394389618883035317" # @oneshot/george2
+    "2 Grr": "1394485328298901514" # @oneshot/george2_grr
+    "2 NO": "1394389614860697731" # @oneshot/george2_NO
+    "2 Sigh": "1394485326927368332" # @oneshot/george2_sigh
+    "2 Stress": "1394389611018588291" # @oneshot/george2_stress
+    "3": "1394389608262926406" # @oneshot/george3
+    "3 Cry": "1394389606438535338" # @oneshot/george3_cry
+    "3 Sad": "1394389604815208488" # @oneshot/george3_sad
+    "3 Sigh": "1394389596577599589" # @oneshot/george3_sigh
+    "3 Worry": "1394485325015027822" # @oneshot/george3_worry
+    "4": "1394389591812997212" # @oneshot/george4
+    "4 Golly": "1394389589912719592" # @oneshot/george4_golly
+    "4 Omg": "1394485322636595341" # @oneshot/george4_omg
+    "4 Oops": "1394389586318462986" # @oneshot/george4_oops
+    "4 Smile": "1394485320799490119" # @oneshot/george4_smile
+    "5": "1394389582086279189" # @oneshot/george5
+    "5 Aww": "1394389580035129465" # @oneshot/george5_aww
+    "5 Heh": "1394389576826486906" # @oneshot/george5_heh
+    "5 Hmm": "1394389575295697057" # @oneshot/george5_hmm
+    "5 Sad": "1394389573769105561" # @oneshot/george5_sad
+    "5 Sigh": "1394389572409888889" # @oneshot/george5_sigh
+    "5 Smile": "1394389570400813110" # @oneshot/george5_smile
+    "6": "1394389568882741358" # @oneshot/george6
+    "6 Fingerguns": "1394389567397957693" # @oneshot/george6_fingerguns
+    "6 Point": "1394389565782888610" # @oneshot/george6_point
+    "6 Shrug": "1394389563992051732" # @oneshot/george6_shrug
+    "6 Smile": "1394389530315853955" # @oneshot/george6_smile
