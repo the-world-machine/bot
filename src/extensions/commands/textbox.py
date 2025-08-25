@@ -254,7 +254,8 @@ class TextboxCommands(Extension):
 			embed=Embed(
 				description=loc.l("textbox.monologue.rendering")+pos, 
 				color=Colors.DARKER_WHITE
-			)
+			),
+			ephemeral=True,
 		)
 
 		start=datetime.now()
