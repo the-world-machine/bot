@@ -3,7 +3,7 @@ import io
 from pathlib import Path
 import textwrap
 from enum import Enum
-from typing import Any, Literal, Sequence
+from typing import Any, Literal, Sequence, get_args
 from utilities.misc import cached_get
 from utilities.config import get_config
 from PIL import Image, ImageDraw, ImageFont
@@ -15,16 +15,45 @@ SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 
 
 class BackgroundStyle():
+	source: str = "OneShot"
 	face_position: SupportedFacePositions = "right"
 	color: str = "orange"
 
 	def __init__(
 	    self,
+	    source: str = "OneShot",
 	    face_position: SupportedFacePositions = "right",
 	    color: str = "orange",
 	):
+		self.source = source
 		self.face_position = face_position
 		self.color = color
+
+	def __str__(self):
+		sanitized_source = self.source.replace('\\', '\\\\').replace('\n', '\\n').replace(';', '\\s')
+		return f"{sanitized_source}-{self.face_position}-{self.color}"
+
+	@classmethod
+	def from_string(cls, style_string: str):
+		try:
+			split = style_string.split('-')
+			if len(split) != 3:
+				raise ValueError("Expected 3 values divided by dashes")
+		except ValueError as e:
+			raise ValueError(
+			    f"Invalid BackgroundStyle format. Expected 'source-facepos-color', but got '{style_string}'"
+			) from e
+		sanitized_source_str, face_position_str, color_str = split
+
+		source = sanitized_source_str.replace('\\s', ';').replace('\\n', '\n').replace('\\\\', '\\')
+
+		if face_position_str not in get_args(SupportedFacePositions):
+			raise ValueError(
+			    f"Face position must be one of {' / '.join(get_args(SupportedFacePositions))}, got '{face_position_str}'"
+			)
+		face_pos: SupportedFacePositions = face_position_str  # type: ignore
+
+		return cls(source, face_position=face_pos, color=color_str)
 
 
 class FrameOptions:
@@ -52,6 +81,42 @@ class FrameOptions:
 		self.end_arrow_bounces = end_arrow_bounces
 		self.end_arrow_delay = end_arrow_delay
 
+	def __str__(self):
+		return f"{self.background},{self.animated},{self.end_delay},{self.end_arrow_bounces},{self.end_arrow_delay},{self.static_delay_override}"
+
+	@classmethod
+	def from_string(cls, opts_string: str):
+		try:
+			split = opts_string.split(',')
+			if len(split) != 6:
+				raise ValueError("Expected 6 values divided by commas")
+		except ValueError as e:
+			raise ValueError(
+			    f"Invalid FrameOptions format. Expected 'background,animated,end_delay,end_arrow_bounces,end_arrow_delay,static_delay_override', but got '{opts_string}'"
+			) from e
+		background_raw, animated_raw, end_delay_raw, end_arrow_bounces_raw, end_arrow_delay_raw, static_delay_override_raw = split
+		background = BackgroundStyle.from_string(background_raw)
+		if animated_raw in ("True", "+", "yes", "1"):
+			animated = True
+		elif animated_raw in ("False", "-", "no", "0"):
+			animated = False
+		else:
+			raise ValueError(f"Invalid value for 'animated', expected boolean, received '{animated_raw}'")
+		end_delay = int(end_delay_raw)
+		end_arrow_bounces = int(end_arrow_bounces_raw)
+		end_arrow_delay = int(end_arrow_delay_raw)
+		static_delay_override = None
+		if static_delay_override_raw != "None":
+			static_delay_override = int(static_delay_override_raw)
+		return cls(
+		    background=background,
+		    animated=animated,
+		    end_delay=end_delay,
+		    end_arrow_bounces=end_arrow_bounces,
+		    end_arrow_delay=end_arrow_delay,
+		    static_delay_override=static_delay_override
+		)
+
 	def __repr__(self):
 		return f"FrameOptions(style={self.background}, animated={self.animated}, end: delay={self.end_delay} arrow: bounces={self.end_arrow_bounces}, delay={self.end_arrow_delay})"
 
@@ -74,9 +139,46 @@ class Frame:
 		self.starting_face_name = starting_face_name
 		self.options = options if options else FrameOptions()
 
+	def __str__(self):
+		face = "None"
+		if self.starting_character_id:
+			face = f"@OneShot/{self.starting_character_id}"
+			if self.starting_face_name:
+				face += f"/{self.starting_face_name}"
+		text = self.text or ""
+		sanitized_text = text.replace('\\', '\\\\').replace('\n', '\\n').replace(';', '\\s')
+		return f"{self.options};{face};{sanitized_text}"
+
 	def __repr__(self):
 		text = self.text if self.text is not None else f"\"{self.text}\""
 		return f"Frame({text}, starting_character={self.starting_character_id}, starting_face={self.starting_face_name}, {self.options.__repr__()})"
+
+	@classmethod
+	def from_string(cls, frame_string: str):
+		try:
+			split = frame_string.split(';', maxsplit=3)
+			if len(split) != 3:
+				raise ValueError("Expected 3 values divided by semicolons")
+		except ValueError as e:
+			raise ValueError(
+			    f"Invalid FrameOptions format. Expected 'options;face;text', but got '{frame_string}'"
+			) from e
+		options_raw, face_raw, sanitized_text = split
+		starting_character_id = None
+		starting_face_name = None
+		if face_raw != "None":
+			catalogue, character, face = face_raw.split('/')
+			if character and face:
+				starting_character_id = character
+				starting_face_name = face
+		options = FrameOptions.from_string(options_raw)
+		text = sanitized_text.replace('\\s', ';').replace('\\n', '\n').replace('\\\\', '\\')
+		return cls(
+		    options=options,
+		    starting_character_id=starting_character_id,
+		    starting_face_name=starting_face_name,
+		    text=text
+		)
 
 
 async def render_textbox(text: str | None,

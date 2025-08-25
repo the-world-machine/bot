@@ -942,6 +942,8 @@ textbox:
       previous: Previous Frame
       manual: Input Frame
       delete: Delete
+      clear: Clear
+    edit: Edit Frames as text
 
   frame_position: "editing frame [current] of [total] total"
 
@@ -951,6 +953,14 @@ textbox:
     styles: Styles...
 
   modal:
+    edit_frames:
+      title: "Editing textbox"
+      input:
+        label: Code
+        placeholder: what goes here
+      accepted: Textbox changes accepted
+      warning: Some warnings showed up while parsing the code
+      declined: Something went wrong while parsing the code
     edit_text:
       title: "Editing text for frame #[index]!"
       input:
