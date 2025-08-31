@@ -1,236 +1,250 @@
-import apng
 import io
-from pathlib import Path
+import apng
+import inspect
 import textwrap
-from enum import Enum
-from typing import Any, Literal, Sequence, get_args
+from pathlib import Path
+from grapheme import graphemes
+from interactions import Color
 from utilities.misc import cached_get
 from utilities.config import get_config
+from dataclasses import dataclass, field, fields
 from PIL import Image, ImageDraw, ImageFont
-from grapheme import graphemes
-from utilities.textbox.characters import Character, Face, get_character
+from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
-SupportedFacePositions = Literal["left", "center", "right"]
+from utilities.textbox.facepics import get_facepic
+from utilities.textbox.parsing import FacepicChangeCommand, parse_textbox_text
+
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
+SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
+sanitize: Callable[[str], str] = lambda text: text.replace('\\', '\\\\').replace('\n', '\\n')
+desanitize: Callable[[str], str] = lambda text: text.replace('\\n', '\n').replace('\\\\', '\\')
 
 
-class BackgroundStyle():
-	source: str = "OneShot"
-	face_position: SupportedFacePositions = "right"
-	color: str = "orange"
+class SerializableData:
+	_separator: str = ';'
 
-	def __init__(
-	    self,
-	    source: str = "OneShot",
-	    face_position: SupportedFacePositions = "right",
-	    color: str = "orange",
-	):
-		self.source = source
-		self.face_position = face_position
-		self.color = color
-
-	def __str__(self):
-		sanitized_source = self.source.replace('\\', '\\\\').replace('\n', '\\n').replace(';', '\\s')
-		return f"{sanitized_source}-{self.face_position}-{self.color}"
+	def __str__(self) -> str:
+		"""Serializes the object to a string based on its fields."""
+		parts = []
+		for field in fields(self):  # type: ignore
+			value = getattr(self, field.name)
+			parts.append(str(value))
+		return self._separator.join(parts)
 
 	@classmethod
-	def from_string(cls, style_string: str):
-		try:
-			split = style_string.split('-')
-			if len(split) != 3:
-				raise ValueError("Expected 3 values divided by dashes")
-		except ValueError as e:
-			raise ValueError(
-			    f"Invalid BackgroundStyle format. Expected 'source-facepos-color', but got '{style_string}'"
-			) from e
-		sanitized_source_str, face_position_str, color_str = split
+	def from_string(cls, data_string: str):
+		"""Deserializes a string into an object of this class."""
 
-		source = sanitized_source_str.replace('\\s', ';').replace('\\n', '\n').replace('\\\\', '\\')
+		class_fields = fields(cls)  # type: ignore
+		num_expected = len(class_fields)
 
-		if face_position_str not in get_args(SupportedFacePositions):
+		parts = data_string.split(cls._separator, num_expected - 1)
+
+		if len(parts) != num_expected:
 			raise ValueError(
-			    f"Face position must be one of {' / '.join(get_args(SupportedFacePositions))}, got '{face_position_str}'"
+			    f"Invalid format for {cls.__name__}. Expected {num_expected} parts separated by '{cls._separator}', but got {len(parts)} in '{data_string}'"
 			)
-		face_pos: SupportedFacePositions = face_position_str  # type: ignore
 
-		return cls(source, face_position=face_pos, color=color_str)
+		kwargs = {}
+		for field, value_str in zip(class_fields, parts):
+			kwargs[field.name] = cls._parse_value(value_str, field.type)
+
+		return cls(**kwargs)
+
+	@staticmethod
+	def _parse_value(value_str: str, target_type: Any) -> Any:
+		"""Helper to parse a string value into its target Python type."""
+		origin = get_origin(target_type)
+		args = get_args(target_type)
+
+		if origin is Literal:
+			if value_str not in args:
+				raise ValueError(f"Value '{value_str}' is not a valid choice from {args}")
+			return value_str
+		if origin in (list, tuple):
+			if not value_str:
+				return origin()
+			item_type = args[0] if args else str
+			return origin(SerializableData._parse_value(item.strip(), item_type) for item in value_str.split(','))
+		if origin is not None and any(
+		    isinstance(arg, type) and issubclass(arg, type(None)) for arg in args
+		):  # Handles X | None
+			if value_str == 'None':
+				return None
+			actual_type = next(arg for arg in args if not issubclass(arg, type(None)))
+			return SerializableData._parse_value(value_str, actual_type)
+
+		if target_type is bool:
+			if value_str in ('True', 'true', '+', 'yes'):
+				return True
+			if value_str == ('False', 'false', '-', 'no'):
+				return False
+			raise ValueError(f"couldn't parse '{value_str}' as bool.")
+		if target_type is int:
+			return int(value_str)
+		if target_type is str:
+			return value_str
+
+		if inspect.isclass(target_type) and issubclass(target_type, SerializableData):
+			return target_type.from_string(value_str)
+
+		return target_type(value_str)
 
 
-class FrameOptions:
-	background: BackgroundStyle | None = None
+@dataclass
+class BackgroundStyle(SerializableData):
+	source: str = "OneShot"
+
+	_separator: str = '-'
+
+
+# future stuffff -- [
+#color: Color = Color(color="#ff6600")
+
+
+@dataclass
+class NameStyle(SerializableData):
+	source: str = "OneShot"
+	position: SupportedLocations = "right"
+	color: Color = Color(color="#ff6600")
+
+	_separator: str = '-'
+
+
+@dataclass
+class FacepicStyle(SerializableData):
+	source: str = "OneShot"
+	face_position: SupportedLocations = "left"
+
+	_separator: str = '-'
+
+
+# ] --
+
+
+@dataclass
+class FrameOptions(SerializableData):
+	background: BackgroundStyle = field(default_factory=BackgroundStyle)
 	animated: bool = True
-	static_delay_override: int | None  # override for the amount of time you show the frame in the gif
-	end_delay: int  # time before the arrow shows up
-	end_arrow_bounces: int
-	end_arrow_delay: int  # how much a singe frame of the arrow should take
+	starting_speed: float = 1.0
+	end_delay: int = 150
+	end_arrow_bounces: int = 4
+	end_arrow_delay: int = 150
+	static_delay_override: int | None = None
 
-	def __init__(
-	    self,
-	    background: BackgroundStyle | None = None,
-	    animated: bool = True,
-	    end_delay: int = 150,
-	    end_arrow_bounces: int = 4,
-	    end_arrow_delay: int = 150,
-	    static_delay_override: int | None = None
-	):
-		self.background = background or BackgroundStyle()
-		self.static_delay_override = static_delay_override
-		self.animated = animated
+	_separator: str = ';'
 
-		self.end_delay = end_delay
-		self.end_arrow_bounces = end_arrow_bounces
-		self.end_arrow_delay = end_arrow_delay
+
+@dataclass
+class Frame(SerializableData):
+	text: str | None = None
+	options: FrameOptions = field(default_factory=FrameOptions)
+
+	_separator: str = ';'
 
 	def __str__(self):
-		return f"{self.background},{self.animated},{self.end_delay},{self.end_arrow_bounces},{self.end_arrow_delay},{self.static_delay_override}"
-
-	@classmethod
-	def from_string(cls, opts_string: str):
-		try:
-			split = opts_string.split(',')
-			if len(split) != 6:
-				raise ValueError("Expected 6 values divided by commas")
-		except ValueError as e:
-			raise ValueError(
-			    f"Invalid FrameOptions format. Expected 'background,animated,end_delay,end_arrow_bounces,end_arrow_delay,static_delay_override', but got '{opts_string}'"
-			) from e
-		background_raw, animated_raw, end_delay_raw, end_arrow_bounces_raw, end_arrow_delay_raw, static_delay_override_raw = split
-		background = BackgroundStyle.from_string(background_raw)
-		if animated_raw in ("True", "+", "yes", "1"):
-			animated = True
-		elif animated_raw in ("False", "-", "no", "0"):
-			animated = False
-		else:
-			raise ValueError(f"Invalid value for 'animated', expected boolean, received '{animated_raw}'")
-		end_delay = int(end_delay_raw)
-		end_arrow_bounces = int(end_arrow_bounces_raw)
-		end_arrow_delay = int(end_arrow_delay_raw)
-		static_delay_override = None
-		if static_delay_override_raw != "None":
-			static_delay_override = int(static_delay_override_raw)
-		return cls(
-		    background=background,
-		    animated=animated,
-		    end_delay=end_delay,
-		    end_arrow_bounces=end_arrow_bounces,
-		    end_arrow_delay=end_arrow_delay,
-		    static_delay_override=static_delay_override
-		)
-
-	def __repr__(self):
-		return f"FrameOptions(style={self.background}, animated={self.animated}, end: delay={self.end_delay} arrow: bounces={self.end_arrow_bounces}, delay={self.end_arrow_delay})"
-
-
-class Frame:
-	text: str | None
-	starting_character_id: str | None
-	starting_face_name: str | None
-	options: FrameOptions
-
-	def __init__(
-	    self,
-	    text: str | None = None,
-	    starting_character_id: str | None = None,
-	    starting_face_name: str | None = None,
-	    options: FrameOptions | None = None,
-	):
-		self.text = text
-		self.starting_character_id = starting_character_id
-		self.starting_face_name = starting_face_name
-		self.options = options if options else FrameOptions()
-
-	def __str__(self):
-		face = "None"
-		if self.starting_character_id:
-			face = f"@OneShot/{self.starting_character_id}"
-			if self.starting_face_name:
-				face += f"/{self.starting_face_name}"
-		text = self.text or ""
-		sanitized_text = text.replace('\\', '\\\\').replace('\n', '\\n').replace(';', '\\s')
-		return f"{self.options};{face};{sanitized_text}"
-
-	def __repr__(self):
-		text = self.text if self.text is not None else f"\"{self.text}\""
-		return f"Frame({text}, starting_character={self.starting_character_id}, starting_face={self.starting_face_name}, {self.options.__repr__()})"
+		return f"{{{self.options}}};{sanitize(self.text or '')}"
 
 	@classmethod
 	def from_string(cls, frame_string: str):
 		try:
-			split = frame_string.split(';', maxsplit=3)
-			if len(split) != 3:
-				raise ValueError("Expected 3 values divided by semicolons")
-		except ValueError as e:
+			if not frame_string.startswith('{'):
+				raise ValueError("String must start with '{' for options.")
+
+			end_brace_idx = frame_string.find('}')
+			if end_brace_idx == -1:
+				raise ValueError("Mismatched braces: missing '}'.")
+
+			if len(frame_string) <= end_brace_idx + 1 or frame_string[end_brace_idx + 1] != cls._separator:
+				raise ValueError(f"Options block must be followed by a '{cls._separator}'.")
+
+			options_raw = frame_string[1:end_brace_idx]
+			sanitized_text = frame_string[end_brace_idx + 2:]
+
+			options = FrameOptions.from_string(options_raw)
+			text = desanitize(sanitized_text) if sanitized_text else None
+
+			return cls(options=options, text=text)
+		except (ValueError, IndexError) as e:
 			raise ValueError(
-			    f"Invalid FrameOptions format. Expected 'options;face;text', but got '{frame_string}'"
+			    f"Invalid Frame format. Expected '{{options}}{cls._separator}text', but got '{frame_string}'"
 			) from e
-		options_raw, face_raw, sanitized_text = split
-		starting_character_id = None
-		starting_face_name = None
-		if face_raw != "None":
-			catalogue, character, face = face_raw.split('/')
-			if character and face:
-				starting_character_id = character
-				starting_face_name = face
-		options = FrameOptions.from_string(options_raw)
-		text = sanitized_text.replace('\\s', ';').replace('\\n', '\n').replace('\\\\', '\\')
-		return cls(
-		    options=options,
-		    starting_character_id=starting_character_id,
-		    starting_face_name=starting_face_name,
-		    text=text
-		)
 
 
-async def render_textbox(text: str | None,
-                         starting_face: Face | None,
-                         animated: bool = True) -> tuple[list[Image.Image], list[int]]:
+async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.Image], list[int]]:
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
-	if text:
-		font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
-	if starting_face:
-		icon = await starting_face.get_image(size=96)
-		icon = icon.resize((96, 96))
+	burned_background = background.copy()
 
+	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
+	text = Image.new("RGBA", (background.width, background.height), color=(255, 255, 255, 0))
 	text_x, text_y = 20, 17
-
-	def draw_frame(img: Image.Image, text: str | None = None) -> Image.Image:
-		if text:
-			d = ImageDraw.Draw(img)
-			y_offset = text_y
-			for line in textwrap.wrap(text, width=46):
-				d.multiline_text((text_x, y_offset), line, font=font, fill=(255, 255, 255))
-				y_offset += 25
-		if starting_face:
-			img.paste(icon, (496, 16), icon.convert('RGBA'))
-		return img
-
-	if not animated and (text or starting_face):
-		return ([draw_frame(background.copy(), text)], [0])
-	if not starting_face and not text:
-		return ([draw_frame(background.copy())], [100])
-
+	text_width = background.width - (20 * 2)
+	text_height = background.height - (17 * 2)
 	images: list[Image.Image] = []
 	durations: Sequence[int] = []
 
-	if animated and text:
-		cumulative_text = ""
-		for cluster in graphemes(text):
-			duration = 20
-			match cluster:
-				case '\n':
-					duration = 800
-				case '.' | '!' | '?' | '．' | '？' | '！':
-					duration = 200
-				case ',' | '，':
-					duration = 40
+	def put_frame(duration: int):
+		new = burned_background.copy()
+		new.paste(text, (text_x, text_y), mask=text)
+		images.append(new)
+		durations.append(duration)
 
-			cumulative_text += cluster or ""
-			images.append(draw_frame(background.copy(), cumulative_text))
-			durations.append(duration)
-	else:
-		images.append(draw_frame(background.copy(), text))
-		durations.append(1000)
+	facepic_present = False
 
+	async def set_facepic(command: FacepicChangeCommand, delay: bool = False):
+		nonlocal burned_background
+		nonlocal facepic_present
+		nonlocal text_width
+		burned_background = background.copy()
+		facepic = await get_facepic(command.facepic)
+		if facepic:
+			facepic_present = True
+			facepic = await facepic.get_image(size=96)
+			facepic = facepic.resize((96, 96), resample=0)
+			burned_background.paste(facepic, (496, 16), mask=facepic.convert("RGBA"))
+		else:
+			facepic_present = False
+		if facepic_present and facepic:
+			text_width = background.width - (20 * 2) - facepic.width + 10
+		else:
+			text_width = background.width - (20 * 2)
+		if delay and animated:
+			put_frame(1)
+
+	parsed = parse_textbox_text(frame.text) if frame.text else []
+	text_offset = [ 0.0, 0.0 ]
+	for i in range(0, len(parsed)):
+		command = parsed[i]
+		if isinstance(command, FacepicChangeCommand):
+			await set_facepic(command)
+
+		elif isinstance(command, str):
+			message = command
+			d = ImageDraw.Draw(text)
+			cumulative_text = ""
+
+			for cluster in list(graphemes(message)):  # type: ignore
+				if not cluster:
+					cluster: str = ""
+				cumulative_text += cluster
+				duration = 20
+				match cluster:
+					case '\n':
+						duration = 800
+					case '.' | '!' | '?' | '．' | '？' | '！':
+						duration = 200
+					case ',' | '，':
+						duration = 40
+				d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
+				text_offset[0] += 15.0
+				if text_y + text_offset[1] > background.height - (17 * 2):
+					text_y -= 25
+				if text_offset[0] + 15 > text_width:
+					text_offset[1] += 25.0
+					text_offset[0] = 15.0
+				if animated:
+					put_frame(duration)
+	put_frame(0)
 	return (images, durations)
 
 
@@ -268,14 +282,7 @@ async def render_textbox_frames(
 			print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 			frame_index = 0
 		frame = frames[int(frame_index)]
-		char = None
-		face = None
-		if frame.starting_character_id:
-			char = get_character(frame.starting_character_id)
-		if char and frame.starting_face_name:
-			face = char.get_face(frame.starting_face_name)
-
-		image = (await render_textbox(frame.text, face, False))[0][0]
+		image = (await render_frame(frame, False))[0][0]
 		if filetype == "JPEG":
 			buffer = io.BytesIO()
 			if image.mode == 'RGBA':
@@ -293,14 +300,8 @@ async def render_textbox_frames(
 		return buffer
 
 	for frame in frames:
-		char = None
-		face = None
-		if frame.starting_character_id:
-			char = get_character(frame.starting_character_id)
-		if char and frame.starting_face_name:
-			face = char.get_face(frame.starting_face_name)
 
-		images, durations = await render_textbox(frame.text, face, frame.options.animated)
+		images, durations = await render_frame(frame, frame.options.animated)
 		all_images.extend(images)
 		all_durations.extend(durations)
 

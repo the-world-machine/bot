@@ -53,6 +53,12 @@ class State:
 		)
 
 	def get_frame(self, index: int):
+		"""
+		Gets a frame from the frames list. Creates an empty frame if the passed index is one above the length of the frames
+		
+    Raises:
+        IndexError: If the passed index is out of bounds and is not length + 1
+		"""
 		if index < len(self.frames):
 			return self.frames[index]
 		elif index == len(self.frames):
@@ -81,12 +87,7 @@ async def state_shortcut(
     ctx, state_id: str | int, frame_index: Optional[str | int]
 ) -> Union[Tuple['Localization', 'State'], Tuple['Localization', 'State', 'Frame']]:
 	"""
-    Retrieves localization, state, and optionally a frame.
-
-    This function is overloaded:
-    - If `frame_index` is None, it returns a tuple of (Localization, State).
-    - If `frame_index` is provided, it returns a tuple of (Localization, State, Frame).
-
+		Helper function for textbox to not have to get these variables all the time
     Raises:
         StateShortcutError: If the state or frame cannot be found, or if the
                             frame index is invalid. The user will be notified
@@ -115,10 +116,7 @@ async def state_shortcut(
 	except IndexError:
 		# Special case: allow creating a new frame if the index is exactly one past the end
 		if idx == len(state.frames):
-			last_frame = state.frames[-1] if state.frames else None
-			start_char = last_frame.starting_character_id if last_frame else "default_char_id"
-			frame_data = Frame(starting_character_id=start_char)
-			state.frames.append(frame_data)  # scary scary scary scary
+			state.frames.append(Frame())  # scary scary scary scary
 		else:
 			# Any other IndexError is a "frame not found" error
 			await fancy_message(ctx, loc.l("textbox.errors.unknown_frame", id=str(frame_index)), ephemeral=True)

@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlencode
 from yaml import safe_load
 from termcolor import colored
 from typing import Any, Literal, TypedDict
@@ -55,14 +56,43 @@ def minify_emoji_names(data: Any) -> Any:
 	return data
 
 
-def make_emoji_cdn_url(emoji: str, size: int | None = 4096, quality: str = "lossless") -> str:
-	match = re.match(r'<(a?):[a-zA-Z0-9_]+:([0-9]+)>', emoji)
-	if not match:
-		raise ValueError("Invalid emoji")
+def make_emoji_cdn_url(
+    emoji: str | None = None,
+    size: int | None = 4096,  # Passing None will make discord pick the resolution automatically
+    quality: str = "lossless",
+    emoji_id: str | None = None,
+    name: str | None = None,
+    is_animated: bool = False,
+    filetype: Literal['png', 'gif', 'webp', 'jpeg', 'jpg'] | None = None
+) -> str:
+	"""Make a discord cdn url for a custom emoji (out of an emoji, or manual. prioritizes 'emoji' if passed)"""
+	if not emoji and not emoji_id:
+		raise ValueError("No emoji passed (pass either 'emoji', or 'emoji_id' argument)")
 
-	animated, emoji_id = match.groups()
-	base_url = "https://cdn.discordapp.com/emojis/"
-	return f"{base_url}{emoji_id}.{'gif' if animated else 'png'}?size={size}&quality={quality}"
+	emoji_name = name
+	animated = is_animated
+
+	if emoji:
+		match = re.match(r'<(a?):([a-zA-Z0-9_]+):([0-9]+)>', emoji)
+		if not match:
+			raise ValueError(f"Invalid emoji format for: {emoji}")
+
+		is_animated_str, emoji_name, emoji_id = match.groups()
+		animated = (is_animated_str == 'a')
+
+	if not emoji_id:
+		raise ValueError("Idk what the emoji id is")
+	if filetype == None:
+		filetype = 'gif' if animated else 'png'
+	params = { 'quality': quality, 'animated': animated}
+	if size:
+		params['size'] = str(size)
+	if emoji_name:
+		params['name'] = emoji_name
+
+	query_string = urlencode(params)
+
+	return f"https://cdn.discordapp.com/emojis/{emoji_id}.{filetype}?{query_string}"
 
 
 def load_emojis() -> Emojis:
@@ -105,7 +135,14 @@ def on_file_update(path):
 	global emojis
 	print(f"{colored('─ Reloading emojis.yml', 'yellow')}", end=" ─ ─ ─ ")
 	old_emojis = emojis
-	new_emojis = load_emojis()
+	try:
+		new_emojis = load_emojis()
+	except BaseException as e:
+		print(colored(" FAILED", "red"))
+		from extensions.events.Ready import ReadyEvent
+		ReadyEvent.log("## Failed to reload emojis\n" + str(e))
+		print(e)
+		return
 
 	old_flat = flatten_emojis(dict(old_emojis))
 	new_flat = flatten_emojis(dict(new_emojis))

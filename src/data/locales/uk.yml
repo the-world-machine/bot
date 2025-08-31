@@ -976,6 +976,6 @@ textbox:
 
   alt:
     single_frame:
-      filename: "TWM текстове вікно ([character], [face], [timestamp])"
+      filename: "TWM текстове вікно ([timestamp])"
     multi_frame:
       filename: "TWM текстове вікно ([frames], [timestamp])"

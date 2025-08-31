@@ -1,0 +1,285 @@
+OneShot:
+  icon: "1026207773559619644"
+  characters:
+    The World Machine:
+      faces:
+        Normal: "1394486232460955769" # @oneshot/en
+        Speak: "1394486194145853491" # @oneshot/en_speak
+        Ah: "1394486171307872416" # @oneshot/en2
+        Hm: "1394486169533943930" # @oneshot/en3
+        Alright: "1394486168141168660" # @oneshot/en4
+        Looking Left: "1394486165243170906" # @oneshot/en5
+        Looking Right: "1394486163804262490" # @oneshot/en6
+        Popcorn: "1408324955208155187" # OSCF of Niko face
+        Wink: "1408324953694015538" # OSCF of Niko face
+        Fed Up: "1408324949923594260" # OSCF of Niko face
+        Blush: "1408324951798448209" # OSCF of Niko face
+        Yawn: "1394486172650049647" # @oneshot/en_yawn
+        Surprise: "1394486192636035182" # @oneshot/en_surprised
+        Shrug: "1411246759447105637" # OSCF of Niko face
+        "What,": "1394486178656424108" # @oneshot/en_what
+        "Concerned": "1394486177075298456" # @oneshot/en_what2
+        "WTF": "1394486175410028654" # @oneshot/en_wtf
+        "WTFear": "1394486173573058712" # @oneshot/en_wtf2
+        "Upset left": "1394486968578080949" # @oneshot/en_upset2
+        "Upset meow": "1394486182485823608" # @oneshot/en_upset_meow
+        "Upset right": "1394486191377748038" # @oneshot/en_upset
+        Distressed: "1394486220645470270" # @oneshot/en_distressed
+        "Distressed down": "1394486214790484120" # @oneshot/en_distressed2 # "down" cuz eyes looking slightly down and i dont want to call it Alt idk
+        "Distressed talk": "1394486217072181381" # @oneshot/en_distressed_talk
+        "Distressed meow": "1394486975712595968" # @oneshot/en_distressed_meow
+        "Distressed less sad": "1394486203406880798" # @oneshot/en_less_sad
+        "Distressed sad": "1394486199800041525" # @oneshot/en_sad
+        "Distressed cry": "1394486225406136380" # @oneshot/en_cry
+        "Eyes closed": "1394486974324281354" # @oneshot/en_eyeclosed
+        "Eyes closed speak": "1394486210281340988" # @oneshot/en_eyeclosed2
+        "Smile": "1394486195492229200" # @oneshot/en_smile
+        "Gas mask": "1394486972621262849" # @oneshot/en_gasmask
+        "Huh": "1394486205944692826" # @oneshot/en_huh
+        "Shock": "1394486969815531644" # @oneshot/en_shock
+        "Pancakes": "1394486970817839146" # @oneshot/en_pancakes
+        Crumbs: "1408325300613419008" # OSCF of Niko face
+        83c: "1394486229894168648" # @oneshot/en_83c
+        #af: "1394387129756422417"
+    Niko:
+      faces:
+        Normal: "1394387133330096228" # @oneshot/niko
+        Speak: "1394387097938427904" # @oneshot/niko_speak
+        Ah: "1394387081899544596" # @oneshot/niko2
+        Hm: "1394387080355774545" # @oneshot/niko3
+        Alright: "1394387078854344846" # @oneshot/niko4
+        Looking Left: "1394387073120604315" # @oneshot/niko5
+        Looking Right: "1394387070742695988" # @oneshot/niko6
+        Popcorn: "1019605504957366282" # to be credited
+        Wink: "1019605506152734790" # to be credited
+        Fed Up: "1019605511802458185" # to be credited
+        Blushing: "1019605508421857401" # to be credited
+        Yawn: "1394387083124277278" # @oneshot/niko_yawn
+        Surprise: "1394387546007670965" # @oneshot/niko_surprised
+        Shrug: "1411246761988587552" # to be credited
+        "What,": "1394387088899837952" # @oneshot/niko_what
+        "Concerned": "1394387087393816779" # @oneshot/niko_what2
+        "WTF": "1394387086022410320" # @oneshot/niko_wtf
+        "WTFear": "1394387084516659360" # @oneshot/niko_wtf2
+        "Upset left": "1394387090346606662" # @oneshot/niko_upset2
+        "Upset meow": "1394387544464031814" # @oneshot/niko_upset_meow
+        "Upset right": "1394387094138257449" # @oneshot/niko_upset
+        Distressed: "1394387126229012490" # @oneshot/niko_distressed
+        "Distressed down": "1394387553670664275" # @oneshot/niko_distressed2 # "down" cuz eyes looking slightly down and i dont want to call it Alt idk
+        "Distressed talk": "1394387122450075740" # @oneshot/niko_distressed_talk
+        "Distressed meow": "1394387555864285184" # @oneshot/niko_distressed_meow
+        "Distressed less sad": "1394387549363113984" # @oneshot/niko_less_sad
+        "Distressed sad": "1394387104578142420" # @oneshot/niko_sad
+        "Distressed cry": "1394387557424431124" # @oneshot/niko_cry
+        "Eyes closed": "1394387118893174854" # @oneshot/niko_eyeclosed
+        "Eyes closed speak": "1394387551254741084" # @oneshot/niko_eyeclosed2
+        "Smile": "1394387099897298975" # @oneshot/niko_smile
+        "Gas mask": "1394387114929426512" # @oneshot/niko_gasmask
+        "Huh": "1394387112215974040" # @oneshot/niko_huh
+        "Shock": "1394387547370819696" # @oneshot/niko_shock
+        "Pancakes": "1394387107148992532" # @oneshot/niko_pancakes
+        Crumbs: "1408301562157076480" # @oneshot_thepancakeepisode/niko_crumbs
+        83c: "1394387559475445941" # @oneshot/niko_83c
+        af: "1394387129756422417" # @oneshot/af
+    Rue:
+      faces:
+        Normal: "1394383365930746057" # @oneshot/rue
+        Speak: "1394383363925868645" # @oneshot/rue_talk
+        Smile: "1394383367188910211" # @oneshot/rue_oh
+        Oh: "1394383373103005827" # @oneshot/rue_sigh
+        Sigh: "1394383370410266624" # @oneshot/rue_sad
+        Sad: "1394383371857039412" # @oneshot/rue_smile
+        ttt: "1408244028239118476" # @oneshot/rue_ttt
+        Hidden: "1394383368832942270" # @oneshot/rue_dark
+    Alula:
+      faces:
+        Normal: "1394387990654095471" # @oneshot/alula
+        Speak: "1394387892364902442" # @oneshot/alula_speak
+        Amazed: "1394387989295136778" # @oneshot/alula_gasp
+        Eyes closed: "1408301587302056056" # @oneshot_thepancakeepisode/alula_eyeclosed
+        Gasp: "1394387987999101080" # @oneshot/alula_gasp2
+        Oh: "1394387985746755695" # @oneshot/alula_oh
+        Pout: "1394387932961439938" # @oneshot/alula_pout
+    Calamus:
+      faces:
+        Normal: "1408245210693107722" # @oneshot/calamus
+        Speak: "1408245315672211517" # @oneshot/calamus_speak
+        Smile: "1408245314959310961" # @oneshot/calamus_smile
+        Slight Smile: "1394488611906257006" # @oneshot/calamus_smile2
+        Shock: "1408245313415811204" # @oneshot/calamus_shock
+        Heh: "1408245243085717675" # @oneshot/calamus_heh
+        Sad: "1408245274542997526" # @oneshot/calamus_sad
+        Shame: "1408245311981223996" # @oneshot/calamus_shame
+        Hidden: "1394487300708110427" # @oneshot/calamus_unknown
+    Maize:
+      faces:
+        Normal: "1394387738119114923" # @oneshot/maize
+        Slight Smile: "1394387736709828768" # @oneshot/maize_smile1
+        Smile: "1394387735304732713" # @oneshot/maize_smile2
+        Strain: "1394387733836857344" # @oneshot/maize_strain
+        Stress: "1394387732259668098" # @oneshot/maize_stress
+        this is fine: "1394387729856331886" # @oneshot/maize_thisisfine
+    Magpie:
+      faces:
+        Normal: "1394387809829388358" # @oneshot/magpie
+        Hm: "1394387807304417350" # @oneshot/magpie_hm
+        Oh: "1394387805018521652" # @oneshot/magpie_oh
+        Smile: "1394387803718029364" # @oneshot/magpie_smile
+    Plight: # lam Plight er
+      faces:
+        Normal: "1394383951715504129" # @oneshot/plight
+        Looking Down: "1394383933218619404" # @oneshot/plight3
+        Looking Left: "1394383949261967441" # @oneshot/plight_2
+        Looking Right: "1394384040819429549" # @oneshot/plight_2b
+        Talking: "1394383939589898323" # @oneshot/plight_why
+        Shock: "1394383943842660412" # @oneshot/plight_shock
+        Scared: "1394383945499545660" # @oneshot/plight_scared
+        Sigh: "1394383942433509447" # @oneshot/plight_sigh
+        Smile: "1408263355512262738" # @oneshot/plight_smile
+        Worry Left: "1394383936712474674" # @oneshot/plight_worry2
+        Worry Right: "1394383938398715965" # @oneshot/plight_worry
+        WTF: "1394383934854402080" # @oneshot/plight_wtf
+        Sip: "1174513437515190372" # to be credited
+        Hidden: "1394383940973891756" # @oneshot/plight_unknown
+    Ling:
+      faces:
+        Normal: "1394389163654123601" # @oneshot/ling3
+        Slight Smile: "1394389222483558502" # @oneshot/ling
+        Looking Left: "1394389220105261222" # @oneshot/ling_hm
+        Looking Right: "1394389219031650525" # @oneshot/ling_hm2
+        Oh: "1394389209074106480" # @oneshot/ling2
+        "Oh Left": "1394389216347160596" # @oneshot/ling_oh
+        Shock: "1394389214384099414" # @oneshot/ling_shock
+        Sigh: "1394389213159620839" # @oneshot/ling_sigh
+        Smile: "1394389210714341377" # @oneshot/ling_smile
+        What: "1408301527893807134" # @oneshot_thepancakeepisode/ling_what
+    Cedric:
+      faces:
+        Normal: "1394487299231842376" # @oneshot/cedric
+        Speak: "1394487290281066719" # @oneshot/cedric_talk
+        Normal Alt: "1394487283213799535" # @oneshot/cedric2
+        Normal Alt²: "1394487227005931591" # @oneshot/cedric3
+        Normal Alt³: "1394487160807100476" # @oneshot/cedric4
+        Eek: "1394487297545736232" # @oneshot/cedric_eek
+        Hmm: "1394487295956090890" # @oneshot/cedric_hmm
+        Sigh: "1394487294466981908" # @oneshot/cedric_sigh
+        Sigh Alt: "1394487292835659888" # @oneshot/cedric_sigh2
+        Smile: "1394487291862585426" # @oneshot/cedric_smile
+        Upset: "1394487288959991808" # @oneshot/cedric_upset
+    Kip:
+      icon: "1394389376859115580" # @oneshot/kip
+      faces:
+        Ah: "1394389281719586946" # @oneshot/kip2
+        Slight Smile: "1394389376859115580" # @oneshot/kip
+        Looking Left: "1408285316837806161" # @meqativ
+        Looking Right: "1408285318494552188" # @meqativ
+        Heh: "1394389374623285388" # @oneshot/kip_heh
+        Huh: "1394389373188833390" # @oneshot/kip_huh
+        Pout: "1394389370156355817" # @oneshot/kip_pout
+        Sad: "1394389368663441419" # @oneshot/kip_sad
+        Sigh: "1394389367275000039" # @oneshot/kip_sigh
+        Pensive: "1027240033599627264" # to be credited
+        Wink: "1394389360258060338" # @oneshot/kip_wink
+        Worry: "1394389319736627383" # @oneshot/kip_worry
+        "cool.": "1019605513387900978" # to be credited?
+    Silver:
+      faces:
+        Normal: "1394382686524539001" # @oneshot/silver
+        Look down: "1394382696490471615" # @oneshot/silver2
+        Ah: "1394382859363684504" # @oneshot/silver3
+        Eyes closed: "1394382704996515910" # @oneshot/silver_eyeclosed
+        Falling: "1394382860940476456" # @oneshot/silver_falling
+        "Get out!": "1394382700474925267" # @oneshot/silver_getout
+        Look up: "1394382695206883420" # @oneshot/silver_lookup
+        "Rip": "1394382693893935184" # @oneshot/silver_rip
+        "Rip0": "1394382692686237877" # @oneshot/silver_rip0
+        "Rip2": "1394382691285074091" # @oneshot/silver_rip2
+        Squares: "1394382689800556634" # @oneshot/silver_square1
+        Too Many Squares: "1394382688504385676" # @oneshot/silver_square2
+        Worry: "1394382685627088988" # @oneshot/silver_worry
+    Prophet:
+      faces:
+        Normal: "1394383888843018331" # @oneshot/prophet
+        Hmm: "1394383887345516666" # @oneshot/prophet_hmm
+        OMG: "1394383885453885602" # @oneshot/prophet_omg
+        Sigh: "1394383884363239495" # @oneshot/prophet_sigh
+    Proto:
+      icon: "1394383821197279392" # @oneshot/proto1b
+      faces:
+        Disk: "1394383830173089792" # @oneshot/proto_disk
+        Eyes closed: "1394383827757175028" # @oneshot/proto_eyeclosed
+        Jealous: "1394383822929399839" # @oneshot/proto_gasp2
+        Gasp: "1394383824393212045" # @oneshot/proto_gasp1
+        Gasp right: "1394383825781653534" # @oneshot/proto1
+        Right-up: "1394383821197279392" # @oneshot/proto1b
+        Right-center: "1394383819767021711" # @oneshot/proto1c
+        Right-right: "1394383818391031938" # @oneshot/proto_jealous
+        Top-left: "1394383816885403648" # @oneshot/proto2
+        Bottom-right: "1394383706109645015" # @oneshot/proto2b
+    Rowbot:
+      icon: "1394383419739344916" # @oneshot/rowbot
+      faces:
+        On: "1394383419739344916" # @oneshot/rowbot
+        Off: "1394383417914953808" # @oneshot/rowbot_off
+    George:
+      faces:
+        "1":
+          faces:
+            Normal: "1394485332367376456" # @oneshot/george1
+            "Hm": "1394389624314658940" # @oneshot/george1_hm
+            "Smile": "1394485329486151720" # @oneshot/george1_smile
+            "Smug": "1394389620430733424" # @oneshot/george1_smug
+        "2":
+          faces:
+            Normal: "1394389618883035317" # @oneshot/george2
+            "Grr": "1394485328298901514" # @oneshot/george2_grr
+            "NO": "1394389614860697731" # @oneshot/george2_NO
+            "Sigh": "1394485326927368332" # @oneshot/george2_sigh
+            "Stress": "1394389611018588291" # @oneshot/george2_stress
+        "3":
+          faces:
+            Normal: "1394389608262926406" # @oneshot/george3
+            Cry: "1394389606438535338" # @oneshot/george3_cry
+            Sad: "1394389604815208488" # @oneshot/george3_sad
+            Sigh: "1394389596577599589" # @oneshot/george3_sigh
+            Worry: "1394485325015027822" # @oneshot/george3_worry
+        "4":
+          faces:
+            Normal: "1394389591812997212" # @oneshot/george4
+            Golly: "1394389589912719592" # @oneshot/george4_golly
+            Omg: "1394485322636595341" # @oneshot/george4_omg
+            Oops: "1394389586318462986" # @oneshot/george4_oops
+            Smile: "1394485320799490119" # @oneshot/george4_smile
+        "5":
+          faces:
+            Normal: "1394389582086279189" # @oneshot/george5
+            Aww: "1394389580035129465" # @oneshot/george5_aww
+            Heh: "1394389576826486906" # @oneshot/george5_heh
+            Hmm: "1394389575295697057" # @oneshot/george5_hmm
+            Sad: "1394389573769105561" # @oneshot/george5_sad
+            Sigh: "1394389572409888889" # @oneshot/george5_sigh
+            Smile: "1394389570400813110" # @oneshot/george5_smile
+        "6":
+          faces:
+            Normal: "1394389568882741358" # @oneshot/george6
+            Fingerguns: "1394389567397957693" # @oneshot/george6_fingerguns
+            Point: "1394389565782888610" # @oneshot/george6_point
+            Shrug: "1394389563992051732" # @oneshot/george6_shrug
+            Smile: "1394389530315853955" # @oneshot/george6_smile
+Other:
+  icon: "1234950811319275636" # @radioactiveradiant
+  faces:
+    "Your Avatar": ~
+    "Someone's Avatar": ~
+    Roomba: "259186372508778498" # @oneshot/roomba
+    Bookbot: "1394485511996837959" # @oneshot/bookbot
+    Shepherd: "1394397743249621085" # @oneshot/shepherd
+    Watcher: "1394385661116813322" # @oneshot/watcher
+    Mason: "1394485426911318128" # @oneshot/mason
+    Kelvin: "1394402172984103015" # @oneshot/kelvin
+    Blue Gatekeeper: "1394487609585045584" # @oneshot/blue_gatekeeper
+    Green Gatekeeper: "1394487590631247973" # @oneshot/green_gatekeeper
+    Red Gatekeeper: "1394487571442040883" # @oneshot/red_gatekeeper
+    Raised Eyebrow Emoji: "1027306556783603813" # https://emojipedia.org/skype/1.0/thinking-face
+    ":nikonlanger_smug:": "1234950811319275636" # @radioactiveradiant
+    "NAVI": "1411249485916668056" # from https://urbanshade.org/wiki/File:NaviQuoteIcon.png

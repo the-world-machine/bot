@@ -931,8 +931,9 @@ textbox:
     JPEG: jpeg
     # ↑ those show up ↓ there
   button:
-    render: Render [type]
-    rendersend: "Render [type] & Send"
+    render: Render everything as [type]
+    rendersend: "Render everything as [type] & Send"
+    face: Select facepic
     text:
       edit: Edit Text
       add: Add Text
@@ -986,6 +987,6 @@ textbox:
 
   alt:
     single_frame:
-      filename: "TWM textbox ([character], [face], [timestamp])"
+      filename: "TWM textbox ([timestamp])"
     multi_frame:
       filename: "TWM textbox ([frames], [timestamp])"

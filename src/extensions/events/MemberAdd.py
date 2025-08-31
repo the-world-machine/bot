@@ -1,10 +1,9 @@
 import io
 import traceback as tb
 from interactions import TYPE_MESSAGEABLE_CHANNEL, AllowedMentions, Extension, File, listen
-from utilities.textbox.mediagen import render_textbox
+from utilities.textbox.mediagen import Frame, render_frame
 from interactions.api.events import MemberAdd
 from utilities.database.schemas import ServerData
-from utilities.textbox.characters import get_character
 from utilities.localization import Localization, assign_variables
 
 
@@ -28,14 +27,17 @@ class MemberAddEvent(Extension):
 		if not target_channel:
 			return
 
-		message = config.message or loc.l("misc.welcome.placeholder_text")
-
+		message = config.message or loc.l("misc.welcome.placeholder_text", typecheck=str)
 		message = assign_variables(
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)
 		buffer = io.BytesIO()
-		renders = await render_textbox(str(message), get_character("The World Machine").get_face("Pancakes"), False)
-		renders[0][0].save(buffer, format="PNG")
+		if not message.startswith("\\@"):
+			# default to this face unless they put some in their message in the beginning
+			message += "\\@[OneShot/The World Machine/Pancakes]"
+
+		images, durations = await render_frame(Frame(str(message)), False)
+		images[0].save(buffer, format="PNG")
 		buffer.seek(0)
 		try:
 			if not event.guild.system_channel:

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import io
 import copy
 import re
+from urllib.parse import urlparse
 import aiohttp
 import aiofiles
 import datetime
@@ -319,8 +320,47 @@ def optionSearch(query: str, options: Iterable[SortOption]) -> list[SlashCommand
 
 	# Convert the map object to a list before returning
 	return list(map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), top + matches))
+
+
 def format_type_hint(type_hint: Any) -> str:
 	"""Formats a type hint for clean error messages."""
 	if hasattr(type_hint, '__name__'):
 		return type_hint.__name__
 	return str(type_hint)
+
+
+def is_domain_allowed(url: str, allowed_domains: list[str]) -> bool:
+	"""
+    Checks if a URL's hostname is either an exact match or a subdomain
+    of any domain in the allowed list.
+    """
+	try:
+		hostname = urlparse(url).hostname
+		if not hostname:
+			return False
+
+		for domain in allowed_domains:
+			if hostname == domain or hostname.endswith(f".{domain}"):
+				return True
+	except (ValueError, AttributeError):
+		raise ValueError("Invalid url passed")
+
+	return False
+
+
+class ReprMixin:
+	"""
+    A mixin class that provides a default __repr__ method.
+    
+    It generates a representation string in the format:
+    ClassName(attribute1=value1, attribute2=value2, ...)
+    
+    Attributes starting with an underscore (_) are excluded.
+    """
+
+	def __repr__(self) -> str:
+		class_name = self.__class__.__name__
+		attrs = { key: value for key, value in self.__dict__.items() if not key.startswith('_') }
+		args = ", ".join(f"{key}={repr(value)}" for key, value in attrs.items())
+
+		return f"{class_name}({args})"

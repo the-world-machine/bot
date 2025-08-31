@@ -965,6 +965,6 @@ textbox:
 
   alt:
     single_frame:
-      filename: "Текстбокс TWM ([character], [face], [timestamp])"
+      filename: "Текстбокс TWM ([timestamp])"
     multi_frame:
       filename: "Текстбокс TWM ([frames], [timestamp])"

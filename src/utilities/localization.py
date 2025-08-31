@@ -322,9 +322,19 @@ token = get_token()
 bot_id = decode_base64_padded(token.split('.')[0])
 
 
+@overload
+def assign_variables(input: str, locale: str = ..., *, ctx: Any = None, **variables: Any) -> str:
+	...
+
+
+@overload
+def assign_variables(input: T, locale: str = ..., *, ctx: Any = None, **variables: Any) -> T:
+	...
+
+
 def assign_variables(
     input: Any, locale: str = get_config("localization.main-locale"), *, ctx: Any = None, **variables: Any
-):
+) -> Any:
 	if isinstance(input, str):
 		result = input
 
