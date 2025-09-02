@@ -172,11 +172,12 @@ class Frame(SerializableData):
 
 
 async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.Image], list[int]]:
+	word_wrap = True
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
 	burned_background = background.copy()
 
 	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
-	text = Image.new("RGBA", (background.width, background.height), color=(255, 255, 255, 0))
+	text = Image.new("RGBA", (background.width, 999999), color=(255, 255, 255, 0))
 	text_x, text_y = 20, 17
 	text_width = background.width - (20 * 2)
 	text_height = background.height - (17 * 2)
@@ -191,7 +192,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 
 	facepic_present = False
 
-	async def set_facepic(command: FacepicChangeCommand, delay: bool = False):
+	async def update_facepic(command: FacepicChangeCommand, delay: bool = False):
 		nonlocal burned_background
 		nonlocal facepic_present
 		nonlocal text_width
@@ -204,46 +205,53 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			burned_background.paste(facepic, (496, 16), mask=facepic.convert("RGBA"))
 		else:
 			facepic_present = False
+			facepic = None
 		if facepic_present and facepic:
 			text_width = background.width - (20 * 2) - facepic.width + 10
 		else:
 			text_width = background.width - (20 * 2)
 		if delay and animated:
-			put_frame(1)
+			put_frame(0)
 
 	parsed = parse_textbox_text(frame.text) if frame.text else []
 	text_offset = [ 0.0, 0.0 ]
 	for i in range(0, len(parsed)):
+		print(i)
 		command = parsed[i]
 		if isinstance(command, FacepicChangeCommand):
-			await set_facepic(command)
+			await update_facepic(command)
 
 		elif isinstance(command, str):
 			message = command
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
-
-			for cluster in list(graphemes(message)):  # type: ignore
-				if not cluster:
-					cluster: str = ""
-				cumulative_text += cluster
-				duration = 20
-				match cluster:
-					case '\n':
-						duration = 800
-					case '.' | '!' | '?' | '．' | '？' | '！':
-						duration = 200
-					case ',' | '，':
-						duration = 40
-				d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
-				text_offset[0] += 15.0
-				if text_y + text_offset[1] > background.height - (17 * 2):
-					text_y -= 25
-				if text_offset[0] + 15 > text_width:
+			for word in message.split(' '):
+				print(word, text_x, text_offset, background.width)
+				if word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
 					text_offset[1] += 25.0
-					text_offset[0] = 15.0
-				if animated:
-					put_frame(duration)
+					text_offset[0] = 0
+				for cluster in list(graphemes(word + " ")):  # type: ignore
+					if not cluster:
+						cluster: str = ""
+					cumulative_text += cluster
+					duration = 20
+					match cluster:
+						case '\n':
+							duration = 800
+						case '.' | '!' | '?' | '．' | '？' | '！':
+							duration = 200
+						case ',' | '，':
+							duration = 40
+					if text_offset[0] + 15 > text_width:
+						text_offset[1] += 25.0
+						text_offset[0] = 0
+					if text_y + text_offset[1] > background.height - (17 * 2):
+						text_y -= 25
+					text_offset[0] += 10.0
+					d.text((text_offset[0] - 10, text_offset[1]), cluster, font=font, fill=(255, 255, 255))
+					if animated:
+						put_frame(duration)
+
 	put_frame(0)
 	return (images, durations)
 
@@ -270,7 +278,7 @@ def bounce(times, height=3):
 
 async def render_textbox_frames(
     frames: list[Frame],
-    quality: int = 80,
+    quality: int = 100,
     filetype: SupportedFiletypes = "WEBP",
     frame_index: int | None = None
 ) -> io.BytesIO:
@@ -279,7 +287,6 @@ async def render_textbox_frames(
 	buffer = io.BytesIO()
 	if filetype in ("JPEG", "PNG"):
 		if not frame_index:
-			print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 			frame_index = 0
 		frame = frames[int(frame_index)]
 		image = (await render_frame(frame, False))[0][0]

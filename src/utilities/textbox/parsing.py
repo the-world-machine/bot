@@ -149,7 +149,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 				pos += 2
 				continue
 
-			if pos + 1 < length and input_str[pos + 1] in ('c', 'u', 'f', 's', 'd', '@', 'n'):
+			if pos + 1 < length and input_str[pos + 1] in COMMAND_MAP.keys():
 				cmd_char = input_str[pos + 1]
 				command = init_token(type=cmd_char)
 				args_start = pos + 2

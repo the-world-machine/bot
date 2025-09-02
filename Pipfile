@@ -1,5 +1,6 @@
 [scripts]
 bot = "python src/main.py"
+testbox = "cd ./src && python -m utilities.textbox.test"
 
 [requires]
 python_version = "3.13"
@@ -21,6 +22,8 @@ jellyfish = "*"
 grapheme = "*"
 apng = "*"
 "interactions.py" = "*"
+aiohttp = "*"
+aiohttp-devtools = "*"
 
 [dev-packages]
 yapf = "*"

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textbox Preview</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div id="preview-container">
+        <div class="image-wrapper">
+            <span id="timer-display"></span>
+            <img id="preview-image" src="" alt="Waiting for input...">
+        </div>
+    </div>
+    <div id="error-box" class="error" style="display:none;"></div>
+
+    <div id="container">
+        <div class="controls">
+            <div class="control-options">
+                <div class="control-item">
+                    <label for="filetype-select">Filetype:</label>
+                    <select id="filetype-select">
+                        <option value="WEBP">WEBP</option>
+                        <option value="APNG">APNG</option>
+                        <option value="GIF">GIF</option>
+                        <option value="PNG">PNG</option>
+                        <option value="JPEG">JPEG</option>
+                        <option value="JPEGXL">JPEGXL (nop)</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="animated-checkbox">Animated:</label>
+                    <input type="checkbox" id="animated-checkbox" checked>
+                </div>
+                
+                <div class="control-item">
+                    <label for="quality-slider">Quality:</label>
+                    <input type="range" id="quality-slider" min="1" max="100" value="100">
+                    <span id="quality-value">100</span>
+                </div>
+                
+                <button id="refresh-button">Refresh</button>
+            </div>
+
+            <hr class="divider">
+
+            <label for="textbox-text" class="textarea-label">Enter Textbox Content:</label>
+            <textarea id="textbox-text">\@[OneShot/Niko/83c]paws at u :3</textarea>
+        </div>
+    </div> 
+    <script src="/static/script.js"></script>
+</body>
+</html>
