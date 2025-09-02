@@ -51,6 +51,20 @@ class MiscellaneousCommands(Extension):
 		    ephemeral=not public
 		)
 
+	@slash_command(description="rewrites the bot in python")
+	@slash_option(
+	    description="Whether you want the response to be visible for others in the channel",
+	    name="public",
+	    opt_type=OptionType.BOOLEAN
+	)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
+	async def python(self, ctx: SlashContext, public: bool = False):
+		return await ctx.send(
+		    "https://cdn.discordapp.com/attachments/1164430884733198416/1412555496296153262/python.gif?ex=68b8b852&is=68b766d2&hm=d13a559d48e65cabfeb1ab642146a8f34f068c336426ae140233c77ea17c973e&",
+		    ephemeral=not public
+		)
+
 	@slash_command(description='Roll an imaginary dice')
 	@slash_option(
 	    description='What sided dice to roll',
