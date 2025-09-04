@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Literal, Union, overload
+from typing import Any, Optional, Tuple, Literal, Union, overload
 from utilities.localization import Localization
 from utilities.message_decorations import fancy_message
 from utilities.textbox.mediagen import Frame
@@ -27,8 +27,16 @@ class State:
 	owner: int
 	frames: list[Frame]
 	options: StateOptions
+	memory_leak: Any  # 🤑🤑🤑
 
-	def __init__(self, owner: int, frames: list[Frame] | Frame | None = None, options: StateOptions | None = None):
+	def __init__(
+	    self,
+	    owner: int,
+	    memory_leak: Any,
+	    frames: list[Frame] | Frame | None = None,
+	    options: StateOptions | None = None
+	):
+		self.memory_leak = memory_leak
 		self.options = options if options else StateOptions()
 		self.owner = owner
 		self.frames = []
@@ -100,11 +108,9 @@ async def state_shortcut(
 		await fancy_message(ctx, loc.l("textbox.errors.unknown_state", id=str(state_id)), ephemeral=True)
 		raise StateShortcutError(f"State with ID '{state_id}' not found.")
 
-	# Corresponds to the first overload: frame_index is not provided
 	if frame_index is None:
 		return (loc, state)
 
-	# Corresponds to the second overload: frame_index is provided
 	try:
 		idx = int(frame_index)
 	except ValueError:
@@ -114,11 +120,9 @@ async def state_shortcut(
 	try:
 		frame_data: Frame = state.get_frame(idx)
 	except IndexError:
-		# Special case: allow creating a new frame if the index is exactly one past the end
 		if idx == len(state.frames):
 			state.frames.append(Frame())  # scary scary scary scary
 		else:
-			# Any other IndexError is a "frame not found" error
 			await fancy_message(ctx, loc.l("textbox.errors.unknown_frame", id=str(frame_index)), ephemeral=True)
 			raise StateShortcutError(f"Frame with index '{idx}' not found in state '{state_id}'.")
 

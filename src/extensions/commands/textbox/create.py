@@ -1,21 +1,20 @@
 import re
 import asyncio
+from interactions.models.discord.components import (
+	MediaGalleryItem,
+	UnfurledMediaItem,
+	ContainerComponent,
+	TextDisplayComponent,
+	MediaGalleryComponent,)
 from datetime import datetime
 from typing import Literal, get_args
-from interactions import ActionRow, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
-from interactions.models.discord.components import (
-	MediaGalleryComponent,
-	MediaGalleryItem,
-	TextDisplayComponent,
-	ContainerComponent,
-	UnfurledMediaItem,
-)
+from .facepic_selector import set_facepic_in_frame_text
 from utilities.config import debugging, get_config
-from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
-from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
 from utilities.localization import Localization, put_mini
 from utilities.message_decorations import Colors, fancy_message
+from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
 from utilities.textbox.states import StateShortcutError, State, StateOptions, new_state, state_shortcut
+from interactions import ActionRow, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
 
 nomentions = AllowedMentions(parse=[])
 
@@ -85,18 +84,22 @@ async def command(
 	if filetype not in get_args(SupportedFiletypes):
 		return
 	face_path = f"\\@[{face_path}]" if face_path else ""
-	text = f"{face_path}{text}"
+
+	if face_path:
+		text = set_facepic_in_frame_text(text, face_path)
+
 	# init state
 	new_state(state_id, State(
 		owner=ctx.user.id,
+		memory_leak=ctx,
 		options=StateOptions(
 			filetype=filetype,
 			send_to=send_to
 		),
-		frames=Frame(text)
+		frames=Frame(text=text)
 	))
 	
-	if send_to != 1 and (len(text) != 0 and len(face_path) != 0): # if face and text is 
+	if send_to != 1 and (len(text) != 0 and len(face_path) != 0):
 		await send_output(ctx, state_id, 0)
 
 	await respond(ctx, state_id, 0, edit=not erored)
@@ -121,8 +124,6 @@ async def handle_components(self, ctx: ComponentContext):
 	
 	match method:
 		case "change_text":
-			return await init_change_text_flow(ctx, state_id, frame_index)
-		case "facepic_selector":
 			return await init_change_text_flow(ctx, state_id, frame_index)
 		case "delete_frame":
 			del state.frames[int(frame_index)]
@@ -179,26 +180,21 @@ async def send_output(ctx: ComponentContext | SlashContext, state_id: str, frame
 	return await ctx.edit(message=message, embed=Embed(description=desc, color=Colors.DEFAULT))
 
 async def render_to_file(ctx: ComponentContext|SlashContext|ModalContext, state: State, frame_preview_index: int | None = None) -> File:
-	# you do alt text here later dont unabstract this
 	loc = Localization(ctx)
 
 	frames = state.frames
-	if frame_preview_index != None:
-		frame = state.frames[int(frame_preview_index)]
-		frames = [state.frames[int(frame_preview_index)]]
+	filetype = state.options.out_filetype 
 
-		filename = loc.l("textbox.alt.single_frame.filename", timestamp=str(round(datetime.now().timestamp())))
-
-	else: # NOT render button
-		filename = loc.l("textbox.alt.multi_frame.filename", frames=len(state.frames),timestamp=str(round(datetime.now().timestamp())))
-	buffer = await render_textbox_frames(frames, state.options.quality, state.options.out_filetype if frame_preview_index is None else "PNG")
-	_filetype="."+state.options.out_filetype
 	if frame_preview_index is not None:
-		_filetype = ".PNG"
-	if state.options.out_filetype == "APNG":
-		_filetype = ""
-	filename = filename + _filetype
+		filetype = "PNG"
+		frames = [state.frames[int(frame_preview_index)]]
+	filename = loc.l(f"textbox.alt.{'single' if frame_preview_index != None else 'multi'}_frame.filename", frames=len(frames), timestamp=str(round(datetime.now().timestamp())))
+
+	buffer = await render_textbox_frames(frames, state.options.quality, filetype)
 	buffer.seek(0)
+	filename = filename + ("" if filetype == "APNG" else "."+filetype)
+
+	#	TODO: alt text
 	return File(file=buffer, file_name=filename)#, description=alt_text if alt_text else frame.text)
 
 
@@ -333,7 +329,7 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext, state_id:
 			Button(
 				style=ButtonStyle.BLURPLE,
 				label=loc.l(f'textbox.button.face'),
-				custom_id=f"textbox facepic_selector {state_id} {frame_index}"
+				custom_id=f"textbox_fs init {state_id} {frame_index}"
 			),
 			Button(
 				style=ButtonStyle.BLURPLE,

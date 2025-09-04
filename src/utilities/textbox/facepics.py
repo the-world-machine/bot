@@ -1,18 +1,26 @@
 import io
 import os
-from pathlib import Path
 import re
-from PIL import Image
-from interactions import PartialEmoji
 import yaml
+from PIL import Image
+from pathlib import Path
 from termcolor import colored
 from datetime import datetime
+from traceback import print_exc
+from interactions import PartialEmoji
+from utilities.data_watcher import subscribe
 from extensions.events.Ready import ReadyEvent
-from utilities.config import debugging, get_config
 from utilities.emojis import make_emoji_cdn_url
+from utilities.config import debugging, get_config
 from utilities.misc import cached_get, is_domain_allowed
 
-facepics: dict = {}
+
+class Facepics:
+	s: dict
+
+
+facepic: Facepics = Facepics()
+facepic.s = {}  # god is dea.d
 last_update: datetime | None = None
 
 icon_regex = re.compile(r"^\d+$")
@@ -60,7 +68,7 @@ def parse_recursive(data: dict) -> dict:
 		if isinstance(value, dict):
 			node = parse_recursive(value)
 			if "icon" in value:
-				node["__icon"] = value.get("icon")
+				node["icon"] = value.get("icon")
 			output[key] = node
 		else:
 			output[key] = value
@@ -76,7 +84,7 @@ def load_facepics():
 	for top_key, top_value in data.items():
 		node = parse_recursive(top_value)
 		if "icon" in top_value:
-			node["__icon"] = top_value.get("icon")
+			node["icon"] = top_value.get("icon")
 		loaded_chars[top_key] = node
 
 	return loaded_chars
@@ -95,7 +103,7 @@ def on_file_update(filename):
 	print(colored('─ Reloading facepics ...', 'yellow'), end="")
 
 	try:
-		facepics = load_facepics()
+		facepic.s = load_facepics()
 	except Exception as e:
 		print(colored(" FAILED", "red"))
 		ReadyEvent.log("## Failed to reload facepics\n" + str(e))
@@ -104,29 +112,38 @@ def on_file_update(filename):
 	print(" ─ ─ ─ ")
 
 
+subscribe("facepics.yml", on_file_update)
+
+invalid_path = "Other/NAVI"
+
+
 async def get_facepic(path: str) -> Face | None:
 	face = Face(path)
 	if path.startswith("https://"):
 		if is_domain_allowed(path, allowed_domains=get_config('textbox.allowed-hosts', typecheck=list)):
 			await face.set_custom_icon(path)
+			return face
 		else:
-			face.path = "Other/NAVI"
-		return face
+			return await get_facepic(invalid_path)
 	else:
 		parts = path.split('/')
-		at = facepics
+		at = facepic.s
 		try:
 			for part in parts:
 				at = at[part]
 
 			if isinstance(at, str) or at is None:
 				return Face(path, icon=at)
+			elif isinstance(at, dict) and 'icon' in at:
+				return Face(path, icon=at['icon'])
 			else:
+				print(at)
 				print(f"Couldn't find face for path {path}")
-				return await get_facepic("Other/NAVI")
+				return await get_facepic(invalid_path)
 		except (KeyError, TypeError) as e:
-			print(e)
-			return await get_facepic("Other/NAVI")
+			print_exc()
+			return await get_facepic(invalid_path)
+	return await get_facepic(invalid_path)
 
 
 if debugging():
@@ -134,11 +151,10 @@ if debugging():
 else:
 	print("Loading facepics ... \033[s", flush=True)
 
-facepics = load_facepics()
-character_count = sum(len(v.keys()) for v in facepics.values() if isinstance(v, dict) and "__icon" not in v)
+facepic.s = load_facepics()
 
 if not debugging():
-	print(f"\033[udone ({character_count})", flush=True)
+	print(f"\033[udone", flush=True)
 	print("\033[999B", end="", flush=True)
 else:
-	print(f"Done ({character_count})")
+	print(f"Done")
