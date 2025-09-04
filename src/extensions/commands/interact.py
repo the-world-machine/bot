@@ -3,6 +3,7 @@ import asyncio
 from dataclasses import dataclass
 import random
 import re
+from traceback import print_exc
 from typing import Any
 from interactions import ActionRow, Button, ButtonStyle, ComponentContext, ContextMenuContext, Embed, Extension, Member, MentionType, Message, OptionType, PartialEmoji, SlashContext, Snowflake_Type, User, component_callback, contexts, integration_types, message_context_menu, slash_command, slash_option, user_context_menu, AllowedMentions
 from utilities.config import debugging
@@ -42,6 +43,7 @@ def fill_with_none(arr, target_index):
 
 def replace_numbers_with_emojis(text: str) -> str:
 	return re.sub(r'\d', lambda m: m.group() + chr(0xFE0F) + chr(0x20E3), text)
+
 
 class InteractCommands(Extension):
 
@@ -215,7 +217,7 @@ class InteractCommands(Extension):
 			    interaction_raw, dict
 			) else InteractionEntry(None, interaction_raw)
 		except BaseException as e:
-			print(e)
+			print_exc()
 			return await ctx.send(
 			    embeds=Embed(
 			        description=f"[ {loc.l('interact.errors.no_path')} ]" +

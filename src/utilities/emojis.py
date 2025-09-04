@@ -1,4 +1,5 @@
 import re
+from traceback import print_exc
 from urllib.parse import urlencode
 from yaml import safe_load
 from termcolor import colored
@@ -141,7 +142,7 @@ def on_file_update(path):
 		print(colored(" FAILED", "red"))
 		from extensions.events.Ready import ReadyEvent
 		ReadyEvent.log("## Failed to reload emojis\n" + str(e))
-		print(e)
+		print_exc()
 		return
 
 	old_flat = flatten_emojis(dict(old_emojis))

@@ -234,7 +234,7 @@ async def _execute_dev_command(message: Message):
 					result = ansi_escape_pattern.sub('', result)
 				return await handle_reply(runtime, result)
 			except Exception as e:
-				print(e)
+				tb.print_exc()
 				if "Description cannot exceed 4096 characters" in str(e):  # TODO: paging
 					return await handle_reply(
 					    runtime,
