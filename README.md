@@ -12,11 +12,7 @@ For more information on what you can do with this bot, check out our [website](h
 
 </div>
 
-## Contributing:
-
-> [!NOTE]
-> The `music.py` module is deprecated and any PRs towards it will not be accepted.
-
+## Contributing
 ### Localization
 
 In `src/data/locales` there are YAML files with the localization strings. Using `en.yml` as a base, you are free to contribute your own language to the bot. If you need any help with this - you can ask away in the support server which you can find on our [website](https://www.theworldmachine.xyz/invite).
@@ -32,7 +28,7 @@ As with any other repo, pull requests and bug reporting is always welcomed.
 
 Contributing in any way to the discord bot will have your name be put in the website's credits and a role assigned on the discord.
 
-## Running your own instance:
+## Running your own instance
 
 ### Prerequisites
 
