@@ -77,5 +77,11 @@ music: # deprecated
 
 textbox:
   font: "src/data/fonts/TerminusTTF-Bold.ttf"
-  frame-limit: 50
-  max-text-length-per-frame: 1423
+  frame-limit: 250
+  max-text-length-per-frame: 2423
+  allowed-hosts:
+    - discordapp.com
+    - discordapp.net
+    - discord.com
+    - github.com
+    - githubusercontent.com
