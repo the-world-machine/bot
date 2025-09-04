@@ -222,6 +222,7 @@ OneShot:
         On: "1394383419739344916" # @oneshot/rowbot
         Off: "1394383417914953808" # @oneshot/rowbot_off
     George:
+      icon: "1394389567397957693" # @oneshot/george6_fingerguns
       faces:
         "1":
           faces:
@@ -270,16 +271,15 @@ Other:
   icon: "1234950811319275636" # @radioactiveradiant
   faces:
     "Your Avatar": ~
-    "Someone's Avatar": ~
-    Roomba: "259186372508778498" # @oneshot/roomba
+    #    "Someone's Avatar": ~
     Bookbot: "1394485511996837959" # @oneshot/bookbot
+    Blue Gatekeeper: "1394487609585045584" # @oneshot/blue_gatekeeper
+    Green Gatekeeper: "1394487590631247973" # @oneshot/green_gatekeeper
+    Red Gatekeeper: "1394487571442040883" # @oneshot/red_gatekeeper
     Shepherd: "1394397743249621085" # @oneshot/shepherd
     Watcher: "1394385661116813322" # @oneshot/watcher
     Mason: "1394485426911318128" # @oneshot/mason
     Kelvin: "1394402172984103015" # @oneshot/kelvin
-    Blue Gatekeeper: "1394487609585045584" # @oneshot/blue_gatekeeper
-    Green Gatekeeper: "1394487590631247973" # @oneshot/green_gatekeeper
-    Red Gatekeeper: "1394487571442040883" # @oneshot/red_gatekeeper
     Raised Eyebrow Emoji: "1027306556783603813" # https://emojipedia.org/skype/1.0/thinking-face
     ":nikonlanger_smug:": "1234950811319275636" # @radioactiveradiant
     "NAVI": "1411249485916668056" # from https://urbanshade.org/wiki/File:NaviQuoteIcon.png
