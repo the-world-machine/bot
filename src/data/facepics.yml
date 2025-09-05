@@ -10,13 +10,8 @@ OneShot:
         Alright: "1394486168141168660" # @oneshot/en4
         Looking Left: "1394486165243170906" # @oneshot/en5
         Looking Right: "1394486163804262490" # @oneshot/en6
-        Popcorn: "1408324955208155187" # OSCF of Niko face
-        Wink: "1408324953694015538" # OSCF of Niko face
-        Fed Up: "1408324949923594260" # OSCF of Niko face
-        Blush: "1408324951798448209" # OSCF of Niko face
         Yawn: "1394486172650049647" # @oneshot/en_yawn
         Surprise: "1394486192636035182" # @oneshot/en_surprised
-        Shrug: "1411246759447105637" # OSCF of Niko face
         "What,": "1394486178656424108" # @oneshot/en_what
         "Concerned": "1394486177075298456" # @oneshot/en_what2
         "WTF": "1394486175410028654" # @oneshot/en_wtf
@@ -38,7 +33,6 @@ OneShot:
         "Huh": "1394486205944692826" # @oneshot/en_huh
         "Shock": "1394486969815531644" # @oneshot/en_shock
         "Pancakes": "1394486970817839146" # @oneshot/en_pancakes
-        Crumbs: "1408325300613419008" # OSCF of Niko face
         83c: "1394486229894168648" # @oneshot/en_83c
         #af: "1394387129756422417"
     Niko:
@@ -50,13 +44,8 @@ OneShot:
         Alright: "1394387078854344846" # @oneshot/niko4
         Looking Left: "1394387073120604315" # @oneshot/niko5
         Looking Right: "1394387070742695988" # @oneshot/niko6
-        Popcorn: "1019605504957366282" # to be credited
-        Wink: "1019605506152734790" # to be credited
-        Fed Up: "1019605511802458185" # to be credited
-        Blushing: "1019605508421857401" # to be credited
         Yawn: "1394387083124277278" # @oneshot/niko_yawn
         Surprise: "1394387546007670965" # @oneshot/niko_surprised
-        Shrug: "1411246761988587552" # to be credited
         "What,": "1394387088899837952" # @oneshot/niko_what
         "Concerned": "1394387087393816779" # @oneshot/niko_what2
         "WTF": "1394387086022410320" # @oneshot/niko_wtf
@@ -139,7 +128,6 @@ OneShot:
         Worry Left: "1394383936712474674" # @oneshot/plight_worry2
         Worry Right: "1394383938398715965" # @oneshot/plight_worry
         WTF: "1394383934854402080" # @oneshot/plight_wtf
-        Sip: "1174513437515190372" # to be credited
         Hidden: "1394383940973891756" # @oneshot/plight_unknown
     Ling:
       faces:
@@ -171,17 +159,13 @@ OneShot:
       faces:
         Ah: "1394389281719586946" # @oneshot/kip2
         Slight Smile: "1394389376859115580" # @oneshot/kip
-        Looking Left: "1408285316837806161" # @meqativ
-        Looking Right: "1408285318494552188" # @meqativ
         Heh: "1394389374623285388" # @oneshot/kip_heh
         Huh: "1394389373188833390" # @oneshot/kip_huh
         Pout: "1394389370156355817" # @oneshot/kip_pout
         Sad: "1394389368663441419" # @oneshot/kip_sad
         Sigh: "1394389367275000039" # @oneshot/kip_sigh
-        Pensive: "1027240033599627264" # to be credited
         Wink: "1394389360258060338" # @oneshot/kip_wink
         Worry: "1394389319736627383" # @oneshot/kip_worry
-        "cool.": "1019605513387900978" # to be credited?
     Silver:
       faces:
         Normal: "1394382686524539001" # @oneshot/silver
@@ -267,6 +251,33 @@ OneShot:
             Point: "1394389565782888610" # @oneshot/george6_point
             Shrug: "1394389563992051732" # @oneshot/george6_shrug
             Smile: "1394389530315853955" # @oneshot/george6_smile
+"OneShot (fan)":
+  icon: "1413524025698816032"
+  characters:
+    The World Machine:
+      faces:
+        Crumbs: "1408325300613419008" # OSCF of Niko face (in original)
+        Popcorn: "1408324955208155187" # OSCF of Niko face
+        Wink: "1408324953694015538" # OSCF of Niko face
+        Fed Up: "1408324949923594260" # OSCF of Niko face
+        Blush: "1408324951798448209" # OSCF of Niko face
+        Shrug: "1411246759447105637" # OSCF of Niko face
+    Niko:
+      faces:
+        Popcorn: "1019605504957366282" # to be credited
+        Wink: "1019605506152734790" # to be credited
+        Fed Up: "1019605511802458185" # to be credited
+        Blush: "1019605508421857401" # to be credited
+        Shrug: "1411246761988587552" # to be credited
+    Kip:
+      faces:
+        Looking Left: "1408285316837806161" # @meqativ
+        Looking Right: "1408285318494552188" # @meqativ
+        Pensive: "1027240033599627264" # to be credited
+        "cool.": "1019605513387900978" # to be credited?
+    Plight:
+      faces:
+        Sip: "1174513437515190372" # to be credited
 Other:
   icon: "1234950811319275636" # @radioactiveradiant
   faces:
