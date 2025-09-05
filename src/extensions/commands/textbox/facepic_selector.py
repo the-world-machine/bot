@@ -144,6 +144,7 @@ select_regex = re.compile(
 
 @component_callback(select_regex)
 async def handle_facepic_selection(self, ctx: ComponentContext):
+	await ctx.defer(edit_origin=True)
 	from .create import respond as update_textbox
 
 	match = select_regex.match(ctx.custom_id)
