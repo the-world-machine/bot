@@ -255,6 +255,7 @@ OneShot:
   icon: "1413524025698816032"
   characters:
     The World Machine:
+      icon: "1394486232460955769" # @oneshot/en
       faces:
         Crumbs: "1408325300613419008" # OSCF of Niko face (in original)
         Popcorn: "1408324955208155187" # OSCF of Niko face
@@ -263,6 +264,7 @@ OneShot:
         Blush: "1408324951798448209" # OSCF of Niko face
         Shrug: "1411246759447105637" # OSCF of Niko face
     Niko:
+      icon: "1394387133330096228" # @oneshot/niko
       faces:
         Popcorn: "1019605504957366282" # to be credited
         Wink: "1019605506152734790" # to be credited
@@ -270,12 +272,14 @@ OneShot:
         Blush: "1019605508421857401" # to be credited
         Shrug: "1411246761988587552" # to be credited
     Kip:
+      icon: "1394389376859115580" # @oneshot/kip
       faces:
         Looking Left: "1408285316837806161" # @meqativ
         Looking Right: "1408285318494552188" # @meqativ
         Pensive: "1027240033599627264" # to be credited
         "cool.": "1019605513387900978" # to be credited?
     Plight:
+      icon: "1394383951715504129" # @oneshot/plight
       faces:
         Sip: "1174513437515190372" # to be credited
 Other:
