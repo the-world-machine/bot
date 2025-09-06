@@ -11,6 +11,7 @@
 For more information on what you can do with this bot, check out our [website](https://www.theworldmachine.xyz/invite).
 
 </div>
+
 ## [Documentation](https://github.com/the-world-machine/bot/tree/main/md/)
 
 ## Contributing
