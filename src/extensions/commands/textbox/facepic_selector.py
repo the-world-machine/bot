@@ -46,14 +46,14 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 			    style=ButtonStyle.BLURPLE,
 			    label=key + "/",
 			    emoji=emoji,
-			    custom_id=f"textbox_fs select {state_id} {frame_index} 0 {new_path_str}"
+			    custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{new_path_str}"
 			)
 		else:
 			button = Button(
 			    style=ButtonStyle.GRAY,
 			    label=key,
 			    emoji=PartialEmoji(id=value) if value else PartialEmoji(name="❔"),
-			    custom_id=f"textbox_fs select {state_id} {frame_index} 0 {new_path_str}"
+			    custom_id=f"textbox_fs select {state_id} {frame_index} {page} {new_path_str}"
 			)
 		all_buttons.append(button)
 
@@ -73,7 +73,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 		    Button(
 		        style=ButtonStyle.BLURPLE,
 		        emoji="⬅️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} {page - 1} {path_str}"
+		        custom_id=f"textbox_fs select {state_id} {frame_index} {page - 1} #{path_str}"
 		    )
 		)
 		free_slots -= 1
@@ -84,7 +84,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 		    Button(
 		        style=ButtonStyle.BLURPLE,
 		        emoji="⬆️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} 0 {parent_path}"
+		        custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{parent_path}"
 		    )
 		)
 		free_slots -= 1
@@ -110,7 +110,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 		    Button(
 		        style=ButtonStyle.BLURPLE,
 		        emoji="➡️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} {page + 1} {path_str}"
+		        custom_id=f"textbox_fs select {state_id} {frame_index} {page + 1} #{path_str}"
 		    )
 		)
 
@@ -138,7 +138,7 @@ async def init_facepic_selector(self, ctx: ComponentContext):
 
 
 select_regex = re.compile(
-    r"textbox_fs select (?P<state_id>-?\d+) (?P<frame_index>-?\d+) (?P<page>\d+)(?: (?P<path>.*))?(?: (?P<noupd>#))?$"
+    r"textbox_fs select (?P<state_id>-?\d+) (?P<frame_index>-?\d+) (?P<page>\d+)(?: (?P<noupd>\#)?(?P<path>.*))?$"
 )
 
 
@@ -151,17 +151,16 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 	if not match:
 		return
 
-	state_id, frame_index_str, page_str, path_str, noupd = match.groups()
+	state_id, frame_index_str, page_str, noupd, path_str = match.groups()
 	frame_index = int(frame_index_str)
 	page = int(page_str)
 	path = path_str.strip().split('.') if path_str and path_str.strip() else []
 
-	try:
-		_, state, frame_data = await state_shortcut(ctx, state_id, frame_index)
-	except StateShortcutError:
-		return
-
-	if path_str.strip():
+	if not noupd and path_str.strip():
+		try:
+			_, state, frame_data = await state_shortcut(ctx, state_id, frame_index)
+		except StateShortcutError:
+			return
 		face_path = path_str.strip().replace('.', '/')
 		face = await get_facepic(face_path)
 		if face and face.icon == None and not face.path.startswith("https://"):
@@ -170,7 +169,7 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 		frame_data.text = set_facepic_in_frame_text(frame_data.text, face_path)
 
 		import asyncio
-		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))
+		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))  #type:ignore
 
 	selected_item = facepic.s
 	for part in path:

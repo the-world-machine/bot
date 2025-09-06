@@ -323,17 +323,26 @@ bot_id = decode_base64_padded(token.split('.')[0])
 
 
 @overload
-def assign_variables(input: str, locale: str = ..., *, ctx: Any = None, **variables: Any) -> str:
+def assign_variables(
+    input: str, locale: str | None = ..., pretty_numbers: bool = ..., *, ctx: Any = None, **variables: Any
+) -> str:
 	...
 
 
 @overload
-def assign_variables(input: T, locale: str = ..., *, ctx: Any = None, **variables: Any) -> T:
+def assign_variables(
+    input: T, locale: str | None = ..., pretty_numbers: bool = ..., *, ctx: Any = None, **variables: Any
+) -> T:
 	...
 
 
 def assign_variables(
-    input: Any, locale: str = get_config("localization.main-locale"), *, ctx: Any = None, **variables: Any
+    input: Any,
+    locale: str | None = get_config("localization.main-locale"),
+    pretty_numbers: bool = True,
+    *,
+    ctx: Any = None,
+    **variables: Any
 ) -> Any:
 	if isinstance(input, str):
 		result = input
@@ -360,7 +369,7 @@ def assign_variables(
 		        'app:id': str(bot_id)
 		    }
 		}.items():
-			if isinstance(data, (int, float)):
+			if locale and pretty_numbers and isinstance(data, (int, float)):
 				data = fnum(data, locale)
 			elif not isinstance(data, str):
 				data = str(data)
@@ -368,11 +377,13 @@ def assign_variables(
 			result = result.replace(f'[{name}]', data)
 		return result
 	elif isinstance(input, tuple):
-		return tuple(assign_variables(elem, locale, ctx=ctx, **variables) for elem in input)
+		return tuple(
+		    assign_variables(elem, locale, pretty_numbers=pretty_numbers, ctx=ctx, **variables) for elem in input
+		)
 	elif isinstance(input, dict):
 		new_dict = {}
 		for key, value in input.items():
-			new_dict[key] = assign_variables(value, locale, ctx=ctx, **variables)
+			new_dict[key] = assign_variables(value, locale, pretty_numbers=pretty_numbers, ctx=ctx, **variables)
 		return new_dict
 	else:
 		return input

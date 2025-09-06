@@ -93,12 +93,12 @@ class FacepicChangeCommand(ReprMixin):
 
 TOKENS = FormatModifier | ColorModifier | CharCommand | DelayCommand | CharSpeedModifier | FacepicChangeCommand | LineBreakCommand
 COMMAND_MAP: dict[str, Type] = {
+    '@': FacepicChangeCommand,
     'f': FormatModifier,
-    'c': ColorModifier,
     'u': CharCommand,
+    'c': ColorModifier,
     's': CharSpeedModifier,
     'd': DelayCommand,
-    '@': FacepicChangeCommand,
     'n': LineBreakCommand
 }
 
@@ -109,10 +109,12 @@ def init_token(type: str) -> TOKENS:
 	if token_class:
 		return token_class()
 	else:
-		raise ValueError(f"Invalid modifier type '{type}'. Expected one of: {", ".join(COMMAND_MAP.keys())}")
+		raise ValueError(
+		    f"Invalid token type '{type}'. Expected one of: {", ".join(COMMAND_MAP.keys())}"
+		)  # TODO: remove this
 
 
-class CommandsParseError(ValueError):
+class TokenParseError(ValueError):
 
 	def __init__(self, message, position=None, command=None):
 		super().__init__(message)
@@ -133,7 +135,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 	Parses a string of textbox text syntax into a list of tokens in the form of modifier/command classes or bare strings for normal text. Making thsi function lowered the amount of my braincells down to 12 from 5 :aga:
 	
 	Raises:
-			CommandsParseError: Whenever there is an unclosed bracket
+			TokenParseError: Whenever there is an unclosed bracket
 	"""
 	tokens = []
 	pos = 0
@@ -141,6 +143,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 
 	while pos < length:
 		if input_str[pos] == '\\':
+			# Handle escaped backslash ('\\')
 			if pos + 1 < length and input_str[pos + 1] == '\\':
 				if tokens and isinstance(tokens[-1], str):
 					tokens[-1] += '\\'
@@ -149,38 +152,51 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 				pos += 2
 				continue
 
-			if pos + 1 < length and input_str[pos + 1] in COMMAND_MAP.keys():
+			# Handle potential command ('\c')
+			if pos + 1 < length:
 				cmd_char = input_str[pos + 1]
-				command = init_token(type=cmd_char)
-				args_start = pos + 2
+				try:
+					token = init_token(type=cmd_char)
+					args_start = pos + 2
 
-				if args_start < length and input_str[args_start] == '[':
-					bracket_pos = args_start
-					bracket_depth = 1
-					scan_pos = args_start + 1
+					if args_start < length and input_str[args_start] == '[':
+						bracket_pos = args_start
+						bracket_depth = 1
+						scan_pos = args_start + 1
 
-					while scan_pos < length and bracket_depth > 0:
-						if input_str[scan_pos] == '[':
-							bracket_depth += 1
-						elif input_str[scan_pos] == ']':
-							bracket_depth -= 1
-							if bracket_depth == 0:
-								command.parse_input(input_str[args_start + 1:scan_pos])
-								pos = scan_pos + 1
-								break
-						scan_pos += 1
+						while scan_pos < length and bracket_depth > 0:
+							if input_str[scan_pos] == '[':
+								bracket_depth += 1
+							elif input_str[scan_pos] == ']':
+								bracket_depth -= 1
+								if bracket_depth == 0:
+									token.parse_input(input_str[args_start + 1:scan_pos])
+									pos = scan_pos + 1
+									break
+							scan_pos += 1
 
-					if bracket_depth > 0:
-						raise CommandsParseError("Unclosed bracket", position=bracket_pos, command=f"\\{cmd_char}")
+						if bracket_depth > 0:
+							raise TokenParseError("Unclosed bracket", position=bracket_pos, command=f"\\{cmd_char}")
 
-					tokens.append(command)
-					continue
-				else:
-					tokens.append(command)
-					pos += 2
-					continue
+						tokens.append(token)
+						continue
+					else:
+						tokens.append(token)
+						pos += 2
+						continue
+				except ValueError as e:
+					if str(e).startswith("Invalid command type"):
+						text_to_add = input_str[pos:pos + 2]
+						if tokens and isinstance(tokens[-1], str):
+							tokens[-1] += text_to_add
+						else:
+							tokens.append(text_to_add)
+						pos += 2
+						continue
+					else:
+						raise
 
-			# lone backslash
+			# lone backslash (e.g., at the end of the string)
 			if tokens and isinstance(tokens[-1], str):
 				tokens[-1] += '\\'
 			else:
@@ -207,7 +223,3 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 			merged.append(token)
 
 	return merged
-
-
-text = "\\@[OneShot/The World Machine/Normal]Hi!!!...\\n Oh,\\@[OneShot/The World Machine/Eyes Closed] it's you."
-print(parse_textbox_text(text))

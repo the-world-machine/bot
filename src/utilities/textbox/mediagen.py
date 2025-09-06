@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import FacepicChangeCommand, parse_textbox_text
+from utilities.textbox.parsing import FacepicChangeCommand, LineBreakCommand, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -92,45 +92,11 @@ class SerializableData:
 
 
 @dataclass
-class BackgroundStyle(SerializableData):
-	source: str = "OneShot"
-
-	_separator: str = '-'
-
-
-# future stuffff -- [
-#color: Color = Color(color="#ff6600")
-
-
-@dataclass
-class NameStyle(SerializableData):
-	source: str = "OneShot"
-	position: SupportedLocations = "right"
-	color: Color = Color(color="#ff6600")
-
-	_separator: str = '-'
-
-
-@dataclass
-class FacepicStyle(SerializableData):
-	source: str = "OneShot"
-	face_position: SupportedLocations = "left"
-
-	_separator: str = '-'
-
-
-# ] --
-
-
-@dataclass
 class FrameOptions(SerializableData):
-	background: BackgroundStyle = field(default_factory=BackgroundStyle)
 	animated: bool = True
-	starting_speed: float = 1.0
 	end_delay: int = 150
 	end_arrow_bounces: int = 4
 	end_arrow_delay: int = 150
-	static_delay_override: int | None = None
 
 	_separator: str = ';'
 
@@ -220,7 +186,9 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 		command = parsed[i]
 		if isinstance(command, FacepicChangeCommand):
 			await update_facepic(command)
-
+		elif isinstance(command, LineBreakCommand):
+			text_offset[1] += 25.0
+			text_offset[0] = 0
 		elif isinstance(command, str):
 			message = command
 			d = ImageDraw.Draw(text)

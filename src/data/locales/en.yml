@@ -34,6 +34,9 @@ generic:
     timeout:
       yn: "[ You took too long to respond ]"
 
+  errors:
+    expired: "This interaction has expired. Run it again, or report this in our community discord server if it keeps happening. (you can find an invite to it in [/about])"
+
 # ---------------------------------------------------------------
 
 music:
@@ -909,8 +912,7 @@ textbox:
     no_char: Character not found...
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
-    failed_to_render: "[ I failed to render the image, please report this in our community discord server. (you can find an invite to it in [/about], state ID: [sid]) ]"
-    unknown_state: "This textbox builder has expired. Run the command again, or report this in our community discord server if it keeps happening. (you can find an invite to it in [/about], state ID: [id])"
+    failed_to_render: "[ I failed to render the image, please report this in our community discord server. (you can find an invite to it in [/about]) ]"
     unknown_frame: "Frame №[index] not found. Total frames: [total]"
     invalid_character: The character "[character_name]" doesn't exist
     invalid_face: Character "[character_name]" doesn't have the "[face_name]" face
@@ -962,6 +964,7 @@ textbox:
       accepted: Textbox changes accepted
       warning: Some warnings showed up while parsing the code
       declined: Something went wrong while parsing the code
+      response: State changed! # only shows up while debugging
     edit_text:
       title: "Editing text for frame #[index]!"
       input:
@@ -990,3 +993,6 @@ textbox:
       filename: "TWM textbox ([timestamp])"
     multi_frame:
       filename: "TWM textbox ([frames], [timestamp])"
+
+  ttb:
+    comment: "documentation on this can be found here: [link]"

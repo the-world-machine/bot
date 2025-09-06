@@ -1,6 +1,8 @@
+import io
 import re
 import asyncio
 from interactions.models.discord.components import (
+	FileComponent,
 	MediaGalleryItem,
 	UnfurledMediaItem,
 	ContainerComponent,
@@ -314,11 +316,16 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext, state_id:
 	preview = await render_to_file(ctx, state, frame_preview_index=int(frame_index))
 	assert preview.file_name is not None
 	funny_name = (lambda p: re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name[:p]).strip('_') + preview.file_name[p:] if p > 0 else re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name).strip('_'))(preview.file_name.rfind('.')) # type: ignore
+	tbb = File(file=io.BytesIO(state.to_string(loc).encode('utf-8')), file_name=funny_name.rsplit(".",maxsplit=1)[0]+".backup.tbb")
+	files = [tbb, preview]
 	components = [
+		FileComponent(
+			file=UnfurledMediaItem(url=f"attachment://{tbb.file_name}")
+		),
 		MediaGalleryComponent(items=[
 			MediaGalleryItem(
 				media=UnfurledMediaItem(url=f"attachment://{funny_name}")
-			)
+			),
 		]),
 		ActionRow(
 			Button(
@@ -365,13 +372,13 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext, state_id:
 		)
 	]
 	if not edit:
-		return await ctx.send(components=components, file=preview, ephemeral=True)
+		return await ctx.send(components=components, files=files, ephemeral=True)
 	elif isinstance(ctx, ComponentContext):
-		return await ctx.edit_origin(components=components, file=preview)
+		return await ctx.edit_origin(components=components, files=files)
 	else:
 		return await ctx.edit(
 				message=ctx.message_id if isinstance(ctx, ModalContext) else "@original",
 				components=components,
-				file=preview
+				files=files
 		)
 	

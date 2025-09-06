@@ -16,7 +16,10 @@ class TextboxCommands(Extension):
 		"""Base command for textboxes."""
 		pass
 
-	create = textbox.subcommand(sub_cmd_name="create", sub_cmd_description="Make a OneShot textbox")(create_cmd)
+	create = textbox.subcommand(
+	    sub_cmd_name="create",
+	    sub_cmd_description="Make a textbox or a GIF dialogue between characters, like in OneShot"
+	)(create_cmd)
 
 	handle_components = create_handle_components
 	handle_update_text_modal = create_handle_update_text_modal
