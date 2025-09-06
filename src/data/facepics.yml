@@ -290,6 +290,40 @@ OneShot:
       icon: "1394383951715504129" # OneShot, plight
       faces:
         Sip: "1174513437515190372" # to be credited
+    Nikonlanger:
+      faces:
+        Normal: "1248987680935514337" # @radioactiveradiant
+        Annoyed: "1235254400948244621" # @radioactiveradiant
+        Angrymeow: "1235256649397178499" # @radioactiveradiant
+        Happy: "1235258428834840586" # @radioactiveradiant
+        Oho: "1328390521839685652" # @radioactiveradiant
+        Blush: "1237471830583935048" # @meqativ
+        What: "1235294056301461506" # @radioactiveradiant
+        Why: "1238379006991142964" # @radioactiveradiant
+        Smug: "1240679644433223802" # @radioactiveradiant
+        Sleepy: "1240679655674216478" # @radioactiveradiant
+        Tired: "1241643559137050714" # @radioactiveradiant
+        Concerned: "1248987357802266704" # @radioactiveradiant
+        Huh: "1248987456255168554" # @radioactiveradiant
+        Distressed: "1248987515390656637" # @radioactiveradiant
+        What the hell: "1237405692663693426" # @radioactiveradiant
+        Amaze: "1248987587780018247" # @radioactiveradiant
+        Unamused: "1248987762481299547" # @radioactiveradiant
+        Scared: "1248987959034904648" # @radioactiveradiant
+        Crying: "1248988045324193865" # @radioactiveradiant
+        
+        You Should: "1235254718415110304" # @meqativ
+        Wave: "1375470514193170524" # @meqativ
+        Blanket: "1237765904331313152" # @meqativ
+        Why: "1248987897659527209" # @meqativ
+        Blob: "1238167213131956264" # @meqativ
+        Flag: "1240679667745165405" # @radioactiveradiant
+        Cookie: "1379532755083460668" # @meqativ
+        Jii: "1248988108796596395" # @radioactiveradiant
+        Stare: "1400493177303076864" # @radioactiveradiant
+        Plush: "1235246182712737802" # @radioactiveradiant
+        Plush Looking Right: "1236987961648746556" # @radioactiveradiant
+        Amazed Uncanny: "1237747423208673371" # @meqativ
 Other:
   icon: "1411249485916668056" # from https://urbanshade.org/wiki/File:NaviQuoteIcon.png
   faces:
@@ -297,4 +331,3 @@ Other:
     #    "Someone's Avatar": ~
     "NAVI": "1411249485916668056" # from https://urbanshade.org/wiki/File:NaviQuoteIcon.png
     Raised Eyebrow Emoji: "1027306556783603813" # https://emojipedia.org/skype/1.0/thinking-face
-    ":nikonlanger_smug:": "1234950811319275636" # @radioactiveradiant
