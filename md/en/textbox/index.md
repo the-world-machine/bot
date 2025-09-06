@@ -16,7 +16,7 @@ You can use special commmands mid-sentence to do various stuff (like changing th
 >
 > - optional string
 >
-> 2. the transformation to apply to the image
+> 2. the transformation to apply to the image **(not implemented yet)**
 >
 > - optional string
 >
@@ -78,10 +78,7 @@ A newline separated list of frames. Each frame has an options and text field, se
 
 ### `text`
 
-Text content for the frame
-
-> [!WARNING]
-> 🚧 Everything below this is not implemented yet!
+Text content for the frame (this supports the commands)
 
 # Variables
 
