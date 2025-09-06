@@ -1,0 +1,91 @@
+> this page applies to version `v0.1`
+
+# Textbox Documentation
+
+## Commands
+
+You can use special commmands mid-sentence to do various stuff (like changing the facepic or coloring text), using `\c[arguments]` syntax (you can omit [] if there's no arguments). This is an almost direct copy of how [OneShot Textbox Maker](https://github.com/Leo40Git/OneShot-Textbox-Maker/) does this, check that project out if you want (even though it's archived), it's a java program that lets you make dialogues like the command in this bot too.<br/>
+
+> `name` - Description - `example`
+
+> ### `@` - Change facepic - `\@[OneShot/Niko/af]`
+>
+> This accepts three arguments separated by a colon (`:`)
+>
+> 1. the path for the facepic. you can find all of these [in this file](https://github.com/the-world-machine/bot/blob/main/src/data/facepics.yml), they are listed in '`name`: `discord emoji id` # `credits`' layout, or by using the facepic selector in the textbox dialogue builder using the bot. When writing the paths manually, make sure to not put "characters" or "faces" in the paths.
+>
+> - optional string
+>
+> 2. the transformation to apply to the image
+>
+> - optional string
+>
+> 3. the position for the face in the textbox **(not implemented yet)**
+>
+> - optional string
+
+> ### `n` - Line break - `\n`
+>
+> Self explanatory (probably shouldn't be included, but it's a command nonetheless)
+
+## File editing
+
+### `StateOptions`:
+
+A newline separated list of key=value pairs
+
+> `out_filetype` # Output filetype
+>
+> - text, one of WEBP, GIF, APNG, PNG, JPEG (default: "WEBP")
+>   APNG: this sends it as a file without a filename, because Discord breaks them upon upload for some reason
+
+> `send_to` # Whether to send the output to the channel or dms
+>
+> - number, one of: 1, 2, 3 (default: 1)
+>   1. Doesn't send anywhere, replies to the textbox in an ephemeral message
+>   2. Sends in Direct Messages of runner
+>   3. Sends to the current channel. If the bot isn't in the server - the bot tries to followup with a normal message (runner needs External Apps in order for this to actually send the message)
+
+> `force_send` # Whether to ignore checks before sending (e.g. no facepic being set or no text being set)
+>
+> - boolean true/false (default: false)
+
+> `quality` # Quality
+>
+> - number, range: 1..=100 (default: 100)
+
+### `Frames`:
+
+A newline separated list of frames. Each frame has an options and text field, separated by a semicolon, options are wrapped in braces for ease of editing ({options};text).
+
+### `options`
+
+> 1. `animated` # Whether the text should be animated
+>
+> - boolean, true/false (default: true)
+
+> 2. `end_delay` # How many milliseconds to wait before showing the end arrow
+>
+> - number, range: 1.. (default: 150)
+
+> 3. `end_arrow_bounces` # How many bounces should the end arrow make
+>
+> - number, range: 1.. (default: 4)
+
+> 4. `end_arrow_delay` # How many milliseconds to wait between arrow bounces
+>
+> - number, range: 1.. (default: 150)
+
+### `text`
+
+Text content for the frame
+
+> [!WARNING]
+> 🚧 Everything below this is not implemented yet!
+
+# Variables
+
+[Locations](#L88) (`SupportedLocations`): "aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"
+
+> a - above
+> b - below
