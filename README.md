@@ -12,7 +12,7 @@ For more information on what you can do with this bot, check out our [website](h
 
 </div>
 
-## [Documentation](https://github.com/the-world-machine/bot/tree/main/md/)
+## [Documentation](./md/en/Documentation.md)
 
 ## Contributing
 
