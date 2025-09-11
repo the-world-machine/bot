@@ -1,7 +1,7 @@
 from .state import command_ as state_cmd
 from .facepic_selector import init_facepic_selector, handle_facepic_selection
 from interactions import Extension, SlashContext, contexts, integration_types, slash_command
-from .create import command as create_cmd, handle_components as create_handle_components, handle_update_text_modal as create_handle_update_text_modal, handle_edit_modal as create_handle_edit_modal
+from .create import command as create_cmd, handle_components as create_handle_components, handle_update_text_modal as create_handle_update_text_modal, handle_edit_modal as create_handle_edit_modal, facepic_autocomplete as create_facepic_autocomplete
 
 
 class TextboxCommands(Extension):
@@ -20,7 +20,7 @@ class TextboxCommands(Extension):
 	    sub_cmd_name="create",
 	    sub_cmd_description="Make a textbox or a GIF dialogue between characters, like in OneShot"
 	)(create_cmd)
-
+	facepic_autocomplete = create.autocomplete("facepic")(create_facepic_autocomplete)
 	handle_components = create_handle_components
 	handle_update_text_modal = create_handle_update_text_modal
 	handle_edit_modal = create_handle_edit_modal

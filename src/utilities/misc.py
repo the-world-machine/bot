@@ -291,9 +291,9 @@ class SortOption(dict):
 		self.names = names
 
 
-def optionSearch(query: str, options: Iterable[SortOption]) -> list[SlashCommandChoice]:  # Changed return type to List
+def optionSearch(query: str, options: Iterable[SortOption], max: int | None = 25) -> list[SlashCommandChoice]:
 	matches = []
-	top = []
+	tøp = []
 
 	filtered_options = [
 	    option for option in options
@@ -308,7 +308,7 @@ def optionSearch(query: str, options: Iterable[SortOption]) -> list[SlashCommand
 		best_name = min(name_candidates, key=lambda name: levenshtein_distance(query, name))
 
 		if levenshtein_distance(query, best_name) == 0:
-			top.append({ "name": option.picked_name, "value": option.value})
+			tøp.append({ "name": option.picked_name, "value": option.value})
 		elif query.lower() in best_name.lower():
 			matches.append({ "name": option.picked_name, "value": option.value})
 		else:
@@ -317,9 +317,11 @@ def optionSearch(query: str, options: Iterable[SortOption]) -> list[SlashCommand
 				matches.append({ "name": option.picked_name, "value": option.value})
 
 	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
+	results = tøp + matches
 
-	# Convert the map object to a list before returning
-	return list(map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), top + matches))
+	if max:
+		results = results[:max]
+	return list(map(lambda choice: SlashCommandChoice(name=choice['name'], value=choice['value']), results))
 
 
 def format_type_hint(type_hint: Any) -> str:
@@ -364,3 +366,7 @@ class ReprMixin:
 		args = ", ".join(f"{key}={repr(value)}" for key, value in attrs.items())
 
 		return f"{class_name}({args})"
+
+
+def replace_numbers_with_emojis(text: str) -> str:
+	return re.sub(r'\d', lambda m: m.group() + chr(0xFE0F) + chr(0x20E3), text)

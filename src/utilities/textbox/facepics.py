@@ -16,11 +16,11 @@ from utilities.misc import cached_get, is_domain_allowed
 
 
 class Facepics:
-	s: dict
+	facepics: dict
 
 
-facepic: Facepics = Facepics()
-facepic.s = {}  # god is dea.d
+f_storage: Facepics = Facepics()
+f_storage.facepics = {}
 last_update: datetime | None = None
 
 icon_regex = re.compile(r"^\d+$")
@@ -103,7 +103,7 @@ def on_file_update(filename):
 	print(colored('─ Reloading facepics ...', 'yellow'), end="")
 
 	try:
-		facepic.s = load_facepics()
+		f_storage.facepics = load_facepics()
 	except Exception as e:
 		print(colored(" FAILED", "red"))
 		ReadyEvent.log("## Failed to reload facepics\n" + str(e))
@@ -127,7 +127,7 @@ async def get_facepic(path: str) -> Face | None:
 			return await get_facepic(invalid_path)
 	else:
 		parts = path.split('/')
-		at = facepic.s
+		at = f_storage.facepics
 		try:
 			for part in parts:
 				at = at[part]
@@ -151,7 +151,7 @@ if debugging():
 else:
 	print("Loading facepics ... \033[s", flush=True)
 
-facepic.s = load_facepics()
+f_storage.facepics = load_facepics()
 
 if not debugging():
 	print(f"\033[udone", flush=True)

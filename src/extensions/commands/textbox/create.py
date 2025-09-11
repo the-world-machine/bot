@@ -9,15 +9,17 @@ from interactions.models.discord.components import (
 	TextDisplayComponent,
 	MediaGalleryComponent,)
 from datetime import datetime
-from typing import Literal, get_args
+from typing import Any, Literal, get_args
+from utilities.misc import SortOption, optionSearch
 from .facepic_selector import set_facepic_in_frame_text
 from utilities.config import debugging, get_config
 from utilities.localization import Localization, put_mini
 from utilities.message_decorations import Colors, fancy_message
 from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
 from utilities.textbox.states import StateShortcutError, State, StateOptions, new_state, state_shortcut
-from interactions import ActionRow, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
+from interactions import ActionRow, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
 
+from utilities.textbox.facepics import f_storage
 nomentions = AllowedMentions(parse=[])
 
 
@@ -85,7 +87,6 @@ async def command(
 
 	if filetype not in get_args(SupportedFiletypes):
 		return
-	face_path = f"\\@[{face_path}]" if face_path else ""
 
 	if face_path:
 		text = set_facepic_in_frame_text(text, face_path)
@@ -101,10 +102,39 @@ async def command(
 		frames=Frame(text=text)
 	))
 	
-	if send_to != 1 and (len(text) != 0 and len(face_path) != 0):
+	if send_to != 1 and (len(text) != 0 and face_path != None):
 		await send_output(ctx, state_id, 0)
 
 	await respond(ctx, state_id, 0, edit=not erored)
+
+async def facepic_autocomplete(self, ctx: AutocompleteContext):
+	loc = Localization(ctx)
+	search_query = ctx.input_text
+	print(search_query)
+	tøp = []
+	print(search_query, type(search_query))
+	if not search_query or search_query == "":
+		tøp.append(SlashCommandChoice(name="Start by selecting a folder (focus back on input to continue)", value="Other/"))
+	choices: list[SortOption] = []
+	#optionSearch(search_query, [SortOption(picked_name=name, value=name) for name, char in characters])
+	path = [part for part in search_query.strip().split("/") if part != ""]
+	selected_item = f_storage.facepics
+	if not search_query == "":
+		for part in path:
+			selected_item = selected_item.get(part)
+			if selected_item is None:
+				return await ctx.send([SlashCommandChoice(name="No facepics found for this search", value="")])
+	if selected_item:
+		for key, value in selected_item.items():
+			if key.startswith("__"):
+				continue
+			full_path = "/".join(path + [key])
+			if isinstance(value, dict):
+				choices.append(SortOption(picked_name=full_path+"/", value=full_path))
+			else:
+				choices.append(SortOption(picked_name=full_path, value=full_path))
+	top = tøp[:5]
+	return await ctx.send(tøp + optionSearch(search_query, choices, 25-len(tøp)))
 
 handle_components_regex = re.compile(
 		r"textbox (?P<method>refresh|render|change_text|facepic_selector|delete_frame|edit) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"

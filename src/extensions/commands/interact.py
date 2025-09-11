@@ -10,6 +10,7 @@ from utilities.config import debugging
 from utilities.emojis import emojis
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
+from utilities.misc import replace_numbers_with_emojis
 
 invis_char = "󠄴"
 
@@ -39,11 +40,6 @@ def fill_with_none(arr, target_index):
 	if target_index >= current_length:
 		arr += [None] * (target_index - current_length + 1)
 	return arr
-
-
-def replace_numbers_with_emojis(text: str) -> str:
-	return re.sub(r'\d', lambda m: m.group() + chr(0xFE0F) + chr(0x20E3), text)
-
 
 class InteractCommands(Extension):
 

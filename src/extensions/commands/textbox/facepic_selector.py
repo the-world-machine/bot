@@ -7,7 +7,8 @@ from interactions import (
     PartialEmoji,
     component_callback,
 )
-from utilities.textbox.facepics import Face, facepic, get_facepic
+from utilities.misc import replace_numbers_with_emojis
+from utilities.textbox.facepics import Face, f_storage, get_facepic
 from utilities.textbox.states import StateShortcutError, state_shortcut
 
 FACEPIC_AT_START_REGEX = re.compile(r"^\\@\[[^\]]*\]")
@@ -24,7 +25,7 @@ def set_facepic_in_frame_text(text: str | None, face_path: str) -> str:
 
 
 async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: int, path: list[str], page: int = 0):
-	current_level = facepic.s
+	current_level = f_storage.facepics
 	for part in path:
 		current_level = current_level.get(part, {})
 
@@ -34,7 +35,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 		if key.startswith("__"):
 			continue
 
-		new_path_str = ".".join(path + [key])
+		new_path_str = "/".join(path + [key])
 
 		if isinstance(value, dict):
 			emoji = PartialEmoji(name="📂")
@@ -66,7 +67,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 
 	rows: list[ActionRow] = []
 	first_row: list[Button] = []
-	path_str = ".".join(path)
+	path_str = "/".join(path)
 
 	if page > 0:
 		first_row.append(
@@ -79,7 +80,7 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 		free_slots -= 1
 
 	if path:
-		parent_path = ".".join(path[:-1])
+		parent_path = "/".join(path[:-1])
 		first_row.append(
 		    Button(
 		        style=ButtonStyle.BLURPLE,
@@ -104,7 +105,14 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 	remaining_page_actions = page_actions[actions_to_add_to_first_row:]
 
 	if paging_active:
-		first_row.append(Button(style=ButtonStyle.GRAY, label=str(page + 1), custom_id="ignore", disabled=True))
+		first_row.append(
+		    Button(
+		        style=ButtonStyle.GRAY,
+		        label=replace_numbers_with_emojis(str(page + 1)),
+		        custom_id="ignore",
+		        disabled=True
+		    )
+		)
 	if has_next_page:
 		first_row.append(
 		    Button(
@@ -154,14 +162,14 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 	state_id, frame_index_str, page_str, noupd, path_str = match.groups()
 	frame_index = int(frame_index_str)
 	page = int(page_str)
-	path = path_str.strip().split('.') if path_str and path_str.strip() else []
+	path = path_str.strip().split('/') if path_str and path_str.strip() else []
 
 	if not noupd and path_str.strip():
 		try:
 			_, state, frame_data = await state_shortcut(ctx, state_id, frame_index)
 		except StateShortcutError:
 			return
-		face_path = path_str.strip().replace('.', '/')
+		face_path = path_str.strip()
 		face = await get_facepic(face_path)
 		if face and face.icon == None and not face.path.startswith("https://"):
 			if face.path == "Other/Your Avatar":
@@ -171,7 +179,7 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 		import asyncio
 		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))  #type:ignore
 
-	selected_item = facepic.s
+	selected_item = f_storage.facepics
 	for part in path:
 		selected_item = selected_item.get(part)
 		if selected_item is None:
