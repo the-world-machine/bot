@@ -291,7 +291,14 @@ class SortOption(dict):
 		self.names = names
 
 
-def optionSearch(query: str, options: Iterable[SortOption], max: int | None = 25) -> list[SlashCommandChoice]:
+class BadResults(Exception):
+	...
+
+
+def optionSearch(query: str,
+                 options: Iterable[SortOption],
+                 max: int | None = 25,
+                 ignore_bad_results: bool = False) -> list[SlashCommandChoice]:
 	matches = []
 	tøp = []
 
@@ -302,7 +309,8 @@ def optionSearch(query: str, options: Iterable[SortOption], max: int | None = 25
 
 	if filtered_options:
 		options = filtered_options
-
+	if not ignore_bad_results and len(filtered_options) == 0:
+		raise BadResults()
 	for option in options:
 		name_candidates = option.get("names") or [option.picked_name]
 		best_name = min(name_candidates, key=lambda name: levenshtein_distance(query, name))

@@ -10,7 +10,7 @@ from interactions.models.discord.components import (
 	MediaGalleryComponent,)
 from datetime import datetime
 from typing import Any, Literal, get_args
-from utilities.misc import SortOption, optionSearch
+from utilities.misc import BadResults, SortOption, optionSearch
 from .facepic_selector import set_facepic_in_frame_text
 from utilities.config import debugging, get_config
 from utilities.localization import Localization, put_mini
@@ -107,6 +107,23 @@ async def command(
 
 	await respond(ctx, state_id, 0, edit=not erored)
 
+def convert_to_sortoptions(item: Any, path: list[str] | None = None, recursive: bool = False):
+	if path is None:
+		path = []
+	items = []
+	for key, value in item.items():
+		if key.startswith("__") or key == "icon":
+			continue
+		full_path = "/".join(path + [key])
+		if isinstance(value, dict):
+			if recursive:
+				items.extend(convert_to_sortoptions(value, path + [key], recursive=True))
+			else:
+				items.append(SortOption(picked_name=full_path + "/", value=full_path))
+		else:
+			items.append(SortOption(picked_name=full_path, value=full_path))
+	return items
+
 async def facepic_autocomplete(self, ctx: AutocompleteContext):
 	loc = Localization(ctx)
 	search_query = ctx.input_text
@@ -114,27 +131,36 @@ async def facepic_autocomplete(self, ctx: AutocompleteContext):
 	tøp = []
 	print(search_query, type(search_query))
 	if not search_query or search_query == "":
-		tøp.append(SlashCommandChoice(name="Start by selecting a folder (focus back on input to continue)", value="Other/"))
+		tøp.append(SlashCommandChoice(name="Start by selecting a folder (focus back on input to continue)", value=""))
 	choices: list[SortOption] = []
-	#optionSearch(search_query, [SortOption(picked_name=name, value=name) for name, char in characters])
+
 	path = [part for part in search_query.strip().split("/") if part != ""]
 	selected_item = f_storage.facepics
+	descended = []
 	if not search_query == "":
 		for part in path:
-			selected_item = selected_item.get(part)
-			if selected_item is None:
-				return await ctx.send([SlashCommandChoice(name="No facepics found for this search", value="")])
-	if selected_item:
-		for key, value in selected_item.items():
-			if key.startswith("__"):
-				continue
-			full_path = "/".join(path + [key])
-			if isinstance(value, dict):
-				choices.append(SortOption(picked_name=full_path+"/", value=full_path))
-			else:
-				choices.append(SortOption(picked_name=full_path, value=full_path))
-	top = tøp[:5]
-	return await ctx.send(tøp + optionSearch(search_query, choices, 25-len(tøp)))
+			got = selected_item.get(part)
+			if isinstance(got, str):
+				path = descended
+				break
+			selected_item = got
+			descended.append(part)
+			if selected_item == None:
+				break
+	if not selected_item:
+		selected_item = f_storage.facepics
+	if len(path) == 0 or (selected_item != f_storage.facepics and len(path) != 0):
+		choices.extend(convert_to_sortoptions(selected_item, path))
+	else:
+		choices.extend(convert_to_sortoptions(selected_item, [], recursive=True))
+	tøp = tøp[:5]
+	completed_search = []
+	try:
+		completed_search = optionSearch(search_query, choices, 25-len(tøp))
+	except BadResults as e:
+		tøp.append(SlashCommandChoice(name="Bad search query", value=""))
+		completed_search = optionSearch(search_query, choices, 25-len(tøp), ignore_bad_results=True)
+	return await ctx.send(tøp + completed_search)
 
 handle_components_regex = re.compile(
 		r"textbox (?P<method>refresh|render|change_text|facepic_selector|delete_frame|edit) (?P<state_id>-?\d+) (?P<frame_index>-?\d+)$"
