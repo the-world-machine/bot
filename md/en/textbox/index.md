@@ -28,13 +28,19 @@ You can use special commmands mid-sentence to do various stuff (like changing th
 >
 > Self explanatory (probably shouldn't be included, but it's a command nonetheless)
 
-## File editing
+## Raw file editing (.tbb)
+
+This is a generic text file that has the entire State (all the dialogue frames and everything) saved inside it. It's usually outputted right above the preview for a frame, you can use this to export/import a dialogue you've made, or edit it in a text editor of your preference instead of using Discord.
+
+### Parsing
+
+The file is parsed line by line. The parser first looks for the `#> StateOptions <#` marker to know that the following lines are for [`StateOptions`](#stateoptions). It then looks for the `#> Frames <#` marker, after which it parses the lines for [`Frames`](#frames). Any lines starting with `#` or that are empty are ignored.
 
 ### `StateOptions`:
 
-A newline separated list of key=value pairs
+A newline separated list of key=value pairs. All of them can be omitted, the default value will be used instead
 
-> `out_filetype` # Output filetype
+> `filetype` # Output filetype
 >
 > - text, one of WEBP, GIF, APNG, PNG, JPEG (default: "WEBP")
 >   APNG: this sends it as a file without a filename, because Discord breaks them upon upload for some reason
@@ -58,7 +64,7 @@ A newline separated list of key=value pairs
 
 A newline separated list of frames. Each frame has an options and text field, separated by a semicolon, options are wrapped in braces for ease of editing ({options};text).
 
-### `options`
+#### `options`
 
 > 1. `animated` # Whether the text should be animated
 >
@@ -76,9 +82,19 @@ A newline separated list of frames. Each frame has an options and text field, se
 >
 > - number, range: 1.. (default: 150)
 
-### `text`
+#### `text`
 
-Text content for the frame (this supports the commands)
+Text content for the frame (this supports [commands](#commands))
+
+### Example
+
+```
+#> StateOptions <#
+force_send=True
+send_to=3
+#> Frames <#
+{True;150;4;150;;};\\@[OneShot (fan)/Nikonlanger/Smug]Meow :3
+```
 
 # Variables
 
@@ -86,3 +102,7 @@ Text content for the frame (this supports the commands)
 
 > a - above
 > b - below
+
+```
+
+```

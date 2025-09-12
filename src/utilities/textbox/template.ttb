@@ -1,8 +1,8 @@
 # [comment]
 #> StateOptions <#
-out_filetype=[out_filetype]
-send_to=[send_to]
 force_send=[force_send]
+filetype=[filetype]
+send_to=[send_to]
 quality=[quality]
 #> Frames <#
 [frames]

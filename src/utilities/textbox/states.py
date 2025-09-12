@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from typing import Any, Optional, Tuple, Literal, Union, overload
+from typing import Any, Optional, Tuple, Literal, Union, get_args, overload
 
 from interactions import File
 
@@ -14,14 +14,27 @@ state_template = Path("src/utilities/textbox/template.ttb").read_text()
 
 
 class StateOptions:
-	out_filetype: SupportedFiletypes  # TODO: m,ake this use an enum
+	filetype: SupportedFiletypes  # TODO: m,ake this use an enum
 	send_to: Literal[1, 2, 3]  # TODO: m,ake this use an enum
 	quality: int
 
 	def __init__(
-	    self, filetype: SupportedFiletypes = "WEBP", send_to: Literal[1, 2, 3] | str = 1, quality: int | str = 100
+	    self,
+	    filetype: SupportedFiletypes | None = "WEBP",
+	    send_to: Literal[1, 2, 3] | str | None = 1,
+	    quality: int | str | None = 100
 	):
-		self.out_filetype = filetype
+		if filetype == None:
+			filetype = "WEBP"
+		if send_to is None:
+			send_to = 1
+		if quality is None:
+			quality = 100
+		filetype = filetype.upper()  # type:ignore
+		if filetype not in get_args(SupportedFiletypes):
+			raise ValueError(f"filetype must be one of {get_args(SupportedFiletypes)}")
+
+		self.filetype = filetype  # type:ignore
 		send_to = int(send_to)  #type:ignore
 		if send_to not in (1, 2, 3):
 			raise ValueError("send_to must be 1, 2 or 3")
@@ -56,8 +69,8 @@ class State:
 		                link=
 		                f"https://github.com/the-world-machine/bot/tree/main/md/{loc.locale}/textbox/index.md#File_editing"
 		            ),
-		        'out_filetype':
-		            self.options.out_filetype,
+		        'filetype':
+		            self.options.filetype,
 		        'send_to':
 		            self.options.send_to,
 		        'force_send':
@@ -70,12 +83,14 @@ class State:
 		)
 		return processed
 
-	def from_string(self, input: str, owner: int) -> tuple['State', bool | None]:
+	@staticmethod
+	def from_string(input: str, owner: int) -> tuple['State', bool | None]:
 		lines = input.split("\n")
 		current = ""
 		parsed_frames: list[Frame] = []
 		StateOptions_parsed = {}
 		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality']
+		i = 0
 		for line in lines:
 			i += 1
 			if line.startswith("#> StateOptions <#"):
@@ -84,13 +99,13 @@ class State:
 			if line.startswith("#> Frames <#"):
 				current = "Frames"
 				continue
-			if line.lstrip().startswith("#"):
+			if line.lstrip().startswith("#") or len(line) == 0:
 				continue
 			if current == "Frames":
 				try:
 					parsed_frames.append(Frame.from_string(line))
 				except BaseException as e:
-					raise ValueError(f"Failed to parse frame #{len(parsed_frames)} at line {i}! {e}") from e
+					raise ValueError(f"Failed to parse frame #{len(parsed_frames)} at line {i}!\n{e}") from e
 				continue
 			if current == "StateOptions":
 				if not '=' in line:
@@ -98,16 +113,38 @@ class State:
 				key, value = line.split("=", maxsplit=1)
 				if key not in StateOptions_allowed_keys:
 					raise KeyError(
-					    f"Received invalid key '{key}' at line {i}, it should be one of: {','.join(StateOptions_allowed_keys)}",
-					    ".join(StateOptions_allowed_keys)}"
+					    f"Received invalid key '{key}' at line {i}, it should be one of: {','.join(StateOptions_allowed_keys)}"
 					)
+
+				try:
+					if value == '':
+						value = None
+					if value:
+						if key == "filetype" and value.upper() not in get_args(SupportedFiletypes):
+							raise ValueError(f"must be one of {get_args(SupportedFiletypes)}")
+						if key == "send_to":
+							try:
+								send_to = int(value)  #type:ignore
+							except:
+								raise ValueError("must be an integer, and one of (1, 2, 3)")
+							if send_to not in (1, 2, 3):
+								raise ValueError("must be one of (1, 2, 3)")
+						if key == "quality":
+							try:
+								quality = int(value)
+							except:
+								raise ValueError("must be an integer, and in the range 1..=100")
+							if quality < 1 or quality > 100:
+								raise ValueError("must be in the range 1..=100")
+				except ValueError as e:
+					raise ValueError(f"`StateOptions:` '{key}' {e}. Got '{value}', at line {i}")
 				StateOptions_parsed[key] = value
 				continue
 
 		force_send = StateOptions_parsed.get("force_send", False) == "True"
-		return (
-		    self.__class__(owner=owner, frames=parsed_frames, options=StateOptions(*StateOptions_parsed)), force_send
-		)
+		if "force_send" in StateOptions_parsed.keys():
+			del StateOptions_parsed["force_send"]
+		return (State(owner=owner, frames=parsed_frames, options=StateOptions(**StateOptions_parsed)), force_send)
 
 	def __init__(
 	    self,

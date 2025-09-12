@@ -9,15 +9,16 @@ from interactions.models.discord.components import (
 	TextDisplayComponent,
 	MediaGalleryComponent,)
 from datetime import datetime
+from traceback import print_stack
 from typing import Any, Literal, get_args
-from utilities.misc import BadResults, SortOption, optionSearch
+from utilities.misc import BadResults, SortOption, fetch, optionSearch
 from .facepic_selector import set_facepic_in_frame_text
 from utilities.config import debugging, get_config
 from utilities.localization import Localization, put_mini
 from utilities.message_decorations import Colors, fancy_message
 from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
 from utilities.textbox.states import StateShortcutError, State, StateOptions, new_state, state_shortcut
-from interactions import ActionRow, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
+from interactions import ActionRow, Attachment, AutocompleteContext, Button, ButtonStyle, ComponentContext, Embed, File, MessageFlags, Modal, ModalContext, OptionType, ParagraphText, SlashCommandChoice, SlashContext, component_callback, modal_callback, slash_option, AllowedMentions
 
 from utilities.textbox.facepics import f_storage
 nomentions = AllowedMentions(parse=[])
@@ -33,14 +34,20 @@ nomentions = AllowedMentions(parse=[])
 @slash_option(
 		name='facepic',
 		argument_name='face_path',
-		description="Which facepic do you want on the textbox? (type another / at the end for more options)",
+		description="Which facepic do you want on the textbox? (go back to this option to continue serching)",
 		opt_type=OptionType.STRING,
 		required=False,
 		autocomplete=True,
 )
 @slash_option(
 		name='animated',
-		description='Do you want the text to animate in? (will take longer to render, overrides filetype arg)',
+		description='Do you want the text to animate? (default: true)',
+		opt_type=OptionType.BOOLEAN,
+		required=False
+)
+@slash_option(
+		name='force_send',
+		description="For sending empty textboxes with 'send_to' option (default: false)",
 		opt_type=OptionType.BOOLEAN,
 		required=False
 )
@@ -58,7 +65,7 @@ nomentions = AllowedMentions(parse=[])
 )
 @slash_option(
 		name='send_to',
-		description='Where do you want the output to be sent? (pass all other arguments for it to render&send right away)',
+		description='Where do you want the output to be sent? (pass all other options for it to render&send right away)',
 		opt_type=OptionType.INTEGER,
 		required=False,
 		choices=[
@@ -67,45 +74,67 @@ nomentions = AllowedMentions(parse=[])
 			SlashCommandChoice(name="This channel (here)", value=3)
 		]
 )
+@slash_option(
+		argument_name="tbb_file",
+		name='from_tbb_file',
+		description='Pass a file here to load a textbox dialogue from a file.tbb (overwrites any other options)',
+		opt_type=OptionType.ATTACHMENT,
+		required=False
+)
 async def command(
 		self, 
 		ctx: SlashContext,
 		text: str = "",
 		face_path: str | None = None,
-		animated: bool | None = None,
+		force_send: bool | None = False,
+		animated: bool = True,
+		tbb_file: Attachment | None = None,
 		filetype: SupportedFiletypes | None = None,
 		send_to: Literal[1, 2, 3] = 1
 ):
 	await respond(ctx, type='loading')
 	state_id = str(ctx.id)  # state_id is the initial `/textbox create` interaction's id
-	erored = False
+	if tbb_file:
+		if not tbb_file.filename.endswith(".tbb"):
+			return await respond(ctx, type='error', error=f"Filename of the file passed to 'from_tbb_file' has to end with `.tbb`, got: '{tbb_file.filename}'",)
+		try:
+			contents = (await fetch(tbb_file.url)).decode('utf-8')
+		except BaseException as e:
+			return await respond(ctx, type='error', error=f"Failed to decode the contents of the file. {e}")
+		try:
+			parsed_state, force_send = State.from_string(contents, owner=ctx.user.id)
+		except BaseException as e:
+			return await respond(ctx, type='error', error=e)
+		new_state(state_id, parsed_state)
+	else:
+		erored = False
+		if not animated:
+			filetype = 'WEBP' if animated else 'PNG'
+		if not filetype:
+			filetype = 'WEBP'
 
-	if animated != None:
-		filetype = 'WEBP' if animated else 'PNG'
-	if not filetype:
-		filetype = 'WEBP'
+		if filetype not in get_args(SupportedFiletypes):
+			filetype = 'WEBP'
 
-	if filetype not in get_args(SupportedFiletypes):
-		return
+		if face_path:
+			text = set_facepic_in_frame_text(text, face_path)
 
-	if face_path:
-		text = set_facepic_in_frame_text(text, face_path)
 
-	# init state
-	new_state(state_id, State(
-		owner=ctx.user.id,
-		memory_leak=ctx,
-		options=StateOptions(
-			filetype=filetype,
-			send_to=send_to
-		),
-		frames=Frame(text=text)
-	))
+		# init state
+		new_state(state_id, State(
+			owner=ctx.user.id,
+			memory_leak=ctx,
+			options=StateOptions(
+				filetype=filetype,
+				send_to=send_to
+			),
+			frames=Frame(text=text)
+		))
 	
-	if send_to != 1 and (len(text) != 0 and face_path != None):
+	if force_send or (send_to != 1 and (len(text) != 0 and face_path != None)):
 		await send_output(ctx, state_id, 0)
 
-	await respond(ctx, state_id, 0, edit=not erored)
+	await respond(ctx, state_id, 0)
 
 def convert_to_sortoptions(item: Any, path: list[str] | None = None, recursive: bool = False):
 	if path is None:
@@ -231,7 +260,7 @@ async def send_output(ctx: ComponentContext | SlashContext, state_id: str, frame
 	desc = loc.l("textbox.monologue.done")
 	if debugging():
 		desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
-	if state.options.out_filetype in ("WEBP", "GIF", "APNG") and sent_message and MessageFlags.EPHEMERAL in sent_message.flags:
+	if state.options.filetype in ("WEBP", "GIF", "APNG") and sent_message and MessageFlags.EPHEMERAL in sent_message.flags:
 		mini = await put_mini(loc, "textbox.errors.ephemeral_warnote", ctx.user.id, type="warn")
 		if mini != "":
 			await ctx.edit(message=sent_message, content=f"{sent_message.content}\n{mini}", allowed_mentions=nomentions)
@@ -241,7 +270,7 @@ async def render_to_file(ctx: ComponentContext|SlashContext|ModalContext, state:
 	loc = Localization(ctx)
 
 	frames = state.frames
-	filetype = state.options.out_filetype 
+	filetype = state.options.filetype 
 
 	if frame_preview_index is not None:
 		filetype = "PNG"
@@ -345,88 +374,108 @@ async def handle_edit_modal(self, ctx: ModalContext, updated_frames: str):
 	await respond(ctx, state_id, int(frame_index))
 
 
-async def respond(ctx: SlashContext | ComponentContext | ModalContext, state_id: str | None = None, frame_index: int | None = None, type: Literal['normal', 'loading']="normal", edit: bool=True, warnings: list = []):
+async def respond(ctx: SlashContext | ComponentContext | ModalContext, state_id: str | None = None, frame_index: int | None = None, type: Literal['normal', 'loading', 'error']="normal", edit: bool=True, warnings: list = [], error: Any | None = None):
+	components = []
+	files = []
+	content: str | None = None
+	accent_color = Colors.BAD.value
 
-	if type == "loading":
-		return await fancy_message(ctx, components=[ContainerComponent(TextDisplayComponent(content=Localization(ctx).l("generic.loading")), accent_color=Colors.DEFAULT.value)], ephemeral=True)
-	
-	assert state_id is not None and frame_index is not None
-	
-	try:
-		loc, state, frame_data = await state_shortcut(ctx, state_id, frame_index)
-	except StateShortcutError:
-		return
+	if type == "normal":
+		assert state_id is not None and frame_index is not None
+		
+		try:
+			loc, state, frame_data = await state_shortcut(ctx, state_id, frame_index)
+		except StateShortcutError:
+			return
 
-	if warnings is None:
-		warnings = []
-	status = ""
-	pos = ""
-	if len(state.frames) > 1 or frame_index != 0:
-		pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
-	if debugging():
-		pos += "\n-# **sid**: "+state_id
-	next_frame_exists = len(state.frames) != int(frame_index)+1
-	print(state)
-	
-	
-	preview = await render_to_file(ctx, state, frame_preview_index=int(frame_index))
-	assert preview.file_name is not None
-	funny_name = (lambda p: re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name[:p]).strip('_') + preview.file_name[p:] if p > 0 else re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name).strip('_'))(preview.file_name.rfind('.')) # type: ignore
-	tbb = File(file=io.BytesIO(state.to_string(loc).encode('utf-8')), file_name=funny_name.rsplit(".",maxsplit=1)[0]+".backup.tbb")
-	files = [tbb, preview]
-	components = [
-		FileComponent(
-			file=UnfurledMediaItem(url=f"attachment://{tbb.file_name}")
-		),
-		MediaGalleryComponent(items=[
-			MediaGalleryItem(
-				media=UnfurledMediaItem(url=f"attachment://{funny_name}")
+		if warnings is None:
+			warnings = []
+		status = ""
+		pos = ""
+		if len(state.frames) > 1 or frame_index != 0:
+			pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
+		if debugging():
+			pos += "\n-# **sid**: "+state_id
+		next_frame_exists = len(state.frames) != int(frame_index)+1
+		print(state)
+		
+		
+		preview = await render_to_file(ctx, state, frame_preview_index=int(frame_index))
+		assert preview.file_name is not None
+		funny_name = (lambda p: re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name[:p]).strip('_') + preview.file_name[p:] if p > 0 else re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name).strip('_'))(preview.file_name.rfind('.')) # type: ignore
+		tbb = File(file=io.BytesIO(state.to_string(loc).encode('utf-8')), file_name=funny_name.rsplit(".",maxsplit=1)[0]+".backup.tbb")
+		files.extend([tbb, preview])
+		components.extend([
+			FileComponent(
+				file=UnfurledMediaItem(url=f"attachment://{tbb.file_name}")
 			),
-		]),
-		ActionRow(
-			Button(
-				style=ButtonStyle.BLURPLE,
-				label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
-				custom_id=f"textbox change_text {state_id} {frame_index}"
-			),
-			Button(
-				style=ButtonStyle.BLURPLE,
-				label=loc.l(f'textbox.button.face'),
-				custom_id=f"textbox_fs init {state_id} {frame_index}"
-			),
-			Button(
-				style=ButtonStyle.BLURPLE,
-				label=loc.l(f'textbox.button.edit'),
-				custom_id=f"textbox edit {state_id} {frame_index}"
-			),
-		),
-		ContainerComponent(
-			TextDisplayComponent(content=pos),
+			MediaGalleryComponent(items=[
+				MediaGalleryItem(
+					media=UnfurledMediaItem(url=f"attachment://{funny_name}")
+				),
+			]),
 			ActionRow(
 				Button(
-					style=ButtonStyle.GRAY,
-					label=loc.l("textbox.button.frame.previous"),
-					custom_id=f"textbox refresh {state_id} {int(frame_index)-1}",
-					disabled=int(frame_index) - 1 < 0
+					style=ButtonStyle.BLURPLE,
+					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
+					custom_id=f"textbox change_text {state_id} {frame_index}"
 				),
 				Button(
-					style=ButtonStyle.GREEN,
-					label=loc.l("textbox.button.render"+("send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.out_filetype}")),
-					custom_id=f"textbox render {state_id} {frame_index}"
+					style=ButtonStyle.BLURPLE,
+					label=loc.l(f'textbox.button.face'),
+					custom_id=f"textbox_fs init {state_id} {frame_index}"
 				),
 				Button(
-					style=ButtonStyle.DANGER if frame_data.text else ButtonStyle.GRAY,
-					label=loc.l(f'textbox.button.frame.{"clear" if len(state.frames) == 1 else "delete"}'),
-					custom_id=f"textbox delete_frame {state_id} {frame_index}"
+					style=ButtonStyle.BLURPLE,
+					label=loc.l(f'textbox.button.edit'),
+					custom_id=f"textbox edit {state_id} {frame_index}"
 				),
-				Button(
-					style=ButtonStyle.GRAY,
-					label=loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
-					custom_id=f"textbox refresh {state_id} {int(frame_index)+1}"
-				),
+			),
+			ContainerComponent(
+				TextDisplayComponent(content=pos),
+				ActionRow(
+					Button(
+						style=ButtonStyle.GRAY,
+						label=loc.l("textbox.button.frame.previous"),
+						custom_id=f"textbox refresh {state_id} {int(frame_index)-1}",
+						disabled=int(frame_index) - 1 < 0
+					),
+					Button(
+						style=ButtonStyle.GREEN,
+						label=loc.l("textbox.button.render"+("send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.filetype}")),
+						custom_id=f"textbox render {state_id} {frame_index}"
+					),
+					Button(
+						style=ButtonStyle.DANGER if frame_data.text else ButtonStyle.GRAY,
+						label=loc.l(f'textbox.button.frame.{"clear" if len(state.frames) == 1 else "delete"}'),
+						custom_id=f"textbox delete_frame {state_id} {frame_index}"
+					),
+					Button(
+						style=ButtonStyle.GRAY,
+						label=loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
+						custom_id=f"textbox refresh {state_id} {int(frame_index)+1}"
+					),
+				)
+			)
+		])
+	elif type == "loading":
+		content = Localization(ctx).l("generic.loading")
+		accent_color = Colors.DEFAULT.value
+		edit = False
+	elif type == "error":
+		content = str(error)
+	else:
+		print(f"Invalid response message type, got: {type}")
+		print_stack()
+		content = f"Invalid response type, report this to the developers (you're not supposed to see this)"
+
+	if len(components) == 0 and content and len(content) != 0:
+		components.append(
+			ContainerComponent(
+				TextDisplayComponent(content=content),
+				accent_color=accent_color,
 			)
 		)
-	]
 	if not edit:
 		return await ctx.send(components=components, files=files, ephemeral=True)
 	elif isinstance(ctx, ComponentContext):
