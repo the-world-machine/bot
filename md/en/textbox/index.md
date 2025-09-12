@@ -1,5 +1,3 @@
-> this page applies to version `v0.1`
-
 # Textbox Documentation
 
 ## Commands
