@@ -22,7 +22,15 @@ logger = createLogger(__name__)
 
 intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
 
-client = Client(
+
+class TWMClient(Client):
+	started_at: datetime | None
+	ready_at: datetime | None
+	followup_message_edited_at: datetime | None
+	followup_at: datetime | None
+
+
+client = TWMClient(
     intents=intents,
     send_command_tracebacks=False,
     send_not_ready_messages=True,

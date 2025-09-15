@@ -8,7 +8,12 @@ from utilities.message_decorations import Colors
 from utilities.misc import get_git_hash
 from utilities.emojis import emojis
 
-stuff = { "started": False, "queue": [], "followup_at": None}
+stuff = {
+    "started": False,
+    "queue": [],
+    "followup_at":
+        None  # datetime | bool,,,,,,,,,, this becomes Boolean after the first follow up, you can access the datetime version this in clilent.followup_at
+}
 
 
 class ReadyEvent(Extension):
@@ -29,26 +34,23 @@ class ReadyEvent(Extension):
 
 	@listen(Ready)
 	async def send_logs(self, event: Ready):
-		if not stuff['started']:
-			stuff['started'] = True  # yapf: ignore
-			# this exists to prevent sending more "ready" messages whenever discord disconnects (ready event may fire again)
-		else:
+		if stuff['started']:
 			return
+		stuff['started'] = True  # yapf: ignore
+		# this exists to prevent sending more "ready" messages whenever discord disconnects (ready event may fire again)
+
 		client = event.client
+
 		client.ready_at = datetime.now()  # type: ignore
 		self.ready_at = client.ready_at  # type: ignore
 		from utilities.localization import fnum
 
 		client = event.client
-		channel = get_config("dev.channels.logs", ignore_None=True)
-		if channel is not str:
-			return print("No logging channel specified")
+		channel = get_config("dev.channels.logs", ignore_None=True, typecheck=str)
 		if channel:
 			channel = await client.fetch_channel(channel)
 
-		extended = get_config("dev.channels.logs", ignore_None=True)
-		if extended is not str:
-			return print("No extended logs channel specified")
+		extended = get_config("dev.channels.logs", ignore_None=True, typecheck=str)
 		if extended:
 			extended = await client.fetch_channel(extended)
 		if not isinstance(channel, TYPE_MESSAGEABLE_CHANNEL):
@@ -56,7 +58,7 @@ class ReadyEvent(Extension):
 		if not isinstance(extended, TYPE_MESSAGEABLE_CHANNEL):
 			return print("erorrrrrrr: extended logs channel id is not of messageable type")
 		ready_delta: timedelta = client.ready_at - client.started_at  # type: ignore
-		message: Message | None
+		message: Message | None  # type:ignore
 		if get_config("dev.send-startup-message", typecheck=bool):
 			message = await channel.send(
 			    embed=Embed(
@@ -68,9 +70,9 @@ class ReadyEvent(Extension):
 			    )
 			)
 
-		async def followup(timestamp: datetime):
-			if not message:  # type: ignore
-				return
+		async def followup(timestamp: datetime):  #
+			nonlocal message
+			assert message is not None
 			client.followup_at = timestamp  # type: ignore
 			loadup_delta: timedelta = client.followup_at - client.started_at  # type: ignore
 			if get_config("dev.send-startup-message", typecheck=bool):
@@ -80,13 +82,15 @@ class ReadyEvent(Extension):
 				    " " + emojis['icons']['loading'], f", loading took **{fnum(loadup_delta.total_seconds())}**s."
 				).replace(" :i:", f", loading took **{fnum(loadup_delta.total_seconds())}**s.")
 
-				await message.edit(embed=embed)
+				message = await message.edit(embed=embed)
+				client.followup_message_edited_at = message.edited_timestamp  # type: ignore
 
-		if (stuff["followup_at"]):
+		if (isinstance(stuff["followup_at"], datetime)):
 			await followup(stuff["followup_at"])
 		ReadyEvent.followup = followup
 		ReadyEvent.stuff = stuff
 		while True:
+			print("meow")
 			await sleep(0.5)
 			if len(stuff['queue']) > 0:
 				for log in stuff['queue']:
