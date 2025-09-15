@@ -90,7 +90,6 @@ class ReadyEvent(Extension):
 		ReadyEvent.followup = followup
 		ReadyEvent.stuff = stuff
 		while True:
-			print("meow")
 			await sleep(0.5)
 			if len(stuff['queue']) > 0:
 				for log in stuff['queue']:
