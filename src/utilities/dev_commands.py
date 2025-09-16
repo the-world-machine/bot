@@ -145,7 +145,14 @@ async def _execute_dev_command(message: Message):
 						return await msg.edit(content=f"[ No command passed ]")
 					output = shell(parse[1])
 					return await msg.edit(content=f"[ Done ]\n```bash\n{output}```")
-
+				case "log":
+					text_to_log = command_content.split(args[0]+" ", maxsplit=1)
+					from extensions.events.Ready import ReadyEvent
+					if len(text_to_log) == 1:
+						out = await ReadyEvent.log(lambda channel: channel.send(content=f"<@{message._author_id}>"))
+						return await message.reply(f"[ logs u {out.jump_url} ]")
+					out = await ReadyEvent.log(lambda channel: channel.send(content=text_to_log[1]))
+					return await message.reply(f"[ logged {out.jump_url} ]")
 				case _:
 					return await message.reply("Available subcommands: `refresh` / `sync_commands`")
 		case "eval":
