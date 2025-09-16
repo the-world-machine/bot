@@ -1,3 +1,4 @@
+from dataclasses import is_dataclass
 import io
 import re
 import sys
@@ -23,7 +24,13 @@ ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 
 def get_collection(collection: str, _id: str):
-	return getattr(schemas, collection)(_id)
+	try:
+		found = getattr(schemas, collection)
+	except:
+		found = None
+	if found == None or is_dataclass(found) or (hasattr(found, '__name__') and found.__name__ == "StatUpdate"):
+		raise ValueError("Invalid collection name, valid one's: " + ", ".join(filter(lambda a: is_dataclass(getattr(schemas,a)) or (hasattr(getattr(schemas,a), '__name__') and getattr(schemas,a).__name__ == "StatUpdate"), dir(schemas))))
+	return found(_id)
 
 
 class CapturePrints:
@@ -123,7 +130,7 @@ async def _execute_dev_command(message: Message):
 					try:
 						extension = args[2]
 					except IndexError as e:
-						return await message.reply('[ Specify an extension to refresh, or "all" ]')
+						return await message.reply('[ This command expects an extension to refresh, or "all" ]')
 					if extension == "all":
 						message.content = "{eval ```py\nload_commands(message.client, unload=True, print=print)\n```}"
 						return await execute_dev_command(message)
@@ -142,7 +149,7 @@ async def _execute_dev_command(message: Message):
 					msg = await message.reply(f"[ Running... {emojis['icons']['loading']} ]")
 					parse = ' '.join(args).split(args[1])
 					if len(parse) < 1:
-						return await msg.edit(content=f"[ No command passed ]")
+						return await msg.edit(content=f"[ No command passed. This command expects a command to execute in the terminal, e.g. `[bot shell echo meow]` ]")
 					output = shell(parse[1])
 					return await msg.edit(content=f"[ Done ]\n```bash\n{output}```")
 				case "log":
@@ -154,7 +161,7 @@ async def _execute_dev_command(message: Message):
 					out = await ReadyEvent.log(lambda channel: channel.send(content=text_to_log[1]))
 					return await message.reply(f"[ logged {out.jump_url} ]")
 				case _:
-					return await message.reply("Available subcommands: `refresh` / `sync_commands`")
+					return await message.reply("Available subcommands: `refresh` / `sync_commands` / `shell` / `log`")
 		case "eval":
 			code = command_content.split(f"eval ")
 			referenced_message = message.get_referenced_message()
@@ -281,8 +288,11 @@ async def _execute_dev_command(message: Message):
 
 						matches = re.findall(pattern, command_content)
 
-						collection_name = args[2]
-						_id = args[3]
+						try:
+							collection_name = args[2]
+							_id = args[3]
+						except:
+							raise ValueError("[db set] expects 2 args: `collection_name` and `id`")
 						str_data = matches[0]
 
 						data = json.loads(str_data)
@@ -293,10 +303,12 @@ async def _execute_dev_command(message: Message):
 
 						return await message.reply('`[ Successfully updated ]`')
 					case "view":
-						collection_name = args[2]
-						_id = args[3]
-						value = args[4]
-
+						try:
+							collection_name = args[2]
+							_id = args[3]
+							value = args[4]
+						except:
+							raise ValueError("[db view] expects 3 args: `collection_name`, `id` and `value`")
 						if collection_name == 'shop':
 							collection = await get_collection(collection_name, "0")
 						else:
@@ -304,15 +316,21 @@ async def _execute_dev_command(message: Message):
 
 						return await message.reply(f'`[ The value of {value} is {str(collection.__dict__[value])} ]`')
 					case "view_all":
-						collection_name = args[2]
-						_id = args[3]
+						try:
+							collection_name = args[2]
+							_id = args[3]
+						except:
+							raise ValueError("[db view] expects 2 args: `collection_name` and `id`")
 
 						collection = await get_collection(collection_name, _id).fetch()
 
 						return await message.reply(f"```yml\n{yaml.dump(main.to_dict(collection), default_flow_style=False, Dumper=yaml.SafeDumper)}```")
 					case "wool":
-						_id = args[2]
-						amount = int(args[3])
+						try:
+							_id = args[2]
+							amount = int(args[3])
+						except:
+							raise ValueError("[db view] expects 2 args: `id` and numeric `amount`")
 
 						collection: schemas.UserData = await schemas.UserData(_id).fetch()
 
@@ -322,9 +340,10 @@ async def _execute_dev_command(message: Message):
 						    f'`[ Successfully modified wool, updated value is now {collection.wool} ]`'
 						)
 					case _:
-						return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`")
+						return await message.reply("Available subcommands: `set` / `view` / `view_all` / `wool`\nCollections:")
 			except Exception as e:
-				await message.reply(f'`[ Error with command ({e}) ]`')
+				tb.print_exc()
+				await message.reply(f'``[ Error with command ({e}) ]``')
 		case "locale_override":
 			return
 		case _:
