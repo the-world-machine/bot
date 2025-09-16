@@ -1,5 +1,6 @@
 import re
 import asyncio
+from traceback import print_exc
 import yaml as yaml
 from babel import Locale
 from pathlib import Path
@@ -63,8 +64,8 @@ def on_file_update(filename):
 		hello = load_locale(locale)
 	except Exception as e:
 		print(colored(" FAILED", "red"))
-		print(ReadyEvent)
-		ReadyEvent.log(e)
+		print_exc()
+		ReadyEvent.queue(e)
 		return
 	_locales[locale] = hello
 	print(" ─ ─ ─ ")
@@ -116,7 +117,8 @@ for file in Path('src/data/locales').glob('*.yml'):
 			raise e
 		if debugging():
 			print("| FAILED " + name)
-		ReadyEvent.log(e)
+		print_exc()
+		ReadyEvent.queue(e)
 
 	if debugging():
 		print("| " + name)

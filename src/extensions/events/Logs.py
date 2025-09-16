@@ -7,4 +7,4 @@ class Logs(Extension):
 	async def send_logs(self, event: Ready):
 		if hasattr(event.client, "followup_message_edited_at"):  # type:ignore
 			from extensions.events.Ready import ReadyEvent
-			ReadyEvent.log(lambda channel: channel.send(content="Ready event triggered!"), error=False)
+			await ReadyEvent.log(lambda channel: channel.send(content="Ready event triggered!"))

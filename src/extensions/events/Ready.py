@@ -1,4 +1,5 @@
 from asyncio import sleep
+import asyncio
 from datetime import datetime, timedelta
 from typing import Any, Callable
 from interactions import Embed, Extension, Message, TYPE_MESSAGEABLE_CHANNEL, listen
@@ -19,11 +20,15 @@ stuff = {
 class ReadyEvent(Extension):
 	# WHY DID I MAKE THIS
 	@staticmethod
-	def log(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Any, error: bool = True):
+	async def log(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Exception) -> Message | Any:
+		...
+
+	@staticmethod
+	def queue(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Exception):
 		print(
-		    f"Queueing some{'thing' if not error else ' error'} into the log: {thing}, queue size will be: {len(stuff['queue'])+1}"
+		    f"Queueing some{'thing' if not isinstance(thing, Exception) else ' error'} into the log: {thing}, queue size will be: {len(stuff['queue'])+1}"
 		)
-		stuff['queue'].append({ "thing": thing, "error": error})
+		stuff['queue'].append(thing)
 
 	@staticmethod
 	async def followup(timestamp: datetime):
@@ -55,10 +60,8 @@ class ReadyEvent(Extension):
 		extended = get_config("dev.channels.logs", ignore_None=True, typecheck=str)
 		if extended:
 			extended = await client.fetch_channel(extended)
-		if not isinstance(channel, TYPE_MESSAGEABLE_CHANNEL):
-			return print("erorrrrrrr: logs channel id is not of messageable type")
-		if not isinstance(extended, TYPE_MESSAGEABLE_CHANNEL):
-			return print("erorrrrrrr: extended logs channel id is not of messageable type")
+			assert isinstance(extended, TYPE_MESSAGEABLE_CHANNEL), "extended logs channel must be messageabe"
+		assert channel and isinstance(channel, TYPE_MESSAGEABLE_CHANNEL), "logs channel must be messageable"
 		ready_delta: timedelta = client.ready_at - client.started_at  # type: ignore
 		message: Message | None  # type:ignore
 		if get_config("dev.send-startup-message", typecheck=bool):
@@ -71,6 +74,21 @@ class ReadyEvent(Extension):
 			        f"Git hash: {get_git_hash()}"
 			    )
 			)
+
+		async def log(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Exception) -> Message | Any:
+			nonlocal channel
+			assert channel and isinstance(channel, TYPE_MESSAGEABLE_CHANNEL), "logs channel must be messageable"
+			if isinstance(thing, Callable):
+				return await thing(channel)
+			elif isinstance(thing, Exception):  ## :pou:
+				return await channel.send(
+				    embed=Embed(description=str(thing), color=Colors.BAD, title="Error"),
+				    allowed_mentions={ "parse": []}
+				)
+			else:
+				print("logged", thing)
+
+		ReadyEvent.log = log
 
 		async def followup(timestamp: datetime):  #
 			nonlocal message
@@ -90,16 +108,13 @@ class ReadyEvent(Extension):
 		if (isinstance(stuff["followup_at"], datetime)):
 			await followup(stuff["followup_at"])
 		ReadyEvent.followup = followup
+
+		def new_queue(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Exception):
+			asyncio.create_task(ReadyEvent.log(thing))
+
+		ReadyEvent.queue = new_queue
 		ReadyEvent.stuff = stuff
-		while True:
-			await sleep(0.5)
-			if len(stuff['queue']) > 0:
-				for log in stuff['queue']:
-					if log["error"]:
-						await channel.send(
-						    embed=Embed(description=str(log["thing"]), color=Colors.BAD, title="Error"),
-						    allowed_mentions={ "parse": []}
-						)
-					else:
-						await log["thing"](channel)
-					stuff['queue'].remove(log)
+		while len(stuff['queue']) > 0:
+			for thing in stuff['queue']:
+				await log(thing)
+				stuff['queue'].remove(thing)

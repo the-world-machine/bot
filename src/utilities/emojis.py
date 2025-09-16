@@ -1,3 +1,4 @@
+import asyncio
 import re
 from traceback import print_exc
 from urllib.parse import urlencode
@@ -140,9 +141,9 @@ def on_file_update(path):
 		new_emojis = load_emojis()
 	except BaseException as e:
 		print(colored(" FAILED", "red"))
-		from extensions.events.Ready import ReadyEvent
-		ReadyEvent.log("## Failed to reload emojis\n" + str(e))
 		print_exc()
+		from extensions.events.Ready import ReadyEvent
+		ReadyEvent.queue(lambda channel: channel.send(content="## Failed to reload emojis\n" + str(e)))
 		return
 
 	old_flat = flatten_emojis(dict(old_emojis))

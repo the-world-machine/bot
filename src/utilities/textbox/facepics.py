@@ -1,3 +1,4 @@
+import asyncio
 import io
 import os
 import re
@@ -106,7 +107,8 @@ def on_file_update(filename):
 		f_storage.facepics = load_facepics()
 	except Exception as e:
 		print(colored(" FAILED", "red"))
-		ReadyEvent.log("## Failed to reload facepics\n" + str(e))
+		print_exc()
+		ReadyEvent.queue(lambda channel: channel.send(content="## Failed to reload facepics\n" + str(e)))
 		return
 
 	print(" ─ ─ ─ ")
