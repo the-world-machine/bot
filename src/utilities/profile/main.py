@@ -54,12 +54,15 @@ async def load_profile_assets():
 		img = img.resize((35, 35), Image.Resampling.NEAREST)
 		assets += 1
 		if debugging():
-			print("| Badge id:", badge["id"])
+			print(f"#{badge['id']}", end=", ")
 		return img
 
+	if debugging():
+		print("| Loading badges ... ", end="")
 	emoji_tasks = [fetch_and_process_emoji(badge) for badge in badges.values()]
-	print(len(emoji_tasks))
 	icons.extend(await asyncio.gather(*emoji_tasks))
+	if debugging():
+		print("done!")
 
 	wool_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis['icons']['wool'], size=32)))
 	if debugging():
@@ -80,11 +83,11 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()
 	assert isinstance(wool_icon, Image.Image) \
-                                     and isinstance(sun_icon, Image.Image) \
-                                     and isinstance(font, FreeTypeFont)\
-                                     and isinstance(badges, dict)\
-                                     and all(isinstance(icon, Image.Image) for icon in icons)\
-                                     and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
+                                                       and isinstance(sun_icon, Image.Image) \
+                                                       and isinstance(font, FreeTypeFont)\
+                                                       and isinstance(badges, dict)\
+                                                       and all(isinstance(icon, Image.Image) for icon in icons)\
+                                                       and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
 	user_id = user.id
 	user_pfp_url = user.display_avatar._url
 	animated = user.display_avatar.animated

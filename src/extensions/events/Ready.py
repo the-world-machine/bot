@@ -20,7 +20,9 @@ class ReadyEvent(Extension):
 	# WHY DID I MAKE THIS
 	@staticmethod
 	def log(thing: Callable[[TYPE_MESSAGEABLE_CHANNEL], Any] | Any, error: bool = True):
-		print(thing, stuff['queue'])
+		print(
+		    f"Queueing some{'thing' if not error else ' error'} into the log: {thing}, queue size will be: {len(stuff['queue'])+1}"
+		)
 		stuff['queue'].append({ "thing": thing, "error": error})
 
 	@staticmethod
