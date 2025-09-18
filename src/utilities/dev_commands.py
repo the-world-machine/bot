@@ -143,7 +143,7 @@ async def _execute_dev_command(message: Message):
 						return await msg.edit(content=f"[ Reloaded {extension} ]")
 				case "sync_commands":
 					msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
-					await msg.client.synchronise_interactions()
+					await msg.client.synchronise_interactions(delete_commands=True)
 					return await msg.edit(content=f"[ Synchronized ]")
 				case "shell":
 					msg = await message.reply(f"[ Running... {emojis['icons']['loading']} ]")

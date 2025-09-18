@@ -24,6 +24,7 @@ apng = "*"
 "interactions.py" = "*"
 aiohttp = "*"
 aiohttp-devtools = "*"
+jurigged = "*"
 
 [dev-packages]
 yapf = "*"

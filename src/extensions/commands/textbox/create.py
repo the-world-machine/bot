@@ -77,7 +77,7 @@ async def start(
 		if force_send or (send_to != 1 and (len(text) != 0 and face_path != None)):
 			await send_output(ctx, state_id, 0)
 
-	await respond(ctx, state_id, 0)
+	return await respond(ctx, state_id, 0)
 
 def convert_to_sortoptions(item: Any, path: list[str] | None = None, recursive: bool = False):
 	if path is None:

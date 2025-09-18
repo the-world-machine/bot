@@ -43,7 +43,7 @@ def fill_with_none(arr, target_index):
 
 class InteractCommands(Extension):
 
-	@user_context_menu('💡 interact...')
+	@user_context_menu(name='💡 interact...')
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def user_context(self, ctx: ContextMenuContext):
@@ -57,7 +57,7 @@ class InteractCommands(Extension):
 			invoker = invoker.user
 		return await self.start(ctx, invoker, who)
 
-	@message_context_menu('💡 interact w/sender...')
+	@message_context_menu(name='💡 interact w/sender...')
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def message_context(self, ctx: ContextMenuContext):

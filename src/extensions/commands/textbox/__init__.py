@@ -8,6 +8,31 @@ from .create import start as start_builder, handle_components as create_handle_c
 
 
 class TextboxCommands(Extension):
+	start_builder = start_builder
+
+	@message_context_menu(name='HELP')
+	@integration_types(guild=True, user=True)
+	@contexts(guild=True, bot_dm=True, private_channel=True)
+	async def from_message(self, ctx: ContextMenuContext):
+		assert isinstance(ctx.target, Message), "hi linter"
+		message = ctx.target
+		return await self.start_builder(
+		    ctx,
+		    message.content,
+		    face_path=message.author.display_avatar.as_url(extension="png", size=96),
+		    force_send=None,
+		    send_to=3
+		)
+
+	@user_context_menu(name='✏️ use avatar as facepic')
+	@integration_types(guild=True, user=True)
+	@contexts(guild=True, bot_dm=True, private_channel=True)
+	async def from_user(self, ctx: ContextMenuContext):
+		who = ctx.target
+		assert isinstance(who, (Member, User)), "hi linter"
+		return await self.start_builder(
+		    ctx, face_path=who.display_avatar.as_url(extension="png", size=96), force_send=None, send_to=3
+		)
 
 	@slash_command(
 	    name="textbox",
@@ -108,30 +133,6 @@ class TextboxCommands(Extension):
 	handle_update_text_modal = create_handle_update_text_modal
 	handle_edit_modal = create_handle_edit_modal
 
-	@message_context_menu('✏️ convert to textbox')
-	@integration_types(guild=True, user=True)
-	@contexts()
-	async def from_message(self, ctx: ContextMenuContext):
-		assert isinstance(ctx.target, Message), "hi linter"
-		message = ctx.target
-		return await start_builder(
-		    self,
-		    ctx,
-		    message.content,
-		    face_path=message.author.display_avatar.as_url(extension="png", size=96),
-		    force_send=None,
-		    send_to=3
-		)
-
-	@user_context_menu('✏️ use avatar as facepic')
-	@integration_types(guild=True, user=True)
-	@contexts()
-	async def from_user(self, ctx: ContextMenuContext):
-		who = ctx.target
-		assert isinstance(who, (Member, User)), "hi linter"
-		return await start_builder(
-		    self, ctx, face_path=who.display_avatar.as_url(extension="png", size=96), force_send=None, send_to=3
-		)
 	init_facepic_selector = init_facepic_selector
 	handle_facepic_selection = handle_facepic_selection
 

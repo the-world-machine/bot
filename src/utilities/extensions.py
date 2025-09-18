@@ -40,7 +40,7 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 	files = [ f for f in os.listdir('src/extensions/commands') if f != '__pycache__']
 	commands = [f.replace('.py', '') for f in files]
 	commands = [None if len(f) < 0 or f.startswith(".") else f for f in commands]
-
+	commands.append("interactions.ext.jurigged")
 	if not get_config("music.enabled", typecheck=bool) and 'music' in commands:
 		commands.remove("music")
 
@@ -52,10 +52,14 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 		if not cmd:
 			continue
 		if unload:
-			client.unload_extension(f"extensions.commands.{cmd}")
+			client.unload_extension(
+			    f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
+			)
 		if debugging():
 			print("| " + cmd)
-		client.load_extension(f"extensions.commands.{cmd}")
+		client.load_extension(
+		    f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
+		)
 		loaded_commands.append(cmd)
 
 	if not debugging():

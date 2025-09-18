@@ -10,7 +10,8 @@
       "type": "debugpy",
       "request": "launch",
       "program": "src/main.py",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+			"justMyCode": false
     },
     {
       "name": "Run textbox test server",
