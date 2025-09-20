@@ -10,7 +10,7 @@ from .create import start as start_builder, handle_components as create_handle_c
 class TextboxCommands(Extension):
 	start_builder = start_builder
 
-	@message_context_menu(name='HELP')
+	@message_context_menu(name='📓 message to textbox')
 	@integration_types(guild=True, user=True)
 	@contexts(guild=True, bot_dm=True, private_channel=True)
 	async def from_message(self, ctx: ContextMenuContext):
@@ -24,7 +24,7 @@ class TextboxCommands(Extension):
 		    send_to=3
 		)
 
-	@user_context_menu(name='✏️ use avatar as facepic')
+	@user_context_menu(name='📓 avatar as textbox facepic')
 	@integration_types(guild=True, user=True)
 	@contexts(guild=True, bot_dm=True, private_channel=True)
 	async def from_user(self, ctx: ContextMenuContext):
