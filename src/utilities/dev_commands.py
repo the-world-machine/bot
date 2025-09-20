@@ -103,6 +103,7 @@ async def _execute_dev_command(message: Message):
 	if str(message.author.id) not in get_config('dev.whitelist', typecheck=list):
 		return
 
+	client = message.client
 	prefix = command_marker.split('.')
 
 	if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
@@ -132,18 +133,18 @@ async def _execute_dev_command(message: Message):
 					except IndexError as e:
 						return await message.reply('[ This command expects an extension to refresh, or "all" ]')
 					if extension == "all":
-						message.content = "{eval ```py\nload_commands(message.client, unload=True, print=print)\n```}"
+						message.content = "{eval ```py\nload_commands(client, unload=True, print=print)\n```}"
 						return await execute_dev_command(message)
 					else:
 						msg = await message.reply(f"[ Working... {emojis['icons']['loading']} ]")
 						try:
-							msg.client.reload_extension(extension)
+							client.reload_extension(extension)
 						except Exception as e:
 							await message.reply(f'`[ {e} ]`')
 						return await msg.edit(content=f"[ Reloaded {extension} ]")
 				case "sync_commands":
 					msg = await message.reply(f"[ Synchronizing commands... {emojis['icons']['loading']} ]")
-					await msg.client.synchronise_interactions(delete_commands=True)
+					await client.synchronise_interactions(delete_commands=True)
 					return await msg.edit(content=f"[ Synchronized ]")
 				case "shell":
 					msg = await message.reply(f"[ Running... {emojis['icons']['loading']} ]")
