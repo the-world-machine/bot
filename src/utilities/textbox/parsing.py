@@ -185,7 +185,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 						pos += 2
 						continue
 				except ValueError as e:
-					if str(e).startswith("Invalid command type"):
+					if str(e).startswith("Invalid token type"):
 						text_to_add = input_str[pos:pos + 2]
 						if tokens and isinstance(tokens[-1], str):
 							tokens[-1] += text_to_add

@@ -182,19 +182,18 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	parsed = parse_textbox_text(frame.text) if frame.text else []
 	text_offset = [ 0.0, 0.0 ]
 	for i in range(0, len(parsed)):
-		print(i)
 		command = parsed[i]
 		if isinstance(command, FacepicChangeCommand):
 			await update_facepic(command)
 		elif isinstance(command, LineBreakCommand):
 			text_offset[1] += 25.0
 			text_offset[0] = 0
+			put_frame(800)
 		elif isinstance(command, str):
 			message = command
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in message.split(' '):
-				print(word, text_x, text_offset, background.width)
 				if word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
 					text_offset[1] += 25.0
 					text_offset[0] = 0
@@ -205,6 +204,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					duration = 20
 					match cluster:
 						case '\n':
+							text_offset[1] += 25.0
+							text_offset[0] = -10
 							duration = 800
 						case '.' | '!' | '?' | '．' | '？' | '！':
 							duration = 200

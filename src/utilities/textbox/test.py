@@ -53,9 +53,8 @@ async def handle_generate(request: web.Request):
 			    f"Generated file is too large ({file_size / 1024 / 1024:.2f} MB). "
 			    f"Limit is {FILE_SIZE_LIMIT_BYTES / 1024 / 1024} MB."
 			)
-			return web.json_response({ 'error': error_message}, status=413)  # 413: Payload Too Large
+			return web.json_response({ 'error': error_message}, status=413)
 
-		# --- If check passes, continue as normal ---
 		image_bytes = image_buffer.getvalue()
 		base64_encoded_data = base64.b64encode(image_bytes).decode('utf-8')
 
