@@ -45,7 +45,7 @@ async def start(
 		except BaseException as e:
 			return await respond(ctx, type='error', error=f"Failed to decode the contents of the file. {e}")
 		try:
-			parsed_state, force_send = State.from_string(contents, owner=ctx.user.id)
+			parsed_state, force_send, frame_index = State.from_string(contents, owner=ctx.user.id)
 		except BaseException as e:
 			return await respond(ctx, type='error', error=e)
 		new_state(state_id, parsed_state)
@@ -77,7 +77,7 @@ async def start(
 		if force_send or (send_to != 1 and (len(text) != 0 and face_path != None)):
 			await send_output(ctx, state_id, 0)
 
-	return await respond(ctx, state_id, 0)
+	return await respond(ctx, state_id, frame_index or 0)
 
 def convert_to_sortoptions(item: Any, path: list[str] | None = None, recursive: bool = False):
 	if path is None:

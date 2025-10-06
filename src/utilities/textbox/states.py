@@ -67,7 +67,7 @@ class State:
 		            loc.l(
 		                "textbox.ttb.comment",
 		                link=
-		                f"https://github.com/the-world-machine/bot/tree/main/md/{loc.locale}/textbox/index.md#File_editing"
+		                f"https://github.com/the-world-machine/bot/blob/main/md/{loc.locale}/textbox/index.md#raw-file-editing-tbb"
 		            ),
 		        'filetype':
 		            self.options.filetype,
@@ -84,12 +84,12 @@ class State:
 		return processed
 
 	@staticmethod
-	def from_string(input: str, owner: int) -> tuple['State', bool | None]:
+	def from_string(input: str, owner: int) -> tuple['State', bool | None, int | None]:
 		lines = input.split("\n")
 		current = ""
 		parsed_frames: list[Frame] = []
 		StateOptions_parsed = {}
-		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality']
+		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality', 'frame_index']
 		i = 0
 		for line in lines:
 			i += 1
@@ -144,7 +144,20 @@ class State:
 		force_send = StateOptions_parsed.get("force_send", False) == "True"
 		if "force_send" in StateOptions_parsed.keys():
 			del StateOptions_parsed["force_send"]
-		return (State(owner=owner, frames=parsed_frames, options=StateOptions(**StateOptions_parsed)), force_send)
+		frame_index = StateOptions_parsed.get("frame_index", None)
+		if frame_index:
+			try:
+				frame_index = int(frame_index)
+			except ValueError as e:
+				raise ValueError("Could not convert frame_index to integer")
+			if not (frame_index >= 0):
+				raise ValueError("frame_index must be >= 0")
+		if "frame_index" in StateOptions_parsed.keys():
+			del StateOptions_parsed["frame_index"]
+		return (
+		    State(owner=owner, frames=parsed_frames,
+		          options=StateOptions(**StateOptions_parsed)), force_send, frame_index
+		)
 
 	def __init__(
 	    self,

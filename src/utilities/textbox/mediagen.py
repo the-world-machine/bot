@@ -47,15 +47,15 @@ class SerializableData:
 
 		kwargs = {}
 		for field, value_str in zip(class_fields, parts):
-			kwargs[field.name] = cls._parse_value(value_str, field.type)
+			kwargs[field.name] = cls._parse_value(value_str, field)
 
 		return cls(**kwargs)
 
 	@staticmethod
-	def _parse_value(value_str: str, target_type: Any) -> Any:
+	def _parse_value(value_str: str, field: Any) -> Any:
 		"""Helper to parse a string value into its target Python type."""
-		origin = get_origin(target_type)
-		args = get_args(target_type)
+		origin = get_origin(field.type)
+		args = get_args(field.type)
 
 		if origin is Literal:
 			if value_str not in args:
@@ -74,21 +74,23 @@ class SerializableData:
 			actual_type = next(arg for arg in args if not issubclass(arg, type(None)))
 			return SerializableData._parse_value(value_str, actual_type)
 
-		if target_type is bool:
+		if value_str == "" and not field.type is str:
+			return None
+		if field.type is bool:
 			if value_str in ('True', 'true', '+', 'yes'):
 				return True
 			if value_str == ('False', 'false', '-', 'no'):
 				return False
 			raise ValueError(f"couldn't parse '{value_str}' as bool.")
-		if target_type is int:
+		if field.type is int:
 			return int(value_str)
-		if target_type is str:
+		if field.type is str:
 			return value_str
 
-		if inspect.isclass(target_type) and issubclass(target_type, SerializableData):
-			return target_type.from_string(value_str)
+		if inspect.isclass(field.type) and issubclass(field.type, SerializableData):
+			return field.type.from_string(value_str)
 
-		return target_type(value_str)
+		return field.type(value_str)
 
 
 @dataclass
@@ -99,6 +101,34 @@ class FrameOptions(SerializableData):
 	end_arrow_delay: int = 150
 
 	_separator: str = ';'
+
+	def __init__(
+	    self,
+	    animated: bool | None = None,
+	    end_delay: int | None = None,
+	    end_arrow_bounces: int | None = None,
+	    end_arrow_delay: int | None = None,
+	    _separator: str | None = ";"
+	):
+		self.separator = ";"
+		self.animated = True if animated is None else bool(animated)
+
+		if isinstance(end_delay, int) and end_delay < 0:
+			raise ValueError("end_delay must be above 0")
+		self.end_delay = 150 if end_delay is None else end_delay
+
+		if isinstance(end_arrow_bounces, int) and end_arrow_bounces < 0:
+			raise ValueError("end_arrow_bounces must be above 0")
+		self.end_arrow_bounces = 4 if end_arrow_bounces is None else end_arrow_bounces
+
+		if isinstance(end_arrow_delay, int) and end_arrow_delay < 0:
+			raise ValueError("end_arrow_delay must be above 0")
+		self.end_arrow_delay = 150 if end_arrow_delay is None else end_arrow_delay
+
+	def __repr__(self):
+		attrs = { k: getattr(self, k) for k in self.__annotations__ }
+		attrs_str = ", ".join(f"{k}={repr(v)}" for k, v in attrs.items())
+		return f"StateOptions({attrs_str})"
 
 
 @dataclass
@@ -115,7 +145,8 @@ class Frame(SerializableData):
 	def from_string(cls, frame_string: str):
 		try:
 			if not frame_string.startswith('{'):
-				raise ValueError("String must start with '{' for options.")
+				frame_string = "{;;;;};" + frame_string
+				#raise ValueError("String must start with '{' for options.")
 
 			end_brace_idx = frame_string.find('}')
 			if end_brace_idx == -1:
@@ -133,7 +164,7 @@ class Frame(SerializableData):
 			return cls(options=options, text=text)
 		except (ValueError, IndexError) as e:
 			raise ValueError(
-			    f"Invalid Frame format. Expected '{{options}}{cls._separator}text', but got '{frame_string}'"
+			    f"Invalid Frame format. Expected '{{options}}{cls._separator}text', but got '{frame_string}'. {e}"
 			) from e
 
 
@@ -141,7 +172,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	word_wrap = True
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
 	burned_background = background.copy()
-
+	background.resize((background.height, background.width+500))
 	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text = Image.new("RGBA", (background.width, 999999), color=(255, 255, 255, 0))
 	text_x, text_y = 20, 17
@@ -251,6 +282,8 @@ async def render_textbox_frames(
     filetype: SupportedFiletypes = "WEBP",
     frame_index: int | None = None
 ) -> io.BytesIO:
+	if len(frames) == 0:
+		raise ValueError("Provide atleast one frame")
 	all_images: list[Image.Image] = []
 	all_durations: list[int] = []
 	buffer = io.BytesIO()

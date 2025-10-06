@@ -12,9 +12,9 @@ sys.path.insert(0, str(project_root))
 from aiohttp import web
 
 from utilities.textbox.mediagen import Frame, render_textbox_frames, SupportedFiletypes
+from utilities.textbox.states import State
 from utilities.config import get_config
 
-HOST = "localhost"
 PORT = 1738
 FILE_SIZE_LIMIT_BYTES = 20 * 1024 * 1024
 
@@ -32,19 +32,13 @@ async def handle_generate(request: web.Request):
 	try:
 		start_time = time.perf_counter()
 
-		data = await request.json()
-		text = data.get('text', '')
-		filetype: SupportedFiletypes = data.get('filetype', 'WEBP')
-		is_animated = data.get('animated', True)
-		quality = data.get('quality', 80)
-
-		frame = Frame(text=text)
-
-		if not is_animated or filetype in ("PNG", "JPEG"):
-			frame.options.animated = False
-
+		state_parse = State.from_string(await request.text(), owner=0)
+		state, _, frame_index = state_parse
 		image_buffer: io.BytesIO = await render_textbox_frames(
-		    frames=[frame], quality=quality, filetype=filetype, frame_index=0
+		    frames=state.frames,
+		    quality=state.options.quality,
+		    filetype=state.options.filetype,
+		    frame_index=int(frame_index) if frame_index is not None else None
 		)
 
 		file_size = image_buffer.tell()
@@ -58,8 +52,8 @@ async def handle_generate(request: web.Request):
 		image_bytes = image_buffer.getvalue()
 		base64_encoded_data = base64.b64encode(image_bytes).decode('utf-8')
 
-		mime_type = f'image/{filetype.lower()}'
-		if filetype == 'APNG':
+		mime_type = f'image/{state.options.filetype.lower()}'
+		if state.options.filetype == 'APNG':
 			mime_type = 'image/apng'
 
 		data_uri = f'data:{mime_type};base64,{base64_encoded_data}'
@@ -82,11 +76,11 @@ async def main():
 	app.router.add_static('/static/', path=static_files_path, name='static')
 
 	if os.environ.get("AIOHTTP_RELOADER") != "1":
-		print(f"🚀 Starting textbox preview server at http://{HOST}:{PORT}")
+		print(f"🚀 Starting textbox preview server at http://localhost:{PORT}")
 
 	runner = web.AppRunner(app)
 	await runner.setup()
-	site = web.TCPSite(runner, HOST, PORT)
+	site = web.TCPSite(runner, None, PORT)
 	await site.start()
 
 	await asyncio.Event().wait()

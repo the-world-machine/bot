@@ -1,56 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Textbox Preview</title>
-    <link rel="stylesheet" href="/static/style.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Textbox Preview</title>
+	<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-
-    <div id="preview-container">
-        <div class="image-wrapper">
-            <span id="timer-display"></span>
-            <img id="preview-image" src="" alt="Waiting for input...">
-        </div>
-    </div>
-    <div id="error-box" class="error" style="display:none;"></div>
-
-    <div id="container">
-        <div class="controls">
-            <div class="control-options">
-                <div class="control-item">
-                    <label for="filetype-select">Filetype:</label>
-                    <select id="filetype-select">
-                        <option value="WEBP">WEBP</option>
-                        <option value="APNG">APNG</option>
-                        <option value="GIF">GIF</option>
-                        <option value="PNG">PNG</option>
-                        <option value="JPEG">JPEG</option>
-                        <option value="JPEGXL">JPEGXL (nop)</option>
-                    </select>
-                </div>
-
-                <div class="control-item">
-                    <label for="animated-checkbox">Animated:</label>
-                    <input type="checkbox" id="animated-checkbox" checked>
-                </div>
-                
-                <div class="control-item">
-                    <label for="quality-slider">Quality:</label>
-                    <input type="range" id="quality-slider" min="1" max="100" value="100">
-                    <span id="quality-value">100</span>
-                </div>
-                
-                <button id="refresh-button">Refresh</button>
-            </div>
-
-            <hr class="divider">
-
-            <label for="textbox-text" class="textarea-label">Enter Textbox Content:</label>
-            <textarea id="textbox-text">\@[OneShot/Niko/83c]paws at u :3</textarea>
-        </div>
-    </div> 
-    <script src="/static/script.js"></script>
+	<div class="control-options">
+		<div id="error-box" class="error" style="display:none;"></div>
+		<label for="textbox-text" class="textarea-label">.tbb file content:</label>
+		<pre contenteditable id="textbox-text"># documentation on this <a href="https://github.com/the-world-machine/bot/blob/main/md/en/textbox/index.md#raw-file-editing-tbb">can be found here</a> (right click or hold)
+#> StateOptions <#
+filetype=WEBP
+quality=100
+#> Frames <#
+\@[OneShot/Niko/83c]paws at u :3</pre>
+		<hr class="divider">
+		<div class="preferences-container">
+			<label for="tbb-file-input" class="file-input-label">.tbb file:</label>
+			<input type="file" id="tbb-file-input" accept=".tbb">
+			<vr></vr>
+			<button id="download-tbb-button">Download</button>
+		</div>
+</div>
+	<hr class="divider">
+	<div id="preview-container">
+			<div class="image-wrapper">
+					<span id="timer-display"></span>
+					<img id="preview-image" src="" alt="Waiting for input...">
+			</div>
+	</div>
+	<script src="/static/script.js"></script>
 </body>
 </html>
