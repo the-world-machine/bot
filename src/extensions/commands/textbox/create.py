@@ -37,6 +37,7 @@ async def start(
 ):
 	await respond(ctx, type='loading')
 	state_id = str(ctx.id)  # state_id is the initial `/textbox create` interaction's id
+	frame_index = 0
 	if tbb_file:
 		if not tbb_file.filename.endswith(".tbb"):
 			return await respond(ctx, type='error', error=f"Filename of the file passed to 'from_tbb_file' has to end with `.tbb`, got: '{tbb_file.filename}'",)
