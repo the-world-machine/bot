@@ -257,7 +257,3 @@ vr {
 	color: var(--file-input-text-color);
 	cursor: pointer;
 }
-
-#download-tbb-button {
-	margin-left: auto; 
-}
