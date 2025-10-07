@@ -17,7 +17,7 @@
       "name": "Run textbox test server",
       "type": "debugpy",
       "request": "launch",
-      "program": "src/utilities/textbox/test.py",
+      "program": "src/utilities/textbox/web.py",
       "console": "integratedTerminal"
     },
     {
