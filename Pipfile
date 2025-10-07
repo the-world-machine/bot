@@ -1,6 +1,6 @@
 [scripts]
 bot = "python src/main.py"
-textboxweb = "python src/utilities/textbox/test.py"
+textboxweb = "python src/utilities/textbox/web.py"
 
 [requires]
 python_version = "3.13"

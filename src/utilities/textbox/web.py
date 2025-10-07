@@ -15,7 +15,7 @@ from utilities.textbox.mediagen import Frame, render_textbox_frames, SupportedFi
 from utilities.textbox.states import State
 from utilities.config import get_config
 
-PORT = 1738
+PORT = get_config("textbox.web.port", typecheck=int)
 FILE_SIZE_LIMIT_BYTES = 20 * 1024 * 1024
 
 static_files_path = Path(__file__).parent / "static"

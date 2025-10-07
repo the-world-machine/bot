@@ -72,10 +72,12 @@ music: # deprecated
 
   lavalink:
     ip: "localhost"
-    port: 4230
+    port: 4231
     password: password_here
 
 textbox:
+  web:
+    port: 4230
   font: "src/data/fonts/TerminusTTF-Bold.ttf"
   frame-limit: 250
   max-text-length-per-frame: 2423
