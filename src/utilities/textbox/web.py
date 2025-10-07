@@ -61,7 +61,7 @@ async def handle_generate(request: web.Request):
 		end_time = time.perf_counter()
 		duration_ms = (end_time - start_time) * 1000
 
-		return web.json_response({ 'image_data': data_uri, 'generation_time_ms': duration_ms})
+		return web.json_response({ 'output_blob': data_uri, 'took': duration_ms})
 
 	except Exception as e:
 		print(f"Error during image generation: {e}")

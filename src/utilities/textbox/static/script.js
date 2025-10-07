@@ -42,9 +42,9 @@ async function updatePreview(force = false) {
     }
 
     const data = await response.json();
-    previewImage.src = data.image_data;
+    previewImage.src = data.output_blob;
 
-    const timeMs = data.generation_time_ms;
+    const timeMs = data.took;
     timerDisplay.innerText = `Took ${timeMs.toFixed(2)}ms`;
     timerDisplay.style.opacity = "1";
     errorBox.style.display = "none";
