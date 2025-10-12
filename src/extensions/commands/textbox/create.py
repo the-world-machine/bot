@@ -243,7 +243,7 @@ async def init_change_text_flow(ctx: ComponentContext | SlashContext, state_id: 
 					label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
 					placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
 					min_length=0,
-					max_length=get_config("textbox.max-text-length-per-frame", typecheck=int)
+					max_length=get_config("textbox.limits.frame-text-length", typecheck=int)
 			),
 			custom_id=f'textbox update_text_finish {state_id} {frame_index}',
 			title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))

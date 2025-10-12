@@ -78,10 +78,12 @@ music: # deprecated
 textbox:
   web:
     port: 4230
+  limits:
+    filesize: 52428800 # 50 * 1024 * 1024
+    frames: 250
+    frame-text-length: 2423
   font: "src/data/fonts/TerminusTTF-Bold.ttf"
-  frame-limit: 250
-  max-text-length-per-frame: 2423
-  allowed-hosts:
+  unproxied-hosts:
     - discordapp.com
     - discordapp.net
     - discord.com

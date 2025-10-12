@@ -1,34 +1,14 @@
-import os
-import sys
-import asyncio
 import base64
 import io
 import time
-from pathlib import Path
-
-project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
 from aiohttp import web
 
+from utilities.misc import io_buffer_bettell
 from utilities.textbox.mediagen import Frame, render_textbox_frames, SupportedFiletypes
 from utilities.textbox.states import State
 from utilities.config import get_config
 
-PORT = get_config("textbox.web.port", typecheck=int)
-FILE_SIZE_LIMIT_BYTES = 20 * 1024 * 1024
-
-static_files_path = Path(__file__).parent / "static"
-routes = web.RouteTableDef()
-
-
-@routes.get('/')
-async def handle_index(request: web.Request):
-	return web.FileResponse(static_files_path / 'index.html')
-
-
-@routes.post('/generate')
-async def handle_generate(request: web.Request):
+async def generate_route(request: web.Request):
 	try:
 		start_time = time.perf_counter()
 
@@ -41,11 +21,11 @@ async def handle_generate(request: web.Request):
 		    frame_index=int(frame_index) if frame_index is not None else None
 		)
 
-		file_size = image_buffer.tell()
-		if file_size > FILE_SIZE_LIMIT_BYTES:
+		file_size = io_buffer_bettell(image_buffer)
+		if file_size > get_config("textbox.limits.filesize", typecheck=int):
 			error_message = (
 			    f"Generated file is too large ({file_size / 1024 / 1024:.2f} MB). "
-			    f"Limit is {FILE_SIZE_LIMIT_BYTES / 1024 / 1024} MB."
+			    f"Limit is {get_config("textbox.limits.filesize", typecheck=int) / 1024 / 1024} MB."
 			)
 			return web.json_response({ 'error': error_message}, status=413)
 
@@ -69,22 +49,5 @@ async def handle_generate(request: web.Request):
 		traceback.print_exc()
 		return web.json_response({ 'error': str(e)}, status=500)
 
-
-async def main():
-	app = web.Application()
-	app.add_routes(routes)
-	app.router.add_static('/static/', path=static_files_path, name='static')
-
-	if os.environ.get("AIOHTTP_RELOADER") != "1":
-		print(f"🚀 Starting textbox preview server at http://localhost:{PORT}")
-
-	runner = web.AppRunner(app)
-	await runner.setup()
-	site = web.TCPSite(runner, None, PORT)
-	await site.start()
-
-	await asyncio.Event().wait()
-
-
-if __name__ == "__main__":
-	asyncio.run(main())
+def process(app: web.Application):
+	app.router.add_post('/generate', generate_route)

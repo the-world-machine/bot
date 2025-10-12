@@ -122,7 +122,7 @@ invalid_path = "Other/NAVI"
 async def get_facepic(path: str) -> Face | None:
 	face = Face(path)
 	if path.startswith("https://"):
-		if is_domain_allowed(path, allowed_domains=get_config('textbox.allowed-hosts', typecheck=list)):
+		if is_domain_allowed(path, allowed_domains=get_config('textbox.unproxied-hosts', typecheck=list)):
 			await face.set_custom_icon(path)
 			return face
 		else:

@@ -378,3 +378,13 @@ class ReprMixin:
 
 def replace_numbers_with_emojis(text: str) -> str:
 	return re.sub(r'\d', lambda m: m.group() + chr(0xFE0F) + chr(0x20E3), text)
+
+
+def io_buffer_bettell(buffer: io.BytesIO) -> int:
+	""" (better tell) get size of io.BytesIO buffer without converting it toa `bytes` object.
+	in comparison to .tell this checks the entire buffer """
+	original_position = buffer.tell()
+	buffer.seek(0, io.SEEK_END)
+	size = buffer.tell()
+	buffer.seek(original_position)
+	return size
