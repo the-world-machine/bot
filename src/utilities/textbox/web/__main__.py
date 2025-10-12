@@ -47,10 +47,12 @@ async def error_middleware(request, handler):
 
 @web.middleware
 async def logging_middleware(request, handler):
-    print(f"{'📓' if request.path=='/generate' else '⚡'} {request.method} {request.path} [{request.remote or 'Unknown'}]")
-    response = await handler(request)
-    
-    return response
+	print(
+	    f"{'📓' if request.path=='/generate' else '⚡'} {request.method} {request.path} [{request.headers['Cf-Connecting-Ip']}:{request.headers['Cf-Ipcountry']}]"
+	)
+	response = await handler(request)
+
+	return response
 app.router.add_static('/static/', path="src/utilities/textbox/web/static/", name='static')
 app.middlewares.extend([error_middleware,logging_middleware])
 async def main():
