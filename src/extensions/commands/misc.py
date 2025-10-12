@@ -101,7 +101,7 @@ class MiscellaneousCommands(Extension):
 		    embeds=Embed(
 		        color=Colors.DEFAULT,
 		        thumbnail=EmbedAttachment(url=make_emoji_cdn_url(emojis["treasures"]["die"])),
-		        title=loc.l("misc.roll.title", amount=amount, sides=sides),
+		        title=loc.l("misc.roll.title", amount=amount if amount > 1 else "", sides=sides),
 		        description=description
 		    ),
 		    ephemeral=not public
