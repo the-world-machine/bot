@@ -175,7 +175,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	background.resize((background.height, background.width+500))
 	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text = Image.new("RGBA", (background.width, 999999), color=(255, 255, 255, 0))
-	text_x, text_y = 20, 17
+	text_x, text_y = 23, 16
 	text_width = background.width - (20 * 2)
 	text_height = background.height - (17 * 2)
 	images: list[Image.Image] = []
@@ -247,8 +247,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 						text_offset[0] = 0
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						text_y -= 25
-					text_offset[0] += 10.0
-					d.text((text_offset[0] - 10, text_offset[1]), cluster, font=font, fill=(255, 255, 255))
+					d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
+					text_offset[0] += d.textlength(cluster, font=font)
 					if animated:
 						put_frame(duration)
 
