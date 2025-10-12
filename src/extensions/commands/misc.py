@@ -5,12 +5,13 @@ import platform
 from datetime import datetime, timezone
 from utilities.misc import get_git_hash
 from utilities.emojis import emojis, make_emoji_cdn_url
-from utilities.localization import Localization, fnum, ftime
+from utilities.localization import Localization, amperjoin, fnum, ftime
 from utilities.message_decorations import Colors, fancy_message
 from interactions import Embed, EmbedAttachment, Extension, Message, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 
 
 class MiscellaneousCommands(Extension):
+
 	@slash_command(description='A random wikipedia article')
 	@slash_option(
 	    description="Whether you want the response to be visible for others in the channel",
@@ -89,9 +90,7 @@ class MiscellaneousCommands(Extension):
 
 		rolls = [random.randint(1, sides) for _ in range(amount)]
 
-		result = ", ".join(
-		    map(str, rolls)
-		) if len(rolls) > 1 else rolls[0]  # TODO: replace .join with a function(to be written) from localisation module
+		result = amperjoin([str(roll) for roll in rolls])
 		description = loc.l("misc.roll.desc", result=result)
 
 		if len(rolls) > 1:
