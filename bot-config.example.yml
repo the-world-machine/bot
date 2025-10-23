@@ -33,6 +33,13 @@ bot:
       contributor-id: "1054832328729427988"
       translator-id: "1337522400367218758"
       supporter-id: "1044343502353481788"
+
+modules:
+  # whether the module is enabled or not
+  welcome: true
+  music: false
+  devcommands: true
+
 dev:
   guild-id: ~ # server id, in ""
   channels:
@@ -65,7 +72,6 @@ localization:
       - ~ # user ids, all in ""
 
 music: # deprecated
-  enabled: true
   spotify:
     secret: ~
     id: ~
