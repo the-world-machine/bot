@@ -1,4 +1,5 @@
 from dataclasses import is_dataclass
+from datetime import datetime
 import io
 import re
 import sys
@@ -12,7 +13,7 @@ from utilities.misc import shell
 from utilities.emojis import emojis
 import utilities.database.main as main
 from utilities.localization import fnum
-from interactions import Embed, Message
+from interactions import Embed, Member, MemberFlags, Message, Timestamp
 from asyncio import iscoroutinefunction
 import utilities.database.schemas as schemas
 from utilities.extensions import load_commands  # used, actually
@@ -125,8 +126,8 @@ async def _execute_dev_command(message: Message):
 
 	match subcommand_name:
 		case "bot":
-			action = args[1]
-			match action:
+			subcase = args[1]
+			match subcase:
 				case "refresh":
 					try:
 						extension = args[2]
@@ -345,6 +346,35 @@ async def _execute_dev_command(message: Message):
 			except Exception as e:
 				tb.print_exc()
 				await message.reply(f'``[ Error with command ({e}) ]``')
+		case "util":
+			subcase = args[1]
+			match subcase:
+				case "fakejoin":
+					from interactions.api.events import MemberAdd
+					user_id = args[2] if len(args) == 3 else message.author.id
+					guild_id = args[3] if len(args) == 4 else None
+					if guild_id is None:
+						if not message.guild:
+							raise ValueError("[ [util fakejoin] expects all arguments in dms: `user_id` and `guild_id` ]")
+						guild_id = message.guild.id
+
+					guild = await client.fetch_guild(guild_id)
+					if not guild:
+						raise ValueError(f"Could not find the guild with ID: {guild_id}")
+
+					member = await guild.fetch_member(user_id)
+					if not member:
+						user = await client.fetch_user(user_id)
+						if user:
+							print(f"Could not find member with ID: {user_id} in the specified guild.")
+						else:
+							raise ValueError(f"Could not find User with ID {user_id}")
+						member = Member.from_dict({'premium_since': None, 'pending': False, 'nick': None, 'mute': False, 'joined_at': datetime.now(), 'flags': 0, 'deaf': False, 'communication_disabled_until': None, 'banner': user.banner, 'avatar': user.avatar, 'guild_id': 1017479547664482444, 'id': user.id, 'bot': user.bot, 'role_ids': []}, client)
+					event = MemberAdd(guild.id, member, bot=client)
+					client.dispatch(event)
+					return await message.reply(f"[ Dispatched {event} ]")
+				case _:
+					return await message.reply("Available subcommand: `fakejoin`")
 		case "locale_override":
 			return
 		case _:
