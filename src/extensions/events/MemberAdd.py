@@ -18,7 +18,6 @@ class MemberAddEvent(Extension):
 
 		if config.disabled:
 			return
-
 		target_channel = guild.system_channel
 		channels = list(map(lambda c: str(c.id), guild.channels))
 		if config.channel_id and config.channel_id in channels:

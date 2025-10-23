@@ -7,8 +7,12 @@ def assign_events(client: interactions.Client):
 	files = [ f for f in os.listdir('src/extensions/events') if f != '__pycache__']
 	events = [f.replace('.py', '') for f in files]
 	events = [None if len(f) < 0 or f.startswith(".") else f for f in events]
-	if not on_prod and "welcome_messages" in events:
-		events.remove("welcome_messages")
+	if get_config("modules.welcome", typecheck=bool) and "MemberAdd" in events:
+		print("Welcome Messages are disabled")
+		events.remove("MemberAdd")
+	if get_config("modules.devcommands", typecheck=bool) and "MessageCreate" in events:
+		print("Developer Commands are disabled [bot]")
+		events.remove("MessageCreate")
 
 	if debugging():
 		print("Assigning events")
@@ -41,7 +45,8 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 	commands = [f.replace('.py', '') for f in files]
 	commands = [None if len(f) < 0 or f.startswith(".") else f for f in commands]
 	commands.append("interactions.ext.jurigged")
-	if not get_config("music.enabled", typecheck=bool) and 'music' in commands:
+	if not get_config("modules.music", typecheck=bool) and 'music' in commands:
+		print("Music commands are disabled")
 		commands.remove("music")
 
 	if debugging():
