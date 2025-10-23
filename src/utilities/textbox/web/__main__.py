@@ -45,11 +45,16 @@ async def error_middleware(request, handler):
 		request.protocol.logger.exception("Error handling request")
 		return web.Response(text=f"<h1 style='text-align: center'> 500: Internal Machine Error </h1>", headers={"Content-Type": "text/html"})
 
+
+def get_ip(request):
+	if 'Cf-Connecting-Ip' in request.headers:
+		return f"{request.headers['Cf-Connecting-Ip']}:{request.headers['Cf-Ipcountry']}"
+	return request.remote
+
+
 @web.middleware
 async def logging_middleware(request, handler):
-	print(
-	    f"{'📓' if request.path=='/generate' else '⚡'} {request.method} {request.path} [{request.headers['Cf-Connecting-Ip']}:{request.headers['Cf-Ipcountry']}]"
-	)
+	print(f"{'📓' if request.path=='/generate' else '⚡'} {request.method} {request.path} [{get_ip(request)}]")
 	response = await handler(request)
 
 	return response
