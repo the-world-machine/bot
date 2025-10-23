@@ -7,10 +7,10 @@ def assign_events(client: interactions.Client):
 	files = [ f for f in os.listdir('src/extensions/events') if f != '__pycache__']
 	events = [f.replace('.py', '') for f in files]
 	events = [None if len(f) < 0 or f.startswith(".") else f for f in events]
-	if get_config("modules.welcome", typecheck=bool) and "MemberAdd" in events:
+	if not get_config("modules.welcome", typecheck=bool) and "MemberAdd" in events:
 		print("Welcome Messages are disabled")
 		events.remove("MemberAdd")
-	if get_config("modules.devcommands", typecheck=bool) and "MessageCreate" in events:
+	if not get_config("modules.devcommands", typecheck=bool) and "MessageCreate" in events:
 		print("Developer Commands are disabled [bot]")
 		events.remove("MessageCreate")
 
