@@ -12,7 +12,7 @@ from utilities.misc import io_buffer_bettell
 from utilities.textbox.mediagen import Frame, render_textbox_frames, SupportedFiletypes
 from utilities.textbox.states import State
 from utilities.config import get_config
-from utilities.textbox.web.misc import http_status_names
+from .misc import http_status_names
 app = web.Application()
 
 files = [ f for f in os.listdir('src/utilities/textbox/web/endpoints') if f != '__pycache__']
