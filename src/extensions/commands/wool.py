@@ -24,6 +24,7 @@ wool_values = {
   'negative_normal': [ -1_000, -5_000  ],
    'negative_major': [ -5_000, -30_000 ]
 }
+wool_give_blacklist = ['545986448231497728', '611543231192236051']
 # yapf: enable
 
 
@@ -78,6 +79,13 @@ class WoolCommands(Extension):
 	)
 	async def give(self, ctx: SlashContext, to: User, amount: int):
 		loc = Localization(ctx)
+
+		if str(ctx.author.id) in wool_give_blacklist:
+			return await ctx.send(
+			    "https://cdn.discordapp.com/attachments/1336864890706595852/1433821383435223233/TWM_textbox_1761920034.png",
+			    ephemeral=True
+			)
+
 		if to.id == ctx.author.id:
 			return await fancy_message(
 			    ctx, loc.l("wool.transfer.errors.self_transfer"), ephemeral=True, color=Colors.BAD
