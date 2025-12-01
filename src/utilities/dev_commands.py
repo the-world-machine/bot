@@ -351,7 +351,7 @@ async def _execute_dev_command(message: Message):
 			match subcase:
 				case "fakejoin":
 					from interactions.api.events import MemberAdd
-					user_id = args[2] if len(args) == 3 else message.author.id
+					user_id = args[2] if len(args) >= 3 else message.author.id
 					guild_id = args[3] if len(args) == 4 else None
 					if guild_id is None:
 						if not message.guild:
@@ -369,7 +369,7 @@ async def _execute_dev_command(message: Message):
 							print(f"Could not find member with ID: {user_id} in the specified guild.")
 						else:
 							raise ValueError(f"Could not find User with ID {user_id}")
-						member = Member.from_dict({'premium_since': None, 'pending': False, 'nick': None, 'mute': False, 'joined_at': datetime.now(), 'flags': 0, 'deaf': False, 'communication_disabled_until': None, 'banner': user.banner, 'avatar': user.avatar, 'guild_id': 1017479547664482444, 'id': user.id, 'bot': user.bot, 'role_ids': []}, client)
+						member = Member.from_dict({'premium_since': None, 'pending': False, 'nick': None, 'mute': False, 'joined_at': datetime.now(), 'flags': 0, 'deaf': False, 'communication_disabled_until': None, 'banner': user.banner, 'avatar': user.avatar, 'guild_id': guild.id, 'id': user.id, 'bot': user.bot, 'role_ids': []}, client)
 					event = MemberAdd(guild.id, member, bot=client)
 					client.dispatch(event)
 					return await message.reply(f"[ Dispatched {event} ]")
