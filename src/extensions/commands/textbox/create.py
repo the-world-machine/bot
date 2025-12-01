@@ -100,9 +100,7 @@ def convert_to_sortoptions(item: Any, path: list[str] | None = None, recursive: 
 async def facepic_autocomplete(self, ctx: AutocompleteContext):
 	loc = Localization(ctx)
 	search_query = ctx.input_text
-	print(search_query)
 	tøp = []
-	print(search_query, type(search_query))
 	if not search_query or search_query == "":
 		tøp.append(SlashCommandChoice(name="Start by selecting a folder (focus back on input to continue)", value=""))
 	choices: list[SortOption] = []
