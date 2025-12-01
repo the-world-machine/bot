@@ -376,7 +376,7 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 				),
 			),
 			ContainerComponent(
-				TextDisplayComponent(content=pos),
+				TextDisplayComponent(content=pos if len(pos) > 0 else "\n-# meow"),
 				ActionRow(
 					Button(
 						style=ButtonStyle.GRAY,

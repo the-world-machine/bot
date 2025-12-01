@@ -248,7 +248,10 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						text_y -= 25
 					d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
-					text_offset[0] += d.textlength(cluster, font=font)
+					try:
+						text_offset[0] += d.textlength(cluster, font=font)
+					except:
+						pass
 					if animated:
 						put_frame(duration)
 
