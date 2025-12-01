@@ -442,12 +442,12 @@ class NikogotchiCommands(Extension):
 			if custom_id == 'pet':
 				happiness_increase = 20
 				nikogotchi.happiness = min(nikogotchi.max_happiness, nikogotchi.happiness + happiness_increase)
-				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.pet'))
+				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.pet', typecheck=tuple))
 
 			if custom_id == 'clean':
 				cleanliness_increase = 30
 				nikogotchi.cleanliness = min(nikogotchi.max_cleanliness, nikogotchi.cleanliness + cleanliness_increase)
-				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.cleaned'))
+				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.cleaned', typecheck=tuple))
 
 			if custom_id == 'findtreasure':
 				dialogue = loc.l('nikogotchi.treasured.dialogues.sent') + await put_mini(
@@ -556,7 +556,7 @@ class NikogotchiCommands(Extension):
 					health_increase = 25
 
 					golden_pancakes -= 1
-				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed'))
+				dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed', typecheck=tuple))
 			case 'glitched':
 				if glitched_pancakes <= 0:
 					dialogue = loc.l('nikogotchi.components.feed.invalid')
@@ -575,7 +575,7 @@ class NikogotchiCommands(Extension):
 					health_increase = 1
 
 					normal_pancakes -= 1
-					dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed'))
+					dialogue = random.choice(loc.l(f'nikogotchi.dialogue.{nikogotchi.nid}.fed', typecheck=tuple))
 			case _:
 				return await ctx.edit()
 
