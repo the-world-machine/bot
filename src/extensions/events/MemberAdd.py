@@ -33,7 +33,7 @@ class MemberAddEvent(Extension):
 		buffer = io.BytesIO()
 		if not message.startswith("\\@"):
 			# default to this face unless they put some in their message in the beginning
-			message += "\\@[OneShot/The World Machine/Pancakes]"
+			message = f"\\@[OneShot/The World Machine/Pancakes]{message}"
 
 		images, durations = await render_frame(Frame(str(message)), False)
 		images[0].save(buffer, format="PNG")
