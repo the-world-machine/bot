@@ -272,10 +272,9 @@ class ShopCommands(Extension):
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 		nikogotchi: Nikogotchi = await Nikogotchi(_id=ctx.author.id).fetch()
 
-		capsule_id = random.choices(range(0, 3), weights=[ 0.40, 0.30, 0.20, 0.10 ], k=1)[0]
-
 		capsules = await fetch_item()
 		capsules = capsules['capsules']
+		capsule_id = random.choices(range(0, 4), weights=[ 0.40, 0.30, 0.20, 0.10 ], k=1)[0]
 
 		nikogotchi_capsule = Item(**capsules[capsule_id])
 		capsule_loc = loc.l(f'items.capsules.{nikogotchi_capsule.id}')
