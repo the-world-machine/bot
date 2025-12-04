@@ -228,6 +228,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 				if word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
 					text_offset[1] += 25.0
 					text_offset[0] = 0
+				if len(word) == 0:
+					text_offset[1] += 25.0
 				for cluster in list(graphemes(word + " ")):  # type: ignore
 					if not cluster:
 						cluster: str = ""
