@@ -176,7 +176,10 @@ class NikogotchiCommands(Extension):
 				info += f'\n-# 💬 {dialogue}'
 			else:
 				info += f'\n-# 💭 {loc.l("nikogotchi.status.template", status=nikogotchi_status)}'
-		N_embed = Embed(title=n.name, description=info, color=Colors.DEFAULT)
+
+		N_embed = Embed(
+		    title=f"{n.name} · *{n.pronouns}*" if n.pronouns != "/" else n.name, description=info, color=Colors.DEFAULT
+		)
 		N_embed.set_thumbnail(metadata.image_url)
 
 		if preview:
@@ -660,10 +663,7 @@ class NikogotchiCommands(Extension):
 		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx,
-			    Localization(ctx).l('nikogotchi.other.rename_you_invalid'),
-			    ephemeral=True,
-			    color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.rename_you_invalid'), ephemeral=True, color=Colors.BAD
 			)
 
 		old_name = nikogotchi.name
@@ -831,3 +831,64 @@ class NikogotchiCommands(Extension):
 		        color=Colors.DEFAULT,
 		    )
 		)
+
+	async def init_repronoun_flow(self, ctx: ComponentContext | SlashContext, old_pronouns: str, cont: bool = False):
+		loc = Localization(ctx)
+		modal = Modal(
+		    ShortText(
+		        custom_id='pronouns',
+		        value=old_pronouns,
+		        label=loc.l('nikogotchi.other.repronoun.input.label'),
+		        placeholder=loc.l('nikogotchi.other.repronoun.input.placeholder'),
+		        max_length=32
+		    ),
+		    custom_id='repronoun_nikogotchi',
+		    title=loc.l('nikogotchi.other.repronoun.title')
+		)
+		if (cont):
+			modal.custom_id = 'repronoun_nikogotchi continue'
+		await ctx.send_modal(modal)
+
+	@modal_callback(re.compile(r'repronoun_nikogotchi?.+'))
+	async def on_repronoun_answer(self, ctx: ModalContext, pronouns: str):
+		loc = Localization(ctx)
+
+		if ctx.custom_id.endswith("continue"):
+			await ctx.defer(edit_origin=True)
+		else:
+			await ctx.defer(ephemeral=True)
+		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
+		if nikogotchi is None:
+			return await fancy_message(
+			    ctx, Localization(ctx).l('nikogotchi.other.repronoun_you_invalid'), ephemeral=True, color=Colors.BAD
+			)
+
+		old_pronouns = nikogotchi.pronouns
+		nikogotchi.pronouns = pronouns
+		await self.save_nikogotchi(nikogotchi, str(ctx.author.id))
+		components = []
+		if ctx.custom_id.endswith("continue"):
+			components.append(
+			    Button(
+			        style=ButtonStyle.GRAY,
+			        label=loc.l('generic.buttons.continue'),
+			        custom_id=f'action_refresh_{ctx.author_id}'
+			    )
+			)
+		await fancy_message(
+		    ctx,
+		    loc.l('nikogotchi.other.repronoun.response', new_pronouns=pronouns, old_pronouns=old_pronouns),
+		    ephemeral=True,
+		    components=components
+		)
+
+	@nikogotchi.subcommand(sub_cmd_description='Change the pronouns of your nikogotchi')
+	async def repronoun(self, ctx: SlashContext):
+		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
+
+		if nikogotchi is None:
+			return await fancy_message(
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD
+			)
+
+		return await self.init_repronoun_flow(ctx, nikogotchi.pronouns)

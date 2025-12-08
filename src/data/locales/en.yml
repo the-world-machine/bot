@@ -666,8 +666,18 @@ nikogotchi:
       button: Rename # used when you use a nikogotchi capsule
       response: >
         Successfully renamed your Nikogotchi!
-        "[old_name]" → "[new_name]"
 
+        "[old_name]" → "[new_name]"
+    repronoun:
+      title: Change your nikogotchi's pronouns
+      input:
+        label: Pronouns
+        placeholder: Enter the new pronouns for your nikogotchi...
+      button: Repronoun
+      response: >
+        Successfully changed the pronouns of your Nikogotchi!
+
+        "[old_pronouns]" → "[new_pronouns]"
     trade:
       request: >
         ### **[user]** wants to trade their Nikogotchi ([name_one]) with you!

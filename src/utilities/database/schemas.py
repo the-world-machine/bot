@@ -102,6 +102,7 @@ class Nikogotchi(Collection):
 
 	nid: str = '?'
 	name: str = 'NONAME'
+	pronouns: str = "it/its"
 
 	async def level_up(self, amount: int) -> list[StatUpdate]:
 
