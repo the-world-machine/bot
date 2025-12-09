@@ -663,7 +663,7 @@ class NikogotchiCommands(Extension):
 		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx, Localization(ctx).l('nikogotchi.other.rename_you_invalid'), ephemeral=True, color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid_get'), ephemeral=True, color=Colors.BAD
 			)
 
 		old_name = nikogotchi.name
@@ -691,7 +691,7 @@ class NikogotchiCommands(Extension):
 
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid_get'), ephemeral=True, color=Colors.BAD
 			)
 
 		return await self.init_rename_flow(ctx, nikogotchi.name)
@@ -860,11 +860,11 @@ class NikogotchiCommands(Extension):
 		nikogotchi = await self.get_nikogotchi(str(ctx.author.id))
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx, Localization(ctx).l('nikogotchi.other.repronoun_you_invalid'), ephemeral=True, color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid_get'), ephemeral=True, color=Colors.BAD
 			)
 		if pronouns != "/" and ("/" not in pronouns or not all(pronouns.split("/"))):
-            return await fancy_message(
-                ctx, Localization(ctx).l('nikogotchi.other.insufficient_pronouns'), ephemeral=True, color=Colors.BAD
+			return await fancy_message(
+					ctx, Localization(ctx).l('nikogotchi.other.insufficient_pronouns'), ephemeral=True, color=Colors.BAD
 			)
 		old_pronouns = nikogotchi.pronouns
 		nikogotchi.pronouns = pronouns
@@ -891,7 +891,7 @@ class NikogotchiCommands(Extension):
 
 		if nikogotchi is None:
 			return await fancy_message(
-			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid'), ephemeral=True, color=Colors.BAD
+			    ctx, Localization(ctx).l('nikogotchi.other.you_invalid_get'), ephemeral=True, color=Colors.BAD
 			)
 
 		return await self.init_repronoun_flow(ctx, nikogotchi.pronouns)

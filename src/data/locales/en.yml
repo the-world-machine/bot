@@ -643,7 +643,7 @@ nikogotchi:
   other:
     you_invalid: "[ You don't have a Nikogotchi. ]"
     other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
-    rename_you_invalid: "[ You don't have a Nikogotchi. What are you doing...? ]"
+    you_invalid_get: "[ You don't have a Nikogotchi. Get a capsule for one in the [/shop] before doing this! ]"
     insufficient_pronouns: "[ Please provide at least two pronoun forms (e.g. 'they/them'), or enter just a slash to hide them ]"
     error:
       description: > # Kelvin was a nikogotchi before
