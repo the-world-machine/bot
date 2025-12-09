@@ -35,7 +35,7 @@ Contributing in any way to the discord bot will have your name be put in the web
 
 ### Prerequisites
 
-Make sure you have python 3 and the `pipenv` module installed.
+Make sure you have python 3.13.11 (u can easily install this one via `pyenv`, running next step will ask if u want to install this version if u dont have it) and the `pipenv` module installed.
 
 ```commandline
 python -m pip install pipenv
