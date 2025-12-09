@@ -673,7 +673,7 @@ nikogotchi:
       title: Change your nikogotchi's pronouns
       input:
         label: Pronouns
-        placeholder: Enter the new pronouns for your nikogotchi...
+        placeholder: Enter the new pronouns for your nikogotchi... (use just "/" if u want to hide the pronouns)
       button: Repronoun
       response: >
         Successfully changed the pronouns of your Nikogotchi!
