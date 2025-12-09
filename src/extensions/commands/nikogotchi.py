@@ -862,7 +862,10 @@ class NikogotchiCommands(Extension):
 			return await fancy_message(
 			    ctx, Localization(ctx).l('nikogotchi.other.repronoun_you_invalid'), ephemeral=True, color=Colors.BAD
 			)
-
+		if pronouns != "/" and ("/" not in pronouns or not all(pronouns.split("/"))):
+            return await fancy_message(
+                ctx, Localization(ctx).l('nikogotchi.other.insufficient_pronouns'), ephemeral=True, color=Colors.BAD
+			)
 		old_pronouns = nikogotchi.pronouns
 		nikogotchi.pronouns = pronouns
 		await self.save_nikogotchi(nikogotchi, str(ctx.author.id))
