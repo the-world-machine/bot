@@ -67,7 +67,7 @@ def on_file_update(filename):
 		print_exc()
 		ReadyEvent.queue(e)
 		return
-	_locales[locale] = hello
+	_locales[locale] = FrozenDict(hello)
 	print(" ─ ─ ─ ")
 
 	if locale == get_config("localization.main-locale"):
