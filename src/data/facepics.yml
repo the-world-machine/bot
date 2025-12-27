@@ -265,6 +265,14 @@ OneShot:
     The World Machine:
       icon: "1394486232460955769" # OneShot, en
       faces:
+        "Jolly (by @RitualDashh)":
+          icon: "1454374382603604019"
+          faces:
+            Normal: "1454374382603604019" # @meqativ edit
+            ":3": "1454374460944679118"
+            83c: "1454374543249637544"
+            snowballed: "1454374564569153580"
+
         Crumbs: "1408325300613419008" # OSCF of Niko face (in original)
         Popcorn: "1408324955208155187" # OSCF of Niko face
         Wink: "1408324953694015538" # OSCF of Niko face
