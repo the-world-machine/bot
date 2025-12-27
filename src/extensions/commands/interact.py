@@ -142,7 +142,7 @@ class InteractCommands(Extension):
 
 	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
 		loc = Localization(ctx)
-		await ctx.respond(content=loc.l('generic.loading'), ephemeral=True)
+		await ctx.respond(content=loc.l('generic.loading.generic'), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,

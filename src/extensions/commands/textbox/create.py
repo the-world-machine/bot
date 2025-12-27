@@ -401,7 +401,7 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 			)
 		])
 	elif type == "loading":
-		content = Localization(ctx).l("generic.loading")
+		content = Localization(ctx).l("generic.loading.textbox")
 		accent_color = Colors.DEFAULT.value
 		edit = False
 	elif type == "error":

@@ -1,6 +1,8 @@
 generic:
-  loading: "[ Завантаження... [emoji:loading] ]"
-  loading_hint: "[ [emoji:loading] ]"
+  loading:
+    hint: "[ [emoji:loading] ]"
+    generic: "[ [emoji:loading] Завантаження... ]"
+    textbox: "[ [emoji:loading] Завантаження редактору текстових вікон... ]"
   command_cooldown: "[ Будь ласка, не спамте цю команду. Ви зможете використати її [timestamp_relative]. ]"
 
   buttons:

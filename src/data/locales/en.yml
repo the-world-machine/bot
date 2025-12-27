@@ -1,6 +1,8 @@
 generic:
-  loading: "[ [emoji:loading] Loading... ]"
-  loading_hint: "[ [emoji:loading] ]"
+  loading:
+    hint: "[ [emoji:loading] ]"
+    generic: "[ [emoji:loading] Loading... ]"
+    textbox: "[ [emoji:loading] Loading textbox editor... ]"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:

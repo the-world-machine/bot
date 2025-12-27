@@ -14,7 +14,7 @@ int_regex = re.compile(r"^\d+$")
     required=False
 )
 async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
-	await fancy_message(ctx, Localization(ctx).l("generic.loading"), ephemeral=True)
+	await fancy_message(ctx, Localization(ctx).l("generic.loading.generic"), ephemeral=True)
 	states2show: list[tuple[str, State]] = []
 	options = search.split("!")
 	filter = options[0]

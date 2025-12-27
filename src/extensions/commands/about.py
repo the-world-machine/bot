@@ -26,7 +26,7 @@ class AboutCommand(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
 		start_time = datetime.now(timezone.utc)
-		_ = await fancy_message(ctx, loc.l("generic.loading_hint"), ephemeral=not public)
+		_ = await fancy_message(ctx, loc.l("generic.loading.hint"), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 
