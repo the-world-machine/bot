@@ -297,15 +297,16 @@ class SettingsCommands(Extension):
 		config = server_data.welcome
 		old_text = config.message
 		new_text = text
-		if text == loc.l("misc.welcome.placeholder_text"):
+		if new_text == loc.l("misc.welcome.placeholder_text") or new_text == "":
 			new_text = None
+		if old_text == None or old_text == "":
+			old_text = loc.l("misc.welcome.placeholder_text")
 
 		await config.update(message=new_text)
-
-		debug = "" if not debugging() else "\n" + loc.l(
-		    "settings.welcome.editor.debug",
+		Changed = loc.l(
+		    "settings.welcome.editor.Changed",
 		    old_text=f"```\n{old_text.replace('```', '` ``')}```",
-		    new_text=f"```\n{text.replace('```', '` ``')}```"
+		    new_text=f"\n-# *{loc.l("settings.welcome.editor.new_none")}*" if new_text is None else f"```\n{text.replace('```', '` ``')}```"
 		)
 		warn = "" if not config.disabled else await put_mini(
 		    loc, "settings.welcome.editor.disabled_note", user_id=ctx.user.id, pre="\n\n"
@@ -314,7 +315,7 @@ class SettingsCommands(Extension):
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
 		)
 
-		await fancy_message(ctx, loc.l("settings.welcome.editor.done") + debug + warn + error, ephemeral=True)
+		await fancy_message(ctx, loc.l("settings.welcome.editor.done") + Changed + warn + error, ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_name="channel", sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(

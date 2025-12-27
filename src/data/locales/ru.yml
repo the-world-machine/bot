@@ -189,7 +189,8 @@ settings:
       input: "Сообщение о приветствии"
       placeholder: "Вы можете использовать переменные: [user_name] [server_name] [member_count]"
       done: "[ Успешно обновлено сообщение о приветствии ]" # todo: string changed
-      debug: |
+      new_none: "[ Reset to default ]"
+      Changed: |
         Предыдущий: [old_text]
 
         Новый (current): [new_text]

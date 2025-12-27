@@ -193,7 +193,8 @@ settings:
       input: "Welcome Message"
       placeholder: "Variables you can use: [user_name] [server_name] [member_count]"
       done: "[ Successfully updated the welcome textbox message ]"
-      debug: |
+      new_none: "[ Reset to default ]"
+      Changed: |
         Previous: [old_text]
 
         New (current): [new_text]

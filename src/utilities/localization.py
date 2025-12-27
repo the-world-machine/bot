@@ -400,7 +400,7 @@ limits = {
     "settings.errors.channel_lost_warn": -1,
     "wool.transfer.to.bot.notefirmation": 10,
     "settings.welcome.enabled.default_tip": 15,
-    "settings.welcome.editor.disabled_note": 15,
+    "settings.welcome.editor.disabled_note": -1,
     "nikogotchi.treasured.dialogues.senote": 25,
 }
 
