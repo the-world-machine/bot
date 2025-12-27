@@ -306,8 +306,8 @@ OneShot:
         Concerned: "1248987357802266704" # @radioactiveradiant
         Huh: "1248987456255168554" # @radioactiveradiant
         Distressed: "1248987515390656637" # @radioactiveradiant
-        What the hell: "1237405692663693426" # @radioactiveradiant
-        Amaze: "1248987587780018247" # @radioactiveradiant
+        What the hell: "1239581023725948979" # @radioactiveradiant
+        Amaze: "1452051271442894961" # @radioactiveradiant
         Unamused: "1248987762481299547" # @radioactiveradiant
         Scared: "1248987959034904648" # @radioactiveradiant
         Crying: "1248988045324193865" # @radioactiveradiant
@@ -323,7 +323,7 @@ OneShot:
         Stare: "1400493177303076864" # @radioactiveradiant
         Plush: "1235246182712737802" # @radioactiveradiant
         Plush Looking Right: "1236987961648746556" # @radioactiveradiant
-        Amazed Uncanny: "1237747423208673371" # @meqativ
+        Amazed Uncanny: "1451657143240495144" # @meqativ
 Other:
   icon: "1411249485916668056" # from https://urbanshade.org/wiki/File:NaviQuoteIcon.png
   faces:
