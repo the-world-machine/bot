@@ -3,37 +3,37 @@ OneShot:
   characters:
     The World Machine:
       faces:
-        Normal: "1394486232460955769" # OneShot, en
-        Speak: "1394486194145853491" # OneShot, en_speak
-        Ah: "1394486171307872416" # OneShot, en2
-        Hm: "1394486169533943930" # OneShot, en3
-        Alright: "1394486168141168660" # OneShot, en4
-        Looking Left: "1394486165243170906" # OneShot, en5
-        Looking Right: "1394486163804262490" # OneShot, en6
-        Yawn: "1394486172650049647" # OneShot, en_yawn
-        Surprise: "1394486192636035182" # OneShot, en_surprised
-        "What,": "1394486178656424108" # OneShot, en_what
-        "Concerned": "1394486177075298456" # OneShot, en_what2
-        "WTF": "1394486175410028654" # OneShot, en_wtf
-        "WTFear": "1394486173573058712" # OneShot, en_wtf2
-        "Upset left": "1394486968578080949" # OneShot, en_upset2
-        "Upset meow": "1394486182485823608" # OneShot, en_upset_meow
-        "Upset right": "1394486191377748038" # OneShot, en_upset
-        Distressed: "1394486220645470270" # OneShot, en_distressed
-        "Distressed down": "1394486214790484120" # OneShot, en_distressed2 # "down" cuz eyes looking slightly down and i dont want to call it Alt idk
-        "Distressed talk": "1394486217072181381" # OneShot, en_distressed_talk
-        "Distressed meow": "1394486975712595968" # OneShot, en_distressed_meow
-        "Distressed less sad": "1394486203406880798" # OneShot, en_less_sad
-        "Distressed sad": "1394486199800041525" # OneShot, en_sad
-        "Distressed cry": "1394486225406136380" # OneShot, en_cry
-        "Eyes closed": "1394486974324281354" # OneShot, en_eyeclosed
-        "Eyes closed speak": "1394486210281340988" # OneShot, en_eyeclosed2
-        "Smile": "1394486195492229200" # OneShot, en_smile
-        "Gas mask": "1394486972621262849" # OneShot, en_gasmask
-        "Huh": "1394486205944692826" # OneShot, en_huh
-        "Shock": "1394486969815531644" # OneShot, en_shock
-        "Pancakes": "1394486970817839146" # OneShot, en_pancakes
-        83c: "1394486229894168648" # OneShot, en_83c
+        Normal: "1454422087824445501" # OneShot, en
+        Speak: "1454422291923599522" # OneShot, en_speak
+        Ah: "1454422058510585856" # OneShot, en2
+        Hm: "1454422060133646459" # OneShot, en3
+        Alright: "1454422065934237809" # OneShot, en4
+        Looking Left: "1454422072574083093" # OneShot, en5
+        Looking Right: "1454422077695066122" # OneShot, en6
+        Yawn: "1454421970853822486" # OneShot, en_yawn
+        Surprise: "1454422114055491624" # OneShot, en_surprised
+        "What,": "1454422126273630309" # OneShot, en_what
+        "Concerned": "1454422123807248518" # OneShot, en_what2
+        "WTF": "1454422297434787893" # OneShot, en_wtf
+        "WTFear": "1454422130228723732" # OneShot, en_wtf2
+        "Upset left": "1454422115481554974" # OneShot, en_upset2
+        "Upset meow": "1454422121584394274" # OneShot, en_upset_meow
+        "Upset right": "1454422294733521100" # OneShot, en_upset
+        Distressed: "1454422079129780245" # OneShot, en_distressed
+        "Distressed down": "1454422070610890852" # OneShot, en_distressed2 # "down" cuz eyes looking slightly down and i dont want to call it Alt idk
+        "Distressed talk": "1454422082732560384" # OneShot, en_distressed_talk
+        "Distressed meow": "1454422080882737213" # OneShot, en_distressed_meow
+        "Distressed less sad": "1454422098595545099" # OneShot, en_less_sad
+        "Distressed sad": "1454422103649550489" # OneShot, en_sad
+        "Distressed cry": "1454422069222576273" # OneShot, en_cry
+        "Eyes closed": "1454422084091515015" # OneShot, en_eyeclosed
+        "Eyes closed speak": "1454422086142660774" # OneShot, en_eyeclosed2
+        "Smile": "1454422109752131767" # OneShot, en_smile
+        "Gas mask": "1454422290199744634" # OneShot, en_gasmask
+        "Huh": "1454422096947052676" # OneShot, en_huh
+        "Shock": "1454422108284256266" # OneShot, en_shock
+        "Pancakes": "1454422100487049259" # OneShot, en_pancakes
+        83c: "1454422067402379418" # OneShot, en_83c
         #af: "1394387129756422417"
     Niko:
       faces:
