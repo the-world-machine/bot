@@ -99,7 +99,12 @@ about:
     translate: Translate
     website: Website
     weblate: Weblate
-    Discord: Discord
+    discord: Discord
+    vote: Vote
+    voting: Voting
+    "vote (no benefits)": Vote (no benefits)
+    "top.gg": Top.gg
+    "DBL": DBL # discord bot list
 
   mes:
     - "a discord bot based off oneshot"
@@ -937,7 +942,9 @@ textbox:
       Discord doesn't show or let you download `.png`s as APNG.
       You can download the file, add .png to its name, open it in the browser and it should animate.
     ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
-
+    recovering:
+      message: "[ State not found, trying to recover... ]"
+      success: "[ Successfully recovered the state, loading editor... [emoji:loading] ]"
   filetypes:
     GIF: gif
     WEBP: webp

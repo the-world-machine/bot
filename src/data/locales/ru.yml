@@ -96,7 +96,7 @@ about:
     translate: Перевести
     website: Сайт
     weblate: Weblate
-    Discord: Discord
+    discord: Discord
 
   mes:
     - "discord бот основанный на oneshot"

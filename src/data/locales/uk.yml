@@ -100,7 +100,12 @@ about:
     translate: Переклад
     website: Сайт
     weblate: Weblate
-    Discord: Discord
+    discord: Discord
+    vote: Голосувати
+    voting: Голосування
+    "vote (no benefits)": Голосувати (переваг нема)
+    "top.gg": Top.gg
+    "DBL": DBL # discord bot list
 
   mes:
     - "discord бот натхненний OneShot-ом"
