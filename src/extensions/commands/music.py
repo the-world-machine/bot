@@ -772,8 +772,8 @@ class MusicCommands(Extension):
 		niko = emojis["icons"]["vibe"]
 		player_state = "Now Playing..."
 		embed = await self.get_playing_embed(player_state, player, True)
-
-		message = await message.edit(content=niko, embed=embed, components=main_buttons)
+		if message:
+			message = await message.edit(content=niko, embed=embed, components=main_buttons)
 
 		stopped_track = player.current
 
@@ -808,7 +808,8 @@ class MusicCommands(Extension):
 
 			embed = await self.get_playing_embed(player_state, player, can_control)
 
-			message = await message.edit(content=niko, embed=embed, components=main_buttons)
+			if message:
+				message = await message.edit(content=niko, embed=embed, components=main_buttons)
 
 			await asyncio.sleep(1)
 
