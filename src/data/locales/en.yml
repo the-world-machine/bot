@@ -37,7 +37,7 @@ generic:
       yn: "[ You took too long to respond ]"
 
   errors:
-    expired: "This interaction has expired. Run it again, or report this in our community discord server if it keeps happening. (you can find an invite to it in [/about])"
+    expired: "This interaction has expired. Run the command again, or report this error in our community discord server if it keeps happening. (you can find an invite to it in [/about])"
 
 # ---------------------------------------------------------------
 

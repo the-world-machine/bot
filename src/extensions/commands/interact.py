@@ -5,7 +5,7 @@ import random
 import re
 from traceback import print_exc
 from typing import Any
-from interactions import ActionRow, Button, ButtonStyle, ComponentContext, ContextMenuContext, Embed, Extension, Member, MentionType, Message, OptionType, PartialEmoji, SlashContext, Snowflake_Type, User, component_callback, contexts, integration_types, message_context_menu, slash_command, slash_option, user_context_menu, AllowedMentions
+from interactions import ActionRow, Button, ButtonStyle, ComponentContext, ContextMenuContext, ContextType, Embed, Extension, Member, MentionType, Message, OptionType, PartialEmoji, SlashContext, Snowflake_Type, User, component_callback, contexts, integration_types, message_context_menu, slash_command, slash_option, user_context_menu, AllowedMentions
 from utilities.config import debugging
 from utilities.emojis import emojis
 from utilities.localization import Localization
@@ -40,6 +40,7 @@ def fill_with_none(arr, target_index):
 	if target_index >= current_length:
 		arr += [None] * (target_index - current_length + 1)
 	return arr
+
 
 class InteractCommands(Extension):
 
@@ -184,7 +185,8 @@ class InteractCommands(Extension):
 	@component_callback(handle_components_regex)
 	async def handle_components(self, ctx: ComponentContext):
 		loc = Localization(ctx)
-		assert ctx.message is not None, "discorded"
+		if ctx.message is None:
+			return await fancy_message(ctx, loc.l("generic.errors.expired"), color=Colors.BAD, ephemeral=True)
 		content = ctx.message.content
 		content = content.replace("→ :i: →", "→ ❔ →")
 		content = content.replace(f"→ {emojis['icons']['loading']} →", "→ ❔ →")
@@ -358,7 +360,11 @@ class InteractCommands(Extension):
 		assert ctxmsg is not None
 		try:
 			try:
-				msg = await ctx.channel.send(content=phrase, allowed_mentions=allowed_mentions)
+				if ctx.context == ContextType.PRIVATE_CHANNEL:
+					msg = await ctx.send(content=phrase, allowed_mentions=allowed_mentions)
+				else:
+					msg = await ctx.channel.send(content=phrase, allowed_mentions=allowed_mentions)
+
 			except:
 				msg = await ctx.respond(content=phrase, ephemeral=False, allowed_mentions=allowed_mentions)
 		except Exception as e:
