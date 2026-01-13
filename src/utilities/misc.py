@@ -210,7 +210,7 @@ def rabbit(
 			if simple_error:
 				error_message = f"{before_path}{failed_part_str}{after_path}"
 			else:
-				full_error_path = f"`{before_path}`**`{failed_part_str}`**"
+				full_error_path = f"`{before_path}`.**`{failed_part_str}`**"
 				if after_path:
 					full_error_path += f"`{after_path}`"
 				error_message = _error_message.replace("[path]", full_error_path).replace("[error]", str(e))
