@@ -7,6 +7,8 @@ from utilities.localization import Localization, fnum, put_mini
 from utilities.message_decorations import Colors, fancy_message
 from interactions import Button, ButtonStyle, Embed, EmbedAttachment, Extension, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
+from utilities.textbox.facepics import Face, get_facepic
+
 # yapf: disable
 wool_finds = {
   10: [ "devoted", "positive_major"   ],
@@ -94,7 +96,7 @@ class WoolCommands(Extension):
 		if to.bot and not (amount <= 0):
 			buttons = [
 			    Button(style=ButtonStyle.RED, label=loc.l('generic.buttons.yes'), custom_id=f'yes'),
-			    Button(style=ButtonStyle.GRAY, label=loc.l('generic.buttons.no'), custom_id=f'no')
+			    Button(style=ButtonStyle.GRAY, label=loc.l('generic.buttons.cancel'), custom_id=f'cancel')
 			]
 
 			confirmation_m = await fancy_message(
@@ -103,16 +105,19 @@ class WoolCommands(Extension):
 			    await put_mini(loc, "wool.transfer.to.bot.notefirmation", user_id=ctx.user.id, pre="\n\n"),
 			    color=Colors.WARN,
 			    components=buttons,
+			    facepic=await get_facepic("OneShot/The World Machine/Looking Left"),
 			    ephemeral=True
 			)
 			try:
-				await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0 * 1000)
+				response = await ctx.client.wait_for_component(messages=confirmation_m, timeout=60.0 * 1000)
 				await ctx.delete(confirmation_m)
+				if response.ctx.custom_id == "cancel":
+					return
 			except asyncio.TimeoutError:
 				await confirmation_m.edit(content=loc.l("generic.responses.timeout.yn"), components=[])
 				await ctx.delete()
 				await asyncio.sleep(15)
-				await confirmation_m.delete()
+				return await confirmation_m.delete()
 
 		loading = await fancy_message(ctx, loc.l('generic.loading.generic'))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
