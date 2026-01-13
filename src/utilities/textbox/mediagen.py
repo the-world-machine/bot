@@ -224,6 +224,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 				text_y -= 5.0
 
 	parsed = parse_textbox_text(frame.text) if frame.text else []
+	print(parsed)
 	text_offset = [ 0.0, 0.0 ]
 	first_facepic_command = next((cmd for cmd in parsed if isinstance(cmd, FacepicChangeCommand)), None)
 	print(first_facepic_command)
@@ -236,7 +237,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			if command.facepic != "":
 				await update_facepic(command)
 		elif isinstance(command, LineBreakCommand):
-			# text_offset[1] += 25.0
+			text_offset[1] += 25.0
 			text_offset[0] = 0.0
 			...
 		elif isinstance(command, str):
