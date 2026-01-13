@@ -6,8 +6,8 @@ generic:
   command_cooldown: "[ Пожалуйста, не спамьте этой командой. Вы можете использовать её через [timestamp_relative]. ]"
 
   buttons:
-    yes: "Да"
-    no: "Нет"
+    "yes": "Да"
+    "no": "Нет"
     done: "Готово"
     cancel: "Отмена"
     back: "Назад"
