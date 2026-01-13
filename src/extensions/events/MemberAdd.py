@@ -31,8 +31,8 @@ class MemberAddEvent(Extension):
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)
 		buffer = io.BytesIO()
-		if not message.startswith("\\@"):
-			# default to this face unless they put some in their message in the beginning
+		if not "\\@" in message:
+			# default to this face unless they have some in their message already
 			message = f"\\@[OneShot/The World Machine/Pancakes]{message}"
 
 		images, durations = await render_frame(Frame(str(message)), False)
