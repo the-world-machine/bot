@@ -9,15 +9,17 @@
       "name": "Run bot",
       "type": "debugpy",
       "request": "launch",
-      "program": "src/main.py",
-      "console": "integratedTerminal",
-			"justMyCode": false
+      "program": "${workspaceFolder}/src/main.py",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "console": "integratedTerminal"
     },
     {
       "name": "Run textbox test server",
       "type": "debugpy",
       "request": "launch",
-      "program": "src/utilities/textbox/web",
+      "program": "${workspaceFolder}/src/utilities/textbox/web",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     },
     {
