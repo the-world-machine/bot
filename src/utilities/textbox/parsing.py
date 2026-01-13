@@ -130,7 +130,7 @@ class TokenParseError(ValueError):
 		return base
 
 
-def parse_textbox_text(input_str) -> list[str | TOKENS]:
+def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 	"""
 	Parses a string of textbox text syntax into a list of tokens in the form of modifier/command classes or bare strings for normal text. Making thsi function lowered the amount of my braincells down to 12 from 5 :aga:
 	
@@ -140,7 +140,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 	tokens = []
 	pos = 0
 	length = len(input_str)
-
+	input_str = input_str.replace("\n", "\\n")
 	while pos < length:
 		if input_str[pos] == '\\':
 			# Handle escaped backslash ('\\')
@@ -185,6 +185,7 @@ def parse_textbox_text(input_str) -> list[str | TOKENS]:
 						pos += 2
 						continue
 				except ValueError as e:
+					print(e)
 					if str(e).startswith("Invalid token type"):
 						text_to_add = input_str[pos:pos + 2]
 						if tokens and isinstance(tokens[-1], str):

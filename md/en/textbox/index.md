@@ -10,7 +10,7 @@ You can use special commmands mid-sentence to do various stuff (like changing th
 >
 > This accepts three arguments separated by a colon (`:`)
 >
-> 1. the path for the facepic. you can find all of these [in this file](https://github.com/the-world-machine/bot/blob/main/src/data/facepics.yml), they are listed in '`name`: `discord emoji id` # `credits`' layout, or by using the facepic selector in the textbox dialogue builder using the bot. When writing the paths manually, make sure to not put "characters" or "faces" in the paths.
+> 1. the path for the facepic. you can find all of these [in this file](https://github.com/the-world-machine/bot/blob/main/src/data/facepics.yml) (they are listed in '`name`: `discord emoji id` # `credits`' layout), or by using the facepic selector in the textbox dialogue builder using the bot. When writing the paths manually, make sure to not put "characters" or "faces" in the paths.
 >
 > - optional string
 >
@@ -21,6 +21,8 @@ You can use special commmands mid-sentence to do various stuff (like changing th
 > 3. the position for the face in the textbox **(not implemented yet)**
 >
 > - optional string
+>
+> If you start the frame text with an empty facepic: `\@[]` - it will force-disable the check which does the initial pad of the whole text on the side, if there is ANY facepic present in the frame. (useful if you want to overlay the facepic after the text was written? this only applies to the people who use multiple facepics in one frame, or move it around in the text)
 
 > ### `n` - Line break - `\n`
 >
@@ -82,7 +84,7 @@ A newline separated list of frames. Each frame has an options and text field, se
 
 #### `text`
 
-Text content for the frame (this supports [commands](#commands))
+Text content for the frame (this supports [commands](#commands)). Whenever this overflows to the bottom of the textbox, it will move the text up with an animation, if you happen to be generating a static image file - it will cut off the beginning of the text.
 
 ### Example
 

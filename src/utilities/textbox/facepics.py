@@ -123,10 +123,15 @@ async def get_facepic(path: str) -> Face | None:
 	face = Face(path)
 	if path.startswith("https://"):
 		if is_domain_allowed(path, allowed_domains=get_config('textbox.unproxied-hosts', typecheck=list)):
-			await face.set_custom_icon(path)
+			try:
+				await face.set_custom_icon(path)
+			except:
+				return await get_facepic(invalid_path)
 			return face
 		else:
 			return await get_facepic(invalid_path)
+	if path == "clear" or path == "":
+		return await get_facepic("Other/Empty")
 	else:
 		parts = path.split('/')
 		at = f_storage.facepics

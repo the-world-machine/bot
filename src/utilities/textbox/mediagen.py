@@ -1,7 +1,6 @@
 import io
 import apng
 import inspect
-import textwrap
 from pathlib import Path
 from grapheme import graphemes
 from interactions import Color
@@ -12,7 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import FacepicChangeCommand, LineBreakCommand, parse_textbox_text
+from utilities.textbox.parsing import FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -168,11 +167,17 @@ class Frame(SerializableData):
 			) from e
 
 
+not_empty_empty_face: FacepicChangeCommand = init_token(type="@")  # type:ignore
+not_empty_empty_face.parse_input("clear")
+
+
 async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.Image], list[int]]:
+	global not_empty_empty_face
 	word_wrap = True
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
-	burned_background = background.copy()
-	background.resize((background.height, background.width+500))
+	borders = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal_borders.png")))
+	burned_borders = borders.copy()
+	background.resize((background.height, background.width + 500))
 	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text = Image.new("RGBA", (background.width, 999999), color=(255, 255, 255, 0))
 	text_x, text_y = 23, 16
@@ -182,24 +187,25 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	durations: Sequence[int] = []
 
 	def put_frame(duration: int):
-		new = burned_background.copy()
-		new.paste(text, (text_x, text_y), mask=text)
+		new = background.copy()
+		new.paste(text, (text_x, int(text_y)), mask=text)
+		new.paste(burned_borders, (0, 0), mask=burned_borders)
 		images.append(new)
 		durations.append(duration)
 
 	facepic_present = False
 
 	async def update_facepic(command: FacepicChangeCommand, delay: bool = False):
-		nonlocal burned_background
+		nonlocal burned_borders
 		nonlocal facepic_present
 		nonlocal text_width
-		burned_background = background.copy()
+		burned_borders = borders.copy()
 		facepic = await get_facepic(command.facepic)
 		if facepic:
 			facepic_present = True
 			facepic = await facepic.get_image(size=96)
 			facepic = facepic.resize((96, 96), resample=0)
-			burned_background.paste(facepic, (496, 16), mask=facepic.convert("RGBA"))
+			burned_borders.paste(facepic, (496, 16), mask=facepic.convert("RGBA"))
 		else:
 			facepic_present = False
 			facepic = None
@@ -210,45 +216,52 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 		if delay and animated:
 			put_frame(0)
 
+	def carriage_return():
+		nonlocal text_y
+		for i in range(4):
+			for i in range(5):
+				put_frame(0)
+				text_y -= 5.0
+
 	parsed = parse_textbox_text(frame.text) if frame.text else []
 	text_offset = [ 0.0, 0.0 ]
+	first_facepic_command = next((cmd for cmd in parsed if isinstance(cmd, FacepicChangeCommand)), None)
+	print(first_facepic_command)
+	if first_facepic_command and first_facepic_command.facepic != "":
+		await update_facepic(not_empty_empty_face)
+		print("meow")
 	for i in range(0, len(parsed)):
 		command = parsed[i]
 		if isinstance(command, FacepicChangeCommand):
-			await update_facepic(command)
+			if command.facepic != "":
+				await update_facepic(command)
 		elif isinstance(command, LineBreakCommand):
-			text_offset[1] += 25.0
-			text_offset[0] = 0
-			put_frame(800)
+			# text_offset[1] += 25.0
+			text_offset[0] = 0.0
+			...
 		elif isinstance(command, str):
 			message = command
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in message.split(' '):
-				if word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
+				if text_offset[1] != 0 and word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
 					text_offset[1] += 25.0
-					text_offset[0] = 0
-				if len(word) == 0:
-					text_offset[1] += 25.0
+					text_offset[0] = 0.0
 				for cluster in list(graphemes(word + " ")):  # type: ignore
 					if not cluster:
 						cluster: str = ""
 					cumulative_text += cluster
 					duration = 20
 					match cluster:
-						case '\n':
-							text_offset[1] += 25.0
-							text_offset[0] = -10
-							duration = 800
 						case '.' | '!' | '?' | '．' | '？' | '！':
 							duration = 200
 						case ',' | '，':
 							duration = 40
 					if text_offset[0] + 15 > text_width:
 						text_offset[1] += 25.0
-						text_offset[0] = 0
+						text_offset[0] = 0.0
 					if text_y + text_offset[1] > background.height - (17 * 2):
-						text_y -= 25
+						carriage_return()
 					d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
 					try:
 						text_offset[0] += d.textlength(cluster, font=font)
@@ -375,19 +388,3 @@ async def render_textbox_frames(
 			)
 	buffer.seek(0)
 	return buffer
-
-
-# import asyncio
-
-# test_frames = {
-#     0: Frame(character_id="Niko", face_name="Normal", text="Hello! 👋"),
-#     1: Frame(character_id="Niko", face_name="Upset", text="nuclear Explosion!!!!!!!!!!!!!!!!!!!!!!"),
-#     2: Frame(character_id="Kip", face_name="Normal", text="...And so the...."),
-# }
-
-# async def test():
-# 	buffer = await render_textboxes(test_frames)
-# 	with open("testbox.webp", "wb") as f:
-# 		f.write(buffer.getvalue())
-
-# asyncio.run(test())

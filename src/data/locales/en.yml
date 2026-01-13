@@ -942,6 +942,7 @@ textbox:
       Discord doesn't show or let you download `.png`s as APNG.
       You can download the file, add .png to its name, open it in the browser and it should animate.
     ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
+    toolong_for_image_warnote: The text on the frame you entered does not fit within the output *image*, it will fully show up if you change the output file type to something that can be animated though. # TODO: warn:
     recovering:
       message: "[ State not found, trying to recover... ]"
       success: "[ Successfully recovered the state, loading editor... [emoji:loading] ]"
