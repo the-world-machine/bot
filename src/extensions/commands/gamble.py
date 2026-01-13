@@ -74,7 +74,7 @@ class GambleCommands(Extension):
 
 		if user_data.wool < bet:
 			return await fancy_message(
-			    ctx, f"[ You don\'t have enough wool to bet that amount. ]", ephemeral=True, color=Colors.BAD
+			    ctx, loc.l("wool.gamble.errors.not_enough_wool"), ephemeral=True, color=Colors.BAD
 			)
 
 		# TAKE the wool
@@ -146,8 +146,9 @@ class GambleCommands(Extension):
 					else:
 						ticker += f'{s} ┋ '
 			return Embed(
-			    description=
-			    f"## Slot Machine\n\n{ctx.author.mention} has bet {emojis['icons']['wool']}**{fnum(bet)}**.\n{ticker}",
+			    description= f"## {loc.l("wool.gamble.slots.title")}\n\n"+\
+						loc.l("wool.gamble.slots.description", user=ctx.author.mention, amount=fnum(bet))+\
+						"\n"+ticker,
 			    color=Colors.DEFAULT,
 			)
 
@@ -185,45 +186,37 @@ class GambleCommands(Extension):
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_embed.color = Colors.PURE_YELLOW
-				result_embed.set_footer(text=f"JACKPOT! 🎉 {ctx.author.username} won back {fnum(abs(win_amount))} wool!")
+				result_embed.set_footer(text=loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount))))
 			else:
 				if win_amount < bet:
 					result_embed.color = Colors.PURE_ORANGE
-					result_embed.set_footer(text=f"{ctx.author.username} got back only {fnum(abs(win_amount))} wool...")
+					result_embed.set_footer(text=loc.l("wool.gamble.slots.result.lost_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
 				else:
 					result_embed.color = Colors.PURE_GREEN
-					result_embed.set_footer(text=f"{ctx.author.username} won back {fnum(abs(win_amount))} wool!")
+					result_embed.set_footer(text=loc.l("wool.gamble.slots.result.won_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
 		else:
 			result_embed.color = Colors.PURE_RED
 			result_embed.set_footer(
-			    text=f'{ctx.author.username} lost it all... better luck next time!'
-			    if not jackpot else f'JACKPOT! 🎉 {ctx.author.username} lost it all! Better luck next time!'
+			    text=loc.l("wool.gamble.slots.result.lost_all", username=ctx.author.username)
+			    if not jackpot else loc.l("wool.gamble.slots.result.pain", username=ctx.author.username)
 			)
 
 		await ctx.edit(embed=result_embed)
 
 	@gamble.subcommand(sub_cmd_description="Read up on how the gamble command works")
 	async def help(self, ctx: SlashContext):
-		text = ( # yapf: disable
-		 "## Slot Machine" + "\n" +
-		 "Gamble any amount of wool as long as you can afford it." + "\n" +
-		 "Here are the slots you can roll and their values:\n"
-		) # yapf: enable
+		loc = Localization(ctx)
 
 		existing_slots = []
 		point_rows = []
-		reduction = "point reduction"
-		normal = "points"
 		for slot in sorted(set(slots)):
 			existing_slots.append(slot.emoji)
 			icon = slot.emoji
 			value = int(slot.value * 100)
-			point_rows.append(f'- {icon} **{value} {reduction if value < 0 else normal}**')
+			point_rows.append(loc.l(f"wool.gamble.slots.guide.values.{'reduction' if value < 0 else 'normal'}", icon=icon, value=value))
 
-		text += ( # yapf: disable
-		    "\n".join(point_rows) + '\n\n' +
-		  "Points are added up and then multiplied by your bet." +
-		    "You also get double the points when you hit a jackpot"
-		)  # yapf: enable
-
-		await fancy_message(ctx, text)
+		await fancy_message(
+			ctx,
+			f"## {loc.l("wool.gamble.slots.title")}\n" +\
+			loc.l("wool.gamble.slots.guide.description", values="\n".join(point_rows))
+		)

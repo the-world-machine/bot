@@ -162,6 +162,28 @@ wool:
     Change:
       gain: "you also got [emoji:wool]**[amount]** wool!"
       loss: "you also lost [emoji:wool]**[amount]** wool..."
+  gamble:
+    errors:
+      not_enough_wool: "[ You don't have enough wool to bet that amount. ]"
+    slots:
+      title: Slot Machine
+      description: "[user] has bet [emoji:wool]**[amount]**."
+      result: # no emojis or formatting in these ↓
+        jackpot: "JACKPOT! 🎉 [username] won back [amount] wool!"
+        won_some: f"[username] won back [amount] wool!"
+        lost_some: "[username] got back only [amount] wool..."
+        lost_all: "[username] lost it all... better luck next time!"
+        pain: f'JACKPOT! 🎉 [username] lost it all! Better luck next time!'
+      guide:
+        description: |
+          Gamble any amount of wool as long as you can afford it.
+          Here are the slots you can roll and their values:
+          [values]
+          Points are added up and then multiplied by your bet.
+          You also get double the points when you hit a jackpot
+        values:
+          reduction: "- [icon] **[value] pt. reduction**"
+          normal: "- [icon] **[value] pt.**"
 
 # ---------------------------------------------------------------
 

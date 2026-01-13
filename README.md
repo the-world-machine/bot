@@ -20,8 +20,7 @@ For more information on what you can do with this bot, check out our [website](h
 
 In `src/data/locales` there are YAML files with the localization strings. Using `en.yml` as a base, you are free to contribute your own language to the bot. If you need any help with this - you can ask away in the support server which you can find on our [website](https://www.theworldmachine.xyz/invite).
 
-> [!NOTE]
-> `/gamble`, `/transmission`, `/sun give`, `/ship` & any slash command names or descriptions - **do not** have localizations yet
+> [!NOTE] > `/transmission`, `/sun give`, `/ship` & any slash command names or descriptions - **do not** have localizations yet
 
 ### Pull Requests
 
