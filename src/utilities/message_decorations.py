@@ -1,7 +1,16 @@
 from datetime import datetime
-from utilities.emojis import emojis
+from utilities.emojis import emojis, make_emoji_cdn_url
 from typing import Any, Dict, Iterable, List, Literal
 from interactions import Color, Message, BaseComponent, Embed, ModalContext
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from utilities.textbox.facepics import Face
+else:
+	try:
+		from utilities.textbox.facepics import Face
+	except ImportError:
+		Face = None
 
 
 class Colors:
@@ -38,13 +47,17 @@ def fancy_message(
     components: Iterable[Iterable[BaseComponent | dict[Any, Any]]] | Iterable[BaseComponent | dict[Any, Any]] |
     BaseComponent | dict[Any, Any] | None = None,
     color: Color = Colors.DEFAULT,
+    facepic: Optional[Face] = None,  # only emoji supported
     embed: Embed | Dict | None = None,
     embeds: List[Embed | Dict] | None = None
 ):
 	if embeds is None:
 		embeds = []
 	if message:
-		embeds.append(Embed(description=message, color=color))
+		emb = Embed(description=message, color=color)
+		if facepic and facepic.icon:
+			emb.set_thumbnail(make_emoji_cdn_url(emoji_id=facepic.icon, size=4096))
+		embeds.append(emb)
 	if embed:
 		embeds.append(embed)
 	if len(embeds) == 0:
