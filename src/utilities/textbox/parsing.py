@@ -65,8 +65,7 @@ class DelayCommand(ReprMixin):
 	time: int = 1
 
 	def parse_input(self, args: str):
-		if args == "":
-			args = "0"
+		args = args or ""
 		try:
 			self.speed = float(args)
 		except ValueError as e:
@@ -78,6 +77,7 @@ class CharSpeedModifier(ReprMixin):
 	speed: float = 1.0
 
 	def parse_input(self, args: str):
+		args = args or ""
 		try:
 			self.speed = float(args)
 		except ValueError as e:
