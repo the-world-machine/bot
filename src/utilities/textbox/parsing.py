@@ -65,6 +65,8 @@ class DelayCommand(ReprMixin):
 	time: int = 1
 
 	def parse_input(self, args: str):
+		if args == "":
+			args = "0"
 		try:
 			self.speed = float(args)
 		except ValueError as e:
