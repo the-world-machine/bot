@@ -1,4 +1,5 @@
 import io
+import re
 import apng
 import inspect
 from pathlib import Path
@@ -11,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
+from utilities.textbox.parsing import CharSpeedModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -186,11 +187,15 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	images: list[Image.Image] = []
 	durations: Sequence[int] = []
 
-	def put_frame(duration: int):
+	frame_speed: float = 1.0
+
+	def put_frame(duration: int, speed_adjust: bool = True):
 		new = background.copy()
 		new.paste(text, (text_x, int(text_y)), mask=text)
 		new.paste(burned_borders, (0, 0), mask=burned_borders)
 		images.append(new)
+		if speed_adjust:
+			duration = int(duration / frame_speed)
 		durations.append(duration)
 
 	facepic_present = False
@@ -230,7 +235,6 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	print(first_facepic_command)
 	if first_facepic_command and first_facepic_command.facepic != "":
 		await update_facepic(not_empty_empty_face)
-		print("meow")
 	for i in range(0, len(parsed)):
 		command = parsed[i]
 		if isinstance(command, FacepicChangeCommand):
@@ -239,16 +243,19 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 		elif isinstance(command, LineBreakCommand):
 			text_offset[1] += 25.0
 			text_offset[0] = 0.0
-			...
+		elif isinstance(command, DelayCommand):
+			put_frame(command.time, speed_adjust=False)
+		elif isinstance(command, CharSpeedModifier):
+			frame_speed = command.speed if not (command.speed <= 0) else 0.25
 		elif isinstance(command, str):
 			message = command
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
-			for word in message.split(' '):
+			for word in re.findall(r'\S+\s*|\S+', message):  # TODO: regex alert
 				if text_offset[1] != 0 and word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
 					text_offset[1] += 25.0
 					text_offset[0] = 0.0
-				for cluster in list(graphemes(word + " ")):  # type: ignore
+				for cluster in list(graphemes(word)):  # type: ignore
 					if not cluster:
 						cluster: str = ""
 					cumulative_text += cluster
@@ -263,8 +270,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 						text_offset[0] = 0.0
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						carriage_return()
-					d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
 					try:
+						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
 						text_offset[0] += d.textlength(cluster, font=font)
 					except:
 						pass
@@ -299,7 +306,8 @@ async def render_textbox_frames(
     frames: list[Frame],
     quality: int = 100,
     filetype: SupportedFiletypes = "WEBP",
-    frame_index: int | None = None
+    frame_index: int | None = None,
+    loops: int = 0,
 ) -> io.BytesIO:
 	if len(frames) == 0:
 		raise ValueError("Provide atleast one frame")
@@ -353,6 +361,23 @@ async def render_textbox_frames(
 			all_durations.append(frame.options.end_arrow_delay)
 	all_images.append(last_frame.copy())
 	all_durations.append(150)
+
+	lowest_fastest = 0
+	match filetype:
+		case "WEBP":
+			lowest_fastest = 11
+		case "GIF":
+			lowest_fastest = 20
+		case "APNG":
+			lowest_fastest = 11
+	# flooring the durations, because if it's lower than a certain number the browser/app just slows it down to 100ms i think? i'm not sure
+	# here's a thing one of the developer working on webp said about this 
+	# https://groups.google.com/a/webmproject.org/g/webp-discuss/c/Yd0sstcZGlU/m/4PfkB4aVa8cJ?pli=1
+	#
+	# all of these are the lowest i could get in firefox/android discord app
+	for i in range(len(all_durations)):
+		if all_durations[i] <= 0:
+			all_durations[i] = lowest_fastest
 	match filetype:
 		case "WEBP":
 			all_images[0].save(
@@ -361,7 +386,8 @@ async def render_textbox_frames(
 			    save_all=True,
 			    append_images=all_images[1:],
 			    duration=all_durations,
-			    quality=quality
+			    quality=quality,
+			    loops=loops
 			)
 		case "APNG":
 			png_images = []
@@ -372,7 +398,9 @@ async def render_textbox_frames(
 				png_obj = apng.PNG.from_bytes(temp_buffer.getvalue())
 				png_images.append(png_obj)
 
-			animation = apng.APNG()
+			animation = apng.APNG(
+			    num_plays=loops,
+			)
 
 			for i, png_obj in enumerate(png_images):
 				animation.append(png_obj, delay=int(all_durations[i]), delay_den=1000)
@@ -386,6 +414,8 @@ async def render_textbox_frames(
 			    save_all=True,
 			    append_images=all_images[1:],
 			    duration=all_durations,
+			    optimize=True,
+			    loops=loops
 			)
 	buffer.seek(0)
 	return buffer

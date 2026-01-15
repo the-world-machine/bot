@@ -17,32 +17,40 @@ class StateOptions:
 	filetype: SupportedFiletypes  # TODO: m,ake this use an enum
 	send_to: Literal[1, 2, 3]  # TODO: m,ake this use an enum
 	quality: int
+	loops: int  # 0 means that it will loop forever.
 
 	def __init__(
 	    self,
 	    filetype: SupportedFiletypes | None = "WEBP",
 	    send_to: Literal[1, 2, 3] | str | None = 1,
-	    quality: int | str | None = 100
+	    quality: int | str | None = 100,
+	    loops: int | None = 1
 	):
 		if filetype == None:
 			filetype = "WEBP"
-		if send_to is None:
-			send_to = 1
-		if quality is None:
-			quality = 100
 		filetype = filetype.upper()  # type:ignore
 		if filetype not in get_args(SupportedFiletypes):
 			raise ValueError(f"filetype must be one of {get_args(SupportedFiletypes)}")
 
+		if send_to is None:
+			send_to = 1
 		self.filetype = filetype  # type:ignore
 		send_to = int(send_to)  #type:ignore
 		if send_to not in (1, 2, 3):
 			raise ValueError("send_to must be 1, 2 or 3")
 		self.send_to = send_to
+
+		if quality is None:
+			quality = 100
 		quality = int(quality)
 		if quality < 1 or quality > 100:
 			raise ValueError("quality must be in the range 1..=100")
+
 		self.quality = quality
+
+		if loops is None or loops < 0:
+			loops = 1
+		self.loops = loops
 
 	def __repr__(self):
 		attrs = { k: getattr(self, k) for k in self.__annotations__ }
@@ -89,7 +97,7 @@ class State:
 		current = ""
 		parsed_frames: list[Frame] = []
 		StateOptions_parsed = {}
-		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality', 'frame_index']
+		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality', 'frame_index', 'loops']
 		i = 0
 		for line in lines:
 			i += 1
@@ -136,6 +144,13 @@ class State:
 								raise ValueError("must be an integer, and in the range 1..=100")
 							if quality < 1 or quality > 100:
 								raise ValueError("must be in the range 1..=100")
+						if key == "loops":
+							try:
+								loops = int(loops)  #type:ignore
+							except:
+								raise ValueError("must be an integer")
+							if loops < 0:
+								raise ValueError("must not be less than 0")
 				except ValueError as e:
 					raise ValueError(f"`StateOptions:` '{key}' {e}. Got '{value}', at line {i}")
 				StateOptions_parsed[key] = value

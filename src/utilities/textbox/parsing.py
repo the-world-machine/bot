@@ -62,13 +62,13 @@ class CharCommand(ReprMixin):
 
 @dataclass
 class DelayCommand(ReprMixin):
-	time: float = 1.0
+	time: int = 1
 
 	def parse_input(self, args: str):
 		try:
 			self.speed = float(args)
 		except ValueError as e:
-			raise ValueError(f"Invalid seconds passed to delay command. Expected a float (1.0), got '{args}'") from e
+			raise ValueError(f"Invalid seconds passed to delay command. Expected an integer (1), got '{args}'") from e
 
 
 @dataclass
