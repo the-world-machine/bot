@@ -46,15 +46,15 @@ def csscolor(color: str) -> RGBA:
 		)
 		output = result.stdout.strip()
 	except subprocess.CalledProcessError as e:
-		print_exc()
 		output = e.stdout.strip()
 
 	if output.startswith("Error:"):
-		raise ValueError(f"Invalid color, {output}")
+		raise ValueError(f"Invalid color, got: '{color}', {output}")
 
 	try:
 		return RGBA(*eval(output))
 	except Exception as e:
+		print_exc()
 		raise ValueError(
 		    f"Kittystrophically failed to parse color: '{color}', output: '{output}'. Report this to the devs please"
 		) from e
@@ -66,12 +66,7 @@ class ColorModifier(ReprMixin):
 
 	def parse_input(self, args: str | None):
 		args = args or "white"
-		try:
-			self.color = csscolor(args)
-		except Exception as e:
-			raise ValueError(
-			    f"Invalid value passed to color command. Expected a CSS3 compliant color name (rgb(0,0,0,0.5) / #6600ff / hsl(...) / named colors such as green / read docs for more options), got '{args}'"
-			) from e
+		self.color = csscolor(args)
 
 
 @dataclass
@@ -108,7 +103,7 @@ class DelayCommand(ReprMixin):
 	def parse_input(self, args: str):
 		args = args or ""
 		try:
-			self.speed = float(args)
+			self.time = int(args)
 		except ValueError as e:
 			raise ValueError(f"Invalid seconds passed to delay command. Expected an integer (1), got '{args}'") from e
 

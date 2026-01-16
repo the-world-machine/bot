@@ -234,7 +234,6 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	print(parsed)
 	text_offset = [ 0.0, 0.0 ]
 	first_facepic_command = next((cmd for cmd in parsed if isinstance(cmd, FacepicChangeCommand)), None)
-	print(first_facepic_command)
 	if first_facepic_command and first_facepic_command.facepic != "":
 		await update_facepic(not_empty_empty_face)
 	for i in range(0, len(parsed)):
@@ -263,12 +262,12 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					if not cluster:
 						cluster: str = ""
 					cumulative_text += cluster
-					duration = 20
+					duration = 50
 					match cluster:
 						case '.' | '!' | '?' | '．' | '？' | '！':
-							duration = 200
+							duration = 600
 						case ',' | '，':
-							duration = 40
+							duration = 100
 					if text_offset[0] + 15 > text_width:
 						text_offset[1] += 25.0
 						text_offset[0] = 0.0
