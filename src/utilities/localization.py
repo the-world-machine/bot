@@ -113,10 +113,10 @@ loaded = 0
 for file in Path('src/data/locales').glob('*.yml'):
 	name = file.stem
 	try:
-		loaded = load_locale(name)
-		if loaded is None:
+		_loaded = load_locale(name)
+		if _loaded is None:
 			raise ValueError("Couldn't read locale for some reason?")
-		_locales[name] = FrozenDict(loaded)
+		_locales[name] = FrozenDict(_loaded)
 	except Exception as e:
 		if get_config("localization.main-locale") == name:
 			raise e
