@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import CharSpeedModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
+from utilities.textbox.parsing import RGBA, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -228,6 +228,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 				put_frame(0)
 				text_y -= 5.0
 
+	current_color = RGBA(255, 255, 255, 255)
+
 	parsed = parse_textbox_text(frame.text) if frame.text else []
 	print(parsed)
 	text_offset = [ 0.0, 0.0 ]
@@ -245,6 +247,8 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			text_offset[0] = 0.0
 		elif isinstance(command, DelayCommand):
 			put_frame(command.time, speed_adjust=False)
+		elif isinstance(command, ColorModifier):
+			current_color = command.color
 		elif isinstance(command, CharSpeedModifier):
 			frame_speed = command.speed if not (command.speed <= 0) else 0.25
 		elif isinstance(command, str):
@@ -271,8 +275,10 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						carriage_return()
 					try:
-						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=(255, 255, 255))
-						text_offset[0] += d.textlength(cluster, font=font)
+						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=current_color)
+						text_offset[0] += d.textlength(
+						    cluster, font=font
+						)  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
 					except:
 						pass
 					if animated:
@@ -371,7 +377,7 @@ async def render_textbox_frames(
 		case "APNG":
 			lowest_fastest = 11
 	# flooring the durations, because if it's lower than a certain number the browser/app just slows it down to 100ms i think? i'm not sure
-	# here's a thing one of the developer working on webp said about this 
+	# here's a thing one of the developer working on webp said about this
 	# https://groups.google.com/a/webmproject.org/g/webp-discuss/c/Yd0sstcZGlU/m/4PfkB4aVa8cJ?pli=1
 	#
 	# all of these are the lowest i could get in firefox/android discord app

@@ -1,5 +1,8 @@
-from typing import Literal, Type
-from dataclasses import dataclass
+import subprocess
+from traceback import print_exc
+from typing import Literal, NamedTuple, Type
+from dataclasses import dataclass, field
+from utilities.config import get_config
 from utilities.misc import ReprMixin
 
 ALL_COMMAND_TYPES = Literal['c', 'u', 'f', 's', 'd', '@']
@@ -25,12 +28,50 @@ class FormatModifier(ReprMixin):
 		self.strikethrough = 's' in args
 
 
+class RGBA(NamedTuple):
+	r: int
+	g: int
+	b: int
+	a: int = 255  # Default alpha
+
+
+def csscolor(color: str) -> RGBA:
+	try:
+		result = subprocess.run(
+		    [get_config("textbox.color-parser-binary"), color],
+		    stdout=subprocess.PIPE,
+		    stderr=subprocess.STDOUT,
+		    text=True,
+		    check=True
+		)
+		output = result.stdout.strip()
+	except subprocess.CalledProcessError as e:
+		print_exc()
+		output = e.stdout.strip()
+
+	if output.startswith("Error:"):
+		raise ValueError(f"Invalid color, {output}")
+
+	try:
+		return RGBA(*eval(output))
+	except Exception as e:
+		raise ValueError(
+		    f"Kittystrophically failed to parse color: '{color}', output: '{output}'. Report this to the devs please"
+		) from e
+
+
 @dataclass
 class ColorModifier(ReprMixin):
-	color: str = "white"  # TODO: implemen proper parsing for ts
+	color: RGBA = field(default_factory=lambda: RGBA(255, 255, 255, 255))
 
 	def parse_input(self, args: str | None):
-		self.color = args or "white"
+		args = args or "white"
+		try:
+			self.color = csscolor(args)
+		except Exception as e:
+			raise ValueError(
+			    f"Invalid value passed to color command. Expected a CSS3 compliant color name (rgb(0,0,0,0.5) / #6600ff / hsl(...) / named colors such as green / read docs for more options), got '{args}'"
+			) from e
 
 
 @dataclass
