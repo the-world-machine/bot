@@ -95,3 +95,4 @@ textbox:
     - discord.com
     - github.com
     - githubusercontent.com
+  color-parser-binary: "./src/utilities/textbox/csscolors/target/release/csscolors" # you have to run `cargp build --release` in the csscolors folder for this binary to appear. setup Rust on your system first: https://rustup.rs/ (this will install cargo)
