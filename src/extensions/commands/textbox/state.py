@@ -1,6 +1,9 @@
+import asyncio
 import re
+from utilities.config import get_config
 from utilities.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
+from utilities.textbox.facepics import get_facepic
 from utilities.textbox.states import State, states
 from interactions import Embed, OptionType, SlashContext, slash_option
 
@@ -14,7 +17,16 @@ int_regex = re.compile(r"^\d+$")
     required=False
 )
 async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
-	await fancy_message(ctx, Localization(ctx).l("generic.loading.generic"), ephemeral=True)
+	loc = Localization(ctx)
+	await fancy_message(ctx, loc.l("generic.loading.checking_developer_status"), ephemeral=True)
+	if str(ctx.author.id) not in get_config('dev.whitelist', typecheck=list):
+		await asyncio.sleep(3)
+		return await fancy_message(
+		    ctx,
+		    loc.l("generic.errors.not_a_developer"),
+		    facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
+		    edit=True
+		)
 	states2show: list[tuple[str, State]] = []
 	options = search.split("!")
 	filter = options[0]
@@ -67,10 +79,11 @@ async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
 		        (" (there are no states)" if len(states) == 0 else " (check your filter maybe?)")
 		    )
 		)
+	print(states2show)
 	return await ctx.edit(
 	    embeds=Embed(
 	        color=Colors.DEFAULT,
-	        title=f"Found results: {len(states2show)}",
+	        title=f"Found results: {len(states2show[:4000])}",
 	        description='\n'.join(map(lambda a: f"-# {a[0]}:\n```{a[1]}```", states2show))
 	    )
 	)

@@ -138,5 +138,5 @@ class TextboxCommands(Extension):
 
 	state = textbox.subcommand(
 	    sub_cmd_name="state",
-	    sub_cmd_description="Debugging command for textboxes",
+	    sub_cmd_description="Debugging command for textboxes (bot developer only)",
 	)(state_cmd)

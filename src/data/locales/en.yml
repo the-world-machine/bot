@@ -3,6 +3,9 @@ generic:
     hint: "[ [emoji:loading] ]"
     generic: "[ [emoji:loading] Loading... ]"
     textbox: "[ [emoji:loading] Loading textbox editor... ]"
+    checking_developer_status: "[ [emoji:loading] Checking developer status... ]"
+  errors:
+    not_a_developer: "Sorry, you are not one of my developers, can't letcha in"
   command_cooldown: "[ Please do not spam this command. You can use it again [timestamp_relative]. ]"
 
   buttons:
