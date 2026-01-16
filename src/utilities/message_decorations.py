@@ -20,6 +20,7 @@ class Colors:
 	ORANGE = WARN = WARNING = Color.from_hex("#D9732B")
 	YELLOW = Color.from_hex("#BFBF26")
 	GREEN = AWESOME = Color.from_hex("#26BF26")
+	PINK = CUTE = Color.from_hex("#FFC0CB")
 	SHOP = TEAL = Color.from_hex("#008080")
 
 	BLACK = Color.from_hex("#000000")
