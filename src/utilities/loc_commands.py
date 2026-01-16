@@ -50,7 +50,8 @@ async def execute_loc_command(message: Message):
 						content = await response.text()
 
 				parsed_data = yaml.safe_load(content)
-
+				if parsed_data is None:
+					raise ValueError("Couldn't read for some reason?")
 				local_override(locale, parsed_data)
 
 				return await message.reply(f"`[ Updated {locale} locale ]`")

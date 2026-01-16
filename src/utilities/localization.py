@@ -62,6 +62,8 @@ def on_file_update(filename):
 	print(colored(f'─ Reloading locale {locale}', 'yellow'), end="")
 	try:
 		hello = load_locale(locale)
+		if hello is None:
+			raise ValueError("Couldn't read for some reason?")
 	except Exception as e:
 		print(colored(" FAILED", "red"))
 		print_exc()
@@ -111,7 +113,10 @@ loaded = 0
 for file in Path('src/data/locales').glob('*.yml'):
 	name = file.stem
 	try:
-		_locales[name] = FrozenDict(load_locale(name))
+		loaded = load_locale(name)
+		if loaded is None:
+			raise ValueError("Couldn't read locale for some reason?")
+		_locales[name] = FrozenDict(loaded)
 	except Exception as e:
 		if get_config("localization.main-locale") == name:
 			raise e
