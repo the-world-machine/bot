@@ -98,7 +98,6 @@ if cl is not None:
 	    ("bot.token", True),
 	    ("database.uri", True),
 	    ("localization.main-locale", True),
-	    ("dev.guild.id", False),
 	    ("bot.prod.token", False),
 	    ("bot.rolling.avatar", False),
 	    ("bot.rolling.status", False),
