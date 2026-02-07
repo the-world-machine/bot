@@ -105,9 +105,9 @@ async def cached_get(location: str | Path, force: bool = False, raw: bool = Fals
 
 def parse_path(raw_path: str) -> list[Union[str, int]]:
 	"""
-    Parses a path string into a list of keys and indices.
-    e.g., 'interactions.phrases[0]["user-key"][1]' -> ['interactions', 'phrases', 0, 'user-key', 1]
-    """
+		Parses a path string into a list of keys and indices.
+		e.g., 'interactions.phrases[0]["user-key"][1]' -> ['interactions', 'phrases', 0, 'user-key', 1]
+		"""
 	if not raw_path:
 		return []
 	pattern = r"[\w-]+|\[\d+\]|\[['\"].*?['\"]\]"
@@ -138,24 +138,24 @@ def rabbit(
     deepcopy: bool = False,
 ) -> Any:
 	"""
-    Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
+		Goes down the `value`'s tree based on a dot-separated, or [0] indexed `path` string.
 
-    It either returns the found value itself, or an error message as the value. You can customize the error message with the `_error_message` argument.
+		It either returns the found value itself, or an error message as the value. You can customize the error message with the `_error_message` argument.
 
-    :param value: The dictionary to search within.
-    :param path: A dot-separated path string. Supports list indices ("list[0]"), nested indices ("list[0][1]"), and quoted keys ("dict['key-name']").
-    :param fallback_value: A secondary dictionary to search in if a value is None at any point in the path.
-    :param return_None_on_not_found: If True, returns None if any part of the path is not found. Overrides raise_on_not_found.
-    :param raise_on_not_found: If True, raises a ValueError if a key/index in `path` is not found.
-    :param _error_message: A custom error message template. Use `[path]` for the full path and `[error]` for the specific error.
-    :param simple_error: If True, returns a simplified error string showing the path.
-    :param deepcopy: If True, returns a deep copy of the found value if it's a dict, list, or tuple.
-    :param _full_path: (Internal use) The original full path for error messages.
+		:param value: The dictionary to search within.
+		:param path: A dot-separated path string. Supports list indices ("list[0]"), nested indices ("list[0][1]"), and quoted keys ("dict['key-name']").
+		:param fallback_value: A secondary dictionary to search in if a value is None at any point in the path.
+		:param return_None_on_not_found: If True, returns None if any part of the path is not found. Overrides raise_on_not_found.
+		:param raise_on_not_found: If True, raises a ValueError if a key/index in `path` is not found.
+		:param _error_message: A custom error message template. Use `[path]` for the full path and `[error]` for the specific error.
+		:param simple_error: If True, returns a simplified error string showing the path.
+		:param deepcopy: If True, returns a deep copy of the found value if it's a dict, list, or tuple.
+		:param _full_path: (Internal use) The original full path for error messages.
 
-    :return: The value at the specified path, None, or an error string.
-    :raises ValueError: If `raise_on_not_found` is True and a key/index is not found.
-    :raises StupidError: If `return_None_on_not_found` and `raise_on_not_found` are both True.
-    """
+		:return: The value at the specified path, None, or an error string.
+		:raises ValueError: If `raise_on_not_found` is True and a key/index is not found.
+		:raises StupidError: If `return_None_on_not_found` and `raise_on_not_found` are both True.
+		"""
 	raw_path = path
 	if return_None_on_not_found and raise_on_not_found:
 		raise StupidError("return_None_on_not_found and raise_on_not_found cannot both be True.")
@@ -172,27 +172,37 @@ def rabbit(
 
 	for i, part in enumerate(parsed_path):
 		try:
-			if isinstance(part, int):
-				current_value = current_value[part]
-			else:
-				current_value = current_value[part]
-
 			if current_fallback is not None:
 				try:
-					if isinstance(part, int):
-						current_fallback = current_fallback[part]
-					else:
-						current_fallback = current_fallback[part]
-				except (KeyError, IndexError, TypeError):
+					current_fallback = current_fallback[part]
+				except (KeyError, IndexError):
 					current_fallback = None
+				except (TypeError):
+					if isinstance(current_fallback, str):
+						raise KeyError(f"Tried to access property ('{part}') of string in fallback")
+					else:
+						current_fallback = None
+
+			try:
+				current_value = current_value[part]
+			except (KeyError, IndexError):
+				current_value = None
+			except (TypeError):
+				if isinstance(current_value, str):
+					raise KeyError(f"Tried to access property ('{part}') of string")
+				else:
+					current_value = None
 
 			if current_value is None and current_fallback is not None:
 				current_value = current_fallback
-
+			if isinstance(current_fallback, (dict, list, tuple)) and part not in current_fallback:
+				if current_value is None and current_fallback is None:
+					raise KeyError(f"Couldn't find '{part}'")
 			if current_value is None and i < len(parsed_path) - 1:
 				raise KeyError(f"Path leads to None at '{part}' before reaching the end")
 
 		except (KeyError, IndexError, TypeError) as e:
+			print(path, e)
 			if return_None_on_not_found:
 				return None
 
@@ -341,9 +351,9 @@ def format_type_hint(type_hint: Any) -> str:
 
 def is_domain_allowed(url: str, allowed_domains: list[str]) -> bool:
 	"""
-    Checks if a URL's hostname is either an exact match or a subdomain
-    of any domain in the allowed list.
-    """
+		Checks if a URL's hostname is either an exact match or a subdomain
+		of any domain in the allowed list.
+		"""
 	try:
 		hostname = urlparse(url).hostname
 		if not hostname:
@@ -360,13 +370,13 @@ def is_domain_allowed(url: str, allowed_domains: list[str]) -> bool:
 
 class ReprMixin:
 	"""
-    A mixin class that provides a default __repr__ method.
-    
-    It generates a representation string in the format:
-    ClassName(attribute1=value1, attribute2=value2, ...)
-    
-    Attributes starting with an underscore (_) are excluded.
-    """
+		A mixin class that provides a default __repr__ method.
+		
+		It generates a representation string in the format:
+		ClassName(attribute1=value1, attribute2=value2, ...)
+		
+		Attributes starting with an underscore (_) are excluded.
+		"""
 
 	def __repr__(self) -> str:
 		class_name = self.__class__.__name__

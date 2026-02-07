@@ -135,7 +135,9 @@ else:
 	print(f"Done ({loaded})")
 
 if get_config("localization.main-locale") in _locales:
-	fallback_locale = get_locale(get_config("localization.main-locale"))
+	_uhh_loc = get_config("localization.main-locale")
+	fallback_locale = get_locale(_uhh_loc)
+	print(f"Loaded fallback locale ({_uhh_loc})")
 
 trailing_dots_regex = re.compile(r"\.*$")
 

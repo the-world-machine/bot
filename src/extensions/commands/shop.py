@@ -552,7 +552,7 @@ class ShopCommands(Extension):
 
 			user_backgrounds = user_data.owned_backgrounds
 
-			background_name = loc.l(f'items.backgrounds.{background}')
+			background_name = loc.l(f'items.backgrounds["{background}"]')
 			background_description = loc.l(
 			    'shop.backgrounds.main', amount=fetched_background['price'], user_wool=user_wool
 			)
