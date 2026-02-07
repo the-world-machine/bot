@@ -7,28 +7,24 @@ from utilities.shop.fetch_items import fetch_badge
 async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, target: User, send_message: bool = True):
 	user_data = await UserData(_id=target.id).fetch()
 
-	emoji = PartialEmoji(id=badge_data['emoji'])
+	emoji = f"<:i:{badge_data['emoji']}>"
 
 	type_descrim = {
-	    'times_shattered':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by shattering a lightbulb **{badge_data["requirement"]}** times!',
-	    'times_asked':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by bothering The World Machine **{badge_data["requirement"]}** times!',
-	    'wool':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by earning over **{badge_data["requirement"]}** wool!',
-	    'times_transmitted':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by transmitting **{badge_data["requirement"]}** times!',
-	    'suns':
-	        f' earned the <:{emoji.name}:{emoji.id}> **{badge_name}** by giving/earning **{badge_data["requirement"]}** suns!'
+	    'times_shattered': f'shatterred a lightbulb **{badge_data["requirement"]}** times...',
+	    'times_asked': f'bothered The World Machine **{badge_data["requirement"]}** times!',
+	    'wool': f'earned over **{badge_data["requirement"]}** wool!',
+	    'times_transmitted': f'initiated over **{badge_data["requirement"]}** transmissions!',
+	    'suns': f'gave/earnt over **{badge_data["requirement"]}** suns!'
 	}
 
 	embed = Embed(
-	    title='You got a badge!',
-	    description=f'<@{int(target.id)}>{type_descrim[badge_data["type"]]}',
+	    #author={'name':'You got a badge!'},
+	    title=f"‹ {emoji} {badge_name} ›",
+	    description=f'<@{target.id}> {type_descrim[badge_data["type"]]}',
 	    color=Colors.YELLOW
 	)
 
-	embed.set_footer('You can change this notification using "/settings badge_notifications"')
+	#embed.set_footer('You can change this notification using "/settings badge_notifications"') TODO: implement user settings
 
 	owned_badges = user_data.owned_badges
 	await owned_badges.append(badge_name)
@@ -36,7 +32,9 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 	await user_data.update(owned_badges=owned_badges)
 
 	if user_data.badge_notifications and send_message:
-		return await ctx.send(embeds=embed)
+		return await ctx.send(
+		    embeds=embed, content="-# [ You got a badge! You can see them on your </profile view:0> ]"
+		)
 
 
 async def increment_value(ctx: SlashContext, value_to_increment: str, amount: int = 1, target: User | None = None):
@@ -61,5 +59,6 @@ async def increment_value(ctx: SlashContext, value_to_increment: str, amount: in
 
 			if get_value > data['requirement']:
 				send_message = False
-
+			if amount == 6:
+				send_message = True
 			return await earn_badge(ctx, badge, data, user, send_message)
