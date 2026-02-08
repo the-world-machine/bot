@@ -286,7 +286,18 @@ profile:
         stamps: "Unlocked Stamps:"
   edit:
     text: "You can edit your profile over on the website!"
-
+  notifications:
+    badge:
+      content: "-# [ You got a badge! See each one you've earned at [/profile view] ]"
+      title: "‹ [emoji] [badge_name] ›"
+      description: "[usermention] [badge_message]"
+      settings_note: "You can change this notification using [/settings badge_notifications]"
+      types:
+        times_shattered: shatterred a lightbulb **[amount]** times...
+        times_asked: bothered The World Machine **[amount]** times!
+        wool: earned over **[amount]** wool!
+        times_transmitted: initiated over **[amount]** transmissions!
+        suns: gave/earnt over **[amount]** suns
 # ---------------------------------------------------------------
 
 explode:

@@ -1,39 +1,38 @@
 from utilities.database.schemas import UserData
 from interactions import Embed, PartialEmoji, SlashContext, User
+from utilities.localization import Localization
 from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge
 
 
 async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, target: User, send_message: bool = True):
+	loc = Localization(ctx)
 	user_data = await UserData(_id=target.id).fetch()
 
-	emoji = f"<:i:{badge_data['emoji']}>"
-
-	type_descrim = {
-	    'times_shattered': f'shatterred a lightbulb **{badge_data["requirement"]}** times...',
-	    'times_asked': f'bothered The World Machine **{badge_data["requirement"]}** times!',
-	    'wool': f'earned over **{badge_data["requirement"]}** wool!',
-	    'times_transmitted': f'initiated over **{badge_data["requirement"]}** transmissions!',
-	    'suns': f'gave/earnt over **{badge_data["requirement"]}** suns!'
-	}
-
-	embed = Embed(
-	    #author={'name':'You got a badge!'},
-	    title=f"‹ {emoji} {badge_name} ›",
-	    description=f'<@{target.id}> {type_descrim[badge_data["type"]]}',
-	    color=Colors.YELLOW
-	)
-
-	#embed.set_footer('You can change this notification using "/settings badge_notifications"') TODO: implement user settings
-
 	owned_badges = user_data.owned_badges
-	await owned_badges.append(badge_name)
-
-	await user_data.update(owned_badges=owned_badges)
+	if badge_name not in owned_badges:
+		await owned_badges.append(badge_name)
 
 	if user_data.badge_notifications and send_message:
 		return await ctx.send(
-		    embeds=embed, content="-# [ You got a badge! You can see them on your </profile view:0> ]"
+		    embeds=Embed(
+		        #author={'name':'You got a badge!'},
+		        title=loc.l(
+		            "profile.notifications.badge.title", emoji=f"<:i:{badge_data['emoji']}>", badge_name=badge_name
+		        ),
+		        description=loc.l(
+		            "profile.notifications.badge.description",
+		            usermention=target.mention,
+		            badge_message=loc.l(
+		                f'profile.notifications.badge.types["{badge_data["type"]}"]', amount=badge_data["requirement"]
+		            )
+		        ),
+		        color=Colors.YELLOW,
+		        #footer={"text": 'You can change this notification using "/settings badge_notifications"'} # TODO: implement user /settings page
+		        # loc.l("profile.notifications.badge.settings_note")
+		        # await put_mini(loc, "profile.notifications.badge.settings_note", user_id=ctx.user.id)
+		    ),
+		    content=loc.l("profile.notifications.badge.content")
 		)
 
 
