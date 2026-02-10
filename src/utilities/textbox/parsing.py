@@ -70,6 +70,15 @@ class ColorModifier(ReprMixin):
 
 
 @dataclass
+class LocaleCommand(ReprMixin):
+	path: str = "textbox.errors.nothing_passed"
+
+	def parse_input(self, args: str | None):
+		args = args or "textbox.errors.nothing_passed"
+		self.text = args
+
+
+@dataclass
 class LineBreakCommand(ReprMixin):
 
 	def parse_input(self, args):

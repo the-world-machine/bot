@@ -1,6 +1,7 @@
 import re
 import asyncio
 from traceback import print_exc
+from types import NoneType
 import yaml as yaml
 from babel import Locale
 from pathlib import Path
@@ -233,6 +234,8 @@ class Localization:
 		result = assign_variables(raw_result, locale, ctx=ctx, **variables)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
+			if result == None:
+				return "{path} not found in all attempted languages"
 			raise TypeError(
 			    f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
 			)

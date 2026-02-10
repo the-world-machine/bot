@@ -5,6 +5,7 @@ import inspect
 from pathlib import Path
 from grapheme import graphemes
 from interactions import Color
+from utilities.localization import Localization
 from utilities.misc import cached_get
 from utilities.config import get_config
 from dataclasses import dataclass, field, fields
@@ -12,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import RGBA, CharCommand, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
+from utilities.textbox.parsing import RGBA, CharCommand, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, LocaleCommand, init_token, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -250,11 +251,19 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			current_color = command.color
 		elif isinstance(command, CharSpeedModifier):
 			frame_speed = command.speed if not (command.speed <= 0) else 0.25
-		elif isinstance(command, (str, CharCommand)):
+		elif isinstance(command, (str, CharCommand, LocaleCommand)):
 			message = command
 			if isinstance(command, CharCommand):
 				# eventually i'll remove this duplicate if, after i handle the rest of the token types
 				message = command.text
+			elif isinstance(command, LocaleCommand):
+				try:
+					message = Localization().l(command.path)
+				except Exception as e:
+					message = str(e)
+			if not isinstance(message, str):
+				message = f"[ ermm? unexpected type from command, got {type(message)} ]"
+
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in re.findall(r'\S+\s*|\S+', message):  # TODO: regex alert
