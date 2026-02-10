@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, Callable, Literal, get_args, Sequence, get_origin
 
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import RGBA, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
+from utilities.textbox.parsing import RGBA, CharCommand, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, init_token, parse_textbox_text
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
 SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
@@ -250,8 +250,11 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			current_color = command.color
 		elif isinstance(command, CharSpeedModifier):
 			frame_speed = command.speed if not (command.speed <= 0) else 0.25
-		elif isinstance(command, str):
+		elif isinstance(command, (str, CharCommand)):
 			message = command
+			if isinstance(command, CharCommand):
+				# eventually i'll remove this duplicate if, after i handle the rest of the token types
+				message = command.text
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in re.findall(r'\S+\s*|\S+', message):  # TODO: regex alert
