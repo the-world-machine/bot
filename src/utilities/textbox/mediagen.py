@@ -272,8 +272,6 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 
 			if not isinstance(message, str):
 				message = f"[ ermm? unexpected type from command, got {type(message)} ]"
-			if message.startswith(" "):
-				message = "â€€" + message
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in re.findall(r'\S+\s*|\s+', message):  # TODO: regex alert
@@ -287,9 +285,9 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					cumulative_text += cluster
 					duration = 50
 					match cluster:
-						case '.' | '!' | '?' | 'ï¼Ž' | 'ï¼Ÿ' | 'ï¼':
+						case '.' | '!' | '?' | '．' | '？' | '！':
 							duration = 600
-						case ',' | 'ï¼Œ':
+						case ',' | '，':
 							duration = 100
 					if text_offset[0] + 15 > max_text_width:
 						text_offset[1] += 25.0
