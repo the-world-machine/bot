@@ -16,9 +16,10 @@ int_regex = re.compile(r"^\d+$")
     opt_type=OptionType.STRING,
     required=False
 )
-async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
+async def command_(self, ctx: SlashContext, search: str = "user:me!0:5"):
 	loc = Localization(ctx)
 	await fancy_message(ctx, loc.l("generic.loading.checking_developer_status"), ephemeral=True)
+
 	if str(ctx.author.id) not in get_config('dev.whitelist', typecheck=list):
 		await asyncio.sleep(3)
 		return await fancy_message(
@@ -27,50 +28,54 @@ async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
 		    facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
 		    edit=True
 		)
+
 	states2show: list[tuple[str, State]] = []
 	options = search.split("!")
-	filter = options[0]
+	filter_str = options[0]
 
 	states2show = list(states.items())
-	match filter:
+
+	match filter_str:
 		case "all":
 			pass
 		case _:
-			if filter.startswith("user:"):
-				_ = filter.split(":")
-				user_id = _[1] if len(_) == 1 else "me"
-				if not int_regex.match(user_id) and not user_id == "me":
-					await ctx.edit(embeds=Embed(color=Colors.BAD, title="Invalid user id"))
+			if filter_str.startswith("user:"):
+				parts = filter_str.split(":")
+				user_id = parts[1] if len(parts) == 2 and parts[1] else "me"
+
+				if not int_regex.match(user_id) and user_id != "me":
+					return await ctx.edit(embeds=Embed(color=Colors.BAD, title="Invalid user id"))
+
 				if user_id == "me":
 					user_id = str(ctx.user.id)
+
 				states2show = [ a for a in states2show if a[1].owner == int(user_id) ]
-			elif int_regex.match(filter):
-				if not filter in states:
-					return await ctx.edit(embeds=Embed(color=Colors.BAD, title=f"Couldn't find sid {filter}"))
-				states2show = [states[filter]]
-	if len(states2show) > 0:
+
+			elif int_regex.match(filter_str):
+				if filter_str not in states:
+					return await ctx.edit(embeds=Embed(color=Colors.BAD, title=f"Couldn't find sid {filter_str}"))
+				states2show = [(filter_str, states[filter_str])]
+
+	if len(states2show) > 0 and len(options) > 1:
 		paging = options[1].split(":")
-		page = paging[0] if len(paging) > 0 else "0"
-		items_per_page = "10"
+
+		page_str = paging[0] if len(paging) > 0 and paging[0] else "0"
+		amount_str = paging[1] if len(paging) > 1 and paging[1] else "10"
+
 		try:
-			page = int(page)
-		except:
-			return await ctx.edit(embeds=Embed(color=Colors.BAD, title=f"Invalid Pages (!__{page}__:{items_per_page})"))
-		items_per_page = paging[1] if len(paging) > 1 else "10"
-		try:
-			items_per_page = int(items_per_page)
-		except:
+			page = int(page_str)
+			items_per_page = int(amount_str)
+		except ValueError:
+			return await ctx.edit(embeds=Embed(color=Colors.BAD, title=f"Invalid Paging syntax"))
+
+		start_index = page * items_per_page
+
+		if start_index >= len(states2show):
 			return await ctx.edit(
-			    embeds=Embed(color=Colors.BAD, title=f"Invalid items per page (Amount) (!{page}:__{items_per_page}__)")
+			    embeds=Embed(color=Colors.BAD, title=f"Page out of bounds, max items: {len(states2show)}")
 			)
-		if page > len(states2show) * items_per_page:
-			return await ctx.edit(
-			    embeds=Embed(
-			        color=Colors.BAD,
-			        title=f"Page out of bounds, max: {len(states2show)} (!{page}:__{items_per_page}__)"
-			    )
-			)
-		states2show = states2show[page * items_per_page:max((page * items_per_page) + items_per_page, len(states2show))]
+		states2show = states2show[start_index:start_index + items_per_page]
+
 	if len(states2show) == 0:
 		return await ctx.edit(
 		    embeds=Embed(
@@ -79,11 +84,11 @@ async def command_(self, ctx: SlashContext, search: str = "user:me!0:1"):
 		        (" (there are no states)" if len(states) == 0 else " (check your filter maybe?)")
 		    )
 		)
-	print(states2show)
+
 	return await ctx.edit(
 	    embeds=Embed(
 	        color=Colors.DEFAULT,
-	        title=f"Found results: {len(states2show[:4000])}",
+	        title=f"Found results: {len(states2show)}",  # Removed [:4000] as len() returns int
 	        description='\n'.join(map(lambda a: f"-# {a[0]}:\n```{a[1]}```", states2show))
 	    )
 	)
