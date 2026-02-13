@@ -1,4 +1,5 @@
 import subprocess
+#import sys
 from traceback import print_exc
 from typing import Literal, NamedTuple, Type
 from dataclasses import dataclass, field
@@ -47,6 +48,8 @@ def csscolor(color: str) -> RGBA:
 		output = result.stdout.strip()
 	except subprocess.CalledProcessError as e:
 		output = e.stdout.strip()
+	except FileNotFoundError as e:
+		raise ValueError("color parsing unsupported (binary not found)")
 
 	if output.startswith("Error:"):
 		raise ValueError(f"Invalid color, got: '{color}', {output}")
@@ -75,7 +78,7 @@ class LocaleCommand(ReprMixin):
 
 	def parse_input(self, args: str | None):
 		args = args or "textbox.errors.nothing_passed"
-		self.text = args
+		self.path = args
 
 
 @dataclass
@@ -146,7 +149,8 @@ COMMAND_MAP: dict[str, Type] = {
     'c': ColorModifier,
     's': CharSpeedModifier,
     'd': DelayCommand,
-    'n': LineBreakCommand
+    'n': LineBreakCommand,
+    'l': LocaleCommand
 }
 
 

@@ -183,7 +183,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	font = ImageFont.truetype(await cached_get(Path(get_config("textbox.font")), force=True), 20)
 	text = Image.new("RGBA", (background.width, 999999), color=(255, 255, 255, 0))
 	text_x, text_y = 23, 16
-	text_width = background.width - (20 * 2)
+	max_text_width = background.width - (20 * 2)
 	text_height = background.height - (17 * 2)
 	images: list[Image.Image] = []
 	durations: Sequence[int] = []
@@ -204,7 +204,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	async def update_facepic(command: FacepicChangeCommand, delay: bool = False):
 		nonlocal burned_borders
 		nonlocal facepic_present
-		nonlocal text_width
+		nonlocal max_text_width
 		burned_borders = borders.copy()
 		facepic = await get_facepic(command.facepic)
 		if facepic:
@@ -216,9 +216,9 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			facepic_present = False
 			facepic = None
 		if facepic_present and facepic:
-			text_width = background.width - (20 * 2) - facepic.width + 10
+			max_text_width = background.width - (20 * 2) - facepic.width + 10
 		else:
-			text_width = background.width - (20 * 2)
+			max_text_width = background.width - (20 * 2)
 		if delay and animated:
 			put_frame(0)
 
@@ -237,8 +237,12 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	first_facepic_command = next((cmd for cmd in parsed if isinstance(cmd, FacepicChangeCommand)), None)
 	if first_facepic_command and first_facepic_command.facepic != "":
 		await update_facepic(not_empty_empty_face)
-	for i in range(0, len(parsed)):
+	i = 0
+	while i < len(parsed):
 		command = parsed[i]
+		print(command)
+		#if i > 8:
+		#	return
 		if isinstance(command, FacepicChangeCommand):
 			if command.facepic != "":
 				await update_facepic(command)
@@ -251,50 +255,58 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			current_color = command.color
 		elif isinstance(command, CharSpeedModifier):
 			frame_speed = command.speed if not (command.speed <= 0) else 0.25
-		elif isinstance(command, (str, CharCommand, LocaleCommand)):
+		elif isinstance(command, LocaleCommand):
+			out = None
+			try:
+				out = parse_textbox_text(Localization().l(command.path))
+			except Exception as e:
+				out = ["[ " + str(e) + " ]"]
+			i += 1
+			parsed[i:i] = out
+			continue
+		elif isinstance(command, (str, CharCommand)):
 			message = command
 			if isinstance(command, CharCommand):
 				# eventually i'll remove this duplicate if, after i handle the rest of the token types
 				message = command.text
-			elif isinstance(command, LocaleCommand):
-				try:
-					message = Localization().l(command.path)
-				except Exception as e:
-					message = str(e)
+
 			if not isinstance(message, str):
 				message = f"[ ermm? unexpected type from command, got {type(message)} ]"
-
+			if message.startswith(" "):
+				message = "â€€" + message
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
-			for word in re.findall(r'\S+\s*|\S+', message):  # TODO: regex alert
-				if text_offset[1] != 0 and word_wrap and (len(word) * 10) + text_x + text_offset[0] + 1 > text_width:
+			for word in re.findall(r'\S+\s*|\s+', message):  # TODO: regex alert
+				word_length = d.textlength(cluster, font=font)
+				if text_offset[1] != 0 and word_wrap and word_length + text_x + text_offset[0] + 1 > max_text_width:
 					text_offset[1] += 25.0
 					text_offset[0] = 0.0
 				for cluster in list(graphemes(word)):  # type: ignore
-					if not cluster:
+					if cluster is None:
 						cluster: str = ""
 					cumulative_text += cluster
 					duration = 50
 					match cluster:
-						case '.' | '!' | '?' | '．' | '？' | '！':
+						case '.' | '!' | '?' | 'ï¼Ž' | 'ï¼Ÿ' | 'ï¼':
 							duration = 600
-						case ',' | '，':
+						case ',' | 'ï¼Œ':
 							duration = 100
-					if text_offset[0] + 15 > text_width:
+					if text_offset[0] + 15 > max_text_width:
 						text_offset[1] += 25.0
 						text_offset[0] = 0.0
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						carriage_return()
 					try:
 						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=current_color)
-						text_offset[0] += d.textlength(
-						    cluster, font=font
-						)  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
+						text_offset[
+						    0
+						] += word_length  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
 					except:
 						pass
 					if animated:
 						put_frame(duration)
 
+		i += 1
 	put_frame(0)
 	return (images, durations)
 
