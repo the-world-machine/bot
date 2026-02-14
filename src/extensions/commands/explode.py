@@ -57,7 +57,7 @@ class ExplodeCommands(Extension):
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
-				dialogue = loc.l("explode.dialogue.sixtyninefourtweny")
+				dialogue = loc.l("explode.dialogue.sixninefourtwo")
 
 			if len(str(explosion_amount)) > 3 and all(char == '9' for char in str(explosion_amount)):
 				dialogue = loc.l("explode.dialogue.nineninenineninenine")
