@@ -88,7 +88,7 @@ async def command_(self, ctx: SlashContext, search: str = "user:me!0:5"):
 	return await ctx.edit(
 	    embeds=Embed(
 	        color=Colors.DEFAULT,
-	        title=f"Found results: {len(states2show)}",  # Removed [:4000] as len() returns int
+	        title=f"Found results: {len(states2show)}",
 	        description='\n'.join(map(lambda a: f"-# {a[0]}:\n```{a[1]}```", states2show))
 	    )
 	)

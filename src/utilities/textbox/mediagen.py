@@ -240,9 +240,6 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 	i = 0
 	while i < len(parsed):
 		command = parsed[i]
-		print(command)
-		#if i > 8:
-		#	return
 		if isinstance(command, FacepicChangeCommand):
 			if command.facepic != "":
 				await update_facepic(command)
