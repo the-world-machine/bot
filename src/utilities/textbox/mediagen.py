@@ -275,8 +275,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in re.findall(r'\S+\s*|\s+', message):  # TODO: regex alert
-				word_length = d.textlength(cluster, font=font)
-				if text_offset[1] != 0 and word_wrap and word_length + text_x + text_offset[0] + 1 > max_text_width:
+				if text_offset[1] != 0 and word_wrap and d.textlength(word, font=font) + text_x + text_offset[0] + 1 > max_text_width:
 					text_offset[1] += 25.0
 					text_offset[0] = 0.0
 				for cluster in list(graphemes(word)):  # type: ignore
@@ -298,7 +297,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=current_color)
 						text_offset[
 						    0
-						] += word_length  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
+						] += d.textlength(cluster, font=font)  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
 					except:
 						pass
 					if animated:
