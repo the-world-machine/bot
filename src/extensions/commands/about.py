@@ -64,7 +64,7 @@ class AboutCommand(Extension):
 							original_lines = loc.l(
 							    "about.me's",
 							)
-							translated_lines = Localization().l("about.me's")
+							translated_lines = Localization().l("about.mes")
 
 							for i in range(0, len(original_lines)):
 								if not (len(translated_lines) > i) and original_lines[i] == line:
