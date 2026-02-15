@@ -4,15 +4,15 @@ config-check-level: 4
 # 2 = stops the bot on missing
 # 3 = doesn't log missing
 bot:
-  token: ~
+  token: "..."
   logging-level: DEBUG
   prod:
     token: ~ # if ~ always uses token above
-    override: ~
+    override: ~ # boolean
     branch: "origin"
     command-marker: ~ # see dev.command-marker
     logging-level: WARN
-  debug: ~ # defaults to false on prod
+  debug: ~ # boolean, defaults to false on prod
 
   rolling:
     avatar: true # uses unstable.png if not on prod
@@ -41,16 +41,16 @@ modules:
   devcommands: true
 
 dev:
-  guild-id: ~ # server id, in ""
+  guild-id: ~ # string, server id
   channels:
-    logs: ~ # channel id, in ""
-    more: ~ # channel id, in ""
+    logs: ~ # string, channel id
+    more: ~ # string, channel id
   send-startup-message: true
 
   command-marker: "[.]" # e.g. <.> (.) [.] {.} ^.^
   whitelist:
     - ~
-    - ~ # user ids, all in ""
+    - ~ #  strings, user ids
     - ~
 
 watcher:
@@ -61,25 +61,22 @@ watcher:
 
 database:
   dns-fix: false # use this if you're on termux and connecting to db doesn't work
-  uri: ~ # example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
+  uri: ~ # string, example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
 
 localization:
-  main-locale: en # make sure the locale is 100% complete
-  debug: ~ # defaults to false on prod, shows detailed error messages for not found paths if true
+  crowdin-token:
+    "..."
+    # ↑ https://crowdin.com/settings#api-key
+    #   Permissions:
+    #     Projects → { Translation status (read only), Source files & strings (Read and Write), Translations (Read only) }
+    #   Granular access: Enable
+    #   go to Select projects and pick twm or whatevr you called it
+  main-locale: en-GB # string, make sure the locale is 100% complete
+  debug: ~ # boolean, defaults to false on prod, shows detailed error messages for not found paths if true
   whitelist:
     en:
       - ~
-      - ~ # user ids, all in ""
-
-music: # deprecated
-  spotify:
-    secret: ~
-    id: ~
-
-  lavalink:
-    ip: "localhost"
-    port: 4231
-    password: password_here
+      - ~ #  strings, user ids
 
 textbox:
   web:
@@ -96,3 +93,13 @@ textbox:
     - github.com
     - githubusercontent.com
   color-parser-binary: "./src/utilities/textbox/csscolors/target/release/csscolors" # you have to run `cargp build --release` in the csscolors folder for this binary to appear. setup Rust on your system first: https://rustup.rs/ (this will install cargo)
+
+music: # deprecated
+  spotify:
+    secret: ~
+    id: ~
+
+  lavalink:
+    ip: "localhost"
+    port: 4231
+    password: password_here
