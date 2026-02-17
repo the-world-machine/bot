@@ -16,3 +16,4 @@ lavalink/Lavalink.jar
 Pipfile.lock
 
 logs/*.*.*.log
+src/utilities/textbox/csscolors/target/
