@@ -1,9 +1,10 @@
 import random
 from datetime import datetime, timedelta
+from utilities.localization.formatting import fnum
 from utilities.message_decorations import *
 import utilities.profile.badge_manager as bm
 from utilities.database.schemas import UserData
-from utilities.localization import Localization, fnum
+from utilities.localization.localization import Localization
 from interactions import Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 
 
@@ -36,6 +37,7 @@ class ExplodeCommands(Extension):
 			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 				    ctx,
+				    await
 				    loc.l("generic.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
 				    ephemeral=True,
 				    color=Colors.RED
@@ -53,24 +55,24 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues: tuple[str] = loc.l("explode.dialogue.why", typecheck=tuple)
+			dialogues: tuple[str] = await loc.l("explode.dialogue.why", typecheck=tuple)
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
-				dialogue = loc.l("explode.dialogue.sixninefourtwo")
+				dialogue = await loc.l("explode.dialogue.sixninefourtwo")
 
 			if len(str(explosion_amount)) > 3 and all(char == '9' for char in str(explosion_amount)):
-				dialogue = loc.l("explode.dialogue.nineninenineninenine")
+				dialogue = await loc.l("explode.dialogue.nineninenineninenine")
 			if not dialogue:
 				dialogue = "." * random.randint(3, 9)
 
 			embed.description = "-# " + dialogue
 			embed.set_image(url=self.explosion_image[random_number])
-			embed.set_footer(loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
+			embed.set_footer(await loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
 		else:
 			embed = Embed(title='...')
 			embed.set_image(url=self.sad_image)
-			embed.set_footer(loc.l("explode.YouKilledNiko"))
+			embed.set_footer(await loc.l("explode.YouKilledNiko"))
 
 		if not sad:
 			await bm.increment_value(ctx, 'times_shattered', 1, ctx.user)

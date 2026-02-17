@@ -4,7 +4,8 @@ from dataclasses import dataclass
 
 from interactions import Embed, Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
 from utilities.emojis import emojis
-from utilities.localization import Localization, fnum
+from utilities.localization.formatting import fnum
+from utilities.localization.localization import Localization
 from utilities.database.schemas import UserData
 from utilities.message_decorations import Colors, fancy_message
 
@@ -69,12 +70,12 @@ class GambleCommands(Extension):
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		loc = Localization(ctx)
-		await fancy_message(ctx, loc.l('generic.loading.generic'))
+		await fancy_message(ctx, await loc.l('generic.loading.generic'))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
 			return await fancy_message(
-			    ctx, loc.l("wool.gamble.errors.not_enough_wool"), ephemeral=True, color=Colors.BAD
+			    ctx, await loc.l("wool.gamble.errors.not_enough_wool"), ephemeral=True, color=Colors.BAD
 			)
 
 		# TAKE the wool
@@ -106,7 +107,7 @@ class GambleCommands(Extension):
 
 		slot_images: list[list] = []
 
-		def generate_embed(index: int, column: int, columns: list[list]):
+		async def generate_embed(index: int, column: int, columns: list[list]):
 
 			def grab_slot(i: int):
 				column = generate_column(rows[i], index)
@@ -146,13 +147,13 @@ class GambleCommands(Extension):
 					else:
 						ticker += f'{s} ┋ '
 			return Embed(
-			    description= f"## {loc.l("wool.gamble.slots.title")}\n\n"+\
-						loc.l("wool.gamble.slots.description", user=ctx.author.mention, amount=fnum(bet))+\
+			    description= f"## {await loc.l("wool.gamble.slots.title")}\n\n"+\
+						await loc.l("wool.gamble.slots.description", user=ctx.author.mention, amount=fnum(bet))+\
 						"\n"+ticker,
 			    color=Colors.DEFAULT,
 			)
 
-		await ctx.edit(embed=generate_embed(0, -1, slot_images))
+		await ctx.edit(embed=await generate_embed(0, -1, slot_images))
 
 		slot_values = [ 0.0, 0.0, 0.0 ]
 
@@ -162,7 +163,7 @@ class GambleCommands(Extension):
 			for i in range(max_rolls):
 				await asyncio.sleep(sleep_first_rotata_s * ((i + 1) / max_rolls)**1.5)
 
-				result_embed = generate_embed(i, column, slot_images)
+				result_embed = await generate_embed(i, column, slot_images)
 				await ctx.edit(embed=result_embed)
 				slot_values[column] = rows[column][i].value
 
@@ -186,19 +187,19 @@ class GambleCommands(Extension):
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_embed.color = Colors.PURE_YELLOW
-				result_embed.set_footer(text=loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount))))
+				result_embed.set_footer(text=await loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount))))
 			else:
 				if win_amount < bet:
 					result_embed.color = Colors.PURE_ORANGE
-					result_embed.set_footer(text=loc.l("wool.gamble.slots.result.lost_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
+					result_embed.set_footer(text=await loc.l("wool.gamble.slots.result.lost_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
 				else:
 					result_embed.color = Colors.PURE_GREEN
-					result_embed.set_footer(text=loc.l("wool.gamble.slots.result.won_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
+					result_embed.set_footer(text=await loc.l("wool.gamble.slots.result.won_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
 		else:
 			result_embed.color = Colors.PURE_RED
 			result_embed.set_footer(
-			    text=loc.l("wool.gamble.slots.result.lost_all", username=ctx.author.username)
-			    if not jackpot else loc.l("wool.gamble.slots.result.pain", username=ctx.author.username)
+			    text=await loc.l("wool.gamble.slots.result.lost_all", username=ctx.author.username)
+			    if not jackpot else await loc.l("wool.gamble.slots.result.pain", username=ctx.author.username)
 			)
 
 		await ctx.edit(embed=result_embed)
@@ -213,10 +214,10 @@ class GambleCommands(Extension):
 			existing_slots.append(slot.emoji)
 			icon = slot.emoji
 			value = int(slot.value * 100)
-			point_rows.append(loc.l(f"wool.gamble.slots.guide.values.{'reduction' if value < 0 else 'normal'}", icon=icon, value=value))
+			point_rows.append(await loc.l(f"wool.gamble.slots.guide.values.{'reduction' if value < 0 else 'normal'}", icon=icon, value=value))
 
 		await fancy_message(
 			ctx,
-			f"## {loc.l("wool.gamble.slots.title")}\n" +\
-			loc.l("wool.gamble.slots.guide.description", values="\n".join(point_rows))
+			f"## {await loc.l("wool.gamble.slots.title")}\n" +\
+			await loc.l("wool.gamble.slots.guide.description", values="\n".join(point_rows))
 		)

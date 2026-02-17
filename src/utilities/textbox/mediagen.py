@@ -5,7 +5,7 @@ import inspect
 from pathlib import Path
 from grapheme import graphemes
 from interactions import Color
-from utilities.localization import Localization
+from utilities.localization.localization import Localization
 from utilities.misc import cached_get
 from utilities.config import get_config
 from dataclasses import dataclass, field, fields
@@ -255,7 +255,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 		elif isinstance(command, LocaleCommand):
 			out = None
 			try:
-				out = parse_textbox_text(Localization().l(command.path))
+				out = parse_textbox_text(await Localization().l(command.path))
 			except Exception as e:
 				out = ["[ " + str(e) + " ]"]
 			i += 1

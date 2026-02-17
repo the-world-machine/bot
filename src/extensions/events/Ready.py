@@ -50,7 +50,7 @@ class ReadyEvent(Extension):
 
 		client.ready_at = datetime.now()  # type: ignore
 		self.ready_at = client.ready_at  # type: ignore
-		from utilities.localization import fnum
+		from utilities.localization.formatting import fnum
 
 		client = event.client
 		channel = get_config("dev.channels.logs", ignore_None=True, typecheck=str)

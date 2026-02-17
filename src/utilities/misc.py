@@ -174,24 +174,24 @@ def rabbit(
 		try:
 			if current_fallback is not None:
 				try:
-					current_fallback = current_fallback[part]
-				except (KeyError, IndexError):
-					current_fallback = None
+					current_fallback = current_fallback[part]  # type: ignore
 				except (TypeError):
 					if isinstance(current_fallback, str):
 						raise KeyError(f"Tried to access property ('{part}') of string in fallback")
 					else:
 						current_fallback = None
+				except Exception:
+					current_fallback = None
 
 			try:
-				current_value = current_value[part]
-			except (KeyError, IndexError):
-				current_value = None
+				current_value = current_value[part]  # type: ignore
 			except (TypeError):
 				if isinstance(current_value, str):
 					raise KeyError(f"Tried to access property ('{part}') of string")
 				else:
 					current_value = None
+			except Exception:
+				current_value = None
 
 			if current_value is None and current_fallback is not None:
 				current_value = current_fallback
@@ -254,10 +254,10 @@ def get_current_branch() -> str:
 
 
 async def set_status(client: Client, text: str | list | None):
-	from utilities.localization import assign_variables
+	from utilities.localization.localization import assign_variables
 	if text is not None:
 		status = str(
-		    assign_variables(
+		    await assign_variables(
 		        input=text,
 		        shard_count=len(client.shards) if hasattr(client, "shards") else 1,  # type: ignore
 		        guild_count=len(client.guilds),
@@ -272,9 +272,9 @@ async def set_avatar(client: Client, avatar: File | Path | str):
 	return await client.user.edit(avatar=avatar)
 
 
-def make_empty_select(loc, placeholder: str | None = None):
+async def make_empty_select(loc, placeholder: str | None = None):
 	return StringSelectMenu(
-	    *[StringSelectOption(label=loc.l("generic.select.empty"), value="423")], placeholder=placeholder, disabled=True
+	    *[StringSelectOption(label="423", value="423")], placeholder=placeholder, disabled=True
 	)
 
 

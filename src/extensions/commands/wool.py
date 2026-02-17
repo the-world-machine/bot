@@ -3,7 +3,9 @@ import asyncio
 from datetime import datetime, timedelta
 from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.database.schemas import UserData
-from utilities.localization import Localization, fnum, put_mini
+from utilities.localization.formatting import fnum
+from utilities.localization.localization import Localization
+from utilities.localization.minis import put_mini
 from utilities.message_decorations import Colors, fancy_message
 from interactions import Button, ButtonStyle, Embed, EmbedAttachment, Extension, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
@@ -62,7 +64,7 @@ class WoolCommands(Extension):
 			who_path = "bot"
 		return await fancy_message(
 		    ctx,
-		    loc.l(
+		    await loc.l(
 		        f'wool.balance.{who_path}.{"none" if wool == 0 else "some"}',
 		        mention=of.mention,
 		        balance=fnum(wool, locale=ctx.locale)
@@ -90,18 +92,18 @@ class WoolCommands(Extension):
 
 		if to.id == ctx.author.id:
 			return await fancy_message(
-			    ctx, loc.l("wool.transfer.errors.self_transfer"), ephemeral=True, color=Colors.BAD
+			    ctx, await loc.l("wool.transfer.errors.self_transfer"), ephemeral=True, color=Colors.BAD
 			)
 
 		if to.bot and not (amount <= 0):
 			buttons = [
-			    Button(style=ButtonStyle.RED, label=loc.l('generic.buttons.yes'), custom_id=f'yes'),
-			    Button(style=ButtonStyle.GRAY, label=loc.l('generic.buttons.cancel'), custom_id=f'cancel')
+			    Button(style=ButtonStyle.RED, label=await loc.l('generic.buttons.yes'), custom_id=f'yes'),
+			    Button(style=ButtonStyle.GRAY, label=await loc.l('generic.buttons.cancel'), custom_id=f'cancel')
 			]
 
 			confirmation_m = await fancy_message(
 			    ctx,
-			    message=loc.l("wool.transfer.to.bot.confirmation") +
+			    message=await loc.l("wool.transfer.to.bot.confirmation") +
 			    await put_mini(loc, "wool.transfer.to.bot.notefirmation", user_id=ctx.user.id, pre="\n\n"),
 			    color=Colors.WARN,
 			    components=buttons,
@@ -114,19 +116,19 @@ class WoolCommands(Extension):
 				if response.ctx.custom_id == "cancel":
 					return
 			except asyncio.TimeoutError:
-				await confirmation_m.edit(content=loc.l("generic.responses.timeout.yn"), components=[])
+				await confirmation_m.edit(content=await loc.l("generic.responses.timeout.yn"), components=[])
 				await ctx.delete()
 				await asyncio.sleep(15)
 				return await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, loc.l('generic.loading.generic'))
+		loading = await fancy_message(ctx, await loc.l('generic.loading.generic'))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 
 		if from_user.wool < amount:
 			return await fancy_message(
 			    ctx,
-			    loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
+			    await loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
 			    await put_mini(loc, "wool.transfer.errors.note_nuf", pre="\n\n"),
 			    edit=True,
 			    ephemeral=True,
@@ -138,11 +140,13 @@ class WoolCommands(Extension):
 
 		if amount < 0:
 			return await fancy_message(
-			    loading, loc.l("wool.transfer.steal", user_one=ctx.author.mention, user_two=to.mention), edit=True
+			    loading,
+			    await loc.l("wool.transfer.steal", user_one=ctx.author.mention, user_two=to.mention),
+			    edit=True
 			)
 		await fancy_message(
 		    loading,
-		    loc.l(
+		    await loc.l(
 		        f'wool.transfer.to.{"bot" if to.bot else "user"}.{"none" if amount == 0 else "some"}',
 		        user_one=ctx.author.mention,
 		        user_two=to.mention,
@@ -166,7 +170,7 @@ class WoolCommands(Extension):
 			time_unix = reset_timestamp.timestamp()
 			return await fancy_message(
 			    ctx,
-			    loc.l("wool.pray.errors.timeout", timestamp_relative=f"<t:{int(time_unix)}:R>"),
+			    await loc.l("wool.pray.errors.timeout", timestamp_relative=f"<t:{int(time_unix)}:R>"),
 			    ephemeral=True,
 			    color=Colors.BAD
 			)
@@ -187,9 +191,9 @@ class WoolCommands(Extension):
 		await ctx.send(
 		    embed=Embed(
 		        thumbnail=EmbedAttachment(make_emoji_cdn_url(emojis["treasures"]["die"])),
-		        title=loc.l("wool.pray.title"),
-		        description=f"{loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " +
-		        loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
+		        title=await loc.l("wool.pray.title"),
+		        description=f"{await loc.l(f'wool.pray.finds.{finding[0]}')}\n-# " +
+		        await loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}", amount=abs(amount)),
 		        color=Colors.GREEN if amount > 0 else Colors.BAD
 		    )
 		)

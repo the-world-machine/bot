@@ -25,6 +25,7 @@ apng = "*"
 aiohttp = "*"
 aiohttp-devtools = "*"
 jurigged = "*"
+pyicumessageformat = "*"
 
 [dev-packages]
 yapf = "*"

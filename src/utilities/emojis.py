@@ -124,7 +124,7 @@ def update_emojis(flat_key, emoji_value: str | None = None):
 	keys = flat_key.split('.')
 	current_dict = emojis
 	for part in keys[:-1]:
-		current_dict = current_dict.setdefault(part, {})
+		current_dict.setdefault(part, {})
 
 	if emoji_value is None:
 		if keys[-1] in current_dict:

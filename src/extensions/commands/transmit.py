@@ -3,7 +3,8 @@ import asyncio
 from typing import Literal
 from utilities.emojis import emojis
 from utilities.database.schemas import ServerData
-from utilities.localization import Localization, ftime
+from utilities.localization.formatting import ftime
+from utilities.localization.localization import Localization
 from utilities.profile.badge_manager import increment_value
 from interactions.api.events import MessageCreate, Component
 from utilities.message_decorations import Colors, fancy_message
@@ -32,7 +33,7 @@ class TransmissionCommands(Extension):
 	# 	server_ids = {
 	# 		guild.id if isinstance(guild, Guild) else guild
 	# 		:
-	# 									guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+	# 									guild.name if isinstance(guild, Guild) else (await loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 	# 		for guild in guilds
 	# 	}
 
@@ -248,7 +249,7 @@ class TransmissionCommands(Extension):
 		known_servers = {
 		 guild.id if isinstance(guild, Guild) else guild
 		 :
-                                                                                                                                    guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+                                                                                                                                                      guild.name if isinstance(guild, Guild) else (await loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		 for guild in guilds
 		}
 		# yapf: enable

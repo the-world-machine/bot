@@ -1,8 +1,9 @@
 import psutil
 import platform
 from datetime import datetime, timezone
+from utilities.localization.formatting import amperjoin, fnum, ftime
 from utilities.misc import get_git_hash
-from utilities.localization import Localization, amperjoin, fnum, ftime
+from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from interactions import ActionRow, Button, ButtonStyle, Embed, EmbedField, Extension, Message, OptionType, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
@@ -26,7 +27,7 @@ class AboutCommand(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
 		start_time = datetime.now(timezone.utc)
-		_ = await fancy_message(ctx, loc.l("generic.loading.hint"), ephemeral=not public)
+		_ = await fancy_message(ctx, await loc.l("generic.loading.hint"), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 
@@ -50,7 +51,7 @@ class AboutCommand(Extension):
 						name, url = line.split(':', 1)
 						name = name.strip()
 
-						loc_name = loc.l(f"about.buttons['{name.lower()}']")
+						loc_name = await loc.l(f"about.buttons['{name.lower()}']")
 						if not loc_name.startswith("`"):
 							name = loc_name
 
@@ -61,10 +62,10 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = loc.l(
+							original_lines = await loc.l(
 							    "about.me's",
 							)
-							translated_lines = Localization().l("about.mes")
+							translated_lines = await Localization().l("about.mes", typecheck=tuple)
 
 							for i in range(0, len(original_lines)):
 								if not (len(translated_lines) > i) and original_lines[i] == line:
@@ -95,38 +96,38 @@ class AboutCommand(Extension):
 		embed = Embed(description=description, color=Colors.DEFAULT)
 		embed.add_fields(
 		    EmbedField(
-		        name=loc.l("about.names.avg_ping"),
-		        value=loc.l("about.values.time", sec=fnum(ctx.client.latency, ctx.locale)),
+		        name=await loc.l("about.names.avg_ping"),
+		        value=await loc.l("about.values.time", sec=fnum(ctx.client.latency, ctx.locale)),
 		        inline=True
 		    ),
 		    EmbedField(
-		        name=loc.l("about.names.latency"),
+		        name=await loc.l("about.names.latency"),
 		        value=
-		        f'{loc.l("about.values.time", sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {loc.l("about.values.time", sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}',
+		        f'{await loc.l("about.values.time", sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.l("about.values.time", sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}',
 		        inline=True
 		    ),
 		    EmbedField(
-		        name=loc.l("about.names.cpu_usg"),
-		        value=loc.l("about.values.percent", num=round(psutil.cpu_percent())),
+		        name=await loc.l("about.names.cpu_usg"),
+		        value=await loc.l("about.values.percent", num=round(psutil.cpu_percent())),
 		        inline=True
 		    ),
 		    EmbedField(
-		        name=loc.l("about.names.mem_usg"),
-		        value=loc.l("about.values.percent", num=round(psutil.virtual_memory().percent)),
+		        name=await loc.l("about.names.mem_usg"),
+		        value=await loc.l("about.values.percent", num=round(psutil.virtual_memory().percent)),
 		        inline=True
-		    ), EmbedField(name=loc.l("about.names.server_count"), value=str(ctx.client.guild_count), inline=True),
+		    ), EmbedField(name=await loc.l("about.names.server_count"), value=str(ctx.client.guild_count), inline=True),
 		    EmbedField(
-		        name=loc.l("about.names.commit_hash"),
-		        value=commit_hash if commit_hash else loc.l("misc.status.values.failed_commit_hash"),
+		        name=await loc.l("about.names.commit_hash"),
+		        value=commit_hash if commit_hash else await loc.l("misc.status.values.failed_commit_hash"),
 		        inline=True
 		    ),
 		    EmbedField(
-		        loc.l("about.names.uptime"), ftime(datetime.now() - ctx.client.start_time, ctx.locale), inline=True
+		        await loc.l("about.names.uptime"), ftime(datetime.now() - ctx.client.start_time, ctx.locale), inline=True
 		    )
 		)
-		# embed.add_field(loc.l("about.names.user_installs"),
+		# embed.add_field(await loc.l("about.names.user_installs"),
 		#                 len(ctx.client.app.users)) # NONEXISTENT
-		embed.add_field(loc.l("about.names.host"), host, inline=True)
+		embed.add_field(await loc.l("about.names.host"), host, inline=True)
 		rows = []
 		for i in range(0, len(buttons), 5):
 			rows.append(ActionRow(*buttons[i:i + 5]))

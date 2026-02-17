@@ -11,10 +11,11 @@ from interactions.models.discord.components import (
 from datetime import datetime
 from traceback import print_stack
 from typing import Any, Literal, get_args
+from utilities.localization.minis import put_mini
 from utilities.misc import BadResults, SortOption, fetch, optionSearch
 from .facepic_selector import set_facepic_in_frame_text
 from utilities.config import debugging, get_config
-from utilities.localization import Localization, put_mini
+from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.textbox.mediagen import Frame, SupportedFiletypes, render_textbox_frames
 from utilities.textbox.states import StateShortcutError, State, StateOptions, new_state, state_shortcut
@@ -171,7 +172,7 @@ async def send_output(ctx: ComponentContext | SlashContext | ContextMenuContext,
 	pos = ""
 	message = await ctx.respond(
 		embed=Embed(
-			description=loc.l("textbox.monologue.rendering")+pos, 
+			description=await loc.l("textbox.monologue.rendering")+pos, 
 			color=Colors.DARKER_WHITE
 		),
 		ephemeral=True,
@@ -182,7 +183,7 @@ async def send_output(ctx: ComponentContext | SlashContext | ContextMenuContext,
 	end=datetime.now()
 	took=start-end
 
-	asyncio.create_task(ctx.edit(message=message, embed=Embed(description=loc.l("textbox.monologue.sending")+pos, color=Colors.DARKER_WHITE)))
+	asyncio.create_task(ctx.edit(message=message, embed=Embed(description=await loc.l("textbox.monologue.sending")+pos, color=Colors.DARKER_WHITE)))
 	content = f"-# [ {ctx.user.mention} ]"
 	
 	try:
@@ -198,10 +199,10 @@ async def send_output(ctx: ComponentContext | SlashContext | ContextMenuContext,
 		elif state.options.send_to == 1:
 			sent_message = await ctx.send(content=content, files=file, allowed_mentions=nomentions, ephemeral=True)
 	except: # when it fails to send a dm or a followup to an ephemeral message with a non-ephemeral message
-		return await ctx.edit(message=message, embed=Embed(description=loc.l("textbox.errors.failed_to_send"+("_dm" if state.options.send_to == 3 else "")), color=Colors.DARKER_WHITE))
-	desc = loc.l("textbox.monologue.done")
+		return await ctx.edit(message=message, embed=Embed(description=await loc.l("textbox.errors.failed_to_send"+("_dm" if state.options.send_to == 3 else "")), color=Colors.DARKER_WHITE))
+	desc = await loc.l("textbox.monologue.done")
 	if debugging():
-		desc+="\n-# "+loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
+		desc+="\n-# "+await loc.l("textbox.monologue.debug", time=took.total_seconds(), sid=state_id)
 	if state.options.filetype in ("WEBP", "GIF", "APNG") and sent_message and MessageFlags.EPHEMERAL in sent_message.flags:
 		mini = await put_mini(loc, "textbox.errors.ephemeral_warnote", ctx.user.id, type="warn")
 		if mini != "":
@@ -217,7 +218,7 @@ async def render_to_file(ctx: ComponentContext | SlashContext | ModalContext | C
 	if frame_preview_index is not None:
 		filetype = "PNG"
 		frames = [state.frames[int(frame_preview_index)]]
-	filename = loc.l(f"textbox.alt.{'single' if frame_preview_index != None else 'multi'}_frame.filename", frames=len(frames), timestamp=str(round(datetime.now().timestamp())))
+	filename = await loc.l(f"textbox.alt.{'single' if frame_preview_index != None else 'multi'}_frame.filename", frames=len(frames), timestamp=str(round(datetime.now().timestamp())))
 
 	buffer = await render_textbox_frames(frames, state.options.quality, filetype)
 	buffer.seek(0)
@@ -238,13 +239,13 @@ async def init_change_text_flow(ctx: ComponentContext | SlashContext, state_id: 
 					custom_id='new_text',
 					required=False,
 					value=frame_data.text,
-					label=loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
-					placeholder=loc.l('textbox.modal.edit_text.input.placeholder'),
+					label=await loc.l('textbox.modal.edit_text.input.label', index=int(frame_index) + 1),
+					placeholder=await loc.l('textbox.modal.edit_text.input.placeholder'),
 					min_length=0,
 					max_length=get_config("textbox.limits.frame-text-length", typecheck=int)
 			),
 			custom_id=f'textbox update_text_finish {state_id} {frame_index}',
-			title=loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
+			title=await loc.l('textbox.modal.edit_text.title', index=int(frame_index) + 1, total=len(state.frames))
 	)
 	await ctx.send_modal(modal)
 
@@ -264,7 +265,7 @@ async def handle_update_text_modal(self, ctx: ModalContext, new_text: str):
 	frame_data.text = new_text
 	if debugging():
 		await fancy_message(
-				ctx, loc.l('textbox.modal.edit_text.response', new_text=new_text, old_text=old_text), ephemeral=True
+				ctx, await loc.l('textbox.modal.edit_text.response', new_text=new_text, old_text=old_text), ephemeral=True
 		)
 	await respond(ctx, state_id, int(frame_index))
 
@@ -281,11 +282,11 @@ async def init_edit_flow(ctx: ComponentContext | SlashContext, state_id: str, fr
 					custom_id='updated_frames',
 					required=False,
 					value=frames,
-					label=loc.l('textbox.modal.edit_frames.input.label', index=int(frame_index) + 1),
-					placeholder=loc.l('textbox.modal.edit_frames.input.placeholder'),
+					label=await loc.l('textbox.modal.edit_frames.input.label', index=int(frame_index) + 1),
+					placeholder=await loc.l('textbox.modal.edit_frames.input.placeholder'),
 			),
 			custom_id=f'textbox edit_finish {state_id} {frame_index}',
-			title=loc.l('textbox.modal.edit_frames.title', index=int(frame_index) + 1, total=len(state.frames))
+			title=await loc.l('textbox.modal.edit_frames.title', index=int(frame_index) + 1, total=len(state.frames))
 	)
 	await ctx.send_modal(modal)
 
@@ -311,7 +312,7 @@ async def handle_edit_modal(self, ctx: ModalContext, updated_frames: str):
 	state.frames = new_frames
 	# if debugging():
 	# 	await fancy_message(
-	# 			ctx, loc.l('textbox.modal.edit_frames.response', new_text=new_text, old_text=old_text), ephemeral=True
+	# 			ctx, await loc.l('textbox.modal.edit_frames.response', new_text=new_text, old_text=old_text), ephemeral=True
 	# 	)
 	await respond(ctx, state_id, int(frame_index))
 
@@ -335,7 +336,7 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 		status = ""
 		pos = ""
 		if len(state.frames) > 1 or frame_index != 0:
-			pos = f"\n-# {loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
+			pos = f"\n-# {await loc.l("textbox.frame_position", current=int(frame_index)+1, total=len(state.frames))}"
 		if debugging():
 			pos += "\n-# **sid**: "+state_id
 		next_frame_exists = len(state.frames) != int(frame_index)+1
@@ -345,7 +346,7 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 		preview = await render_to_file(ctx, state, frame_preview_index=int(frame_index))
 		assert preview.file_name is not None
 		funny_name = (lambda p: re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name[:p]).strip('_') + preview.file_name[p:] if p > 0 else re.sub(r'[^a-zA-Z0-9]+', '_', preview.file_name).strip('_'))(preview.file_name.rfind('.')) # type: ignore
-		tbb = File(file=io.BytesIO(state.to_string(loc).encode('utf-8')), file_name=funny_name.rsplit(".",maxsplit=1)[0]+".backup.tbb")
+		tbb = File(file=io.BytesIO((await state.to_string(loc)).encode('utf-8')), file_name=funny_name.rsplit(".",maxsplit=1)[0]+".backup.tbb")
 		files.extend([tbb, preview])
 		components.extend([
 			FileComponent(
@@ -359,17 +360,17 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 			ActionRow(
 				Button(
 					style=ButtonStyle.BLURPLE,
-					label=loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
+					label=await loc.l(f'textbox.button.text.{"edit" if frame_data.text else "add"}'),
 					custom_id=f"textbox change_text {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.BLURPLE,
-					label=loc.l(f'textbox.button.face'),
+					label=await loc.l(f'textbox.button.face'),
 					custom_id=f"textbox_fs init {state_id} {frame_index}"
 				),
 				Button(
 					style=ButtonStyle.BLURPLE,
-					label=loc.l(f'textbox.button.edit'),
+					label=await loc.l(f'textbox.button.edit'),
 					custom_id=f"textbox edit {state_id} {frame_index}"
 				),
 			),
@@ -378,30 +379,30 @@ async def respond(ctx: SlashContext | ComponentContext | ModalContext | ContextM
 				ActionRow(
 					Button(
 						style=ButtonStyle.GRAY,
-						label=loc.l("textbox.button.frame.previous"),
+						label=await loc.l("textbox.button.frame.previous"),
 						custom_id=f"textbox refresh {state_id} {int(frame_index)-1}",
 						disabled=int(frame_index) - 1 < 0
 					),
 					Button(
 						style=ButtonStyle.GREEN,
-						label=loc.l("textbox.button.render"+("send" if state.options.send_to != 1 else ""), type=loc.l(f"textbox.filetypes.{state.options.filetype}")),
+						label=await loc.l("textbox.button.render"+("send" if state.options.send_to != 1 else ""), type=await loc.l(f"textbox.filetypes.{state.options.filetype}")),
 						custom_id=f"textbox render {state_id} {frame_index}"
 					),
 					Button(
 						style=ButtonStyle.DANGER if frame_data.text else ButtonStyle.GRAY,
-						label=loc.l(f'textbox.button.frame.{"clear" if len(state.frames) == 1 else "delete"}'),
+						label=await loc.l(f'textbox.button.frame.{"clear" if len(state.frames) == 1 else "delete"}'),
 						custom_id=f"textbox delete_frame {state_id} {frame_index}"
 					),
 					Button(
 						style=ButtonStyle.GRAY,
-						label=loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
+						label=await loc.l(f'textbox.button.frame.{"next" if next_frame_exists else "add"}'),
 						custom_id=f"textbox refresh {state_id} {int(frame_index)+1}"
 					),
 				)
 			)
 		])
 	elif type == "loading":
-		content = Localization(ctx).l("generic.loading.textbox")
+		content = await Localization(ctx).l("generic.loading.textbox")
 		accent_color = Colors.DEFAULT.value
 		edit = False
 	elif type == "error":

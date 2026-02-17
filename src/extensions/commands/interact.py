@@ -8,7 +8,7 @@ from typing import Any
 from interactions import ActionRow, Button, ButtonStyle, ComponentContext, ContextMenuContext, ContextType, Embed, Extension, Member, MentionType, Message, OptionType, PartialEmoji, SlashContext, Snowflake_Type, User, component_callback, contexts, integration_types, message_context_menu, slash_command, slash_option, user_context_menu, AllowedMentions
 from utilities.config import debugging
 from utilities.emojis import emojis
-from utilities.localization import Localization
+from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import replace_numbers_with_emojis
 
@@ -143,27 +143,27 @@ class InteractCommands(Extension):
 
 	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
 		loc = Localization(ctx)
-		await ctx.respond(content=loc.l('generic.loading.generic'), ephemeral=True)
+		await ctx.respond(content=await loc.l('generic.loading.generic'), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
-			    Localization(ctx).l('interact.twm_is_fed_up_with_you', user=ctx.author.mention),
+			    await Localization(ctx).l('interact.twm_is_fed_up_with_you', user=ctx.author.mention),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
 		if who.id == ctx.client.user.id:
 			return await fancy_message(
 			    ctx,
-			    loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention),
+			    await loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
 		if who.bot:
-            await fancy_message(ctx, loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
+            await fancy_message(ctx, await loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
             return
 								await fancy_message(
 		    ctx,
-		    message=loc.l(
+		    message=await loc.l(
 		        f'interact.selected{"_self" if with_self else ""}',
 		        user_one=f"<@{user_one.id}>" if isinstance(user_one, User) else user_one,
 		        user_two=f"<@{user_two.id}>" if isinstance(user_two, User) else user_two
@@ -186,7 +186,7 @@ class InteractCommands(Extension):
 	async def handle_components(self, ctx: ComponentContext):
 		loc = Localization(ctx)
 		if ctx.message is None:
-			return await fancy_message(ctx, loc.l("generic.errors.expired"), color=Colors.BAD, ephemeral=True)
+			return await fancy_message(ctx, await loc.l("generic.errors.expired"), color=Colors.BAD, ephemeral=True)
 		content = ctx.message.content
 		content = content.replace("→ :i: →", "→ ❔ →")
 		content = content.replace(f"→ {emojis['icons']['loading']} →", "→ ❔ →")
@@ -209,7 +209,7 @@ class InteractCommands(Extension):
 			user_two = user_two[2:-2]
 		user_one, user_two = await self.parse_args(ctx, user_one, user_two)
 		try:
-			interaction_raw = loc.l(f"interact{path}", typecheck=Any)
+			interaction_raw = await loc.l(f"interact{path}", typecheck=Any)
 			assert not isinstance(interaction_raw, str), "Assertion failed: " + interaction_raw
 			interaction = InteractionEntry(interaction_raw['name'], phrases=interaction_raw['phrases']) if isinstance(
 			    interaction_raw, dict
@@ -218,7 +218,7 @@ class InteractCommands(Extension):
 			print_exc()
 			return await ctx.send(
 			    embeds=Embed(
-			        description=f"[ {loc.l('interact.errors.no_path')} ]" +
+			        description=f"[ {await loc.l('interact.errors.no_path')} ]" +
 			        ("" if not debugging() else f"\n-# Debug: {e}"),
 			        color=Colors.BAD
 			    )
@@ -234,7 +234,7 @@ class InteractCommands(Extension):
 	):
 		ctx, loc = cx
 		page, path, user_one, user_two = state
-		interaction_raw: dict | tuple = loc.l(f"interact{path}", typecheck=Any)  # type:ignore
+		interaction_raw: dict | tuple = await loc.l(f"interact{path}", typecheck=Any)  # type:ignore
 		assert not isinstance(interaction_raw, str)
 		interaction = InteractionEntry(interaction_raw['name'], phrases=interaction_raw['phrases']) if isinstance(
 		    interaction_raw, dict
@@ -245,7 +245,9 @@ class InteractCommands(Extension):
 		for i in range(len(phrases)):
 			phrase = phrases[i]
 			if isinstance(phrase, str):
-				return await ctx.send(embeds=Embed(description=f"[ {loc.l('interact.errors.500')} ]", color=Colors.BAD))
+				return await ctx.send(
+				    embeds=Embed(description=f"[ {await loc.l('interact.errors.500')} ]", color=Colors.BAD)
+				)
 			new_path = f"{path_prefix}[{i}]"
 			button = Button(style=ButtonStyle.GRAY, label=phrase.name, custom_id=f"interact {page} {new_path}")
 			if not self.ie_only_basic(phrase.phrases):
@@ -322,7 +324,9 @@ class InteractCommands(Extension):
 			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
 
 		if len(rows) == 0:
-			rows.append(ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=loc.l("generic.buttons.top"))))
+			rows.append(
+			    ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=await loc.l("generic.buttons.top")))
+			)
 
 		return await ctx.edit(
 		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
@@ -338,7 +342,7 @@ class InteractCommands(Extension):
 		ctx, loc = cx
 		quote_path, user_one, user_two = state
 
-		interaction: Any = loc.l(
+		interaction: Any = await loc.l(
 		    f"interact{quote_path}",
 		    typecheck=Any,
 		    user_one=self.format_mention(user_one),
@@ -368,7 +372,9 @@ class InteractCommands(Extension):
 			except:
 				msg = await ctx.respond(content=phrase, ephemeral=False, allowed_mentions=allowed_mentions)
 		except Exception as e:
-			return await ctx.send(embeds=Embed(description=f"[ {loc.l('interact.errors.fail')} ]", color=Colors.BAD))
+			return await ctx.send(
+			    embeds=Embed(description=f"[ {await loc.l('interact.errors.fail')} ]", color=Colors.BAD)
+			)
 			raise e
 		if user_two.lower() in [
 		    f"<@{ctx.client.user.id}>", "@twm", "@the world machine", "@world machine", "@theworldmachine",

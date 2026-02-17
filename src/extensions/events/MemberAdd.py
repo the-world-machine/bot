@@ -4,7 +4,7 @@ from interactions import TYPE_MESSAGEABLE_CHANNEL, AllowedMentions, Extension, F
 from utilities.textbox.mediagen import Frame, render_frame
 from interactions.api.events import MemberAdd
 from utilities.database.schemas import ServerData
-from utilities.localization import Localization, assign_variables
+from utilities.localization.localization import Localization, assign_variables
 
 
 class MemberAddEvent(Extension):
@@ -26,12 +26,13 @@ class MemberAddEvent(Extension):
 		if not target_channel:
 			return
 
-		message = config.message or loc.l("misc.welcome.placeholder_text", typecheck=str)
-		message = assign_variables(
+		message = config.message or await loc.l("misc.welcome.placeholder_text", typecheck=str)
+		message = await assign_variables(
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)
 		buffer = io.BytesIO()
-		if not "\\@" in message:
+		basic_facepic_command = "\\@"
+		if basic_facepic_command in message:
 			# default to this face unless they have some in their message already
 			message = f"\\@[OneShot/The World Machine/Pancakes]{message}"
 

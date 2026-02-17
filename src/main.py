@@ -22,7 +22,6 @@ logger = createLogger(__name__)
 
 intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
 
-
 class TWMClient(Client):
 	started_at: datetime | None
 	ready_at: datetime | None

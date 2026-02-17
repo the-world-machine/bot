@@ -4,7 +4,7 @@ from itertools import chain
 from termcolor import colored
 from interactions import Message
 from utilities.config import get_config
-from utilities.localization import local_override
+from utilities.localization.localization import local_override
 
 
 async def execute_loc_command(message: Message):

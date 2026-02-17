@@ -4,7 +4,7 @@ from typing import Any, Optional, Tuple, Literal, Union, get_args, overload
 
 from interactions import File
 
-from utilities.localization import Localization, assign_variables
+from utilities.localization.localization import Localization, assign_variables
 from utilities.message_decorations import fancy_message
 from utilities.textbox.mediagen import Frame
 
@@ -64,15 +64,15 @@ class State:
 	options: StateOptions
 	memory_leak: Any | None  # 🤑🤑🤑
 
-	def to_string(self, loc: Localization) -> str:
+	async def to_string(self, loc: Localization) -> str:
 		frames = "\n".join([str(f) for f in self.frames])
-		processed: str = assign_variables(
+		processed: str = await assign_variables(
 		    state_template,
 		    pretty_numbers=False,
 		    locale=loc.locale,
 		    **{
 		        'comment':
-		            loc.l(
+		            await loc.l(
 		                "textbox.ttb.comment",
 		                link=
 		                f"https://github.com/the-world-machine/bot/blob/main/md/{loc.locale}/textbox/index.md#raw-file-editing-tbb"
@@ -250,7 +250,9 @@ async def state_shortcut(
 	try:
 		state: State = states[str(state_id)]
 	except KeyError:
-		await fancy_message(ctx, loc.l("general.errors.expired") + f"\n-# **sid:** {str(state_id)}", ephemeral=True)
+		await fancy_message(
+		    ctx, await loc.l("general.errors.expired") + f"\n-# **sid:** {str(state_id)}", ephemeral=True
+		)
 		raise StateShortcutError(f"State with ID '{state_id}' not found.")
 
 	if frame_index is None:
@@ -259,7 +261,9 @@ async def state_shortcut(
 	try:
 		idx = int(frame_index)
 	except ValueError:
-		await fancy_message(ctx, loc.l("textbox.errors.invalid_frame_index", index=str(frame_index)), ephemeral=True)
+		await fancy_message(
+		    ctx, await loc.l("textbox.errors.invalid_frame_index", index=str(frame_index)), ephemeral=True
+		)
 		raise StateShortcutError(f"Frame index '{frame_index}' is not a valid integer.")
 
 	try:
@@ -268,7 +272,7 @@ async def state_shortcut(
 		if idx == len(state.frames):
 			state.frames.append(Frame())  # scary scary scary scary
 		else:
-			await fancy_message(ctx, loc.l("textbox.errors.unknown_frame", id=str(frame_index)), ephemeral=True)
+			await fancy_message(ctx, await loc.l("textbox.errors.unknown_frame", id=str(frame_index)), ephemeral=True)
 			raise StateShortcutError(f"Frame with index '{idx}' not found in state '{state_id}'.")
 
 	return (loc, state, frame_data)

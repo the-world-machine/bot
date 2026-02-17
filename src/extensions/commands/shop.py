@@ -6,8 +6,9 @@ from collections import Counter
 from utilities.emojis import emojis
 from datetime import datetime, timedelta
 from interactions.api.events import Ready
+from utilities.localization.formatting import fnum
 from utilities.message_decorations import *
-from utilities.localization import Localization, fnum
+from utilities.localization.localization import Localization
 from utilities.database.schemas import Nikogotchi, UserData
 from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treasure
 from utilities.shop.fetch_shop_data import Item, ShopData, StockData, TreasureTypes, fetch_shop_data, reset_shop_data
@@ -120,7 +121,7 @@ class ShopCommands(Extension):
 
 		result_text = ''
 
-		treasure_loc: dict = loc.l(f'items.treasures.{treasure_id}', typecheck=Dict)
+		treasure_loc: dict = await loc.l(f'items.treasures.{treasure_id}', typecheck=Dict)
 
 		async def update():
 
@@ -134,7 +135,7 @@ class ShopCommands(Extension):
 			await ctx.edit(embeds=embeds, components=components)
 
 		if amount_of_treasure <= 0:
-			result_text = loc.l('shop.traded_fail')
+			result_text = await loc.l('shop.traded_fail')
 			await update()
 			return
 
@@ -151,7 +152,7 @@ class ShopCommands(Extension):
 			sell_price = int(treasure['price'] * stock_price)
 			owned_treasure[treasure_id] -= 1
 		await user_data.update(owned_treasures=owned_treasure)
-		result_text = loc.l('shop.traded_sell', item_name=treasure_loc['name'], amount=amount, price=sell_price)
+		result_text = await loc.l('shop.traded_sell', item_name=treasure_loc['name'], amount=amount, price=sell_price)
 
 		await user_data.manage_wool(sell_price)
 
@@ -197,13 +198,13 @@ class ShopCommands(Extension):
 			await ctx.edit(embeds=embeds, components=components)
 
 		if user_data.wool < treasure_price:
-			return await update(loc.l('shop.traded_fail'))
+			return await update(await loc.l('shop.traded_fail'))
 
 		current_balance = user_data.wool
 		price = 0
 		amount = 0
 
-		treasure_loc: dict = loc.l(f'items.treasures.{treasure_id}', typecheck=dict)
+		treasure_loc: dict = await loc.l(f'items.treasures.{treasure_id}', typecheck=dict)
 
 		name = treasure_loc['name']
 
@@ -223,7 +224,7 @@ class ShopCommands(Extension):
 		await user_data.update(owned_treasures=owned_treasure)
 		await user_data.manage_wool(-price)
 
-		return await update(loc.l('shop.traded', item_name=name, amount=int(amount), price=int(price)))
+		return await update(await loc.l('shop.traded', item_name=name, amount=int(amount), price=int(price)))
 
 	r_buy_bg = re.compile(r'buy_bg_(.*)_(\d+)')
 
@@ -249,17 +250,17 @@ class ShopCommands(Extension):
 
 		embeds, components = await self.embed_manager(ctx, 'Backgrounds', page=page)
 		if bg_id in owned_backgrounds:
-			embeds[0].set_footer(loc.l('shop.buttons.owned'))
+			embeds[0].set_footer(await loc.l('shop.buttons.owned'))
 		elif user.wool < get_background['price']:
-			embeds[0].set_footer(loc.l('shop.buttons.too_poor'))
+			embeds[0].set_footer(await loc.l('shop.buttons.too_poor'))
 		else:
 			await owned_backgrounds.append(bg_id)
 
-			embeds[0].description = loc.l(
-			    'shop.backgrounds.newly_owned', user_wool=loc.l('shop.user_wool', wool=user.wool)
+			embeds[0].description = await loc.l(
+			    'shop.backgrounds.newly_owned', user_wool=await loc.l('shop.user_wool', wool=user.wool)
 			)
 			await user.manage_wool(-get_background['price'])
-			embeds[0].set_footer(loc.l('shop.backgrounds.traded'))
+			embeds[0].set_footer(await loc.l('shop.backgrounds.traded'))
 		await ctx.send(embeds=embeds, components=components, ephemeral=True)
 
 	@component_callback('nikogotchi_buy')
@@ -277,7 +278,7 @@ class ShopCommands(Extension):
 		capsule_id = random.choices(range(0, 4), weights=[ 0.40, 0.30, 0.20, 0.10 ], k=1)[0]
 
 		nikogotchi_capsule = Item(**capsules[capsule_id])
-		capsule_loc = loc.l(f'items.capsules.{nikogotchi_capsule.id}')
+		capsule_loc = await loc.l(f'items.capsules.{nikogotchi_capsule.id}')
 
 		async def update(result: str):
 			embeds, components = await self.embed_manager(ctx, 'capsules')
@@ -286,15 +287,15 @@ class ShopCommands(Extension):
 			await ctx.edit(embeds=embeds, components=components)
 
 		if nikogotchi.status > -1 or nikogotchi.available:
-			return await update(loc.l('shop.traded_fail'))
+			return await update(await loc.l('shop.traded_fail'))
 
 		if user_data.wool < nikogotchi_capsule.cost:
-			return await update(loc.l('shop.traded_fail'))
+			return await update(await loc.l('shop.traded_fail'))
 
 		await nikogotchi.update(available=True, rarity=capsule_id)
 		await user_data.manage_wool(-50_000)
 
-		await update(loc.l('shop.nikogotchi.result', amount=50_000, capsule_name=capsule_loc))
+		await update(await loc.l('shop.nikogotchi.result', amount=50_000, capsule_name=capsule_loc))
 
 	r_buy_object = re.compile(r'buy_([^\d]+)_(\d+)')
 
@@ -329,15 +330,15 @@ class ShopCommands(Extension):
 		item = item['pancakes'][item_id]
 		item = Item(**item)
 
-		item_loc: dict = loc.l(
+		item_loc: dict = await loc.l(
 		    f'items.pancakes.{pancake_id_to_emoji_index_please_rename_them_in_db(item.id)}', typecheck=dict
 		)
 
 		if user_data.wool < item.cost:
-			result_text = loc.l('shop.traded_fail')
+			result_text = await loc.l('shop.traded_fail')
 			return await update()
 
-		result_text = loc.l('shop.traded', amount=1, item_name=item_loc['name'])
+		result_text = await loc.l('shop.traded', amount=1, item_name=item_loc['name'])
 
 		json_data = asdict(nikogotchi_data)
 
@@ -403,31 +404,31 @@ class ShopCommands(Extension):
 
 		wool: int = user_data.wool
 
-		stock: str = loc.l('shop.stocks', value=daily_shop.stock.value, price=daily_shop.stock.price)
+		stock: str = await loc.l('shop.stocks', value=daily_shop.stock.value, price=daily_shop.stock.price)
 
-		user_wool = loc.l('shop.user_wool', wool=user_data.wool)
+		user_wool = await loc.l('shop.user_wool', wool=user_data.wool)
 		magpie_image = EmbedAttachment(
 		    'https://cdn.discordapp.com/attachments/1025158352549982299/1176956900928131143/Magpie.webp'
 		)
 
-		go_back = Button(style=ButtonStyle.GRAY, custom_id='go_back', label=loc.l('shop.buttons.go_back'))
+		go_back = Button(style=ButtonStyle.GRAY, custom_id='go_back', label=await loc.l('shop.buttons.go_back'))
 
-		b_trade: str = loc.l('shop.buttons.buy')
-		b_owned: str = loc.l('shop.buttons.owned')
-		b_poor: str = loc.l('shop.buttons.too_poor')
-		b_poor_all: str = loc.l('shop.buttons.too_poor_all')
+		b_trade: str = await loc.l('shop.buttons.buy')
+		b_owned: str = await loc.l('shop.buttons.owned')
+		b_poor: str = await loc.l('shop.buttons.too_poor')
+		b_poor_all: str = await loc.l('shop.buttons.too_poor_all')
 		embeds = []
 		components = []
 		if category == 'main_shop' or category == 'go_back':
 
-			motds: tuple = loc.l('shop.motds', typecheck=tuple)
+			motds: tuple = await loc.l('shop.motds', typecheck=tuple)
 
 			motd = motds[daily_shop.motd]
 
 			embeds.append(
 			    Embed(
-			        title=loc.l('shop.main_title'),
-			        description=loc.l('shop.main', motd=motd, user_wool=user_wool),
+			        title=await loc.l('shop.main_title'),
+			        description=await loc.l('shop.main', motd=motd, user_wool=user_wool),
 			        thumbnail=magpie_image,
 			        color=Colors.SHOP
 			    )
@@ -435,25 +436,25 @@ class ShopCommands(Extension):
 
 			buttons = [
 			    Button(
-			        label=loc.l('shop.nikogotchi.title'),
+			        label=await loc.l('shop.nikogotchi.title'),
 			        emoji=emojis['icons']["capsule"],
 			        style=ButtonStyle.BLURPLE,
 			        custom_id='capsules'
 			    ),
 			    Button(
-			        label=loc.l('shop.pancakes.title'),
+			        label=await loc.l('shop.pancakes.title'),
 			        emoji=emojis["pancakes"]['normal'],
 			        style=ButtonStyle.BLURPLE,
 			        custom_id='pancakes'
 			    ),
 			    Button(
-			        label=loc.l('shop.backgrounds.title'),
+			        label=await loc.l('shop.backgrounds.title'),
 			        emoji=emojis['treasures']["card"],
 			        style=ButtonStyle.BLURPLE,
 			        custom_id='Backgrounds'
 			    ),
 			    Button(
-			        label=loc.l('shop.treasures.buy.title'),
+			        label=await loc.l('shop.treasures.buy.title'),
 			        emoji=emojis['icons']["inverted_clover"],
 			        style=ButtonStyle.BLURPLE,
 			        custom_id='Treasures'
@@ -473,10 +474,10 @@ class ShopCommands(Extension):
 
 				item = Item(**capsule)
 
-				capsule_loc = loc.l(f'items.capsules.{item.id}')
+				capsule_loc = await loc.l(f'items.capsules.{item.id}')
 
 			button = Button(
-			    label=loc.l('shop.buttons.buy'),
+			    label=await loc.l('shop.buttons.buy'),
 			    emoji=PartialEmoji(1147279947086438431),
 			    style=ButtonStyle.BLURPLE,
 			    custom_id=f'nikogotchi_buy'
@@ -496,8 +497,8 @@ class ShopCommands(Extension):
 
 			buttons.append(go_back)
 
-			title = loc.l('shop.nikogotchi.title')
-			description = loc.l('shop.nikogotchi.main', cost=cost, user_wool=user_wool)
+			title = await loc.l('shop.nikogotchi.title')
+			description = await loc.l('shop.nikogotchi.main', cost=cost, user_wool=user_wool)
 
 			embeds.append(Embed(title=title, description=description, thumbnail=magpie_image, color=Colors.SHOP))
 			components.append(ActionRow(*buttons))
@@ -516,13 +517,13 @@ class ShopCommands(Extension):
 				pancake_id = pancake_id_to_emoji_index_please_rename_them_in_db(pancake.id)
 				owned = json_data[pancake.id]
 
-				amount_owned = loc.l('shop.owned', amount=owned)
-				pancake_loc: dict = loc.l(f'items.pancakes.{pancake_id}', typecheck=dict)
+				amount_owned = await loc.l('shop.owned', amount=owned)
+				pancake_loc: dict = await loc.l(f'items.pancakes.{pancake_id}', typecheck=dict)
 
 				pancake_text += f"{emojis['pancakes'][pancake_id]} **{pancake_loc['name']}** - {emojis['icons']['wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
 
 				button = Button(
-				    label=loc.l('shop.buttons.buy'),
+				    label=await loc.l('shop.buttons.buy'),
 				    emoji=emojis['pancakes'][pancake_id],
 				    style=ButtonStyle.BLURPLE,
 				    custom_id=f'buy_pancakes_{id_}'
@@ -537,8 +538,8 @@ class ShopCommands(Extension):
 
 			buttons.append(go_back)
 
-			title = loc.l('shop.pancakes.title')
-			description = loc.l('shop.pancakes.main', items=pancake_text, user_wool=user_wool)
+			title = await loc.l('shop.pancakes.title')
+			description = await loc.l('shop.pancakes.main', items=pancake_text, user_wool=user_wool)
 
 			embeds.append(Embed(title=title, description=description, thumbnail=magpie_image, color=Colors.SHOP))
 			components.append(ActionRow(*buttons))
@@ -552,8 +553,8 @@ class ShopCommands(Extension):
 
 			user_backgrounds = user_data.owned_backgrounds
 
-			background_name = loc.l(f'items.backgrounds["{background}"]')
-			background_description = loc.l(
+			background_name = await loc.l(f'items.backgrounds["{background}"]')
+			background_description = await loc.l(
 			    'shop.backgrounds.main', amount=fetched_background['price'], user_wool=user_wool
 			)
 
@@ -567,7 +568,7 @@ class ShopCommands(Extension):
 			buttons = [
 			    Button(label='<', style=ButtonStyle.BLURPLE, custom_id=f'page_prev_{bg_page}'),
 			    Button(
-			        label=loc.l('shop.buttons.buy'),
+			        label=await loc.l('shop.buttons.buy'),
 			        style=ButtonStyle.GREEN,
 			        custom_id=f'buy_bg_{background}_{bg_page}'
 			    ), go_back,
@@ -606,7 +607,7 @@ class ShopCommands(Extension):
 			if selected_treasure is not None:
 
 				get_selected_treasure = all_treasures[selected_treasure]
-				selected_treasure_loc: dict = loc.l(f'items.treasures.{selected_treasure}', typecheck=dict)
+				selected_treasure_loc: dict = await loc.l(f'items.treasures.{selected_treasure}', typecheck=dict)
 
 				amount_selected = owned.get(selected_treasure, 0)
 
@@ -623,11 +624,11 @@ class ShopCommands(Extension):
 				amount = int(max_items)
 				buy_price_all = int(max_items * buy_price_one)
 
-				treasure_details = loc.l(
+				treasure_details = await loc.l(
 				    'shop.treasures.selection',
 				    treasure_icon=emojis['treasures'][selected_treasure],
 				    treasure_name=selected_treasure_loc['name'],
-				    owned=loc.l('shop.owned', amount=amount_selected),
+				    owned=await loc.l('shop.owned', amount=amount_selected),
 				    price_one=buy_price_one,
 				    price_all=buy_price_all,
 				    limit=self.max_buy_sell_limit,
@@ -648,14 +649,13 @@ class ShopCommands(Extension):
 
 				get_treasure = all_treasures[treasure]
 
-				amount_owned = loc.l('shop.owned', amount=owned.get(treasure, 0))
-				treasure_loc: dict = loc.l(f'items.treasures.{treasure}', typecheck=dict)
+				amount_owned = await loc.l('shop.owned', amount=owned.get(treasure, 0))
+				treasure_loc: dict = await loc.l(f'items.treasures.{treasure}', typecheck=dict)
 
 				treasure_list.append(
 				    StringSelectOption(
-				        label=loc.l(
-				            'shop.treasures.buy.option', name=treasure_loc['name'], price=get_treasure['price']
-				        ),
+				        label=await
+				        loc.l('shop.treasures.buy.option', name=treasure_loc['name'], price=get_treasure['price']),
 				        description=treasure_loc['description'],
 				        value=treasure,
 				        emoji=emojis['treasures'][treasure]
@@ -667,14 +667,14 @@ class ShopCommands(Extension):
 				get_selected_treasure = all_treasures[selected_treasure]
 
 				button = Button(
-				    label=loc.l('shop.buttons.buy'),
+				    label=await loc.l('shop.buttons.buy'),
 				    emoji=emojis['treasures'][selected_treasure],
 				    style=ButtonStyle.BLURPLE,
 				    custom_id=f'treasure_buy_{selected_treasure}_One'
 				)
 
 				button_all = Button(
-				    label=loc.l('shop.buttons.buy_all'),
+				    label=await loc.l('shop.buttons.buy_all'),
 				    emoji=emojis['treasures'][selected_treasure],
 				    style=ButtonStyle.BLURPLE,
 				    custom_id=f'treasure_buy_{selected_treasure}_All'
@@ -694,14 +694,16 @@ class ShopCommands(Extension):
 
 			buttons.append(
 			    Button(
-			        label=loc.l('shop.treasures.sell.title'), style=ButtonStyle.GREEN, custom_id='sell_treasure_menu'
+			        label=await loc.l('shop.treasures.sell.title'),
+			        style=ButtonStyle.GREEN,
+			        custom_id='sell_treasure_menu'
 			    )
 			)
 
 			buttons.append(go_back)
 
-			title = loc.l('shop.treasures.buy.title')
-			description = loc.l(
+			title = await loc.l('shop.treasures.buy.title')
+			description = await loc.l(
 			    'shop.treasures.buy.message',
 			    stock_market=stock,
 			    selected_treasure=treasure_details,
@@ -715,20 +717,20 @@ class ShopCommands(Extension):
 			if len(treasure_list) > 0:
 				select_menu = StringSelectMenu(
 				    *treasure_list,
-				    placeholder=loc.l('shop.treasures.buy.placeholder'),
+				    placeholder=await loc.l('shop.treasures.buy.placeholder'),
 				    custom_id=f'select_treasure',
 				)
 			else:
 				select_menu = StringSelectMenu(
 				    '💥💥💥💥💥💥💥💥💥💥💥💥',
-				    placeholder=loc.l('shop.treasures.cannot_sell'),
+				    placeholder=await loc.l('shop.treasures.cannot_sell'),
 				    custom_id=f'select_treasure',
 				    disabled=True
 				)
 
 			components = [ActionRow(select_menu), ActionRow(*buttons)]
 		elif category == 'Sell_Treasures':
-			go_back = Button(label=loc.l('shop.buttons.go_back'), style=ButtonStyle.GRAY, custom_id='Treasures')
+			go_back = Button(label=await loc.l('shop.buttons.go_back'), style=ButtonStyle.GRAY, custom_id='Treasures')
 			selected_treasure = kwargs['selected_treasure']
 			selected_treasure_loc: dict = { 'name': '???'}
 			sell_price_one = 0
@@ -744,7 +746,7 @@ class ShopCommands(Extension):
 			if selected_treasure is not None:
 
 				get_selected_treasure = all_treasures[selected_treasure]
-				selected_treasure_loc: dict = loc.l(f'items.treasures.{selected_treasure}', typecheck=dict)
+				selected_treasure_loc: dict = await loc.l(f'items.treasures.{selected_treasure}', typecheck=dict)
 
 				sell_price_one = int(get_selected_treasure['price'] * daily_shop.stock.price)
 				sell_price_all = int(get_selected_treasure['price'] * daily_shop.stock.price * owned[selected_treasure])
@@ -753,11 +755,11 @@ class ShopCommands(Extension):
 
 				if amount_selected > 0:
 
-					treasure_details = loc.l(
+					treasure_details = await loc.l(
 					    'shop.treasures.selection',
 					    treasure_icon=emojis['treasures'][selected_treasure],
 					    treasure_name=selected_treasure_loc['name'],
-					    owned=loc.l('shop.owned', amount=amount_selected),
+					    owned=await loc.l('shop.owned', amount=amount_selected),
 					    price_one=sell_price_one,
 					    price_all=sell_price_all,
 					    amount=amount_selected
@@ -774,7 +776,7 @@ class ShopCommands(Extension):
 					continue
 				treasure = all_treasures[treasure_id]
 
-				treasure_loc = loc.l(f'items.treasures.{treasure_id}', typecheck=dict)
+				treasure_loc = await loc.l(f'items.treasures.{treasure_id}', typecheck=dict)
 
 				treasure_selection.append(
 				    StringSelectOption(
@@ -794,12 +796,12 @@ class ShopCommands(Extension):
 
 				buttons = [
 				    Button(
-				        label=loc.l('shop.buttons.sell'),
+				        label=await loc.l('shop.buttons.sell'),
 				        custom_id=f'treasure_sell_{treasure_id}_one',
 				        style=ButtonStyle.GREEN
 				    ),
 				    Button(
-				        label=loc.l('shop.buttons.sell_all'),
+				        label=await loc.l('shop.buttons.sell_all'),
 				        custom_id=f'treasure_sell_{treasure_id}_all',
 				        style=ButtonStyle.GREEN
 				    )
@@ -809,8 +811,8 @@ class ShopCommands(Extension):
 
 			embeds.append(
 			    Embed(
-			        title=loc.l('shop.treasures.sell.title'),
-			        description=loc.l(
+			        title=await loc.l('shop.treasures.sell.title'),
+			        description=await loc.l(
 			            'shop.treasures.sell.message',
 			            stock_market=stock,
 			            selected_treasure=treasure_details,
@@ -826,13 +828,13 @@ class ShopCommands(Extension):
 			if len(treasure_selection) > 0:
 				select_menu = StringSelectMenu(
 				    *treasure_selection,
-				    placeholder=loc.l('shop.treasures.sell.placeholder'),
+				    placeholder=await loc.l('shop.treasures.sell.placeholder'),
 				    custom_id=f'select_treasure_sell',
 				)
 			else:
 				select_menu = StringSelectMenu(
 				    '💥💥💥💥💥💥💥💥💥💥💥💥',
-				    placeholder=loc.l('shop.treasures.sell.no_treasures'),
+				    placeholder=await loc.l('shop.treasures.sell.no_treasures'),
 				    custom_id=f'select_treasure_sell',
 				    disabled=True
 				)

@@ -1,6 +1,6 @@
 generic:
-  loading: "[ Laden... [emoji:loading] ]"
-  loading_hint: "[ [emoji:loading] ]"
+  loading: "[ Laden... {loading, emoji} ]"
+  loading_hint: "[ {loading, emoji} ]"
   command_cooldown: "[ Bitte spam diese command nicht. Du kannset es noch benutzen in [timestamp_relative]. ]"
 
   buttons:
@@ -34,8 +34,8 @@ generic:
 
 music:
   loading:
-    search: "[ Suchen... [emoji:loading] ]"
-    file: "[ Lade deine Daten... [emoji:loading] ]"
+    search: "[ Suchen... {loading, emoji} ]"
+    file: "[ Lade deine Daten... {loading, emoji} ]"
 
 # ---------------------------------------------------------------
 
@@ -101,35 +101,35 @@ about:
 wool:
   balance:
     you:
-      none: "[ Du hast **no[emoji:wool]Wool** ]"
-      some: "[ Du hast **[balance]**[emoji:wool] ]"
+      none: "[ Du hast **no{wool, emoji}Wool** ]"
+      some: "[ Du hast **[balance]**{wool, emoji} ]"
     other:
-      none: "[ **[mention]** hat **no[emoji:wool]Wool** ]"
-      some: "[ **[mention]** hat **[balance]**[emoji:wool] ]"
+      none: "[ **[mention]** hat **no{wool, emoji}Wool** ]"
+      some: "[ **[mention]** hat **[balance]**{wool, emoji} ]"
     bot:
       none: |
         [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal.
 
-        so [mention] hat keine [emoji:wool]**Wool** ]
+        so [mention] hat keine {wool, emoji}**Wool** ]
       some: |
         [ Bots normalerweise interaktiern nicht mit mir, nicht das sie können mal, aber...
 
-        [mention] war gegeben [emoji:wool]**[balance]** ]
+        [mention] war gegeben {wool, emoji}**[balance]** ]
     twm:
-      none: "[ Ich probiere nicht die wirtschaft beeinflussen, so ich habe **no[emoji:wool]Wool** ]"
-      some: "[ Ich probiere nicht die wirtschaft beeinflussen, aber ich habe [emoji:wool]**[balance]** ]"
+      none: "[ Ich probiere nicht die wirtschaft beeinflussen, so ich habe **no{wool, emoji}Wool** ]"
+      some: "[ Ich probiere nicht die wirtschaft beeinflussen, aber ich habe {wool, emoji}**[balance]** ]"
   transfer:
     errors:
       self_transfer: "[ Fertig... ]"
-      not_enough: "[ Du hast nicht so viel [emoji:wool] wool! (du hast nur [emoji:wool]**[balance]**) ]"
+      not_enough: "[ Du hast nicht so viel {wool, emoji} wool! (du hast nur {wool, emoji}**[balance]**) ]"
     to:
       bot:
-        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig!"
-        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig..."
+        none: "[user_one] verschenkt {wool, emoji}**[amount]** to [user_two], nicht sehr großzügig!"
+        some: "[user_one] verschenkt {wool, emoji}**[amount]** to [user_two], wie großzügig..."
         confirmation: "[ Bist du sicherer das du will woole geben zu ein bot...? Du kannst es nicht wieder haben, du weißt dass...? ]"
       user:
-        none: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], nicht sehr großzügig schließlich..."
-        some: "[user_one] verschenkt [emoji:wool]**[amount]** to [user_two], wie großzügig!"
+        none: "[user_one] verschenkt {wool, emoji}**[amount]** to [user_two], nicht sehr großzügig schließlich..."
+        some: "[user_one] verschenkt {wool, emoji}**[amount]** to [user_two], wie großzügig!"
     steal: "[user_one] hat eine singulare stück wool gestohlen von [user_two], warum!?"
   pray:
     errors:
@@ -143,8 +143,8 @@ wool:
       devoted: "...und sie sehen du bist ein echetr they see you're truly a devoted follower. Lob sei die Welt maschine!"
     title: "Du betete zu die Welt maschine..."
     Change:
-      gain: "Du also hast bekommen [emoji:wool]**[amount]** wool!"
-      loss: "Du also hast verloren [emoji:wool]**[amount]** wool..."
+      gain: "Du also hast bekommen {wool, emoji}**[amount]** wool!"
+      loss: "Du also hast verloren {wool, emoji}**[amount]** wool..."
 
 # ---------------------------------------------------------------
 
@@ -156,7 +156,7 @@ transmit:
 
 settings:
   errors:
-    weird_edgecase_number_0: Ober du bist [app:mention] nicht in der server. Wenn du bist der server Manager bitte nochmal [app:mention] zu dem Server einladen.
+    weird_edgecase_number_0: Ober du bist {twm, user, mention} nicht in der server. Wenn du bist der server Manager bitte nochmal {twm, user, mention} zu dem Server einladen.
     missing_permissions: '[ Du musst die "Manage Server" Erlaubnis haben bevor du die Einstellungen verändert]'
     channel_not_messageable: "[ Ich kann nicht eine Nachricht in diesem Kanal senden. ]"
     channel_insufficient_perms: "[ Ich hab nicht genug erlaubnisse für diesem Kannal. stell doch sicher ich habe alle von diesem: **Send Messages**, **View Channel** und **Attach Files**. ]"
@@ -210,7 +210,7 @@ profile:
     message: v Anzeige [usermention]'s profil
     BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Verändere deine Profil"
     bots: "[ Bots haben keine profilen! ]"
-    loading: "[ Laden [user]'s Profil... [emoji:loading] ]"
+    loading: "[ Laden [user]'s Profil... {loading, emoji} ]"
 
     image:
       alt_nodescription: "in der Bilder ist der profil von [username] in der Welt Machine system. Sie besitzen: Sonnen [suns], Woolen [wool]"
@@ -247,9 +247,9 @@ explode:
 # ---------------------------------------------------------------
 
 shop:
-  loading: "[ Laden Laden?... [emoji:loading] ]"
+  loading: "[ Laden Laden?... {loading, emoji} ]"
 
-  user_wool: "**Ihr Guthaben: [emoji:wool][wool]**"
+  user_wool: "**Ihr Guthaben: {wool, emoji}[wool]**"
   owned: "du hast **[amount]**"
 
   buttons:
@@ -265,7 +265,7 @@ shop:
   main_title: Willkommen!
 
   main: >
-    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen, Hintergründe, Kapseln und mehr für deine woolen [emoji:wool]**Wool**... Denk es als Euros kannst du?
+    Hey, Hey! Willkommen zum mein emporium, Ich bin's breit zu verkaufen sehr viel glänzen und färbliche Schatzen, Hintergründe, Kapseln und mehr für deine woolen {wool, emoji}**Wool**... Denk es als Euros kannst du?
 
 
     Um zu starten, offene mal die Kategorien unten und dann verkaufe! wiss das welche Sachen verändern **täglich**, Soo.. besser eine Auge halten für diese!
@@ -308,7 +308,7 @@ shop:
       *AHEM* existenziell Furcht beiseite, füttern sie mit Pfannkuchen und gut um sie kümmern, erlaubt dir um zu Schatzen zu suchen! und dann kannst du dir mir verkaufen! cool ober?
 
 
-      So warum nicht jetzt eine Kapsel kaufen? nur für [emoji:wool]**[cost]**!
+      So warum nicht jetzt eine Kapsel kaufen? nur für {wool, emoji}**[cost]**!
 
 
       * Denken Sie daran das du kannst nur **eine Kapsel** per Nikogotchi.*
@@ -339,7 +339,7 @@ shop:
     title: Hintergründe
 
     main: >
-      Willst du diese Hintergrund für [emoji:wool]**[amount]**?
+      Willst du diese Hintergrund für {wool, emoji}**[amount]**?
 
 
       [user_wool]
@@ -355,7 +355,7 @@ shop:
     buy:
       title: Schätze
       message: >
-        Du willst deine [emoji:wool]**Wool** verkaufen für Schatzen!? Dann bist du hier richtig! Ich habe sehr viele Schatzen das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
+        Du willst deine {wool, emoji}**Wool** verkaufen für Schatzen!? Dann bist du hier richtig! Ich habe sehr viele Schatzen das ich habe gefunden ober andere verkauft bei mir! obwohl ich bin der einzige Verkäufer hier..
         [stock_market]
         [selected_treasure]
         [user_wool]
@@ -381,9 +381,9 @@ shop:
       - [treasure_icon] "**[treasure_name]**" - [owned]
 
 
-      **Verkauf ein**: [emoji:wool]**[price_one]**
+      **Verkauf ein**: {wool, emoji}**[price_one]**
 
-      **Verkauf alles**: [emoji:wool]**[price_all]** (x[amount])
+      **Verkauf alles**: {wool, emoji}**[price_all]** (x[amount])
 
 # ---------------------------------------------------------------
 
@@ -586,7 +586,7 @@ interact:
             - "[user_one] wirft eine Molotov Cocktail in Richtung [user_two] ‼️"
         - name: Empty Bottle (ow)
           #type: bottle
-          #no_bottles: "[user_one] ran out of [emoji:treasures.bottle] bottles!"
+          #no_bottles: "[user_one] ran out of {treasures.bottle, emoji} bottles!"
           phrases:
             - "[user_one] threw an empty bottle at [user_two]'s head"
 
@@ -605,7 +605,7 @@ treasure:
 
 nikogotchi:
   owned: "Besitzt von [user]"
-  loading: "[ Laden Nikogotchi... [emoji:loading] ]"
+  loading: "[ Laden Nikogotchi... {loading, emoji} ]"
   invalid: "[ Du hast kein Nikogotchi! ]"
   tipnvalid: "du kannst eine Kapsel kaufen von den laden un entsperrt eine" # tip:
 
@@ -661,7 +661,7 @@ nikogotchi:
 
         Willst du deine Nikogotchi handeln ([name_two]) mit ihnen?
 
-      waiting: "[ Senden [user] ein Handel Anfrage! Warten für ihre Antwort... [emoji:loading] ]"
+      waiting: "[ Senden [user] ein Handel Anfrage! Warten für ihre Antwort... {loading, emoji} ]"
       declined: "[ Deine Handel Anfrage wurde abgelehnt... ]"
       success_decline: "[ Handel anfrage erfolgreich abgelehnt. ]"
       success: "[ Erfolgreich gehandelt mit [user]! Sag hallo zu **[name]**! ]"
@@ -698,7 +698,7 @@ nikogotchi:
       glitched_powerup: "Dein Nikogotchi has wurde deutlich verstärkt nachdem dein Nikogotchi hat diese Chaos von einem Pfannkuchen gegessen..."
 
       no_food: "Kein essen... Du kannst welche kaufen in den Laden!"
-      invalid: Du kannst nicht dein Nikogotchi futtern dass! bitte aktualisieren mit [emojis:refresh]!
+      invalid: Du kannst nicht dein Nikogotchi futtern dass! bitte aktualisieren mit {refresh, emoji}!
 
   died:
     title: "🪦 [name] ist gestorben..."
@@ -906,7 +906,7 @@ textbox:
     invalid_face: The face "[face_name]" is not real for "[character_name]"
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
     failed_to_send: "[ Failed to send for some reason :[ ]"
-    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id=[app:id]) yet? ]"
+    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id={twm, user, id}) yet? ]"
     apng_preview_warn: | # warn:
       Discord doesn't show or let you download `.png`s as APNG.
       You can open the attachment in the browser, and it should animate (if there's any animation).
@@ -957,8 +957,8 @@ textbox:
     face: "[ Pick a face ]"
     press_notext: "[ Make sure you put some text... if you want. Press the green button whenever you're ready ]"
     press: "[ Press the green button whenever you're ready ]"
-    rendering: "[ [emoji:loading] Rendering... ]"
-    sending: "[ [emoji:loading] Sending... ]"
+    rendering: "[ {loading, emoji} Rendering... ]"
+    sending: "[ {loading, emoji} Sending... ]"
     done: "[ Done ]"
 
     debug: "(Took: **[time]**ms., Sid: **[sid]**)"

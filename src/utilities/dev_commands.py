@@ -12,7 +12,7 @@ from termcolor import colored
 from utilities.misc import shell
 from utilities.emojis import emojis
 import utilities.database.main as main
-from utilities.localization import fnum
+from utilities.localization.formatting import fnum
 from interactions import Embed, Member, MemberFlags, Message, Timestamp
 from asyncio import iscoroutinefunction
 import utilities.database.schemas as schemas

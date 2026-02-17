@@ -3,7 +3,7 @@ from typing import Literal
 from datetime import datetime
 from dataclasses import dataclass
 from utilities.emojis import TreasureTypes
-from utilities.localization import Localization
+from utilities.localization.localization import Localization
 from utilities.database.main import fetch_items, update_shop
 
 
@@ -64,7 +64,7 @@ async def reset_shop_data():
 			backgrounds[bg] = all_bgs[bg]
 
 	treasures = items['treasures']
-	motds = Localization().l('shop.motds', typecheck=tuple)
+	motds = await Localization().l('shop.motds', typecheck=tuple)
 
 	data['backgrounds'] = []
 	data['treasures'] = []

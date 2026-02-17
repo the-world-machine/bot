@@ -1,6 +1,7 @@
 from utilities.database.schemas import ServerData
-from utilities.config import debugging, get_config
-from utilities.localization import Localization, put_mini
+from utilities.config import get_config
+from utilities.localization.localization import Localization
+from utilities.localization.minis import put_mini
 from utilities.message_decorations import Colors, fancy_message
 from interactions import AutocompleteContext, Embed, Extension, Guild, GuildText, InputText, MessageableMixin, Modal, ModalContext, OptionType, Permissions, SlashContext, TextStyles, contexts, integration_types, modal_callback, slash_command, slash_option
 
@@ -18,7 +19,7 @@ class SettingsCommands(Extension):
 		if not isinstance(channel, MessageableMixin):
 			await fancy_message(
 			    ctx,
-			    loc.l("settings.errors.channel_not_messageable"),
+			    await loc.l("settings.errors.channel_not_messageable"),
 			    color=Colors.BAD,
 			)
 			return False
@@ -28,7 +29,7 @@ class SettingsCommands(Extension):
 		if not has_perms:
 			await fancy_message(
 			    ctx,
-			    loc.l("settings.errors.channel_insufficient_perms"),
+			    await loc.l("settings.errors.channel_insufficient_perms"),
 			    color=Colors.BAD,
 			)
 		return True
@@ -38,11 +39,11 @@ class SettingsCommands(Extension):
 		assert ctx.member is not None
 		member = ctx.guild.get_member(ctx.user.id)
 		if not member:
-			await fancy_message(ctx, loc.l("settings.errors.weird_edgecase_number_0"), color=Colors.BAD, ephemeral=True)
+			await fancy_message(ctx, await loc.l("settings.errors.weird_edgecase_number_0"), color=Colors.BAD, ephemeral=True)
 			return False
 
 		if not ctx.member.has_permission(Permissions.MANAGE_GUILD):
-			await fancy_message(ctx, loc.l("settings.errors.missing_permissions"), color=Colors.BAD, ephemeral=True)
+			await fancy_message(ctx, await loc.l("settings.errors.missing_permissions"), color=Colors.BAD, ephemeral=True)
 			return False
 
 		return True
@@ -77,7 +78,7 @@ class SettingsCommands(Extension):
 		await server_data.transmissions.update(disabled=not value)
 
 		return await fancy_message(
-		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
+		    ctx, await loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
 		)
 
 	@transmissions.subcommand(
@@ -95,14 +96,14 @@ class SettingsCommands(Extension):
 
 		if channel is None:
 			await server_data.transmissions.update(channel_id=None)
-			return await fancy_message(ctx, loc.l("settings.transmissions.channel.auto"), ephemeral=True)
+			return await fancy_message(ctx, await loc.l("settings.transmissions.channel.auto"), ephemeral=True)
 
 		if not await self.channel_permission_check(loc, ctx, channel):
 			return
 
 		await server_data.transmissions.update(channel_id=str(channel.id))
 		return await fancy_message(
-		    ctx, loc.l("settings.transmissions.channel.Changed", channel=channel.mention), ephemeral=True
+		    ctx, await loc.l("settings.transmissions.channel.Changed", channel=channel.mention), ephemeral=True
 		)
 
 	@transmissions.subcommand(sub_cmd_name="images", sub_cmd_description="Toggle embedding images when transmitting")
@@ -119,7 +120,7 @@ class SettingsCommands(Extension):
 
 		await server_data.transmissions.update(allow_images=value)
 		return await fancy_message(
-		    ctx, loc.l(f"settings.transmissions.images.{'enabled' if value else 'disabled'}"), ephemeral=True
+		    ctx, await loc.l(f"settings.transmissions.images.{'enabled' if value else 'disabled'}"), ephemeral=True
 		)
 
 	@transmissions.subcommand(
@@ -141,7 +142,7 @@ class SettingsCommands(Extension):
 		await server_data.transmissions.update(anonymous=value)
 
 		return await fancy_message(
-		    ctx, loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
+		    ctx, await loc.l(f"settings.transmissions.anonymous.{'enabled' if value else 'disabled'}"), ephemeral=True
 		)
 
 	@transmissions.subcommand(
@@ -171,7 +172,7 @@ class SettingsCommands(Extension):
 			    ctx,
 			    embed=Embed(
 			        description=
-			        f'{loc.l("settings.errors.invalid_server_id")}\n-# {loc.l("settings.errors.get_server_id")}',
+			        f'{await loc.l("settings.errors.invalid_server_id")}\n-# {await loc.l("settings.errors.get_server_id")}',
 			        color=Colors.BAD,
 			    )
 			)
@@ -182,10 +183,10 @@ class SettingsCommands(Extension):
 
 		return await fancy_message(
 		    ctx,
-		    loc.l(
+		    await loc.l(
 		        f"settings.transmissions.blocked.{'yah' if server_id in blocklist else 'nah'}",
 		        server_name=guild.name if guild else server_id
-		    ) + (("\n-# " + loc.l("settings.errors.uncached_server")) if not guild else ""),
+		    ) + (("\n-# " + await loc.l("settings.errors.uncached_server")) if not guild else ""),
 		    ephemeral=True
 		)
 
@@ -199,7 +200,7 @@ class SettingsCommands(Extension):
 		]
 		# yapf: disable
 		servers = {
-		  guild.id if isinstance(guild, Guild) else guild: guild.name if isinstance(guild, Guild) else (loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+		  guild.id if isinstance(guild, Guild) else guild: guild.name if isinstance(guild, Guild) else (await loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
 		  for guild in guilds
 		}
 		# yapf: enable
@@ -240,7 +241,7 @@ class SettingsCommands(Extension):
 		await server_data.welcome.update(disabled=not value)
 
 		return await fancy_message(
-		    ctx, loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}") + error, ephemeral=True
+		    ctx, await loc.l(f"settings.welcome.enabled.{'yah' if value else 'nah'}") + error, ephemeral=True
 		)
 
 	@welcome.subcommand(
@@ -263,7 +264,7 @@ class SettingsCommands(Extension):
 		await server_data.welcome.update(ping=not value)
 
 		return await fancy_message(
-		    ctx, loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}") + error, ephemeral=True
+		    ctx, await loc.l(f"settings.welcome.ping.{'yah' if value else 'nah'}") + error, ephemeral=True
 		)
 
 	@welcome.subcommand(sub_cmd_name="edit", sub_cmd_description="Edit this server's welcome message")
@@ -275,15 +276,15 @@ class SettingsCommands(Extension):
 		return await ctx.send_modal(
 		    Modal(
 		        InputText(
-		            label=loc.l("settings.welcome.editor.input"),
+		            label=await loc.l("settings.welcome.editor.input"),
 		            style=TextStyles.PARAGRAPH,
 		            custom_id="text",
-		            placeholder=loc.l("settings.welcome.editor.placeholder"),
+		            placeholder=await loc.l("settings.welcome.editor.placeholder"),
 		            max_length=get_config("textbox.limits.frame-text-length", typecheck=int, ignore_None=True) or 1423,
 		            required=False,
-		            value=server_data.welcome.message or loc.l("misc.welcome.placeholder_text")
+		            value=server_data.welcome.message or await loc.l("misc.welcome.placeholder_text")
 		        ),
-		        title=loc.l("settings.welcome.editor.title"),
+		        title=await loc.l("settings.welcome.editor.title"),
 		        custom_id="welcome_message_editor",
 		    )
 		)
@@ -297,16 +298,16 @@ class SettingsCommands(Extension):
 		config = server_data.welcome
 		old_text = config.message
 		new_text = text
-		if new_text == loc.l("misc.welcome.placeholder_text") or new_text == "":
+		if new_text == await loc.l("misc.welcome.placeholder_text") or new_text == "":
 			new_text = None
 		if old_text == None or old_text == "":
-			old_text = loc.l("misc.welcome.placeholder_text")
+			old_text = await loc.l("misc.welcome.placeholder_text")
 
 		await config.update(message=new_text)
-		Changed = loc.l(
+		Changed = "\n" + await loc.l(
 		    "settings.welcome.editor.Changed",
 		    old_text=f"```\n{old_text.replace('```', '` ``')}```",
-		    new_text=f"\n-# *{loc.l("settings.welcome.editor.new_none")}*" if new_text is None else f"```\n{text.replace('```', '` ``')}```"
+		    new_text=f"\n-# *{await loc.l("settings.welcome.editor.new_none")}*" if new_text is None else f"```\n{text.replace('```', '` ``')}```"
 		)
 		warn = "" if not config.disabled else await put_mini(
 		    loc, "settings.welcome.editor.disabled_note", user_id=ctx.user.id, pre="\n\n"
@@ -315,7 +316,7 @@ class SettingsCommands(Extension):
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
 		)
 
-		await fancy_message(ctx, loc.l("settings.welcome.editor.done") + Changed + warn + error, ephemeral=True)
+		await fancy_message(ctx, await loc.l("settings.welcome.editor.done") + Changed + warn + error, ephemeral=True)
 
 	@welcome.subcommand(sub_cmd_name="channel", sub_cmd_description="Where to send the welcome textboxes to")
 	@slash_option(
@@ -339,7 +340,7 @@ class SettingsCommands(Extension):
 
 		if channel is None:
 			await config.update(channel_id=None, errored=False)
-			return await fancy_message(ctx, loc.l("settings.welcome.channel.auto"), ephemeral=True)
+			return await fancy_message(ctx, await loc.l("settings.welcome.channel.auto"), ephemeral=True)
 
 		error = "" if not config.errored else await put_mini(
 		    loc, "settings.errors.channel_lost_warn", type="warn", pre="\n\n"
@@ -353,5 +354,5 @@ class SettingsCommands(Extension):
 		await config.update(channel_id=str(channel.id), errored=False)
 		return await fancy_message(
 		    ctx,
-		    loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn + error,
+		    await loc.l("settings.welcome.channel.Changed", channel=channel.mention) + warn + error,
 		)

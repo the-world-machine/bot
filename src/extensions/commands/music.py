@@ -13,7 +13,7 @@ from interactions_lavalink import Lavalink, Player
 from interactions_lavalink.events import TrackStart, TrackException
 
 from utilities.emojis import emojis
-from utilities.localization import Localization
+from utilities.localization.localization import Localization
 from utilities.music.music_loaders import CustomSearch
 from utilities.message_decorations import *
 
@@ -119,11 +119,13 @@ class MusicCommands(Extension):
 
 			user = await self.client.fetch_user(requester)
 
-			queue_list.append(EmbedField(
-			    name=f"{i}. {title}",
-			    value=f"*by {author}* - Requested by {user.mention}",
-			    inline=False,
-			))
+			queue_list.append(
+			    EmbedField(
+			        name=f"{i}. {title}",
+			        value=f"*by {author}* - Requested by {user.mention}",
+			        inline=False,
+			    )
+			)
 
 			i += 1
 
@@ -144,7 +146,9 @@ class MusicCommands(Extension):
 
 		queue_embed.set_author(name=f"Queue for {guild.name}", icon_url=guild.icon.url)
 		queue_embed.set_thumbnail(url=self.get_cover_image(track.identifier))
-		queue_embed.set_footer(text="Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track.")
+		queue_embed.set_footer(
+		    text="Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track."
+		)
 		queue_embed.fields = queue_list
 
 		return queue_embed
@@ -219,7 +223,7 @@ class MusicCommands(Extension):
 				self.assign_node()
 				tries += 1
 
-		message = await fancy_message(ctx, loc.l("music.loading.search"))
+		message = await fancy_message(ctx, await loc.l("music.loading.search"))
 
 		result = await self.lavalink.client.get_tracks(song, check_local=True)
 		tracks = result.tracks
@@ -280,7 +284,7 @@ class MusicCommands(Extension):
 			    ephemeral=True,
 			)
 
-		message = await fancy_message(ctx, loc.l("music.loading.file"))
+		message = await fancy_message(ctx, await loc.l("music.loading.file"))
 
 		player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 

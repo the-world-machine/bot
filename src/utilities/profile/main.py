@@ -5,11 +5,12 @@ from typing import Any
 from termcolor import colored
 from interactions import File, User
 from utilities.emojis import make_emoji_cdn_url, emojis
+from utilities.localization.formatting import fnum
 from utilities.message_decorations import Colors
 from utilities.database.schemas import UserData
 from utilities.misc import cached_get, pretty_user
 from utilities.config import debugging, get_config
-from utilities.localization import Localization, fnum
+from utilities.localization.localization import Localization
 from utilities.shop.fetch_items import fetch_background, fetch_badge
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
 from PIL.ImageFont import FreeTypeFont
@@ -83,11 +84,11 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()
 	assert isinstance(wool_icon, Image.Image) \
-                                                       and isinstance(sun_icon, Image.Image) \
-                                                       and isinstance(font, FreeTypeFont)\
-                                                       and isinstance(badges, dict)\
-                                                       and all(isinstance(icon, Image.Image) for icon in icons)\
-                                                       and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
+                                                                and isinstance(sun_icon, Image.Image) \
+                                                                and isinstance(font, FreeTypeFont)\
+                                                                and isinstance(badges, dict)\
+                                                                and all(isinstance(icon, Image.Image) for icon in icons)\
+                                                                and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
 	user_id = user.id
 	user_pfp_url = user.display_avatar._url
 	animated = user.display_avatar.animated
@@ -100,7 +101,7 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 
 	user_data: UserData = await UserData(_id=user_id).fetch()
 
-	title = loc.l("profile.view.image.title", username=user.display_name)
+	title = await loc.l("profile.view.image.title", username=user.display_name)
 
 	backgrounds = await fetch_background()
 	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]['image']))
@@ -189,7 +190,7 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 
 	base_profile.text(
 	    (42, 251),
-	    loc.l("profile.view.image.unlocked.stamps", username=user.username),
+	    await loc.l("profile.view.image.unlocked.stamps", username=user.username),
 	    font=font,
 	    fill=(255, 255, 255),
 	    stroke_width=2,
@@ -219,14 +220,14 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	# TODO: move this out of here sometime
 	username = pretty_user(user)
 
-	alt = alt if alt is not None else loc.l(
+	alt = alt if alt is not None else await loc.l(
 	    "profile.view.image.alt_nodescription",
 	    username=username,
 	    suns=user_data.suns,
 	    wool=user_data.wool,
 	)
 	if len(user_data.profile_description) > 0:
-		alt = loc.l(
+		alt = await loc.l(
 		    "profile.view.image.alt_cont",
 		    alt_nodescription=alt,
 		    description=user_data.profile_description,
