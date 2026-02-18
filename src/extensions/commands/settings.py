@@ -282,7 +282,7 @@ class SettingsCommands(Extension):
 		            placeholder=await loc.l("settings.welcome.editor.placeholder"),
 		            max_length=get_config("textbox.limits.frame-text-length", typecheck=int, ignore_None=True) or 1423,
 		            required=False,
-		            value=server_data.welcome.message or await loc.l("misc.welcome.placeholder_text")
+		            value=server_data.welcome.message or await loc.l("misc.welcome.placeholder_text", format=False)
 		        ),
 		        title=await loc.l("settings.welcome.editor.title"),
 		        custom_id="welcome_message_editor",
@@ -298,10 +298,10 @@ class SettingsCommands(Extension):
 		config = server_data.welcome
 		old_text = config.message
 		new_text = text
-		if new_text == await loc.l("misc.welcome.placeholder_text") or new_text == "":
+		if new_text == await loc.l("misc.welcome.placeholder_text", format=False) or new_text == "":
 			new_text = None
 		if old_text == None or old_text == "":
-			old_text = await loc.l("misc.welcome.placeholder_text")
+			old_text = await loc.l("misc.welcome.placeholder_text", format=False)
 
 		await config.update(message=new_text)
 		Changed = "\n" + await loc.l(

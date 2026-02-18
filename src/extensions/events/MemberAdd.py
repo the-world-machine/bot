@@ -26,7 +26,7 @@ class MemberAddEvent(Extension):
 		if not target_channel:
 			return
 
-		message = config.message or await loc.l("misc.welcome.placeholder_text", typecheck=str)
+		message = config.message or await loc.l("misc.welcome.placeholder_text", format=False, typecheck=str)
 		message = await assign_variables(
 		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
 		)

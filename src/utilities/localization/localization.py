@@ -171,9 +171,11 @@ class Localization:
 	async def l(self, path: str, **variables: Any) -> str:
 		...
 
-	async def l(self, path: str, *, typecheck: Any = str, **variables: Any) -> Any:
+	async def l(self, path: str, *, typecheck: Any = str, format: bool = True, **variables: Any) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		result = await self.sl(path=path, locale=self.locale, typecheck=typecheck, ctx=self.ctx, **variables)
+		result = await self.sl(
+		    path=path, locale=self.locale, typecheck=typecheck, format=format, ctx=self.ctx, **variables
+		)
 		return result
 
 	@staticmethod
@@ -185,6 +187,7 @@ class Localization:
 	    typecheck: Type[T],
 	    raise_on_not_found: bool = False,
 	    ctx: Any = None,
+	    format: bool = True,
 	    **variables: Any
 	) -> T:
 		...
@@ -202,20 +205,21 @@ class Localization:
 	    typecheck: Any = str,
 	    raise_on_not_found: bool = False,
 	    ctx: Any = None,
+	    format: bool = True,
 	    **variables: Any
 	) -> Any:
 		if locale is None:
 			raise ValueError("No locale provided")
 		value = get_locale(locale)
-		raw_result = rabbit(
+		result = raw_result = rabbit(
 		    value,
 		    path,
 		    fallback_value=fallback_locale if 'fallback_locale' in globals() and fallback_locale else None,
 		    raise_on_not_found=raise_on_not_found,
 		    _error_message="[path] ([error])" if debug else "[path]"
 		)
-
-		result = await assign_variables(raw_result, locale, ctx=ctx, **variables)
+		if format:
+			result = await assign_variables(raw_result, locale, ctx=ctx, **variables)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
 			if result == None:
