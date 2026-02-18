@@ -272,7 +272,9 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
 			for word in re.findall(r'\S+\s*|\s+', message):  # TODO: regex alert
-				if text_offset[1] != 0 and word_wrap and d.textlength(word, font=font) + text_x + text_offset[0] + 1 > max_text_width:
+				if text_offset[0] != 0 and word_wrap and (
+				    d.textlength(word, font=font) + text_x + text_offset[0] + 1 > max_text_width
+				):
 					text_offset[1] += 25.0
 					text_offset[0] = 0.0
 				for cluster in list(graphemes(word)):  # type: ignore
