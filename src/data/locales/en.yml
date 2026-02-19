@@ -6,7 +6,7 @@ generic:
     evaluating: "[ {loading, emoji} Evaluating... ]"
     checking_developer_status: "[ {loading, emoji} Checking developer status... ]"
   errors:
-    not_a_developer: "Sorry, you are not one of my developers, can't letcha in"
+    not_a_developer: "[ Sorry, you are not one of my developers, can't letcha in ]"
   command_cooldown: "[ Please do not spam this command. You can use it again {timestamp_relative}. ]"
 
   buttons:
