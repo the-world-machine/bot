@@ -19,6 +19,7 @@ except FileNotFoundError as e:
 C = TypeVar("C")
 
 
+# all of these overloads were made by google gemini bytheway i'm too lazy to learn how this works
 @overload
 def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Literal[False] = False) -> str:
 	...
@@ -79,7 +80,6 @@ def get_config(
 	if typecheck is None:
 		return str(res)
 
-	# Typecheck case: validate the type
 	if not isinstance(res, typecheck):
 		raise TypeError(
 		    f"Configuration value for '{path}' has type {type(res).__name__}, "
@@ -88,8 +88,6 @@ def get_config(
 
 	return res
 
-
-# --- END: REPLACEMENT FOR get_config() ---
 
 cl = get_config("config-check-level", typecheck=int, ignore_None=True)
 if cl is not None:
@@ -106,7 +104,6 @@ if cl is not None:
 	    ("music.spotify.id", False),
 	]
 	for key, required in to_check:
-		# Calling get_config without typecheck will return str or None
 		got = get_config(key, ignore_None=True)
 		if got is not None:
 			continue

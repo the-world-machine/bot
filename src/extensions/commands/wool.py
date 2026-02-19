@@ -40,8 +40,12 @@ class WoolCommands(Extension):
 	async def wool(self, ctx: SlashContext):
 		pass
 
-	@wool.subcommand(sub_cmd_description='View your balance')
-	@slash_option(description='The person you want to view balance of instead', name='of', opt_type=OptionType.USER)
+	@wool.subcommand(sub_cmd_description='View the balance')
+	@slash_option(
+	    description='The person you want to view balance of instead (defaults to yours)',
+	    name='of',
+	    opt_type=OptionType.USER
+	)
 	@slash_option(
 	    description="Whether you want the response to be visible for others in the channel",
 	    name="public",
@@ -66,7 +70,7 @@ class WoolCommands(Extension):
 		    ctx,
 		    await loc.l(
 		        f'wool.balance.{who_path}.{"none" if wool == 0 else "some"}',
-		        mention=of.mention,
+		        account_holder_id=of.id,
 		        balance=fnum(wool, locale=ctx.locale)
 		    ),
 		    edit=True
@@ -128,8 +132,12 @@ class WoolCommands(Extension):
 		if from_user.wool < amount:
 			return await fancy_message(
 			    ctx,
-			    await loc.l("wool.transfer.errors.not_enough", balance=fnum(from_user.wool, locale=ctx.locale)) +
-			    await put_mini(loc, "wool.transfer.errors.note_nuf", pre="\n\n"),
+			    await loc.l(
+			        "wool.transfer.errors.not_enough",
+			        balance=from_user.wool,
+			        sender_id=from_user._id,
+			        receiver_id=to_user._id
+			    ) + await put_mini(loc, "wool.transfer.errors.note_nuf", pre="\n\n"),
 			    edit=True,
 			    ephemeral=True,
 			    color=Colors.BAD
@@ -141,15 +149,15 @@ class WoolCommands(Extension):
 		if amount < 0:
 			return await fancy_message(
 			    loading,
-			    await loc.l("wool.transfer.steal", user_one=ctx.author.mention, user_two=to.mention),
+			    await loc.l("wool.transfer.steal", sender_id=from_user._id, receiver_id=to_user._id),
 			    edit=True
 			)
 		await fancy_message(
 		    loading,
 		    await loc.l(
 		        f'wool.transfer.to.{"bot" if to.bot else "user"}.{"none" if amount == 0 else "some"}',
-		        user_one=ctx.author.mention,
-		        user_two=to.mention,
+		        sender_id=from_user._id,
+		        receiver_id=to_user._id,
 		        amount=amount
 		    ),
 		    edit=True

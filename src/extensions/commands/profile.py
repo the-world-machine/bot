@@ -1,13 +1,18 @@
+import asyncio
 import time
-from utilities.config import debugging
+from utilities.config import debugging, get_config
 from datetime import datetime, timedelta
 from utilities.localization.formatting import fnum
 from utilities.message_decorations import *
+from utilities.misc import InvalidResponseError, cached_get, fetch
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
 from utilities.database.schemas import UserData
 from utilities.localization.localization import Localization
-from interactions import Button, ButtonStyle, Extension, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
+from interactions import Button, ButtonStyle, Extension, File, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
+
+from utilities.textbox.facepics import get_facepic
+from utilities.textbox.mediagen import Frame, render_textbox_frames
 
 
 class ProfileCommands(Extension):
@@ -55,7 +60,7 @@ class ProfileCommands(Extension):
 		_ = ctx.author
 		if isinstance(_, Member):
 			_ = _.user
-		await bm.increment_value(ctx, 'suns', target=_)  # TODO: is it supposed to give suns to both?
+		await bm.increment_value(ctx, 'suns', target=_)
 		await bm.increment_value(ctx, 'suns', target=who)
 
 		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
@@ -71,10 +76,10 @@ class ProfileCommands(Extension):
 		if user.bot and ctx.client.user != user:
 			return await ctx.send(await loc.l("profile.view.bots"), ephemeral=True)
 
-		await fancy_message(ctx, await loc.l("profile.view.loading", user=user.mention))
+		await fancy_message(ctx, await loc.l("profile.view.loading", target_id=user.id))
 
 		start_time = time.perf_counter()
-		image = await draw_profile(user, filename=await loc.l("profile.view.image.name", username=user.id), loc=loc)
+		image = await draw_profile(user, filename=await loc.l("profile.view.image.name", target_id=user.id), loc=loc)
 		runtime = (time.perf_counter() - start_time) * 1000
 		components = []
 		if user == ctx.user:
@@ -82,10 +87,10 @@ class ProfileCommands(Extension):
 			    Button(
 			        style=ButtonStyle.URL,
 			        url=url,
-			        label=await loc.l("profile.view.BBBBBUUUUUTTTTTTTTTTOOOOONNNNN"),
+			        label=await loc.l("profile.view.button"),
 			    )
 			)
-		content = await loc.l("profile.view.message", usermention=user.mention)
+		content = await loc.l("profile.view.message", target_id=user.id)
 		await ctx.edit(
 		    content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
 		    files=image,
@@ -97,12 +102,30 @@ class ProfileCommands(Extension):
 	@profile.subcommand(sub_cmd_description='Edit your profile')
 	async def edit(self, ctx: SlashContext):
 		loc = Localization(ctx)
-		components = Button(
+		components = [Button(
 		    style=ButtonStyle.URL,
 		    label=await loc.l('generic.buttons.open_site'),
-		    url="https://theworldmachine.xyz/profile"
+		    url=get_config("bot.links.website-root")+"/profile"
+		)]
+		asyncio.create_task(
+		    fancy_message(ctx, message=await loc.l('profile.edit.text'), ephemeral=True, components=components)
 		)
-		await fancy_message(ctx, message=await loc.l('profile.edit.text'), ephemeral=True, components=components)
+		try:
+			await fetch("https://theworldmachine.xyz/profile")
+		except InvalidResponseError as e:
+			components.append(
+				Button(
+					style=ButtonStyle.URL,
+					label=await loc.l('about.buttons["community server"]'),
+					url=get_config("bot.links.discord-invite")
+				)
+			)
+			buffer = await render_textbox_frames([Frame(str(await loc.l("profile.edit.down")))])
+			filename = await loc.l(f"textbox.alt.single_frame.filename", timestamp=str(round(datetime.now().timestamp())))+".webp"
+
+			await ctx.edit(files=File(file=buffer, file_name=filename), embeds=[], components=components)
+		except Exception:
+			pass
 
 	choices = [
 	    SlashCommandChoice(name='Sun Amount', value='suns'),
@@ -111,4 +134,4 @@ class ProfileCommands(Extension):
 	    SlashCommandChoice(name='Times Asked', value='times_asked'),
 	    SlashCommandChoice(name='Times Messaged', value='times_messaged'),
 	    SlashCommandChoice(name='Times Transmitted', value='times_transmitted')
-	]                                                                           # TODO: what is this
+	]  # TODO: what is this

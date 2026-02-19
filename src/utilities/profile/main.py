@@ -83,12 +83,11 @@ async def load_profile_assets():
 async def draw_profile(user: User, filename: str, alt: str | None = None, loc: Localization = Localization()) -> File:
 	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()
-	assert isinstance(wool_icon, Image.Image) \
-                                                                and isinstance(sun_icon, Image.Image) \
-                                                                and isinstance(font, FreeTypeFont)\
-                                                                and isinstance(badges, dict)\
-                                                                and all(isinstance(icon, Image.Image) for icon in icons)\
-                                                                and all(isinstance(icon, Image.Image) for icon in shop_icons), "linter pleasing failed"
+	assert isinstance(wool_icon, Image.Image) and isinstance(sun_icon, Image.Image) and isinstance(
+	    font, FreeTypeFont
+	) and isinstance(badges, dict) and all(isinstance(icon, Image.Image) for icon in icons) and all(
+	    isinstance(icon, Image.Image) for icon in shop_icons
+	), "linter pleasing failed"
 	user_id = user.id
 	user_pfp_url = user.display_avatar._url
 	animated = user.display_avatar.animated
@@ -101,7 +100,7 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 
 	user_data: UserData = await UserData(_id=user_id).fetch()
 
-	title = await loc.l("profile.view.image.title", username=user.display_name)
+	title = await loc.l("profile.view.image.title", target_id=user.id)
 
 	backgrounds = await fetch_background()
 	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]['image']))

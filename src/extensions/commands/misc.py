@@ -1,14 +1,25 @@
+import asyncio
+import re
+import sys
+import time
+from aioconsole import aexec
 import psutil
 import random
 import aiohttp
 import platform
+import traceback as tb
 from datetime import datetime, timezone
+from utilities.config import get_config
 from utilities.localization.formatting import amperjoin, fnum, ftime
 from utilities.misc import get_git_hash
 from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
 from interactions import Embed, EmbedAttachment, Extension, Message, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
+from utilities.dev_commands import redir_prints
+from utilities.textbox.facepics import get_facepic
+
+ansi_escape_pattern = re.compile(r'\033\[[0-9;]*[A-Za-z]')
 
 
 class MiscellaneousCommands(Extension):
@@ -136,3 +147,84 @@ class MiscellaneousCommands(Extension):
 		embed.description = await loc.l("misc.miaou.finding.cat")
 		embed.set_image(image)
 		return await ctx.send(embed=embed, ephemeral=not public)
+
+	@slash_command(description='eval code in slash context (bot developer only)')
+	@slash_option(description='wa to eval', name='code', opt_type=OptionType.STRING, required=True)
+	@slash_option(description="try to send without ephemeral", name="public", opt_type=OptionType.BOOLEAN)
+	@integration_types(guild=True, user=True)
+	@contexts(bot_dm=True)
+	async def eval(self, ctx: SlashContext, code: str, public: bool = False):
+		loc = Localization(ctx)
+		await fancy_message(ctx, await loc.l("generic.loading.checking_developer_status"), ephemeral=True)
+
+		if str(ctx.author.id) not in get_config('dev.whitelist', typecheck=list):
+			await asyncio.sleep(3)
+			return await fancy_message(
+			    ctx,
+			    await loc.l("generic.errors.not_a_developer"),
+			    facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
+			    edit=True
+			)
+
+		# Corrected: Removed 'await' from inside create_task so it runs in background immediately
+		asyncio.create_task(fancy_message(ctx, await loc.l("generic.loading.generic"), ephemeral=not public))
+
+		# 1. Determine execution method
+		method = "eval"
+		if "\n" in code or "import " in code or "await " in code or "return " in code:
+			method = "aexec" if "await" in code else "exec"
+
+		result = None
+		state = { 'asnyc_warn': False, 'strip_ansi_sequences': True, 'raisure': False}
+		start_time = time.perf_counter()
+
+		# 2. Execute
+		try:
+			if method == "exec":
+				result = await redir_prints(exec, code, locals(), globals())
+			elif method == "aexec":
+				result = await redir_prints(aexec, code, locals())
+			else:
+				if not code.strip():
+					raise ValueError("no code provided")
+				result = eval(code, globals(), locals())
+		except Exception:
+			state['raisure'] = True
+			# Format traceback and strip internal noise
+			raw_err = tb.format_exc(chain=True)
+			result = raw_err.replace('  File "<aexec>", ', " - at ").replace('  File "<string>", ', " - at ")
+
+			if " in redir_prints" in result:
+				result = result.split("method(code, globals, locals)")[1]
+			elif "new_local = await coro" in result:
+				state['asnyc_warn'] = True
+				result = result.split("^^^^^^^^^^")[1]
+
+		runtime = (time.perf_counter() - start_time) * 1000
+
+		# 3. Response Helper
+		def build_embed(output_val, note=""):
+			res_str = str(output_val)
+			if state['strip_ansi_sequences']:
+				res_str = ansi_escape_pattern.sub('', res_str)
+
+			desc = f"-# Runtime: {fnum(runtime)} ms{note}"
+			if state['asnyc_warn']:
+				desc += "\n-# Line numbers offset by +1"
+
+			if not res_str.strip() and method != "eval":
+				desc += "\n-# Nothing was printed"
+			else:
+				# Discord limit is 4096; we truncate to ~3900 to be safe with formatting
+				if len(res_str) > 3900:
+					res_str = res_str[:3850] + "\n... (truncated)"
+				desc += f"\n```py\n{res_str.replace('```', '` ``')}```"
+
+			return Embed(color=Colors.BAD if state['raisure'] else Colors.DEFAULT, description=desc)
+
+		# 4. Send
+		try:
+			return await ctx.edit(embeds=build_embed(result))
+		except Exception as e:
+			# Final fallback for unexpected Discord API errors (e.g. still too long)
+			return await ctx.edit(embeds=build_embed("Output too complex to display", note=f"\n⚠️ Send Error: {e}"))

@@ -208,7 +208,7 @@ settings:
 profile:
   view:
     message: v Anzeige [usermention]'s profil
-    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Verändere deine Profil"
+    button: "Verändere deine Profil"
     bots: "[ Bots haben keine profilen! ]"
     loading: "[ Laden [user]'s Profil... {loading, emoji} ]"
 

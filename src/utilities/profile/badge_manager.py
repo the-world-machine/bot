@@ -21,7 +21,7 @@ async def earn_badge(ctx: SlashContext, badge_name: str, badge_data: dict, targe
 		        loc.l("profile.notifications.badge.title", emoji=f"<:i:{badge_data['emoji']}>", badge_name=badge_name),
 		        description=await loc.l(
 		            "profile.notifications.badge.description",
-		            usermention=target.mention,
+		            target_id=target.id,
 		            badge_message=await loc.l(
 		                f'profile.notifications.badge.types["{badge_data["type"]}"]', amount=badge_data["requirement"]
 		            )

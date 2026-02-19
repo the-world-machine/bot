@@ -238,7 +238,7 @@ settings:
 profile:
   view:
     message: Показывается профиль {usermention}
-    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редактировать Свой Профиль"
+    button: "Редактировать Свой Профиль"
     bots: "[ У ботов нету профилей! ]"
     loading: "[ Загрузка профиля {user}... {loading, emoji} ]"
     image:

@@ -226,7 +226,7 @@ settings:
 profile:
   view:
     message: "Переглядуємо профіль {usermention}"
-    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Редагувати Свій Профіль"
+    button: "Редагувати Свій Профіль"
     bots: "[ Боти не мають профілів! ]"
     loading: "[ Завантаження профіля {user}... {loading, emoji} ]"
 

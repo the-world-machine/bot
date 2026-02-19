@@ -107,22 +107,24 @@ class AboutCommand(Extension):
 		        inline=True
 		    ),
 		    EmbedField(
-		        name=await loc.l("about.names.cpu_usg"),
-		        value=await loc.l("about.values.percent", num=round(psutil.cpu_percent())),
-		        inline=True
-		    ),
-		    EmbedField(
-		        name=await loc.l("about.names.mem_usg"),
-		        value=await loc.l("about.values.percent", num=round(psutil.virtual_memory().percent)),
-		        inline=True
-		    ), EmbedField(name=await loc.l("about.names.server_count"), value=str(ctx.client.guild_count), inline=True),
-		    EmbedField(
 		        name=await loc.l("about.names.commit_hash"),
 		        value=commit_hash if commit_hash else await loc.l("misc.status.values.failed_commit_hash"),
 		        inline=True
 		    ),
 		    EmbedField(
-		        await loc.l("about.names.uptime"), ftime(datetime.now() - ctx.client.start_time, ctx.locale), inline=True
+		        name=await loc.l("about.names.mem_usg"),
+		        value=await loc.l("about.values.percent", percentage=psutil.virtual_memory().percent / 100),
+		        inline=True
+		    ), EmbedField(name=await loc.l("about.names.server_count"), value=str(ctx.client.guild_count), inline=True),
+		    EmbedField(
+		        name=await loc.l("about.names.cpu_usg"),
+		        value=await loc.l("about.values.percent", percentage=psutil.cpu_percent() / 100),
+		        inline=True
+		    ),
+		    EmbedField(
+		        await loc.l("about.names.uptime"),
+		        ftime(datetime.now() - ctx.client.start_time, ctx.locale),
+		        inline=True
 		    )
 		)
 		# embed.add_field(await loc.l("about.names.user_installs"),

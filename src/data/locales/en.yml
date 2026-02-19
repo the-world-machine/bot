@@ -3,6 +3,7 @@ generic:
     hint: "[ {loading, emoji} ]"
     generic: "[ {loading, emoji} Loading... ]"
     textbox: "[ {loading, emoji} Loading textbox editor... ]"
+    evaluating: "[ {loading, emoji} Evaluating... ]"
     checking_developer_status: "[ {loading, emoji} Checking developer status... ]"
   errors:
     not_a_developer: "Sorry, you are not one of my developers, can't letcha in"
@@ -65,7 +66,7 @@ misc:
     multi: "Totaling at **{total, pretty_num}**."
 
   welcome:
-    placeholder_text: "[ Welcome to {server_name}, {user_name}! There is now {member_count} users here! ]"
+    placeholder_text: "[ Welcome to {server_name}, {user_name}! There is now {member_count, pretty_num} users here! ]"
 
   wikipedia: "[ [Here]({link}) is your random wikipedia article. It's about {title}... I think... ]"
   ship:
@@ -109,7 +110,7 @@ about:
 
   values:
     time: "**{sec}** s."
-    percent: "**{num}**%"
+    percent: "**{percentage, number, percent}**"
     failed_commit_hash: "N/A"
 
   buttons:
@@ -138,38 +139,38 @@ wool:
   balance:
     you:
       none: "[ You have **no{wool, emoji}Wool** ]"
-      some: "[ You have **{balance}**{wool, emoji} ]"
+      some: "[ You have **{balance, pretty_num}**{wool, emoji} ]"
     other:
-      none: "[ **{mention}** has **no{wool, emoji}Wool** ]"
-      some: "[ **{mention}** has **{balance}**{wool, emoji} ]"
+      none: "[ **{account_holder_id, user, mention}** has **no{wool, emoji}Wool** ]"
+      some: "[ **{account_holder_id, user, mention}** has **{balance, pretty_num}**{wool, emoji} ]"
     bot:
       none: |
         [ Bots usually don't interact with me, not that they even can,
 
-        so {mention} has **no{wool, emoji}Wool** ]
+        so {account_holder_id, user, mention} has **no{wool, emoji}Wool** ]
       some: |
         [ Bots usually don't interact with me, not that they even can, but...
 
-        {mention} was given {wool, emoji}**{balance}** ]
+        {account_holder_id, user, mention} was given {wool, emoji}**{balance, pretty_num}** ]
     twm:
       none: "[ I try not to influence the economy, so i have **no{wool, emoji}Wool** ]"
-      some: "[ I try not to influence the economy, but i've got {wool, emoji}**{balance}** ]"
+      some: "[ I try not to influence the economy, but i've got {wool, emoji}**{balance, pretty_num}** ]"
   transfer:
     errors:
       self_transfer: "[ Done... ]"
       not_enough: "[ You don't have that much {wool, emoji} wool! ]"
-      note_nuf: "you have {wool, emoji}**{balance}**" # note:
+      note_nuf: "you have {wool, emoji}**{balance, pretty_num}**" # note:
 
     to:
       bot:
-        none: "{user_one} gave away {wool, emoji}**{amount}** to {user_two}, not very generous!"
-        some: "{user_one} gave away {wool, emoji}**{amount}** to {user_two}, how generous..."
+        none: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, not very generous!"
+        some: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, how generous..."
         confirmation: "[ Are you sure you want to give wool to... a bot? ]"
         notefirmation: "you won't be able get it back yk..." # note:
       user:
-        none: "{user_one} gave away {wool, emoji}**{amount}** to {user_two}, not very generous after all..."
-        some: "{user_one} gave away {wool, emoji}**{amount}** to {user_two}, how generous!"
-    steal: "{user_one} stole a single piece of wool from {user_two}, why!?"
+        none: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, not very generous after all..."
+        some: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, how generous!"
+    steal: "{sender_id, user, mention} stole a single piece of wool from {receiver_id, user, mention}, why!?"
   pray:
     errors:
       timeout: "[ You've already prayed in the past 24 hours. You can pray again {timestamp_relative}]"
@@ -182,25 +183,32 @@ wool:
       devoted: "...and they see you're truly a devoted follower. Praise be The World Machine!"
     title: "You prayed to The World Machine..."
     Change:
-      gain: "you also got {wool, emoji}**{amount}** wool!"
-      loss: "you also lost {wool, emoji}**{amount}** wool..."
+      gain: "you also got {wool, emoji}**{amount, pretty_num}** wool!"
+      loss: "you also lost {wool, emoji}**{amount, pretty_num}** wool..."
   gamble:
     errors:
       not_enough_wool: "[ You don't have enough wool to bet that amount. ]"
     slots:
-      title: Slot Machine
-      description: "{user} has bet {wool, emoji}**{amount}**."
-      result: # no emojis or formatting in these ↓
-        jackpot: "JACKPOT! 🎉 {username} won back {amount} wool!"
-        won_some: f"{username} won back {amount} wool!"
-        lost_some: "{username} got back only {amount} wool..."
-        lost_all: "{username} lost it all... better luck next time!"
-        pain: f'JACKPOT! 🎉 {username} lost it all! Better luck next time!'
+      title: 🎰 Slot Machine
+      description_running: |
+        {bettor_id, user, mention} has bet {wool, emoji}**{amount, pretty_num}**.
+        {ticker}
+      description_result: |
+        {bettor_id, user, mention} has bet {wool, emoji}**{bet_amount, pretty_num}**.
+        {ticker}
+        -# {result, select,
+          jackpot {JACKPOT! 🎉 {bettor_id, user, mention} won back {win_amount, pretty_num} wool!}
+          won_some {{bettor_id, user, mention} won back {win_amount, pretty_num} wool!}
+          lost_some {{bettor_id, user, mention} got back only {win_amount, pretty_num} wool...}
+          lost_all {{bettor_id, user, mention} lost it all... better luck next time!}
+          pain {JACKPOT! 🎉 {bettor_id, user, mention} lost it all! Better luck next time!}
+          other {{bettor_id, user, mention} tricked the machine!}
+        }
       guide:
         description: |
           Gamble any amount of wool as long as you can afford it.
           Here are the slots you can roll and their values:
-          {values}
+          {slot_values}
           Points are added up and then multiplied by your bet.
           You also get double the points when you hit a jackpot
         values:
@@ -224,13 +232,13 @@ settings:
     invalid_server_id: "[ Invalid server ID. ]"
     uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
     get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
-    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using `/settings welcome channel`, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using {/setting_welcome_channel}, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
 
   welcome:
     enabled:
       yah: "[ Welcome textboxes have been enabled ]"
       nah: "[ Welcome textboxes have been disabled ]"
-      default_tip: "you can change the textbox message with `/settings welcome edit`" # tip:
+      default_tip: "you can change the textbox message with {/settings/welcome_edit}" # tip:
     channel:
       auto: "[ Welcome textboxes channel has been reset ]"
       Changed: "[ Welcome textboxes channel has been set to {channel} ]"
@@ -247,7 +255,7 @@ settings:
         Previous: {old_text}
 
         New (current): {new_text}
-      disabled_note: "don't forget to enable them with `/settings welcome enabled value:True`" # note:
+      disabled_note: "don't forget to enable them with {/settings/welcome/enabled}` value:True`" # note:
   transmissions:
     enabled:
       yah: "[ This server is now closed for calls ]"
@@ -269,34 +277,41 @@ settings:
 
 profile:
   view:
-    message: Viewing {usermention}'s profile
-    BBBBBUUUUUTTTTTTTTTTOOOOONNNNN: "Edit Your Profile"
+    message: Viewing {target_id, user, mention}'s profile
+    button: "Edit Your Profile"
     bots: "[ Bots don't have profiles! ]"
-    loading: "[ {loading, emoji} Loading {user}'s profile... ]"
+    loading: "[ {loading, emoji} Loading {target_id, user, mention}'s profile... ]"
 
     image:
       alt_nodescription: "On the image is profile of user {username} in The World Machine's system. They own: Suns {suns}, Wool {wool}"
 
       # you may also still use any of the variables from above, if your language requires some rewording (try not to use {alt_nodescription} at all if you do)
       alt_cont: "{alt_nodescription}. Their description says: {description}"
-      name: "{userid} profile"
-      title: "{username}'s Profile"
+      name: "{target_id} profile"
+      title: "{target_id, user, display_name}'s (@{target_id, user, username}) Profile"
       unlocked:
         stamps: "Unlocked Stamps:"
   edit:
+    down: "\\s[10]\\@[OneShot/The World Machine/What,][ \\s[1.2]Oh,\\d[500] apologies,\\d[250]\\@[OneShot/The World Machine/Upset left],\\d[250],\\d[250] the website is down right now. \\@[OneShot/The World Machine/Speak]As i was finishing up maintenance on it last week, i went out to take a short break and \\@[OneShot/Robots/Kelvin]\\c[lightcoral]Kelvin\\c[]\\@[OneShot/The World Machine/Looking Left] came up asking for help at the factory. A week later, i find out that i got so carried away, that i forgot to close the \\@[OneShot/The World Machine/Looking Right]door to the server room... \\d[500]\\d[1000]the cats apparently got in there \\@[OneShot/The World Machine/Looking Left]and messed everything up..\\d[1400] \\@[OneShot/The World Machine/Looking Right]My developers will send updates on it in the community server\\@[OneShot/The World Machine/Normal]\\d[200],\\@[OneShot/The World Machine/Speak] so join if you want\\s[1000]. ]  "
     text: "You can edit your profile over on the website!"
   notifications:
     badge:
-      content: "-# [ You got a badge! See each one you've earned at [/profile view] ]"
+      content: "-# [ You got a badge! See each one you've earned at {/profile/view} ]"
       title: "‹ {emoji} {badge_name} ›"
-      description: "{usermention} {badge_message}"
-      settings_note: "You can change this notification using [/settings badge_notifications]"
+      description: "{target_id, user, mention} {badge_message}"
+      settings_note: "You can change this notification using {/settings/badge_notifications}"
       types:
-        times_shattered: shatterred a lightbulb **{amount}** times...
-        times_asked: bothered The World Machine **{amount}** times!
-        wool: earned over **{amount}** wool!
-        times_transmitted: initiated over **{amount}** transmissions!
-        suns: gave/earnt over **{amount}** suns
+        times_shattered: shatterred a lightbulb **{amount, pretty_num}** {amount, select,
+          1 {time}
+          other {times}
+        }...
+        times_asked: bothered The World Machine **{amount, pretty_num}** {amount, select,
+          1 {time}
+          other {times}
+        }!
+        wool: earned over **{amount, pretty_num}** wool!
+        times_transmitted: initiated over **{amount, pretty_num}** transmissions!
+        suns: gave/earnt over **{amount, pretty_num}** suns
 # ---------------------------------------------------------------
 
 explode:
@@ -314,7 +329,7 @@ explode:
 
       ⚠️ warning: Utterly despicable.
 
-  info: "Shatter count: {amount}"
+  info: "Shatter count: {amount, pretty_num}"
   YouKilledNiko: "[ You killed Niko. ]"
 
 # ---------------------------------------------------------------
@@ -1064,7 +1079,7 @@ textbox:
     sending: "[ {loading, emoji} Sending... ]"
     done: "[ Done ]"
 
-    debug: "(Took: **{time}**ms., Sid: **{sid}**)"
+    debug: "(Took: **{time, pretty_num}**ms., Sid: **{sid}**)"
 
   alt:
     single_frame:

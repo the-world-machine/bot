@@ -1,7 +1,7 @@
 import asyncio
 from traceback import print_exc
 from typing import Any
-from interactions import BaseContext, User
+from interactions import GLOBAL_SCOPE, BaseContext, Snowflake, User
 from pyicumessageformat import Parser
 from babel import Locale
 from babel.numbers import format_decimal, format_percent, format_currency
@@ -58,6 +58,10 @@ async def icu_user(
 	user_id = str(found_var) if found_var else str(arguments[0])
 	if user_id.lower() in ("twm", "the world machine", "theworldmachine", "the-world-machine"):
 		user_id = bot_id
+	try:
+		Snowflake(int(user_id))
+	except:
+		return f"'{user_id}' is not a valid user id"
 	prop = arguments[2]
 	if user_id != str(bot_id):
 		if not ctx or not isinstance(ctx, BaseContext):
@@ -70,12 +74,20 @@ async def icu_user(
 			return f"could not fetch user from userid, '{user}'"
 	if user:
 		user_data = {
+		    'mention+(username)': f"<@{user.id}> (@{user.username})",
 		    'mention': f"<@{user.id}>",
 		    'id': str(user.id),
 		    'username': user.username,
+		    'display_name': user.display_name,
 		}
 	elif user_id == str(bot_id):
-		user_data = { 'id': bot_id, 'mention': f"<@{bot_id}>", 'username': "The World Machine"}
+		user_data = {
+		    'mention+(username)': f"<@{bot_id}> (The World Machine)",
+		    'id': bot_id,
+		    'mention': f"<@{bot_id}>",
+		    'username': "The World Machine",
+		    'display_name': "The World Machine"
+		}
 	else:
 		return Exception("all ways of getting the user have failed and the doom has come")
 	if prop not in user_data:
@@ -88,15 +100,17 @@ async def icu_slash(
     arguments: tuple[Any, Any, Any],
     variables: dict[str, Any],
     locale: str,
-    ctx: Any | None = None,
+    ctx: BaseContext | None = None,
     found_var: Any | None = None
 ):
-	command_name = arguments[0]
+	command_name = arguments[0][1:].replace("/", " ")
+	id = "0"
 	if ctx and hasattr(ctx, "client") and hasattr(ctx.client, "_interaction_lookup"):
 		command = ctx.client._interaction_lookup.get(command_name)
 		if command:
-			return command.mention()
-	return f"</{command_name}:0>"
+			id = command.get_cmd_id(GLOBAL_SCOPE)
+			command_name = command.get_localised_name(locale)
+	return f"</{command_name}:{id}>"
 
 
 async def icu_pretty_num(

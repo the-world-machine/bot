@@ -26,6 +26,11 @@ bot:
       - "[ Do I really have to do things for these users? ]"
       - "[ No thoughts right now. ]"
 
+  links:
+    website-root: https://theworldmachine.xyz
+    textbox-website-root: https://tb.theworldmachine.xyz
+    discord-invite: "https://discord.com/invite/UuyuubugZ9"
+
   main:
     guild-id: "1017531963000754247" # server id, in "", the main community server for the bot
     invite: ""
