@@ -18,10 +18,18 @@ For more information on what you can do with this bot, check out our [website](h
 
 ### Localization
 
-In `src/data/locales` there are YAML files with the localization strings. Using `en.yml` as a base, you are free to contribute your own language to the bot. If you need any help with this - you can ask away in the support server which you can find on our [website](https://www.theworldmachine.xyz/invite).
+Localization is done on the [TWM translation](https://translate.theworldmachine.xyz/translate/the-world-machine/bot) website (we are using [Weblate](https://translate.theworldmachine.xyz/about/)). You are required to register using a Google account for the time being, after that you may suggest any changes to the text in any language, for the Lead Translators of that language to review. Contact @meqativ on the community server if you wish to become a Lead Translator for any language.
 
 > [!NOTE]
-> `/transmission`, `/sun give`, `/ship` & any slash command names or descriptions - **do not** have localizations yet
+> Some basic rules for translating
+>
+> - We are not looking for AI/ML translations, please only translate if you are a native of the language & you're confident in your skills. Feel free to use AI as a tool though, just don't copy-paste stuff from it without checking (e.g. if you can't find a word you can detail the context and ask the ai for suggestions. i recommend https://aistudio.google.com since it can access the internet to look up stuff)
+> - Make sure to use the same terms/wording as the OneShot game or the Discord app does in your language (when possible) so that it's familiar for all people (e.g. if Discord translated a "Stage" channel to -> "Етап" (ukrainian), make sure to do that in your translation too, even if it's a dumb translation by discord)
+> - Follow [other common translator expectations](https://translate.wordpress.com/translator-expectations/#:~:text=Translator%20Best%20Practices)
+> - If you are found sending spam/incorrect translations - you will be removed from the project without a possibility of returning
+
+> [!NOTE]
+> `/transmission`, `/sun give` & any slash command names or descriptions - **do not** have localizations yet
 
 ### Pull Requests
 
@@ -41,9 +49,16 @@ Make sure you have python 3.13.11 (u can easily install this one via `pyenv`, ru
 python -m pip install pipenv
 ```
 
-### Step 1: Install Dependencies
+Clone the repo to get the codebase downloaded on your device
 
-(after cloning the repo, and navigating to that folder)
+```commandline
+git clone https://github.com/the-world-machine/bot the-world-machine --recursive
+```
+
+> [!NOTE]
+> Without `--recursive` it won't download the required strings for the UI and it'll look all messed up
+
+### Step 1: Install Dependencies
 
 ```commandline
 pipenv install

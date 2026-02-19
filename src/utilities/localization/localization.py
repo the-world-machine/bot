@@ -29,7 +29,7 @@ def local_override(locale: str, data: dict):
 
 
 def load_locale(locale: str):
-	return yaml.full_load(open(Path('src/data/locales', locale + '.yml'), 'r', encoding='utf-8'))
+	return yaml.full_load(open(Path('src/data/locales/bot/', locale + '.yml'), 'r', encoding='utf-8'))
 
 
 last_update_timestamps = {}
@@ -96,7 +96,7 @@ else:
 
 subscribe("locales/", on_file_update)
 loaded = 0
-for file in Path('src/data/locales').glob('*.yml'):
+for file in Path('src/data/locales/bot/').glob('*.yml'):
 	name = file.stem
 	try:
 		_loaded = load_locale(name)

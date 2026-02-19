@@ -1,0 +1,6 @@
+[submodule "src/data/src/data/locales"]
+	path = src/data/src/data/locales
+	url = https://github.com/the-world-machine/i18n
+[submodule "src/data/locales"]
+	path = src/data/locales
+	url = https://github.com/the-world-machine/i18n
