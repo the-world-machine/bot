@@ -301,14 +301,16 @@ profile:
       description: "{target_id, user, mention} {badge_message}"
       settings_note: "You can change this notification using {/settings/badge_notifications}"
       types:
-        times_shattered: shatterred a lightbulb **{amount, pretty_num}** {amount, select,
-          1 {time}
-          other {times}
-        }...
-        times_asked: bothered The World Machine **{amount, pretty_num}** {amount, select,
-          1 {time}
-          other {times}
-        }!
+        times_shattered: |
+          shatterred a lightbulb **{amount, pretty_num}** {amount, select,
+            1 {time}
+            other {times}
+          }...
+        times_asked: |
+          bothered The World Machine **{amount, pretty_num}** {amount, select,
+            1 {time}
+            other {times}
+          }!
         wool: earned over **{amount, pretty_num}** wool!
         times_transmitted: initiated over **{amount, pretty_num}** transmissions!
         suns: gave/earnt over **{amount, pretty_num}** suns
@@ -325,7 +327,7 @@ explode:
 
     sixninefourtwo: nice 👍
     nineninenineninenine: |
-      [ That's enough. How the `####` did you manage to reach this number!? Do you understand how much worlds you have destroyed? ]
+      [ That's enough. How the `####` did you manage to reach this number!? Do you understand how many worlds you have destroyed? ]
 
       ⚠️ warning: Utterly despicable.
 
@@ -337,8 +339,8 @@ explode:
 shop:
   loading: "[ {loading, emoji} Loading Shop... ]"
 
-  user_wool: "**Your Balance: {wool, emoji}{wool}**"
-  owned: "you have **{amount}**"
+  user_wool: "**Your Balance: {wool, emoji}{wool, pretty_num}**"
+  owned: "you have **{amount, pretty_num}**"
 
   buttons:
     buy: Trade
@@ -372,14 +374,14 @@ shop:
     - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
     - 'Do you like my bottle collection? I like my bottle collection. What do you mean it''s all "Hard Liquor"? Is that what it says?' # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
 
-  traded: '> Successfully traded for {amount} of "{item_name}"!' # {price} is also available here
-  traded_sell: '> Sucessfully traded in {amount} "{item_name}" for {price} Wool!'
+  traded: '> Successfully traded for {amount, pretty_num} of "{item_name}"!' # {price} is also available here
+  traded_sell: '> Sucessfully traded in {amount, pretty_num} "{item_name}" for {price, pretty_num} Wool!'
   traded_fail: "> You cannot trade for this."
 
   stocks: >
-    ```Stock Value: {value}
+    ```Stock Value: {value, pretty_num}
 
-    Stock Price: {price}```
+    Stock Price: {price, pretty_num}```
 
   nikogotchi:
     title: Capsules
@@ -396,7 +398,7 @@ shop:
       *AHEM* existential dread aside, feeding them with pancakes and taking good care of them will allow you to gather treasures! Which you can trade to me! Pretty cool right?
 
 
-      So why not trade for a capsule today? Only {wool, emoji}**{cost}**!
+      So why not trade for a capsule today? Only {wool, emoji}**{cost, pretty_num}**!
 
 
       *Do keep in mind that you can only have **one capsule** per Nikogotchi.*
@@ -461,7 +463,7 @@ shop:
       #not_selected: "*You haven't selected any treasures to trade in...*"
       placeholder: Choose a treasure to trade in...
       no_treasures: You have no treasures to trade in.
-      option: '"{name}" (x{amount})'
+      option: '"{name}" (x{amount, pretty_num})'
 
     selection: >
       **Currently Selected:**
@@ -469,9 +471,9 @@ shop:
       - {treasure_icon} "**{treasure_name}**" - {owned}
 
 
-      **Trade One**: {wool, emoji}**{price_one}**
+      **Trade One**: {wool, emoji}**{price_one, pretty_num}**
 
-      **Trade All**: {wool, emoji}**{price_all}** (x{amount})
+      **Trade All**: {wool, emoji}**{price_all, pretty_num}** (x{amount, pretty_num})
 
 # ---------------------------------------------------------------
 
@@ -552,9 +554,9 @@ items:
 # ---------------------------------------------------------------
 
 interact:
-  twm_not_being_very_happy: "[ Don't touch me, {user}. ]"
-  twm_questioning_if_youre_stupid_or_not: "[ {user}, you can't really interact with bots. ]" # unused
-  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, {user}. ]"
+  twm_not_being_very_happy: "[ Don't touch me, {user_id, user, mention}. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ {user_id, user, mention}, you can't really interact with bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, {user_id, user, mention}. ]"
 
   errors:
     no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my community server (you can an invite to it in {/about})"
@@ -683,7 +685,7 @@ interact:
 # ---------------------------------------------------------------
 
 treasure:
-  bots: "[ {bot} doesn't have any treasure ]"
+  empty: "[ {user_id, user, mention} doesn't have any treasure ]"
   item: "**`{amount}`** {icon} {name}"
   message: >
     ### {user}'s treasures
@@ -695,7 +697,7 @@ treasure:
 # ---------------------------------------------------------------
 
 nikogotchi:
-  owned: Owned by @{owner_id, user, username}
+  owned: Owned by {owner_id, user, displayname+(@username)}
   loading: "[ {loading, emoji} Loading Nikogotchi... ]"
   invalid: "[ You don't have a Nikogotchi! ]"
   tipnvalid: "you can buy a capsule with one in the shop" # tip:
@@ -735,7 +737,7 @@ nikogotchi:
 
     send_away:
       description: "[ Are you sure you want to send away {name} so that you can adopt a new Nikogotchi? ]"
-      success: "[ Successfully sent away {name}. Enjoy your future Nikogotchi! ]"
+      success: "[ Successfully sent away {name}... Enjoy your future Nikogotchi! ]"
 
     renaming:
       title: Give your Nikogotchi a new name!
@@ -759,19 +761,19 @@ nikogotchi:
         "{old_pronouns}" → "{new_pronouns}"
     trade:
       request: >
-        ### **{user}** wants to trade their Nikogotchi ({name_one}) with you!
+        ### **{user_id, user, mention}** wants to trade their Nikogotchi ({name_one}) with you!
 
         Do you want to trade your Nikogotchi ({name_two}) with them?
 
-      waiting: "[ Sent {user} a trade offer! {loading, emoji} Waiting for their response... ]"
+      waiting: "[ Sent {user_id, user, mention} a trade offer! {loading, emoji} Waiting for their response... ]"
       declined: "[ Your trade request has been declined... ]"
       success_decline: "[ Trade request successfully declined. ]"
-      success: "[ Successfully traded with {user}! Say hello to **{name}**! ]"
+      success: "[ Successfully traded with {user_id, user, mention}! Say hello to **{name}**! ]"
 
   found:
     title: You found {name}!
     description: "Want to give them a different a name?"
-    renamenote: you can also do this using `/nikogotchi rename` # note:
+    renamenote: you can also do this using {/nikogotchi/rename} # note:
 
   status:
     template: "*{status}*"
@@ -793,9 +795,9 @@ nikogotchi:
     feed:
       placeholder: "Choose food to feed with..."
 
-      pancakes: Feed Pancake (x{amount})
-      golden_pancakes: Feed Golden Pancake (x{amount})
-      glitched_pancakes: Feed ??? (x{amount})
+      pancakes: Feed Pancake (x{amount, pretty_num})
+      golden_pancakes: Feed Golden Pancake (x{amount, pretty_num})
+      glitched_pancakes: Feed ??? (x{amount, pretty_num})
 
       glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
 
@@ -808,10 +810,10 @@ nikogotchi:
       {name} lived a full life which lasted for: {age}.
 
 
-      - Time since last taken care of: **{time_difference}**
-
-
-      Nikogotchis rely on your love and attention, so keep trying to give them the best care possible!
+      - You haven't interacted with your nikogotchi for **{time_difference} {time_difference, select, 
+        1 {hour}
+        other {hours}
+      }**... They rely on your love and attention, so keep trying to give them the best care possible!
 
 
       R.I.P....
@@ -830,12 +832,12 @@ nikogotchi:
       none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
 
   levelupped:
-    title: 🏆 they levelled up to level {level}!
+    title: 🏆 they levelled up to level {level, pretty_num}!
     message: >
       Here are the stat changes:
 
       {stats}
-    stat: "- {icon} +**{increase}** ({old_value} → {new_value})"
+    stat: "- {icon} +**{increase, pretty_num}** ({old_value, pretty_num} → {new_value, pretty_num})"
 
   dialogue:
     niko:
@@ -1003,7 +1005,7 @@ textbox:
     no_faces: No faces found...
     no_faces_for_char: Faces not found for this character...
     failed_to_render: "[ I failed to render the image, please report this in our community discord server. (you can find an invite to it in {/about}) ]"
-    unknown_frame: "Frame №{index} not found. Total frames: {total}"
+    unknown_frame: "Frame №{index} not found. Total frames: {total, pretty_num}"
     invalid_character: The character "{character_name}" doesn't exist
     invalid_face: Character "{character_name}" doesn't have the "{face_name}" face
     cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
@@ -1041,7 +1043,7 @@ textbox:
       clear: Clear
     edit: Edit Frames as text
 
-  frame_position: "editing frame {current} of {total} total"
+  frame_position: "editing frame {current, pretty_num} of {total, pretty_num} total"
 
   select:
     chars: Characters...

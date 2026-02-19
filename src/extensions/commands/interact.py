@@ -147,26 +147,26 @@ class InteractCommands(Extension):
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
-			    await Localization(ctx).l('interact.twm_is_fed_up_with_you', user=ctx.author.mention),
+			    await Localization(ctx).l('interact.twm_is_fed_up_with_you', user_id=ctx.author.id),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
 		if who.id == ctx.client.user.id:
 			return await fancy_message(
 			    ctx,
-			    await loc.l('interact.twm_not_being_very_happy', user=ctx.author.mention),
+			    await loc.l('interact.twm_not_being_very_happy', user_id=ctx.author.id),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
 		if who.bot:
-            await fancy_message(ctx, await loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user=ctx.author.mention), ephemeral=True, color=0XFF0000)
+            await fancy_message(ctx, await loc.l('interact.twm_questioning_if_youre_stupid_or_not', bot=who.mention, user_id=ctx.author.id), ephemeral=True, color=0XFF0000)
             return
 								await fancy_message(
 		    ctx,
 		    message=await loc.l(
 		        f'interact.selected{"_self" if with_self else ""}',
-		        user_one=f"<@{user_one.id}>" if isinstance(user_one, User) else user_one,
-		        user_two=f"<@{user_two.id}>" if isinstance(user_two, User) else user_two
+		        user_one_mention=f"<@{user_one.id}>" if isinstance(user_one, User) else user_one,
+		        user_two_mention=f"<@{user_two.id}>" if isinstance(user_two, User) else user_two
 		    ),
 		    components=[
 		        Button(

@@ -74,15 +74,23 @@ async def icu_user(
 			return f"could not fetch user from userid, '{user}'"
 	if user:
 		user_data = {
-		    'mention+(username)': f"<@{user.id}> (@{user.username})",
-		    'mention': f"<@{user.id}>",
-		    'id': str(user.id),
-		    'username': user.username,
-		    'display_name': user.display_name,
+		    'mention+(@username)':
+		        f"<@{user.id}> (@{user.username})",
+		    'displayname+(@username)':
+		        f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
+		    'mention':
+		        f"<@{user.id}>",
+		    'id':
+		        str(user.id),
+		    'username':
+		        user.username,
+		    'display_name':
+		        user.display_name,
 		}
 	elif user_id == str(bot_id):
 		user_data = {
-		    'mention+(username)': f"<@{bot_id}> (The World Machine)",
+		    'mention+(@username)': f"<@{bot_id}> (@The World Machine)",
+		    'displayname+(@username)': f"The World Machine",
 		    'id': bot_id,
 		    'mention': f"<@{bot_id}>",
 		    'username': "The World Machine",
@@ -312,6 +320,5 @@ async def render_icu(message, variables, locale, ctx: Any | None = None):
 
 	if not isinstance(message, str):
 		return str(message)
-
 	tree = icu_parser.parse(message)
 	return await evaluate_ast(tree, variables, locale, ctx)

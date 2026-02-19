@@ -741,7 +741,7 @@ class NikogotchiCommands(Extension):
 
         await user.send(
             embed=Embed(
-                description=await loc.l('nikogotchi.other.trade.request', user=ctx.author.mention, name_one=nikogotchi_one.name, name_two=nikogotchi_two.name),
+                description=await loc.l('nikogotchi.other.trade.request', user_id=ctx.author.id, name_one=nikogotchi_one.name, name_two=nikogotchi_two.name),
                 color=Colors.WARN
             ),
             components=buttons
@@ -762,13 +762,13 @@ class NikogotchiCommands(Extension):
             nikogotchi_two._id = str(ctx.author.id)
             nikogotchi_one._id = str(uid)
             embed_two = Embed(
-                description=await loc.l('nikogotchi.other.trade.success', user=user.mention, name=nikogotchi_two.name),
+                description=await loc.l('nikogotchi.other.trade.success', user_id=user.id, name=nikogotchi_two.name),
                 color=Colors.GREEN,
             )
             embed_two.set_image(url=two_data.image_url)
 
             embed_one = Embed(
-                description=await loc.l('nikogotchi.other.trade.success', user=ctx.author.mention, name=nikogotchi_one.name),
+                description=await loc.l('nikogotchi.other.trade.success', user_id=ctx.author.id, name=nikogotchi_one.name),
                 color=Colors.GREEN,
             )
             embed_one.set_image(url=one_data.image_url)
@@ -803,7 +803,7 @@ class NikogotchiCommands(Extension):
 		if user is None:
 			user = ctx.user
 		if user.bot:
-			return await ctx.send(await loc.l('treasure.bots', bot=user.mention), ephemeral=True)
+			return await ctx.send(await loc.l('treasure.empty', user_id=user.id), ephemeral=True)
 
 		await fancy_message(ctx, await loc.l('nikogotchi.loading'), ephemeral=not public)
 		all_treasures = await fetch_treasure()
@@ -812,7 +812,8 @@ class NikogotchiCommands(Extension):
 		user_data: UserData = await UserData(_id=user.id).fetch()
 		owned_treasures = user_data.owned_treasures
 		max_amount_length = len(fnum(max(owned_treasures.values(), default=0), locale=loc.locale))
-
+		if len(list(user_data.owned_treasures.items())) == 0:
+			return await ctx.send(await loc.l('treasure.empty', user_id=user.id), ephemeral=True)
 		for treasure_nid, item in all_treasures.items():
 
 			treasure_loc: dict = await loc.l(f'items.treasures', typecheck=dict)
