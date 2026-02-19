@@ -67,22 +67,26 @@ class UnknownLanguageError(Exception):
 
 
 def parse_locale(locale):
-	if locale in _locales.keys():
-		pass
-	elif "-" in locale:
-		locale_prefix = locale.split('-')[0]
+	matched_locale = None
+	available_locales = list(_locales.keys())
 
-		possible_locales = [ locale for locale in _locales.keys() if locale.startswith(locale_prefix) ]
-		if len(possible_locales) == 0:
-			locale = "en"
+	if locale in available_locales:
+		matched_locale = locale
+	else:
+		locale_prefix = locale.split('-')
 
-		for possible_locale in possible_locales:
-			if possible_locale in _locales.keys():
-				locale = possible_locale
-				break
-	elif locale not in _locales.keys():
-		raise UnknownLanguageError(f"Language {locale} not found in {_locales.keys()}")
-	return locale
+		if locale_prefix in available_locales:
+			matched_locale = locale_prefix
+		else:
+			for possible_locale in available_locales:
+				if possible_locale.startswith(f"{locale_prefix}-"):
+					matched_locale = possible_locale
+					break
+
+	if not matched_locale:
+		raise UnknownLanguageError(f"Language '{locale}' not found in {available_locales}")
+
+	return matched_locale
 
 
 def get_locale(locale):

@@ -62,9 +62,7 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = await loc.l(
-							    "about.me's",
-							)
+							original_lines = await loc.l("about.mes", typecheck=tuple)
 							translated_lines = await Localization().l("about.mes", typecheck=tuple)
 
 							for i in range(0, len(original_lines)):
