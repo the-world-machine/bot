@@ -1,0 +1,1093 @@
+generic:
+  loading:
+    hint: "[ {loading, emoji} ]"
+    generic: "[ {loading, emoji} Loading... ]"
+    textbox: "[ {loading, emoji} Loading textbox editor... ]"
+    evaluating: "[ {loading, emoji} Evaluating... ]"
+    checking_developer_status: "[ {loading, emoji} Checking developer status... ]"
+  errors:
+    not_a_developer: "Sorry, you are not one of my developers, can't letcha in"
+  command_cooldown: "[ Please do not spam this command. You can use it again {timestamp_relative}. ]"
+
+  buttons:
+    "yes": "Yes"
+    "no": "No"
+    done: "Done"
+    cancel: "Cancel"
+    back: "Back"
+    forwards: "Forwards"
+    continue: "Continue"
+    next: "Next"
+    previous: "Previous"
+    open_site: "Open Website"
+    dont_show_again: "Don't Show Again"
+    up: "Up"
+    top: "To the Top"
+    down: "Down"
+    bottom: "To the Bottom"
+
+  minis:
+    note: "❕ note:"
+    tip: "❔ tip:"
+    warn: "⚠️ warning:"
+    err: "‼️ error:"
+
+  select:
+    multiple: ({current, pretty_num}/{total, pretty_num})
+
+  responses:
+    timeout:
+      yn: "[ You took too long to respond ]"
+
+  errors:
+    expired: "This interaction has expired. Run the command again, or report this error in our community discord server if it keeps happening. (you can find an invite to it in {/about})"
+
+# ---------------------------------------------------------------
+
+music:
+  loading:
+    search: "[ {loading, emoji} Searching... ]"
+    file: "[ {loading, emoji} Loading your file... ]"
+
+# ---------------------------------------------------------------
+
+misc:
+  miaou:
+    title: "You found..."
+    finding:
+      noik: Niko!
+      note: a 1% chance! Lucky!
+      cat: a cat!
+
+  roll:
+    title: Rolling {amount}d{sides}...
+    desc: "...got {result, pretty_num}."
+    # adds on when more than 1 dice
+    multi: "Totaling at **{total, pretty_num}**."
+
+  welcome:
+    placeholder_text: "[ Welcome to {server_name}, {user_name}! There is now {member_count, pretty_num} users here! ]"
+
+  wikipedia: "[ [Here]({link}) is your random wikipedia article. It's about {title}... I think... ]"
+  ship:
+
+  ship:
+    errors:
+      idk: "[ I dont know how to handle that... ]"
+      failed_mention: "[ Could you type out their names instead? ]"
+      cant_find_one: "[ Could not find entity one ('who' argument) ]"
+      cant_find_two: "[ Could not find entity two ('whomst' argument) ]"
+      hugs_you: "[ Do you need a hug? ]"
+    
+    compatibility: 
+      description: |
+        {who} & {whomst} have a compatibility of:
+        # {emoji} **{percentage}%** {emoji}
+      footer:
+        "perfect": Perfect compatibility.  # 💛
+        "love": In love.                   # 💖
+        "interest": There's interest!      # ❤
+        "potential": Potentially?          # ❓
+        "disinterest": No interest.        # ❌
+        "nope": Not at all.                # 💔
+# ---------------------------------------------------------------
+
+about:
+  names:
+    shards: "Shards"
+    avg_ping: "Average ping"
+    latency: "Response latency"
+    commit_hash: "Commit hash"
+    server_count: "Server count"
+    user_installs: "User installs"
+    host: "Host"
+    music_listeners: "Music Listeners"
+    played_time: "Played for"
+    played_songs: "Played songs"
+    cpu_usg: "CPU usage"
+    mem_usg: "Memory usage"
+    uptime: "Uptime"
+
+  values:
+    time: "**{sec}** s."
+    percent: "**{percentage, number, percent}**"
+    failed_commit_hash: "N/A"
+
+  buttons:
+    dev server: Dev Server
+    community: Community
+    community server: Community Server
+    support: Support
+    support server: Support Server
+    translate: Translate
+    website: Website
+    weblate: Weblate
+    discord: Discord
+    vote: Vote
+    voting: Voting
+    "vote (no benefits)": Vote (no benefits)
+    "top.gg": Top.gg
+    "DBL": DBL # discord bot list
+
+  mes:
+    - "a discord bot based off oneshot"
+    - "a testing build for The World Machine, do not invite this bot if you want The World Machine in your server"
+
+# ---------------------------------------------------------------
+
+wool:
+  balance:
+    you:
+      none: "[ You have **no{wool, emoji}Wool** ]"
+      some: "[ You have **{balance, pretty_num}**{wool, emoji} ]"
+    other:
+      none: "[ **{account_holder_id, user, mention}** has **no{wool, emoji}Wool** ]"
+      some: "[ **{account_holder_id, user, mention}** has **{balance, pretty_num}**{wool, emoji} ]"
+    bot:
+      none: |
+        [ Bots usually don't interact with me, not that they even can,
+
+        so {account_holder_id, user, mention} has **no{wool, emoji}Wool** ]
+      some: |
+        [ Bots usually don't interact with me, not that they even can, but...
+
+        {account_holder_id, user, mention} was given {wool, emoji}**{balance, pretty_num}** ]
+    twm:
+      none: "[ I try not to influence the economy, so i have **no{wool, emoji}Wool** ]"
+      some: "[ I try not to influence the economy, but i've got {wool, emoji}**{balance, pretty_num}** ]"
+  transfer:
+    errors:
+      self_transfer: "[ Done... ]"
+      not_enough: "[ You don't have that much {wool, emoji} wool! ]"
+      note_nuf: "you have {wool, emoji}**{balance, pretty_num}**" # note:
+
+    to:
+      bot:
+        none: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, not very generous!"
+        some: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, how generous..."
+        confirmation: "[ Are you sure you want to give wool to... a bot? ]"
+        notefirmation: "you won't be able get it back yk..." # note:
+      user:
+        none: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, not very generous after all..."
+        some: "{sender_id, user, mention} gave away {wool, emoji}**{amount, pretty_num}** to {receiver_id, user, mention}, how generous!"
+    steal: "{sender_id, user, mention} stole a single piece of wool from {receiver_id, user, mention}, why!?"
+  pray:
+    errors:
+      timeout: "[ You've already prayed in the past 24 hours. You can pray again {timestamp_relative}]"
+    finds:
+      misdeed: "...but they saw your misdeed the other day."
+      unhappy: "...but they aren't happy with you today."
+      despise: "...and they despise you today... Too bad..."
+      ogie: "...and they see you're doing okay."
+      yippie: "...and they're happy with you! Praise be The World Machine!"
+      devoted: "...and they see you're truly a devoted follower. Praise be The World Machine!"
+    title: "You prayed to The World Machine..."
+    Change:
+      gain: "you also got {wool, emoji}**{amount, pretty_num}** wool!"
+      loss: "you also lost {wool, emoji}**{amount, pretty_num}** wool..."
+  gamble:
+    errors:
+      not_enough_wool: "[ You don't have enough wool to bet that amount. ]"
+    slots:
+      title: 🎰 Slot Machine
+      description_running: |
+        {bettor_id, user, mention} has bet {wool, emoji}**{amount, pretty_num}**.
+        {ticker}
+      description_result: |
+        {bettor_id, user, mention} has bet {wool, emoji}**{bet_amount, pretty_num}**.
+        {ticker}
+        -# {result, select,
+          jackpot {JACKPOT! 🎉 {bettor_id, user, mention} won back {win_amount, pretty_num} wool!}
+          won_some {{bettor_id, user, mention} won back {win_amount, pretty_num} wool!}
+          lost_some {{bettor_id, user, mention} got back only {win_amount, pretty_num} wool...}
+          lost_all {{bettor_id, user, mention} lost it all... better luck next time!}
+          pain {JACKPOT! 🎉 {bettor_id, user, mention} lost it all! Better luck next time!}
+          other {{bettor_id, user, mention} tricked the machine!}
+        }
+      guide:
+        description: |
+          Gamble any amount of wool as long as you can afford it.
+          Here are the slots you can roll and their values:
+          {slot_values}
+          Points are added up and then multiplied by your bet.
+          You also get double the points when you hit a jackpot
+        values:
+          reduction: "- {icon} **{value} pt. reduction**"
+          normal: "- {icon} **{value} pt.**"
+
+# ---------------------------------------------------------------
+
+transmit:
+  autocomplete:
+    unknown_server: Unknown ({server_id})
+
+# ---------------------------------------------------------------
+
+settings:
+  errors:
+    weird_edgecase_number_0: Either you or {twm, user, mention} is not in the server. If you are a server manager, please re-add {twm, user, mention} to the server.
+    missing_permissions: '[ You must have the "Manage Server" permission in order to change the settings ]'
+    channel_not_messageable: "[ I cannot send messages in that channel ]"
+    channel_insufficient_perms: "[ I do not have enough permissions for that channel. Make sure i have all of these: **Send Messages**, **View Channel** and **Attach Files**. ]"
+    invalid_server_id: "[ Invalid server ID. ]"
+    uncached_server: "couldn't find the name of the server (maybe i was kicked from it)"
+    get_server_id: "(Discord Settings -> Advanced -> enable 'Developer Options', then look at the bottom of the server menu)"
+    channel_lost_warn: "Something broke last time i tried to send a welcome textbox in the channel you chose. Make sure i have enough permissions in it and it exists. You can change the channel using {/setting_welcome_channel}, or in Server Settings -> Overview -> ꜱʏꜱᴛᴇᴍ ᴍᴇꜱꜱᴀɢᴇꜱ ᴄʜᴀɴɴᴇʟ"
+
+  welcome:
+    enabled:
+      yah: "[ Welcome textboxes have been enabled ]"
+      nah: "[ Welcome textboxes have been disabled ]"
+      default_tip: "you can change the textbox message with {/settings/welcome_edit}" # tip:
+    channel:
+      auto: "[ Welcome textboxes channel has been reset ]"
+      Changed: "[ Welcome textboxes channel has been set to {channel} ]"
+    ping:
+      yah: "[ Welcome textboxes should now ping the newcomers ]"
+      nah: "[ Welcome textboxes will no longer ping the newcomers ]"
+    editor:
+      title: "Editing the welcome textbox message..."
+      input: "Welcome Message"
+      placeholder: "Variables you can use: {user_name} {server_name} {member_count}"
+      done: "[ Successfully updated the welcome textbox message ]"
+      new_none: "[ Reset to default ]"
+      Changed: |
+        Previous: {old_text}
+
+        New (current): {new_text}
+      disabled_note: "don't forget to enable them with {/settings/welcome/enabled}` value:True`" # note:
+  transmissions:
+    enabled:
+      yah: "[ This server is now closed for calls ]"
+      nah: "[ This server is now open for calls ]"
+    channel:
+      auto: "[ Transmission channel has been reset ]"
+      Changed: "[ Transmission channel has been set to {channel} ]"
+    images:
+      enabled: "[ Enabled transmission images ]"
+      disabled: "[ Disabled transmission images ]"
+    anonymous:
+      enabled: "[ Successfully enabled anonymous mode ]"
+      disabled: "[ Successfully disabled anonymous mode ]"
+    blocked:
+      yah: "[ Successfully blocked `{server_name}` ]"
+      nah: "[ Successfully unblocked that server ]" # you can use server_name here also if you wish
+
+# ---------------------------------------------------------------
+
+profile:
+  view:
+    message: Viewing {target_id, user, mention}'s profile
+    button: "Edit Your Profile"
+    bots: "[ Bots don't have profiles! ]"
+    loading: "[ {loading, emoji} Loading {target_id, user, mention}'s profile... ]"
+
+    image:
+      alt_nodescription: "On the image is profile of user {username} in The World Machine's system. They own: Suns {suns}, Wool {wool}"
+
+      # you may also still use any of the variables from above, if your language requires some rewording (try not to use {alt_nodescription} at all if you do)
+      alt_cont: "{alt_nodescription}. Their description says: {description}"
+      name: "{target_id} profile"
+      title: "{target_id, user, display_name}'s (@{target_id, user, username}) Profile"
+      unlocked:
+        stamps: "Unlocked Stamps:"
+  edit:
+    down: "\\s[10]\\@[OneShot/The World Machine/What,][ \\s[1.2]Oh,\\d[500] apologies,\\d[250]\\@[OneShot/The World Machine/Upset left],\\d[250],\\d[250] the website is down right now. \\@[OneShot/The World Machine/Speak]As i was finishing up maintenance on it last week, i went out to take a short break and \\@[OneShot/Robots/Kelvin]\\c[lightcoral]Kelvin\\c[]\\@[OneShot/The World Machine/Looking Left] came up asking for help at the factory. A week later, i find out that i got so carried away, that i forgot to close the \\@[OneShot/The World Machine/Looking Right]door to the server room... \\d[500]\\d[1000]the cats apparently got in there \\@[OneShot/The World Machine/Looking Left]and messed everything up..\\d[1400] \\@[OneShot/The World Machine/Looking Right]My developers will send updates on it in the community server\\@[OneShot/The World Machine/Normal]\\d[200],\\@[OneShot/The World Machine/Speak] so join if you want\\s[1000]. ]  "
+    text: "You can edit your profile over on the website!"
+  notifications:
+    badge:
+      content: "-# [ You got a badge! See each one you've earned at {/profile/view} ]"
+      title: "‹ {emoji} {badge_name} ›"
+      description: "{target_id, user, mention} {badge_message}"
+      settings_note: "You can change this notification using {/settings/badge_notifications}"
+      types:
+        times_shattered: |
+          shatterred a lightbulb **{amount, pretty_num}** {amount, select,
+            1 {time}
+            other {times}
+          }...
+        times_asked: |
+          bothered The World Machine **{amount, pretty_num}** {amount, select,
+            1 {time}
+            other {times}
+          }!
+        wool: earned over **{amount, pretty_num}** wool!
+        times_transmitted: initiated over **{amount, pretty_num}** transmissions!
+        suns: gave/earnt over **{amount, pretty_num}** suns
+# ---------------------------------------------------------------
+
+explode:
+  dialogue:
+    why:
+      - "[ Why? ]"
+      - "[ I have to clean up everytime someone does this. ]"
+      - "[ Wow... really? ]"
+      - "[  ]"
+      - ~ # don't touch this one, the bot inserts a random amount of dots here
+
+    sixninefourtwo: nice 👍
+    nineninenineninenine: |
+      [ That's enough. How the `####` did you manage to reach this number!? Do you understand how many worlds you have destroyed? ]
+
+      ⚠️ warning: Utterly despicable.
+
+  info: "Shatter count: {amount, pretty_num}"
+  YouKilledNiko: "[ You killed Niko. ]"
+
+# ---------------------------------------------------------------
+
+shop:
+  loading: "[ {loading, emoji} Loading Shop... ]"
+
+  user_wool: "**Your Balance: {wool, emoji}{wool, pretty_num}**"
+  owned: "you have **{amount, pretty_num}**"
+
+  buttons:
+    buy: Trade
+    buy_all: Trade All
+    too_poor: Cannot Afford
+    too_poor_all: Cannot Afford All
+    sell: Trade in
+    sell_all: Trade in All
+    go_back: Go Back
+    owned: Owned
+
+  main_title: Welcome!
+
+  main: >
+    Hey, Hey! Welcome to my emporium. I'm willing to trade many shiny and colorful treasures, backgrounds, capsules and more in exchange for your {wool, emoji}**Wool**... think of it as a currency eh?
+
+
+    To get started, simply open one of the categories shown below and then trade away! Keep in mind that there are some items that change **daily**, so keep an eye out on those!
+
+
+    {motd}
+
+
+    {user_wool}
+
+  motds:
+    - The wool market changes everyday. Honestly, we bird people have a good intuition about it, and by intuition I mean I randomly increase it or decrease it to whatever I feel like.
+    - I may have *broken* the wool market once or twice. Let's keep that between us.
+    - "Words of wisdom as a friend: If you buy high and sell low, good fortune awaits..! Don't fact check that!"
+    - My poor trinket and treasures were washed away... perhaps you could find more for me?
+    - You're asking about what happened to that one trader before me? I wouldn't know. *I wouldn't know at all...* # During the World Machine Edition AMA Nightmargin jokingly said that Magpie hid a body which has not been found yet. Considering the fact that the purple trader is nowhere to be found in the remake, it is the most likely victim of this alleged crime.
+    - 'Do you like my bottle collection? I like my bottle collection. What do you mean it''s all "Hard Liquor"? Is that what it says?' # Magpie's drink of choice is hard liquor, but only so he can collect the bottles afterwards.
+
+  traded: '> Successfully traded for {amount, pretty_num} of "{item_name}"!' # {price} is also available here
+  traded_sell: '> Sucessfully traded in {amount, pretty_num} "{item_name}" for {price, pretty_num} Wool!'
+  traded_fail: "> You cannot trade for this."
+
+  stocks: >
+    ```Stock Value: {value, pretty_num}
+
+    Stock Price: {price, pretty_num}```
+
+  nikogotchi:
+    title: Capsules
+
+    main: >
+      I see you're interested in this weird capsule thingamajig!
+      If I recall correctly, this is used to unlock **Nikogotchis!**
+      What are *Nikogotchis* you might ask? Well my dear customer, they are simple pets you can take care off, based of me, or any other...
+
+
+      ...
+
+
+      *AHEM* existential dread aside, feeding them with pancakes and taking good care of them will allow you to gather treasures! Which you can trade to me! Pretty cool right?
+
+
+      So why not trade for a capsule today? Only {wool, emoji}**{cost, pretty_num}**!
+
+
+      *Do keep in mind that you can only have **one capsule** per Nikogotchi.*
+
+
+      {user_wool}
+
+    result: >
+      > You gave Magpie {amount} Wool, then he turns the gatchapon machine and...
+
+      > He gives you a {capsule_name}!
+
+    result_footer: Use [ /nikogotchi check ] to see your new Nikogotchi!
+
+  pancakes:
+    title: Pancakes
+
+    main: >
+      Nikogotchis absolutely adore pancakes, and thankfully, you can trade some with me!
+
+
+      {items}
+
+
+      {user_wool}
+
+  backgrounds:
+    title: Backgrounds
+
+    main: >
+      Do you want to trade {wool, emoji}**{amount}** for this background?
+
+
+      {user_wool}
+
+    newly_owned: >
+      Thanks! Now you are a proud owner of this background.
+
+
+      {user_wool}
+    traded: "> Successfully traded for this background!"
+
+  treasures:
+    buy:
+      title: Treasures
+      message: >
+        You want to trade your {wool, emoji}**Wool** for treasures? Then you've come to the right place! I've got plenty of treasures I've found, or treasure other users have traded in!
+        {stock_market}
+        {selected_treasure}
+        {user_wool}
+      placeholder: Choose a treasure to trade...
+      option: '"{name}" - {price} Wool'
+
+    sell:
+      title: Trade in Treasures
+      message: >
+        Ah... You're intrerested in trading in your treasures! That's great!
+        Whenever you trade in treasures, I can trade it to other people, so make sure you really want to trade it!
+        {stock_market}
+        {selected_treasure}
+        {user_wool}
+      #not_selected: "*You haven't selected any treasures to trade in...*"
+      placeholder: Choose a treasure to trade in...
+      no_treasures: You have no treasures to trade in.
+      option: '"{name}" (x{amount, pretty_num})'
+
+    selection: >
+      **Currently Selected:**
+
+      - {treasure_icon} "**{treasure_name}**" - {owned}
+
+
+      **Trade One**: {wool, emoji}**{price_one, pretty_num}**
+
+      **Trade All**: {wool, emoji}**{price_all, pretty_num}** (x{amount, pretty_num})
+
+# ---------------------------------------------------------------
+
+items:
+  treasures:
+    amber:
+      name: Glowing Amber
+      description: It has a three-leaf clover pattern.
+    bottle:
+      name: Bottle of Alcohol
+      description: A bottle of alcohol. Perfect for making molotov cocktails.
+    card:
+      name: '"Real" Library Card'
+      description: Niko's own photo is glued on.
+    clover:
+      name: Glowing Clover
+      description: A glowing clover.
+    die:
+      name: Glowing Die
+      description: A die with glowing dots.
+    journal:
+      name: Mysterious Journal
+      description: It's written in an unknown language.
+    pen:
+      name: Glowing Feather
+      description: A long and slender feather with glowing edges.
+    shirt:
+      name: Novelty Shirt
+      description: '"I herded rams and all I got was this lousy T-shirt!"'
+    sun:
+      name: The Sun
+      description: A large lightbulb. It's the sun.
+
+  pancakes:
+    normal:
+      name: Pancakes
+      description: >
+        The bare minimum for feeding a Nikogotchi.
+
+        *+25 🥞*
+
+        *+1 ❤️*
+
+    golden:
+      name: Golden Pancakes
+      description: >
+        Expensive, but worth it.
+
+        *MAX 🥞*
+
+        *+25 ❤️*
+
+    glitched:
+      name: "???"
+      description: I don't even know how this got here.
+
+  capsules:
+    blue: Barrens Capsule
+    green: Glens Capsule
+    red: Refuge Capsule
+    yellow: Solstice Capsule
+
+  backgrounds:
+    Alula and Calamus: Alula and Calamus
+    Barrens: Barrens
+    Glens: Glens
+    Refuge: Refuge
+    Pancakes: Pancakes
+    Magpie: Magpie
+    Catwalk: Catwalk
+    Ruins: Ruins
+    Factory: Factory
+    Lamplighter: Lamplighter
+    Library: Library
+    The World Machine: The World Machine
+    The Author: The Author
+
+# ---------------------------------------------------------------
+
+interact:
+  twm_not_being_very_happy: "[ Don't touch me, {user_id, user, mention}. ]"
+  twm_questioning_if_youre_stupid_or_not: "[ {user_id, user, mention}, you can't really interact with bots. ]" # unused
+  twm_is_fed_up_with_you: "[ *sigh* You cannot interact with yourself, {user_id, user, mention}. ]"
+
+  errors:
+    no_path: "Couldn't find the interaction, try running the command again. If the error persists, please report it in my community server (you can an invite to it in {/about})"
+    500: "Unexpected error, try running the command again. If the error persists, please report it in my community server (you can find an invite to it in {/about})"
+    fail: Failed to send the interaction
+
+  phrases:
+    - name: Boop
+      phrases:
+        - name: Basic
+          phrases:
+            - "{user_one} booped {user_two}"
+        - name: Playful
+          phrases:
+            - "{user_one} pokes the nose of {user_two}!"
+            - "{user_one} reaches out and boops {user_two}!"
+            - "{user_one} felt silly and booped {user_two}!"
+            - "{user_one} playfully boops {user_two}!"
+        - name: Delicate
+          phrases:
+            - "{user_one} delicately boops and brushes the nose of {user_two}"
+            - "{user_one} delivers a dainty boop to {user_two}"
+            - "{user_one} gently taps {user_two}'s nose"
+            - "{user_one} places a delicate boop on {user_two}'s nose"
+        - name: Frustrated
+          phrases:
+            - "{user_one} aggressively booped {user_two}"
+            - "{user_one} booped {user_two} out of frustration"
+            - "{user_one} huffs and boops {user_two} in irritation"
+            - "{user_one} lets out their frustration with a firm boop on {user_two}"
+        - name: Irresistible
+          phrases:
+            - "{user_one} felt the need to give {user_two} a boop!"
+            - "{user_one} just wanted to give {user_two} a boop!"
+            - "{user_one} couldn't resist booping {user_two}"
+            - "{user_one} gives in to the urge and boops {user_two}"
+        - name: Confused
+          phrases:
+            - "{user_one} leaves {user_two} in confusion via a boop!"
+            - "{user_one} gives {user_two} an unexpected boop!"
+            - "{user_one} left {user_two} speechless post-boop!"
+            - "{user_one} leaves {user_two} wondering why they were booped"
+        - name: Cute
+          phrases:
+            - "{user_one} gives {user_two} the cutest little boop!"
+            - "{user_one} boops {user_two}'s nose and giggles cutely!"
+            - "{user_one} can't handle how adorable {user_two} is and boops them!"
+            - "{user_one} with a smile, delivers a heart-melting boop to {user_two}!"
+    - name: Slap
+      phrases:
+        - "{user_one} slapped {user_two}, probably deserved."
+        - "{user_one} slaps {user_two}!"
+        - "{user_two} received a sudden slap from {user_one}!"
+    - name: Pet
+      phrases:
+        - "{user_one} pet {user_two}!"
+    - name: Head Pat
+      phrases:
+        - "{user_one} gave {user_two} a headpat!"
+    - name: Tickle
+      phrases:
+        - "{user_one} started tickling {user_two} a surprise tickle!"
+        - "{user_one} gave {user_two} a surprise tickle!"
+        - "{user_one} tickled {user_two} and sparked a tickle fight!"
+        - "{user_one} went for a tickle attack at {user_two}!"
+    - name: Hug
+      phrases:
+        - "{user_one} hugged {user_two}!"
+    - name: Cuddle
+      phrases:
+        - "{user_one} cuddled with {user_two}!"
+    - name: Kiss
+      phrases:
+        - name: Basic
+          phrases:
+            - "{user_one} kissed {user_two}! ❤️"
+        - name: Warm
+          phrases:
+            - "{user_one} gave {user_two} a warm kiss ❤️"
+        - name: Romantic
+          phrases:
+            - "{user_one} pulls {user_two} close and shares a slow, tender kiss"
+        - name: Cheek Kiss
+          phrases:
+            - "{user_one} plants a sweet peck on {user_two}'s cheek"
+            - "{user_one} leaves {user_two} blushing with an affectionate cheek kiss!"
+    - name: Attack
+      phrases:
+        - name: Basic Punch
+          phrases:
+            - "{user_one} punched {user_two}, that hurts."
+        - name: Random Combo
+          phrases:
+            - "{user_one} delivers a rapid 1-2 punch combo to {user_two}!"
+            - "{user_one} lands three quick jabs followed by an overhand right on {user_two}!"
+            - "{user_one} goes full flurry mode on {user_two}!"
+        - name: Pillow
+          phrases:
+            - "{user_one} hits {user_two} behind their head with a fluffy pillow!"
+            - "{user_one} launches a pillow barrage at {user_two}! No feathers left!"
+            - "{user_one} swings a cushion at {user_two} in a soft attack!"
+    - name: 🔥
+      phrases:
+        - name: Rocks
+          phrases:
+            - "{user_one} threw a small rock at {user_two}!"
+            - "{user_one} threw a bunch of pebbles at {user_two}!"
+            - "{user_one} unearthed a giant rock out of the ground and launched it at {user_two} using brain power"
+        - name: Molotov
+          phrases:
+            - "{user_one} threw a Molotov Cocktail towards {user_two} ‼️"
+        - name: Empty Bottle (ow)
+          phrases: # VIOLENCE
+            - "{user_one} threw an empty bottle at {user_two}'s head"
+            - "{user_one} shattered a bottle on {user_two}'s head"
+          flags: bottle # do not translate
+        - name: Piece of Wool
+          phrases:
+            - "{user_one} threw a piece of wool at {user_two}, and it fell on the ground mid-way"
+            - "{user_one} released a tiny 🤏 pinch of wool above {user_two}'s head"
+            - "{user_one} rubbed {user_two}'s face with a big clump of wool"
+            - "{user_one} tickled {user_two}'s ear with a small piece of wool"
+          flags: wool # do not translate
+  modifiers:
+    no_item: "{user_one} ran out of {item} to throw at {user_two}!"
+# ---------------------------------------------------------------
+
+treasure:
+  empty: "[ {user_id, user, mention} doesn't have any treasure ]"
+  item: "**`{amount}`** {icon} {name}"
+  message: >
+    ### {user}'s treasures
+
+    {treasures}
+
+  tip: you can get more treasure by trading in the shop or sending Nikogotchis to find some! # tip:
+
+# ---------------------------------------------------------------
+
+nikogotchi:
+  owned: Owned by {owner_id, user, displayname+(@username)}
+  loading: "[ {loading, emoji} Loading Nikogotchi... ]"
+  invalid: "[ You don't have a Nikogotchi! ]"
+  tipnvalid: "you can buy a capsule with one in the shop" # tip:
+
+  name:
+    niko: Niko
+    nikonlanger: Nikonlanger
+    prophet_bot: Prophet Bot
+    silver: Silver
+    alula: Alula
+    calamus: Calamus
+    magpie: Magpie
+    lamplighter: Lamplighter
+    ling: Ling
+    kip: Kip
+    penguin: Penguin
+    george: George
+    rue: Rue
+    prototype: Prototype
+    cedric: Cedric
+    the_world_machine: The World Machine
+
+  other:
+    you_invalid: "[ You don't have a Nikogotchi. ]"
+    other_invalid: "[ This person doesn't seem to have a Nikogotchi. ]"
+    you_invalid_get: "[ You don't have a Nikogotchi. Get a capsule for one in the {/shop} before doing this! ]"
+    insufficient_pronouns: "[ Please provide at least two pronoun forms (e.g. 'they/them'), or enter just a slash to hide them ]"
+    error:
+      description: > # Kelvin was a nikogotchi before
+        [ Your Nikogotchi (`{id}`) no longer exists. You can get a new one of the same rarity or send it away. ]
+
+
+        [ What do you want to do? ]
+      buttons:
+        send_away: Send Away
+        rotate: Rotate
+
+    send_away:
+      description: "[ Are you sure you want to send away {name} so that you can adopt a new Nikogotchi? ]"
+      success: "[ Successfully sent away {name}... Enjoy your future Nikogotchi! ]"
+
+    renaming:
+      title: Give your Nikogotchi a new name!
+      input:
+        label: Name
+        placeholder: Enter the new name for your Nikogotchi...
+      button: Rename # used when you use a nikogotchi capsule
+      response: >
+        Successfully renamed your Nikogotchi!
+
+        "{old_name}" → "{new_name}"
+    repronoun:
+      title: Change your nikogotchi's pronouns
+      input:
+        label: Pronouns
+        placeholder: Enter the new pronouns for your nikogotchi... (use just "/" if u want to hide the pronouns)
+      button: Repronoun
+      response: >
+        Successfully changed the pronouns of your Nikogotchi!
+
+        "{old_pronouns}" → "{new_pronouns}"
+    trade:
+      request: >
+        ### **{user_id, user, mention}** wants to trade their Nikogotchi ({name_one}) with you!
+
+        Do you want to trade your Nikogotchi ({name_two}) with them?
+
+      waiting: "[ Sent {user_id, user, mention} a trade offer! {loading, emoji} Waiting for their response... ]"
+      declined: "[ Your trade request has been declined... ]"
+      success_decline: "[ Trade request successfully declined. ]"
+      success: "[ Successfully traded with {user_id, user, mention}! Say hello to **{name}**! ]"
+
+  found:
+    title: You found {name}!
+    description: "Want to give them a different a name?"
+    renamenote: you can also do this using {/nikogotchi/rename} # note:
+
+  status:
+    template: "*{status}*"
+
+    normal: "👍 Currently doing fine."
+    normal-rare: "🙂 Waiting for something to happen?"
+    pet: "🥺 {name} wants attention!"
+    dirty: "🛀 {name} wants to be cleaned!"
+    hungry: "🥞 {name} is feeling hungry..."
+    treasure: "🎒 {name} is currently looking for treasures!"
+    danger: 🚨 {name} is at low health! Use Golden Pancakes to restore their health!
+
+  components:
+    pet: Pet
+    clean: Clean
+    find_treasure: Find Treasure
+    call_back: Call Back
+
+    feed:
+      placeholder: "Choose food to feed with..."
+
+      pancakes: Feed Pancake (x{amount, pretty_num})
+      golden_pancakes: Feed Golden Pancake (x{amount, pretty_num})
+      glitched_pancakes: Feed ??? (x{amount, pretty_num})
+
+      glitched_powerup: "Your Nikogotchi has been significantly powered up after eating this mess of a pancake..."
+
+      no_food: "No Food... you can get some at the shop!"
+      invalid: You can't feed this to your Nikogotchi! Please refresh using {refresh, emoji}!
+
+  died:
+    title: "🪦 {name} passed away..."
+    description: >
+      {name} lived a full life which lasted for: {age}.
+
+
+      - You haven't interacted with your nikogotchi for **{time_difference} {time_difference, select, 
+        1 {hour}
+        other {hours}
+      }**... They rely on your love and attention, so keep trying to give them the best care possible!
+
+
+      R.I.P....
+  treasured:
+    title: 🎉 Your Nikogotchi found some treasures!
+    message: >
+      {treasures}
+
+      Total Treasures: **{total}**
+
+      Time Spent Looking: {time}.
+
+    dialogues:
+      sent: "Your Nikogotchi was sent to find treasures!"
+      senote: "their stats will decrease faster than normal, so don't forget to call them back" # note:
+      none_found: "Your Nikogotchi didn't find any treasures... Maybe you should give them more time?"
+
+  levelupped:
+    title: 🏆 they levelled up to level {level, pretty_num}!
+    message: >
+      Here are the stat changes:
+
+      {stats}
+    stat: "- {icon} +**{increase, pretty_num}** ({old_value, pretty_num} → {new_value, pretty_num})"
+
+  dialogue:
+    niko:
+      fed:
+        - "Ah... Pancakes!"
+        - "Wow, these are just a good as the ones my mama makes!"
+        - "Please tell me there are hazelnuts in this one!"
+        - "PANCAKES!"
+        - "Yummy!"
+      pet:
+        - "Wow... thank you!"
+        - "Aw, that feels nice!"
+        - "*purr*"
+      cleaned:
+        - "Feeling pretty refreshed!"
+        - "Squeaky clean!"
+        - "My fur's all nice and fluffy!"
+    nikonlanger:
+      fed:
+        - "yum"
+      pet:
+        - ","
+      cleaned:
+        - "so qlean so lush"
+    prophet_bot:
+      fed:
+        - "[My purpose is not to eat. But thank you.]"
+        - "[Thank you for the gesture.]"
+      pet:
+        - "{...}"
+        - "[I appreciate your attention.]"
+      cleaned:
+        - "[Maintenance is necessary for my purpose. Thank you.]"
+    silver:
+      fed:
+        - "[Food is no longer necessary for me, but thank you for the gesture.]"
+      pet:
+        - "[Your touch is comforting, though I lack the ability to feel.]"
+      cleaned:
+        - "[I appreciate your efforts to maintain my function. Thank you.]"
+    alula:
+      fed:
+        - "Yum! I much prefer fish though!"
+        - "Delicious! I was pretty hungry!"
+        - "Yum!"
+      pet:
+        - "Hee hee, that tickles!"
+      cleaned:
+        - "I feel so refreshed and clean! Whee!"
+    calamus:
+      fed:
+        - "Oh, pancakes? Thank you so much."
+      pet:
+        - "That's quite nice. Thanks for the attention."
+      cleaned:
+        - "I really needed that. These ruins can get quite dusty."
+    magpie:
+      fed:
+        - "Ah, pancakes! Exactly the ones I sold you!"
+        - "Ah thank you! It is interesting becoming a Nikogotchi, but eating pancakes does get a little tiring."
+      pet:
+        - "A gentle touch, just what I like!"
+        - "Well, aren't you a friendly one? A pat on the feathers always brightens my day."
+      cleaned:
+        - "Ah, a little sprucing up, I appreciate it!"
+    lamplighter:
+      fed:
+        - "Oh, thanks. Coffee's my usual, but I could use a change. Appreciate it."
+        - "Pancakes? Thanks. I could use a little extra fuel right now."
+      pet:
+        - "Oh, uh, thanks. Not used to this... but it's not bad."
+        - "Oh, uh, thanks. I, um, appreciate the gesture."
+      cleaned:
+        - "Really? I mean, sure, I appreciate it. Thanks."
+        - "Cleanliness is... important. Thanks."
+    ling:
+      fed:
+        - "Oh, thank you! You're too kind. Usually I'd be the one serving these!"
+      pet:
+        - "Ah, that's quite pleasant. Thank you for the little pick-me-up."
+      cleaned:
+        - "I'm feeling quite refreshed. Thank you."
+    kip:
+      fed:
+        - "Mmm, pancakes! You know the way to an engineer's heart. Thanks!"
+      pet:
+        - "You've got a knack for this, my friend."
+      cleaned:
+        - "A little sprucing up, eh? I feel ready to take on a whole assembly line now!"
+    penguin:
+      fed:
+        - "HELLO."
+      pet:
+        - "HELLO."
+      cleaned:
+        - "HELLO."
+    george:
+      fed:
+        - "George graciously accepts the offering of fluffy pancakes. George's heart is content."
+        - "I guess pancakes are fine. Don't expect me to be all sunshine and rainbows about it."
+        - "Oh, pancakes... I suppose they're alright. Nothing really matters anyway."
+        - "Wow, pancakes! I can't help but smile. Thanks a bunch!"
+        - "Oh dear, you shouldn't have. But thank you, sweetie. I appreciate it."
+        - "Pancakes? Rad choice, my friend! I'm all about that."
+      pet:
+        - "Your gentle touch pleases George greatly. George appreciates it."
+        - "What are you touching me for? Keep your hands to yourself."
+        - "Why bother petting me? I don't deserve it."
+        - "Awww, you're the best! I feel all warm and fuzzy now."
+        - "You're so caring. Thank you my dear!"
+        - "Chill vibes, dude! Your petting game is on point."
+      cleaned:
+        - "George is pleased with the tidiness. It reflects well upon George."
+        - "Finally, someone does something right. About time."
+        - "Cleaning up after me won't make a difference in this bleak world."
+        - "You're so thoughtful! With a clean space, I can do anything!"
+        - "Thank you dear for keeping things tidy. It makes my life much easier!"
+        - "Thanks for keeping it chill and clean around here. I respect that."
+    rue:
+      fed:
+        - "Mmm, these pancakes are delightful. Thank you!"
+        - "Pancakes? My favorite! You're too kind."
+      pet:
+        - "Ah, that's the spot! You're quite good at this, aren't you?"
+        - "A little scratch behind the ears is always appreciated."
+      cleaned:
+        - "Oh, you really didn't have to, but I appreciate the effort."
+        - "I may be a bit dusty, but it's nothing I can't handle. Thanks for caring"
+    prototype:
+      fed:
+        - "[This is...unexpected. Thank you.]"
+      pet:
+        - "[Hm, not bad, human. Your touch isn't as cold as your technology.]"
+        - "[I may not feel it, but I appreciate the gesture.]"
+      cleaned:
+        - "[I suppose even a machine like me needs some maintenance now and then. Carry on.]"
+        - "[Maintenance is necessary, even for a reclusive robot. I suppose I'm due for a little care.]"
+    cedric:
+      fed:
+        - "Ah, a delectable offering! My thanks, dear friend."
+        - "These pancakes are a delightful treat. You have my gratitude."
+      pet:
+        - "Your kindness warms my heart. A gentle touch in trying times."
+        - "A moment of respite, I appreciate your companionship."
+      cleaned:
+        - "A spot of maintenance, much appreciated! A well-tended flying machine is a reliable one."
+        - "You honor me with your diligence. A clean apparatus functions optimally."
+    the_world_machine:
+      fed:
+        - "[Ah... Thank you.]"
+        - "[Oh, pancakes? I never thought I'd get to taste something like this.]"
+      pet:
+        - "[I can't feel it in the same way you do, but I sense your kindness. It's comforting in its own unique way.]"
+      cleaned:
+        - "[Cleaning me up? That's unexpected, but it feels... refreshing.]"
+        - "[I suppose even digital entities need a bit of care sometimes. You have my gratitude.]"
+
+# ---------------------------------------------------------------
+
+textbox:
+  errors:
+    nothing_passed: "[ Path not passed to the locale command, \\@[OneShot/Niko/83c] hiiiiiiiiii ]"
+    no_chars: No characters found...
+    no_char: Character not found...
+    no_faces: No faces found...
+    no_faces_for_char: Faces not found for this character...
+    failed_to_render: "[ I failed to render the image, please report this in our community discord server. (you can find an invite to it in {/about}) ]"
+    unknown_frame: "Frame №{index} not found. Total frames: {total, pretty_num}"
+    invalid_character: The character "{character_name}" doesn't exist
+    invalid_face: Character "{character_name}" doesn't have the "{face_name}" face
+    cutoff: "This text has been truncated to fit within Discord's limitations." # TODO: implemen
+    failed_to_send: "[ Failed to send for some reason :[ ]"
+    failed_to_send_dm: "[ Couldn't send message to our dms, are your dms open or have you [added me](https://discord.com/oauth2/authorize?client_id={twm, user, id}) yet? ]"
+    apng_preview_warn: | # warn:
+      Discord doesn't show or let you download `.png`s as APNG.
+      You can download the file, add .png to its name, open it in the browser and it should animate.
+    ephemeral_warnote: If you're planning to ⭐ Favorite this - make sure to download it as file, and send it elsewhere. Files in ephemeral messages (those only you can see) have a very short lifespan, discord deletes them after like 15 minutes. So make sure to save it or it'll show up as a blue square in your favorites list # warn:
+    toolong_for_image_warnote: The text on the frame you entered does not fit within the output *image*, it will fully show up if you change the output file type to something that can be animated though. # TODO: warn:
+    recovering:
+      message: "[ State not found, trying to recover... ]"
+      success: "[ Successfully recovered the state, loading editor... {loading, emoji} ]"
+  filetypes:
+    GIF: gif
+    WEBP: webp
+    APNG: apng
+
+    PNG: png
+    JPEG: jpeg
+    # ↑ those show up ↓ there
+  button:
+    render: Render everything as {type}
+    rendersend: "Render everything as {type} & Send"
+    face: Select facepic
+    text:
+      edit: Edit Text
+      add: Add Text
+    frame:
+      next: Next Frame
+      add: Add Frame
+      previous: Previous Frame
+      manual: Input Frame
+      delete: Delete
+      clear: Clear
+    edit: Edit Frames as text
+
+  frame_position: "editing frame {current, pretty_num} of {total, pretty_num} total"
+
+  select:
+    chars: Characters...
+    faces: Faces...
+    styles: Styles...
+
+  modal:
+    edit_frames:
+      title: "Editing textbox"
+      input:
+        label: Code
+        placeholder: what goes here
+      accepted: Textbox changes accepted
+      warning: Some warnings showed up while parsing the code
+      declined: Something went wrong while parsing the code
+      response: State changed! # only shows up while debugging
+    edit_text:
+      title: "Editing text for frame #{index}!"
+      input:
+        label: Text
+        placeholder: Text probably goes here
+      response: > # only shows up while debugging
+        Text changed!
+
+        New text: {new_text}
+
+        Old text: {old_text}
+
+  monologue:
+    char: "[ Pick a character for the textbox ]"
+    face: "[ Pick a face ]"
+    press_notext: "[ Make sure you put some text... if you want ]"
+    press: "[ Press the green button whenever you're ready ]"
+    rendering: "[ {loading, emoji} Rendering... ]"
+    sending: "[ {loading, emoji} Sending... ]"
+    done: "[ Done ]"
+
+    debug: "(Took: **{time, pretty_num}**ms., Sid: **{sid}**)"
+
+  alt:
+    single_frame:
+      filename: "TWM textbox ({timestamp})"
+    multi_frame:
+      filename: "TWM textbox ({frames}, {timestamp})"
+
+  ttb:
+    comment: "documentation on this can be found here: {link}"
