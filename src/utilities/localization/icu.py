@@ -75,17 +75,17 @@ async def icu_user(
 	if user:
 		user_data = {
 		    'mention+(@username)':
-		        f"<@{user.id}> (@{user.username})",
+                      f"<@{user.id}> (@{user.username})",
 		    'displayname+(@username)':
-		        f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
+                      f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
 		    'mention':
-		        f"<@{user.id}>",
+                      f"<@{user.id}>",
 		    'id':
-		        str(user.id),
+                      str(user.id),
 		    'username':
-		        user.username,
+                      user.username,
 		    'display_name':
-		        user.display_name,
+                      user.display_name,
 		}
 	elif user_id == str(bot_id):
 		user_data = {
@@ -155,6 +155,35 @@ async def icu_select(
 
 	return await render_icu(result_branch, variables, locale, ctx)
 
+
+async def icu_selectordinal(
+    arguments: tuple, variables: dict, locale: str, ctx: Any | None = None, found_var: Any | None = None
+):
+	try:
+		value = float(found_var) if found_var is not None else 0
+	except (ValueError, TypeError):
+		value = 0
+
+	options = arguments
+	if not isinstance(options, dict):
+		return str(value)
+
+	exact_key = f"={int(value)}" if value.is_integer() else f"={value}"
+	if exact_key in options:
+		raw_result = options
+	else:
+		babel_locale = Locale.parse(locale, sep="-")
+		category = babel_locale.ordinal_form(value)
+
+		raw_result = options.get(category, options.get('other', ""))
+
+	rendered_result = await render_icu(raw_result, variables, locale, ctx)
+
+	if "#" in rendered_result:
+		formatted_num = fnum(int(value) if value.is_integer() else value, locale)
+		rendered_result = rendered_result.replace("#", formatted_num)
+
+	return rendered_result
 
 async def icu_plural(
     arguments: tuple[Any, Any, Any],
@@ -235,6 +264,7 @@ icu_formatters = {
     'user': icu_user,
     'command': icu_slash,
     'pretty_num': icu_pretty_num,
+    'selectOrdinal': icu_selectordinal,
     'select': icu_select,
     'plural': icu_plural,
     'number': icu_number
