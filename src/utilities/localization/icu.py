@@ -75,17 +75,17 @@ async def icu_user(
 	if user:
 		user_data = {
 		    'mention+(@username)':
-                      f"<@{user.id}> (@{user.username})",
+		        f"<@{user.id}> (@{user.username})",
 		    'displayname+(@username)':
-                      f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
+		        f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
 		    'mention':
-                      f"<@{user.id}>",
+		        f"<@{user.id}>",
 		    'id':
-                      str(user.id),
+		        str(user.id),
 		    'username':
-                      user.username,
+		        user.username,
 		    'display_name':
-                      user.display_name,
+		        user.display_name,
 		}
 	elif user_id == str(bot_id):
 		user_data = {
@@ -156,6 +156,20 @@ async def icu_select(
 	return await render_icu(result_branch, variables, locale, ctx)
 
 
+async def icu_notempty(
+    arguments: tuple[Any, Any, Any],
+    variables: dict[str, Any],
+    locale: str,
+    ctx: Any | None = None,
+    found_var: Any | None = None
+):
+	print(arguments)
+	input = arguments[2]
+	if found_var:
+		return await render_icu(input, variables, locale, ctx)
+	return ""
+
+
 async def icu_selectordinal(
     arguments: tuple, variables: dict, locale: str, ctx: Any | None = None, found_var: Any | None = None
 ):
@@ -184,6 +198,7 @@ async def icu_selectordinal(
 		rendered_result = rendered_result.replace("#", formatted_num)
 
 	return rendered_result
+
 
 async def icu_plural(
     arguments: tuple[Any, Any, Any],
@@ -267,7 +282,8 @@ icu_formatters = {
     'selectOrdinal': icu_selectordinal,
     'select': icu_select,
     'plural': icu_plural,
-    'number': icu_number
+    'number': icu_number,
+    'notempty': icu_notempty
 }
 
 
