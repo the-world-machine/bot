@@ -220,18 +220,10 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	username = pretty_user(user)
 
 	alt = alt if alt is not None else await loc.l(
-	    "profile.view.image.alt_nodescription",
+	    "profile.view.image.alt",
 	    username=username,
 	    suns=user_data.suns,
 	    wool=user_data.wool,
+	    description=user_data.profile_description,
 	)
-	if len(user_data.profile_description) > 0:
-		alt = await loc.l(
-		    "profile.view.image.alt_cont",
-		    alt_nodescription=alt,
-		    description=user_data.profile_description,
-		    username=username,
-		    suns=user_data.suns,
-		    wool=user_data.wool,
-		)
 	return File(file=img_buffer, file_name=filename + (".gif" if animated else ".png"), description=alt)

@@ -36,9 +36,11 @@ last_update_timestamps = {}
 debounce_interval = 1  # seconds
 
 
-def on_file_update(filename):
+def on_file_update(filename: str):
 	global fallback_locale
 	current_time = datetime.now()
+	if not filename.endswith(".yml"):
+		return
 	locale = Path(filename).stem
 	if filename in last_update_timestamps and (
 	    current_time - last_update_timestamps[filename]
