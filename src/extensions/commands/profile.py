@@ -1,20 +1,17 @@
-import asyncio
 import time
-
+import asyncio
+from utilities.misc import fetch
 from aiohttp import ClientResponseError
-from utilities.config import debugging, get_config
 from datetime import datetime, timedelta
-from utilities.localization.formatting import fnum
 from utilities.message_decorations import *
-from utilities.misc import InvalidResponseError, cached_get, fetch
 import utilities.profile.badge_manager as bm
 from utilities.profile.main import draw_profile
 from utilities.database.schemas import UserData
+from utilities.localization.formatting import fnum
+from utilities.config import debugging, get_config
 from utilities.localization.localization import Localization
-from interactions import Button, ButtonStyle, Extension, File, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
-
-from utilities.textbox.facepics import get_facepic
 from utilities.textbox.mediagen import Frame, render_textbox_frames
+from interactions import Button, ButtonStyle, Extension, File, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
 
 class ProfileCommands(Extension):
