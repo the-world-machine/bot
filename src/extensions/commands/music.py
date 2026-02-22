@@ -773,7 +773,7 @@ class MusicCommands(Extension):
 
 		main_buttons = self.get_buttons()
 
-		niko = emojis["icons"]["vibe"]
+		niko = emojis["icons"]["jam"]
 		player_state = "Now Playing..."
 		embed = await self.get_playing_embed(player_state, player, True)
 		if message:
@@ -785,12 +785,12 @@ class MusicCommands(Extension):
 
 			if player.paused:
 				player_state = "Paused"
-				niko = "<:nikosleepy:1027492467337080872>"
+				niko = emojis["icons"]["sleep"]
 				main_buttons[2].label = "Resume"
 				main_buttons[2].style = ButtonStyle.BLUE
 			else:
 				player_state = "Now Playing..."
-				niko = "<a:vibe:1027325436360929300>"
+				niko = emojis["icons"]["jam"]
 				main_buttons[2].label = "Pause"
 				main_buttons[2].style = ButtonStyle.RED
 

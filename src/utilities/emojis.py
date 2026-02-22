@@ -21,7 +21,7 @@ class BadgeTiers(TypedDict):
 	digital: str
 
 
-Icons = Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"]
+Icons = Literal["loading", "wool", "sun", "inverted_clover", "capsule", "jam", "sleep", "refresh", "penguin"]
 PancakeTypes = Literal["normal", "golden", "glitched"]
 TreasureTypes = Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"]
 BadgeNames = Literal["shattered_sun", "wool", "sun", "remote"]
