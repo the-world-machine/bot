@@ -13,9 +13,18 @@ class ProgressBar(TypedDict):
 	filled: dict[Literal["start", "middle", "end"], str]
 
 
+class BadgeTiers(TypedDict):
+	normal: str
+	bronze: str
+	silver: str
+	gold: str
+	digital: str
+
+
 Icons = Literal["loading", "wool", "sun", "inverted_clover", "capsule", "vibe", "sleep", "refresh", "penguin"]
 PancakeTypes = Literal["normal", "golden", "glitched"]
 TreasureTypes = Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"]
+BadgeNames = Literal["shattered_sun", "wool", "sun", "remote"]
 
 
 class Emojis(TypedDict):
@@ -23,6 +32,7 @@ class Emojis(TypedDict):
 	pancakes: dict[PancakeTypes, str]
 	treasures: dict[TreasureTypes, str]
 	progress_bars: dict[Literal["square", "round"], ProgressBar]
+	badges: dict[BadgeNames, BadgeTiers]
 
 
 def flatten_emojis(data: dict[str, Any], parent_key: str = '') -> dict[str, str]:

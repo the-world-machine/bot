@@ -1,15 +1,15 @@
 # Common
 icons:
-  loading: '<a:loading:1290848643561164902>'
-  wool: '<:wool:1290848297698852947>'
-  sun: '<:sun:1290848333610618967>'
-  inverted_clover: '<:inverted_clover:1026135536190111755>'
+  loading: "<a:loading:1290848643561164902>"
+  wool: "<:wool:1290848297698852947>"
+  sun: "<:sun:1290848333610618967>"
+  inverted_clover: "<:inverted_clover:1026135536190111755>"
   capsule: "<:capsule:1147279938660089898>"
   vibe: "<a:vibe:1290847354542489660>"
   sleep: "<:sleepy:1290849529670664283>"
   refresh: "<:refresh:1147696088250335303>"
   penguin: "<:penguin:1291071376517501119>"
-  
+
 pancakes:
   normal: "<:pancakes:1290847273210740757>"
   golden: "<:golden_pancakes:1290847240247574610>"
@@ -31,13 +31,13 @@ progress_bars:
   # Music
   square:
     empty:
-      start: '<:square_bar_empty_start:1280362762651828255>'
-      middle: '<:square_bar_empty_middle:1280362590379446293>'
-      end: '<:square_bar_empty_end:1280362634591338537>'
+      start: "<:square_bar_empty_start:1280362762651828255>"
+      middle: "<:square_bar_empty_middle:1280362590379446293>"
+      end: "<:square_bar_empty_end:1280362634591338537>"
     filled:
-      start: '<:square_bar_filled_middle:1280362778946699275>'
-      middle: '<:square_bar_filled_start:1280362609648074792>'
-      end: '<:square_bar_filled_end:1280362656364105800>'
+      start: "<:square_bar_filled_middle:1280362778946699275>"
+      middle: "<:square_bar_filled_start:1280362609648074792>"
+      end: "<:square_bar_filled_end:1280362656364105800>"
   # Nikogotchi
   round:
     empty:
@@ -48,3 +48,30 @@ progress_bars:
       start: "<:round_bar_filled_start:1291069871181922448>"
       middle: "<:round_bar_filled_middle:1291069976769200209>"
       end: "<:round_bar_filled_end:1291070082998341642>"
+
+# Badge Icons
+badges:
+  shattered_sun:
+    normal: "<:shattered_sun:>"
+    bronze: "<:bronze_shattered_sun:>"
+    silver: "<:silver_shattered_sun:>"
+    gold: "<:gold_shattered_sun:>"
+    digital: "<:digital_shattered_sun:>"
+  wool:
+    normal: "<:wool:>"
+    bronze: "<:bronze_wool:>"
+    silver: "<:silver_wool:>"
+    gold: "<:gold_wool:>"
+    digital: "<:digital_wool:>"
+  sun:
+    normal: "<:sun:>"
+    bronze: "<:bronze_sun:>"
+    silver: "<:silver_sun:>"
+    gold: "<:gold_sun:>"
+    digital: "<:digital_sun:>"
+  remote:
+    normal: "<:remote:>"
+    bronze: "<:bronze_remote:>"
+    silver: "<:silver_remote:>"
+    gold: "<:gold_remote:>"
+    digital: "<:digital_remote:>"
