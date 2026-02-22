@@ -4,12 +4,14 @@ import copy
 import re
 from urllib.parse import urlparse
 import aiohttp
+from aiohttp.client import _RequestOptions
+from aiohttp.typedefs import StrOrURL
 import aiofiles
 import datetime
 import subprocess
 from pathlib import Path
 from base64 import b64decode
-from typing import Any, Iterable, TypedDict, Union, Optional, get_args, get_origin
+from typing import Any, Iterable, Literal, TypedDict, Union, Optional, Unpack, get_args, get_origin
 from jellyfish import jaro_winkler_similarity, levenshtein_distance
 from interactions import Activity, ActivityType, Client, File, StringSelectMenu, StringSelectOption, User, SlashCommandChoice
 
@@ -67,17 +69,39 @@ class StupidError(Exception):
 	...
 
 
-class InvalidResponseError(Exception):
-	...
-
-
-async def fetch(url: str):
+async def fetch(
+    url: StrOrURL,
+    method: Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"] = "GET",
+    output: Literal["text", "json", "read"] = "read",
+    ignore_status: bool = False,
+    **kwargs: Unpack[_RequestOptions]
+):
 	async with aiohttp.ClientSession() as session:
-		async with session.get(url) as resp:
-			if 200 <= resp.status < 300:
-				return await resp.read()
-			else:
-				raise InvalidResponseError(f"{resp.status} website shittig!!")
+		async with session.__getattribute__(method.lower())(url, **kwargs) as resp:
+			if not ignore_status:
+				resp.raise_for_status()
+			return await resp.__getattribute__(output)()
+
+
+async def refresh_discord_cdn_link(url: list[str] | str, token: str):
+	result = await fetch(
+	    "https://discord.com/api/v10/attachments/refresh-urls",
+	    method="POST",
+	    output="json",
+	    headers={
+	        "Content-Type": "application/json",
+	        f"Authorization": f"Bot {token}"
+	    },
+	    json={ "attachment_urls": url if isinstance(url, (list, tuple)) else [url]}
+	)
+	if isinstance(url, list):
+		urls = copy.deepcopy(url)
+		for refreshed_url in result["refreshed_urls"]:
+			index = urls.index(refreshed_url["original"])
+			urls[index] = refreshed_url["refreshed"]
+		return urls
+	else:
+		return result["refreshed_urls"][0]["refreshed"]
 
 
 async def read_file(path: Path | str):
@@ -273,9 +297,7 @@ async def set_avatar(client: Client, avatar: File | Path | str):
 
 
 async def make_empty_select(loc, placeholder: str | None = None):
-	return StringSelectMenu(
-	    *[StringSelectOption(label="423", value="423")], placeholder=placeholder, disabled=True
-	)
+	return StringSelectMenu(*[StringSelectOption(label="423", value="423")], placeholder=placeholder, disabled=True)
 
 
 def pretty_user(user: User):
