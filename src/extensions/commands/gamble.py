@@ -1,4 +1,5 @@
 import asyncio
+import math
 import random
 from dataclasses import dataclass
 from typing import Literal
@@ -210,9 +211,8 @@ class GambleCommands(Extension):
 
 		tasks = []
 		for slot in sorted(set(slots)):
-			value = int(slot.value * 100)
-			key = f"wool.gamble.slots.guide.values.{'reduction' if value < 0 else 'normal'}"
-			tasks.append(loc.l(key, icon=slot.emoji, value=value))
+			value = int(abs(slot.value) * 100)
+			tasks.append(loc.l("wool.gamble.slots.guide.value_entry", icon=slot.emoji, value=value, value_sign='negative' if slot.value < 0 else 'positive'))
 
 		point_rows = await asyncio.gather(*tasks)
 
