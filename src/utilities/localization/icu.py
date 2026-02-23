@@ -23,9 +23,7 @@ def edicted(emojis):
 edicted(emojis)
 on_emojis_update(edicted)
 
-icu_parser = Parser({
-    'allow_tags': False,
-})
+icu_parser = Parser({ 'allow_tags': False, 'require_other': False})
 
 
 async def icu_emoji(
@@ -178,17 +176,18 @@ async def icu_selectordinal(
 	except (ValueError, TypeError):
 		value = 0
 
-	options = arguments
+	options = arguments[2]
+
 	if not isinstance(options, dict):
 		return str(value)
 
 	exact_key = f"={int(value)}" if value.is_integer() else f"={value}"
+
 	if exact_key in options:
-		raw_result = options
+		raw_result = options[exact_key]
 	else:
 		babel_locale = Locale.parse(locale, sep="-")
 		category = babel_locale.ordinal_form(value)
-
 		raw_result = options.get(category, options.get('other', ""))
 
 	rendered_result = await render_icu(raw_result, variables, locale, ctx)
@@ -279,7 +278,7 @@ icu_formatters = {
     'user': icu_user,
     'command': icu_slash,
     'pretty_num': icu_pretty_num,
-    'selectOrdinal': icu_selectordinal,
+    'selectordinal': icu_selectordinal,
     'select': icu_select,
     'plural': icu_plural,
     'number': icu_number,
