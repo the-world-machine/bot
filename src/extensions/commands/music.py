@@ -79,7 +79,7 @@ class MusicCommands(Extension):
 		current = lavalink.format_time(player.position)
 		total = lavalink.format_time(track.duration)
 
-		description = f"From **{track.author}**\n\n{current} <:Sun:1026207773559619644> {total}\n{progress_bar}\n\n"
+		description = f"From **{track.author}**\n\n{current} {emojis['icons']['sun']} {total}\n{progress_bar}\n\n"
 
 		embed = Embed(
 		    title=track.title,
@@ -140,7 +140,7 @@ class MusicCommands(Extension):
 		hours = int(time / 3600)
 		minutes = int(hours / 60)
 
-		description = f"### Currently Playing:\n**{track.title}** from **{track.author}** <:Sun:1026207773559619644>\n\n*There are currently* ***{len(player.queue)}*** *songs in the queue.*\n*Approximately* ***{hours} hours*** and ***{minutes} minutes*** *left.*\n### Next Up..."
+		description = f"### Currently Playing:\n**{track.title}** from **{track.author}** {emojis['icons']['sun']}\n\n*There are currently* ***{len(player.queue)}*** *songs in the queue.*\n*Approximately* ***{hours} hours*** and ***{minutes} minutes*** *left.*\n### Next Up..."
 
 		queue_embed = Embed(description=description, color=Colors.DEFAULT)
 
@@ -430,7 +430,7 @@ class MusicCommands(Extension):
 			)
 		if position < 0:
 			position = -position
-			queue = queue[::-1] # reverses the queue
+			queue = queue[::-1]  # reverses the queue
 		if position == 0:
 			position = 1
 		for index, track in enumerate(queue):
@@ -561,10 +561,12 @@ class MusicCommands(Extension):
 			if len(f'"{song_name}"\n - {artists["name"]}') > 99:
 				continue
 
-			tracks.append({
-			    "Text": f'"{song_name}"\n by {artists["name"]}',
-			    "URL": f"http://open.spotify.com/track/{url}",
-			})
+			tracks.append(
+			    {
+			        "Text": f'"{song_name}"\n by {artists["name"]}',
+			        "URL": f"http://open.spotify.com/track/{url}",
+			    }
+			)
 
 		return tracks
 
@@ -728,11 +730,13 @@ class MusicCommands(Extension):
 				lyric_data: dict = await jsondata.json()
 
 		if "error" in lyric_data.keys():
-			return await ctx.send(embed=Embed(
-			    title=f"{track.title} Lyrics",
-			    description="`[ No Lyrics found. ]`",
-			    color=Colors.BAD,
-			))
+			return await ctx.send(
+			    embed=Embed(
+			        title=f"{track.title} Lyrics",
+			        description="`[ No Lyrics found. ]`",
+			        color=Colors.BAD,
+			    )
+			)
 
 		lyrics = lyric_data["lyrics"]
 
@@ -844,7 +848,7 @@ class MusicCommands(Extension):
 			requester = await self.client.fetch_user(stopped_track.requester)
 			embed.set_footer(text="Requested by " + requester.username, icon_url=requester.avatar_url)
 
-		message = await message.edit(content="<:nikosleepy:1027492467337080872>", embed=embed, components=[])
+		message = await message.edit(content=emojis['icons']['sleep'], embed=embed, components=[])
 
 	@component_callback("queue", "loop", "playpause", "skip", "lyrics")
 	async def buttons(self, ctx: ComponentContext):
