@@ -1,7 +1,8 @@
-from enum import Enum
-from dataclasses import dataclass
-from utilities.database.main import get_database
 import random
+from dataclasses import dataclass
+from enum import Enum
+
+from utilities.database.main import get_database
 
 
 class Rarity(Enum):
@@ -21,17 +22,15 @@ class NikogotchiMetadata:
 
 
 def convert_to_class(data: dict, nid: str):
-	return NikogotchiMetadata(nid, Rarity(data['rarity']), data['image'])
+	return NikogotchiMetadata(nid, Rarity(data["rarity"]), data["image"])
 
 
 async def fetch_nikogotchi_metadata(nid: str) -> NikogotchiMetadata | None:
 	db = await get_database()
 
-	result = await db.get_collection('NikogotchiFeatures')\
-                       .find_one(
-	  { "key": "NikogotchiFeatures"},
-	  { "_id": 0, "nikogotchi": 1}
-	 )
+	result = await db.get_collection("NikogotchiFeatures").find_one(
+		{"key": "NikogotchiFeatures"}, {"_id": 0, "nikogotchi": 1}
+	)
 
 	# Cast the result to the expected structure
 	nikogotchi_data: dict[str, NikogotchiMetadata] = result["nikogotchi"] if result else {}
@@ -44,19 +43,17 @@ async def fetch_nikogotchi_metadata(nid: str) -> NikogotchiMetadata | None:
 async def pick_random_nikogotchi(rarity: int):
 	db = await get_database()
 
-	result = await db.get_collection('NikogotchiFeatures')\
-                .find_one(
-	 { "key": "NikogotchiFeatures"},
-	 { "_id": 0, "nikogotchi": 1}
+	result = await db.get_collection("NikogotchiFeatures").find_one(
+		{"key": "NikogotchiFeatures"}, {"_id": 0, "nikogotchi": 1}
 	)
 
-	nikogotchi_info = result['nikogotchi'] if result else {}
+	nikogotchi_info = result["nikogotchi"] if result else {}
 
 	candidates = []
 
 	keys = list(nikogotchi_info.keys())
 	for key in keys:
-		if nikogotchi_info[key]['rarity'] == rarity:
+		if nikogotchi_info[key]["rarity"] == rarity:
 			candidates.append(key)
 
 	choice = random.choice(candidates)

@@ -1,6 +1,6 @@
 [scripts]
 bot = "python src/main.py"
-textboxweb = "python src/utilities/textbox/web"
+textboxweb = "python src/utilities/textbox/web/main.py"
 
 [requires]
 python_version = "3.13"
@@ -28,7 +28,7 @@ jurigged = "*"
 pyicumessageformat = "*"
 
 [dev-packages]
-yapf = "*"
+ruff = "*"
 
 [[source]]
 url = "https://pypi.org/simple"

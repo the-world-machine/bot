@@ -1,18 +1,22 @@
-from datetime import date, datetime
-from typing import Any, Literal, Type, TypeVar, Union, overload
-from yaml import safe_load as load_yml_file
 from pathlib import Path
+from typing import Literal, Type, TypeVar, overload
+
 from termcolor import colored
+from yaml import safe_load as load_yml_file
+
 from utilities.misc import get_current_branch, rabbit
 
 bcpath = Path("bot-config.yml")
 try:
-	with open(bcpath, 'r') as f:
+	with open(bcpath, "r") as f:
 		config = load_yml_file(f)
 		print("Loaded configuration")
 except FileNotFoundError as e:
 	print(
-	    colored(f"─ config file at '{bcpath.resolve()}' is missing.\nAre you sure you set it up correctly?", 'yellow')
+		colored(
+			f"─ config file at '{bcpath.resolve()}' is missing.\nAre you sure you set it up correctly?",
+			"yellow",
+		)
 	)
 	exit(1)
 
@@ -32,14 +36,22 @@ def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Liter
 
 @overload
 def get_config(
-    path: str, *, typecheck: Type[C], raise_on_not_found: bool = True, ignore_None: Literal[False] = False
+	path: str,
+	*,
+	typecheck: Type[C],
+	raise_on_not_found: bool = True,
+	ignore_None: Literal[False] = False,
 ) -> C:
 	...
 
 
 @overload
 def get_config(
-    path: str, *, typecheck: Type[C], raise_on_not_found: bool = True, ignore_None: Literal[True]
+	path: str,
+	*,
+	typecheck: Type[C],
+	raise_on_not_found: bool = True,
+	ignore_None: Literal[True],
 ) -> C | None:
 	...
 
@@ -67,11 +79,11 @@ def get_config(
 	return_none = ignore_None
 
 	res = rabbit(
-	    config,
-	    path,
-	    raise_on_not_found=should_raise,
-	    return_None_on_not_found=return_none,
-	    _error_message="Configuration does not have [path]"
+		config,
+		path,
+		raise_on_not_found=should_raise,
+		return_None_on_not_found=return_none,
+		_error_message="Configuration does not have [path]",
 	)
 
 	if res is None:
@@ -82,8 +94,7 @@ def get_config(
 
 	if not isinstance(res, typecheck):
 		raise TypeError(
-		    f"Configuration value for '{path}' has type {type(res).__name__}, "
-		    f"but expected {typecheck.__name__}"
+			f"Configuration value for '{path}' has type {type(res).__name__}, but expected {typecheck.__name__}"
 		)
 
 	return res
@@ -108,12 +119,12 @@ if cl is not None:
 		if got is not None:
 			continue
 		if required:
-			print(colored("─ config key ") + colored(key, 'cyan') + colored(" is required", 'red'))
+			print(colored("─ config key ") + colored(key, "cyan") + colored(" is required", "red"))
 			if cl <= 1:
 				exit(1)
 		else:
 			if cl <= 3:
-				print(colored("─ config key ") + colored(key, 'cyan') + colored(" is missing", 'yellow'))
+				print(colored("─ config key ") + colored(key, "cyan") + colored(" is missing", "yellow"))
 			if cl <= 2:
 				exit(1)
 

@@ -1,11 +1,12 @@
-import asyncio
 import re
 from traceback import print_exc
-from urllib.parse import urlencode
-from yaml import safe_load
-from termcolor import colored
 from typing import Any, Literal, TypedDict
-from utilities.data_watcher import subscribe
+from urllib.parse import urlencode
+
+from termcolor import colored
+from yaml import safe_load
+
+from utilities.source_watcher import subscribe, toEndswith
 
 
 class ProgressBar(TypedDict):
@@ -21,7 +22,17 @@ class BadgeTiers(TypedDict):
 	digital: str
 
 
-Icons = Literal["loading", "wool", "sun", "inverted_clover", "capsule", "jam", "sleep", "refresh", "penguin"]
+Icons = Literal[
+	"loading",
+	"wool",
+	"sun",
+	"inverted_clover",
+	"capsule",
+	"jam",
+	"sleep",
+	"refresh",
+	"penguin",
+]
 PancakeTypes = Literal["normal", "golden", "glitched"]
 TreasureTypes = Literal["amber", "bottle", "card", "clover", "die", "journal", "pen", "shirt", "sun"]
 BadgeNames = Literal["shattered_sun", "wool", "sun", "remote"]
@@ -35,7 +46,7 @@ class Emojis(TypedDict):
 	badges: dict[BadgeNames, BadgeTiers]
 
 
-def flatten_emojis(data: dict[str, Any], parent_key: str = '') -> dict[str, str]:
+def flatten_emojis(data: dict[str, Any], parent_key: str = "") -> dict[str, str]:
 	items: list[tuple[str, str]] = []
 	for k, v in data.items():
 		key = f"{parent_key}.{k}" if parent_key else k
@@ -61,21 +72,21 @@ def unflatten_emojis(flat_data: dict[str, str]) -> dict[str, Any]:
 
 def minify_emoji_names(data: Any) -> Any:
 	if isinstance(data, dict):
-		return { key: minify_emoji_names(value) for key, value in data.items() }
+		return {key: minify_emoji_names(value) for key, value in data.items()}
 	elif isinstance(data, str):
 		# replaces all names with "i" for more message content space
-		return re.sub(r'(?<=[:])\w+(?=:\d)', 'i', data)
+		return re.sub(r"(?<=[:])\w+(?=:\d)", "i", data)
 	return data
 
 
 def make_emoji_cdn_url(
-    emoji: str | None = None,
-    size: int | None = 4096,  # Passing None will make discord pick the resolution automatically
-    quality: str = "lossless",
-    emoji_id: str | None = None,
-    name: str | None = None,
-    is_animated: bool = False,
-    filetype: Literal['png', 'gif', 'webp', 'jpeg', 'jpg'] | None = None
+	emoji: str | None = None,
+	size: int | None = 4096,  # Passing None will make discord pick the resolution automatically
+	quality: str = "lossless",
+	emoji_id: str | None = None,
+	name: str | None = None,
+	is_animated: bool = False,
+	filetype: Literal["png", "gif", "webp", "jpeg", "jpg"] | None = None,
 ) -> str:
 	"""Make a discord cdn url for a custom emoji (out of an emoji, or manual. prioritizes 'emoji' if passed)"""
 	if not emoji and not emoji_id:
@@ -85,22 +96,22 @@ def make_emoji_cdn_url(
 	animated = is_animated
 
 	if emoji:
-		match = re.match(r'<(a?):([a-zA-Z0-9_]+):([0-9]+)>', emoji)
+		match = re.match(r"<(a?):([a-zA-Z0-9_]+):([0-9]+)>", emoji)
 		if not match:
 			raise ValueError(f"Invalid emoji format for: {emoji}")
 
 		is_animated_str, emoji_name, emoji_id = match.groups()
-		animated = (is_animated_str == 'a')
+		animated = is_animated_str == "a"
 
 	if not emoji_id:
 		raise ValueError("Idk what the emoji id is")
 	if filetype == None:
-		filetype = 'gif' if animated else 'png'
-	params = { 'quality': quality, 'animated': animated}
+		filetype = "gif" if animated else "png"
+	params = {"quality": quality, "animated": animated}
 	if size:
-		params['size'] = str(size)
+		params["size"] = str(size)
 	if emoji_name:
-		params['name'] = emoji_name
+		params["name"] = emoji_name
 
 	query_string = urlencode(params)
 
@@ -131,7 +142,7 @@ def on_emojis_update(callback):
 
 def update_emojis(flat_key, emoji_value: str | None = None):
 	global emojis
-	keys = flat_key.split('.')
+	keys = flat_key.split(".")
 	current_dict = emojis
 	for part in keys[:-1]:
 		current_dict.setdefault(part, {})
@@ -153,6 +164,7 @@ def on_file_update(path):
 		print(colored(" FAILED", "red"))
 		print_exc()
 		from extensions.events.Ready import ReadyEvent
+
 		ReadyEvent.queue(lambda channel: channel.send(content="## Failed to reload emojis\n" + str(e)))
 		return
 
@@ -176,4 +188,4 @@ def on_file_update(path):
 	print("done", f"Changes: {', '.join(changes)}")
 
 
-subscribe("emojis.yml", on_file_update)
+subscribe(toEndswith("data/emojis.yml"), on_file_update)

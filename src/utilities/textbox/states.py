@@ -1,8 +1,5 @@
-import io
 from pathlib import Path
-from typing import Any, Optional, Tuple, Literal, Union, get_args, overload
-
-from interactions import File
+from typing import Any, Literal, Optional, Tuple, Union, get_args, overload
 
 from utilities.localization.localization import Localization, assign_variables
 from utilities.message_decorations import fancy_message
@@ -20,11 +17,11 @@ class StateOptions:
 	loops: int  # 0 means that it will loop forever.
 
 	def __init__(
-	    self,
-	    filetype: SupportedFiletypes | None = "WEBP",
-	    send_to: Literal[1, 2, 3] | str | None = 1,
-	    quality: int | str | None = 100,
-	    loops: int | None = 1
+		self,
+		filetype: SupportedFiletypes | None = "WEBP",
+		send_to: Literal[1, 2, 3] | str | None = 1,
+		quality: int | str | None = 100,
+		loops: int | None = 1,
 	):
 		if filetype == None:
 			filetype = "WEBP"
@@ -35,7 +32,7 @@ class StateOptions:
 		if send_to is None:
 			send_to = 1
 		self.filetype = filetype  # type:ignore
-		send_to = int(send_to)  #type:ignore
+		send_to = int(send_to)  # type:ignore
 		if send_to not in (1, 2, 3):
 			raise ValueError("send_to must be 1, 2 or 3")
 		self.send_to = send_to
@@ -67,37 +64,37 @@ class State:
 	async def to_string(self, loc: Localization) -> str:
 		frames = "\n".join([str(f) for f in self.frames])
 		processed: str = await assign_variables(
-		    state_template,
-		    pretty_numbers=False,
-		    locale=loc.locale,
-		    **{
-		        'comment':
-		            await loc.l(
-		                "textbox.ttb.comment",
-		                link=
-		                f"https://github.com/the-world-machine/bot/blob/main/md/{loc.locale}/textbox/index.md#raw-file-editing-tbb"
-		            ),
-		        'filetype':
-		            self.options.filetype,
-		        'send_to':
-		            self.options.send_to,
-		        'force_send':
-		            False,
-		        'quality':
-		            self.options.quality,
-		        'frames':
-		            frames
-		    }
+			state_template,
+			pretty_numbers=False,
+			locale=loc.locale,
+			**{
+				"comment": await loc.l(
+					"textbox.ttb.comment",
+					link=f"https://github.com/the-world-machine/bot/blob/main/md/{loc.locale}/textbox/index.md#raw-file-editing-tbb",
+				),
+				"filetype": self.options.filetype,
+				"send_to": self.options.send_to,
+				"force_send": False,
+				"quality": self.options.quality,
+				"frames": frames,
+			},
 		)
 		return processed
 
 	@staticmethod
-	def from_string(input: str, owner: int) -> tuple['State', bool | None, int | None]:
+	def from_string(input: str, owner: int) -> tuple["State", bool | None, int | None]:
 		lines = input.split("\n")
 		current = ""
 		parsed_frames: list[Frame] = []
 		StateOptions_parsed = {}
-		StateOptions_allowed_keys = [ 'force_send', 'filetype', 'send_to', 'quality', 'frame_index', 'loops']
+		StateOptions_allowed_keys = [
+			"force_send",
+			"filetype",
+			"send_to",
+			"quality",
+			"frame_index",
+			"loops",
+		]
 		i = 0
 		for line in lines:
 			i += 1
@@ -116,7 +113,7 @@ class State:
 					raise ValueError(f"Failed to parse frame #{len(parsed_frames)} at line {i}!\n{e}") from e
 				continue
 			if current == "StateOptions":
-				if not '=' in line:
+				if not "=" in line:
 					raise ValueError(f"Couldn't find the value to set at line {i} of StateOptions")
 				key, value = line.split("=", maxsplit=1)
 				if key not in StateOptions_allowed_keys:
@@ -125,14 +122,14 @@ class State:
 					)
 
 				try:
-					if value == '':
+					if value == "":
 						value = None
 					if value:
 						if key == "filetype" and value.upper() not in get_args(SupportedFiletypes):
 							raise ValueError(f"must be one of {get_args(SupportedFiletypes)}")
 						if key == "send_to":
 							try:
-								send_to = int(value)  #type:ignore
+								send_to = int(value)  # type:ignore
 							except:
 								raise ValueError("must be an integer, and one of (1, 2, 3)")
 							if send_to not in (1, 2, 3):
@@ -146,7 +143,7 @@ class State:
 								raise ValueError("must be in the range 1..=100")
 						if key == "loops":
 							try:
-								loops = int(loops)  #type:ignore
+								loops = int(loops)  # type:ignore
 							except:
 								raise ValueError("must be an integer")
 							if loops < 0:
@@ -170,16 +167,21 @@ class State:
 		if "frame_index" in StateOptions_parsed.keys():
 			del StateOptions_parsed["frame_index"]
 		return (
-		    State(owner=owner, frames=parsed_frames,
-		          options=StateOptions(**StateOptions_parsed)), force_send, frame_index
+			State(
+				owner=owner,
+				frames=parsed_frames,
+				options=StateOptions(**StateOptions_parsed),
+			),
+			force_send,
+			frame_index,
 		)
 
 	def __init__(
-	    self,
-	    owner: int,
-	    memory_leak: Any | None = None,
-	    frames: list[Frame] | Frame | None = None,
-	    options: StateOptions | None = None
+		self,
+		owner: int,
+		memory_leak: Any | None = None,
+		frames: list[Frame] | Frame | None = None,
+		options: StateOptions | None = None,
 	):
 		self.memory_leak = memory_leak
 		self.options = options if options else StateOptions()
@@ -207,10 +209,10 @@ class State:
 
 	def get_frame(self, index: int) -> Frame:
 		"""
-		Gets a frame from the frames list. Creates an empty frame if the passed index is one above the length of the frames
-		
-    Raises:
-        IndexError: If the passed index is out of bounds and is not length + 1
+		            Gets a frame from the frames list. Creates an empty frame if the passed index is one above the length of the frames
+
+		Raises:
+		    IndexError: If the passed index is out of bounds and is not length + 1
 		"""
 		if index < len(self.frames):
 			return self.frames[index]
@@ -227,31 +229,35 @@ class StateShortcutError(Exception):
 
 
 @overload
-async def state_shortcut(ctx, state_id: str | int, frame_index: Literal[None]) -> Tuple['Localization', 'State']:
+async def state_shortcut(ctx, state_id: str | int, frame_index: Literal[None]) -> Tuple["Localization", "State"]:
 	...
 
 
 @overload
-async def state_shortcut(ctx, state_id: str | int, frame_index: str | int) -> Tuple['Localization', 'State', 'Frame']:
+async def state_shortcut(
+	ctx, state_id: str | int, frame_index: str | int
+) -> Tuple["Localization", "State", "Frame"]:
 	...
 
 
 async def state_shortcut(
-    ctx, state_id: str | int, frame_index: Optional[str | int]
-) -> Union[Tuple['Localization', 'State'], Tuple['Localization', 'State', 'Frame']]:
+	ctx, state_id: str | int, frame_index: Optional[str | int]
+) -> Union[Tuple["Localization", "State"], Tuple["Localization", "State", "Frame"]]:
 	"""
-		Helper function for textbox to not have to get these variables all the time
-    Raises:
-        StateShortcutError: If the state or frame cannot be found, or if the
-                            frame index is invalid. The user will be notified
-                            with an ephemeral message before the exception is raised.
-    """
+	            Helper function for textbox to not have to get these variables all the time
+	Raises:
+	    StateShortcutError: If the state or frame cannot be found, or if the
+	                        frame index is invalid. The user will be notified
+	                        with an ephemeral message before the exception is raised.
+	"""
 	loc = Localization(ctx)
 	try:
 		state: State = states[str(state_id)]
 	except KeyError:
 		await fancy_message(
-		    ctx, await loc.l("general.errors.expired") + f"\n-# **sid:** {str(state_id)}", ephemeral=True
+			ctx,
+			await loc.l("general.errors.expired") + f"\n-# **sid:** {str(state_id)}",
+			ephemeral=True,
 		)
 		raise StateShortcutError(f"State with ID '{state_id}' not found.")
 
@@ -262,7 +268,9 @@ async def state_shortcut(
 		idx = int(frame_index)
 	except ValueError:
 		await fancy_message(
-		    ctx, await loc.l("textbox.errors.invalid_frame_index", index=str(frame_index)), ephemeral=True
+			ctx,
+			await loc.l("textbox.errors.invalid_frame_index", index=str(frame_index)),
+			ephemeral=True,
 		)
 		raise StateShortcutError(f"Frame index '{frame_index}' is not a valid integer.")
 
@@ -272,7 +280,11 @@ async def state_shortcut(
 		if idx == len(state.frames):
 			state.frames.append(Frame())  # scary scary scary scary
 		else:
-			await fancy_message(ctx, await loc.l("textbox.errors.unknown_frame", id=str(frame_index)), ephemeral=True)
+			await fancy_message(
+				ctx,
+				await loc.l("textbox.errors.unknown_frame", id=str(frame_index)),
+				ephemeral=True,
+			)
 			raise StateShortcutError(f"Frame with index '{idx}' not found in state '{state_id}'.")
 
 	return (loc, state, frame_data)

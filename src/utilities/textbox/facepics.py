@@ -1,19 +1,20 @@
-import asyncio
 import io
 import os
 import re
-import yaml
-from PIL import Image
-from pathlib import Path
-from termcolor import colored
 from datetime import datetime
+from pathlib import Path
 from traceback import print_exc
+
+import yaml
 from interactions import PartialEmoji
-from utilities.data_watcher import subscribe
+from PIL import Image
+from termcolor import colored
+
 from extensions.events.Ready import ReadyEvent
-from utilities.emojis import make_emoji_cdn_url
 from utilities.config import debugging, get_config
+from utilities.emojis import make_emoji_cdn_url
 from utilities.misc import cached_get, is_domain_allowed
+from utilities.source_watcher import subscribe, toEndswith
 
 
 class Facepics:
@@ -78,7 +79,7 @@ def parse_recursive(data: dict) -> dict:
 
 
 def load_facepics():
-	with open('src/data/facepics.yml', 'r') as f:
+	with open("src/data/facepics.yml", "r") as f:
 		data = yaml.safe_load(f)
 
 	loaded_chars = {}
@@ -101,7 +102,7 @@ def on_file_update(filename):
 		return print(".", end="")
 
 	last_update = current_time
-	print(colored('─ Reloading facepics ...', 'yellow'), end="")
+	print(colored("─ Reloading facepics ...", "yellow"), end="")
 
 	try:
 		f_storage.facepics = load_facepics()
@@ -114,7 +115,7 @@ def on_file_update(filename):
 	print(" ─ ─ ─ ")
 
 
-subscribe("facepics.yml", on_file_update)
+subscribe(toEndswith("data/facepics.yml"), on_file_update)
 
 invalid_path = "Other/NAVI"
 
@@ -122,7 +123,7 @@ invalid_path = "Other/NAVI"
 async def get_facepic(path: str) -> Face | None:
 	face = Face(path)
 	if path.startswith("https://"):
-		if is_domain_allowed(path, allowed_domains=get_config('textbox.unproxied-hosts', typecheck=list)):
+		if is_domain_allowed(path, allowed_domains=get_config("textbox.unproxied-hosts", typecheck=list)):
 			try:
 				await face.set_custom_icon(path)
 			except:
@@ -133,7 +134,7 @@ async def get_facepic(path: str) -> Face | None:
 	if path == "clear" or path == "":
 		return await get_facepic("Other/Empty")
 	else:
-		parts = path.split('/')
+		parts = path.split("/")
 		at = f_storage.facepics
 		try:
 			for part in parts:
@@ -141,8 +142,8 @@ async def get_facepic(path: str) -> Face | None:
 
 			if isinstance(at, str) or at is None:
 				return Face(path, icon=at)
-			elif isinstance(at, dict) and 'icon' in at:
-				return Face(path, icon=at['icon'])
+			elif isinstance(at, dict) and "icon" in at:
+				return Face(path, icon=at["icon"])
 			else:
 				print(at)
 				print(f"Couldn't find face for path {path}")

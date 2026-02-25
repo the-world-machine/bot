@@ -1,26 +1,31 @@
-#import asyncio
+"""
+import asyncio
 
-#async def temp():
+async def temp():
 
-#if __name__ == "__main__":
-#	asyncio.run(temp())
+if __name__ == "__main__":
+        asyncio.run(temp())
+"""
+
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
-from utilities.config import get_config, get_token
+from datetime import datetime
 
 from interactions import Client, Intents, IntervalTrigger, Task, listen
-# from utilities.misc import set_status
-from utilities.extensions import load_commands, assign_events
-from utilities.database.main import connect_to_db
-from utilities.profile.main import load_profile_assets
-from utilities.rolling import roll_status, roll_avatar
 from interactions.api.events import Startup
-from datetime import datetime
+
+from utilities.config import get_config, get_token
+from utilities.database.main import connect_to_db
+from utilities.extensions import assign_events, load_commands
 from utilities.logging import createLogger
+from utilities.misc import set_status
+from utilities.profile.main import load_profile_assets
+from utilities.rolling import roll_avatar, roll_status
 
 logger = createLogger(__name__)
 
-intents = (Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS)
+intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
+
 
 class TWMClient(Client):
 	started_at: datetime | None
@@ -30,12 +35,12 @@ class TWMClient(Client):
 
 
 client = TWMClient(
-    intents=intents,
-    send_command_tracebacks=False,
-    send_not_ready_messages=True,
-    sync_interactions=False,
-    sync_ext=False,
-    logger=createLogger("client")
+	intents=intents,
+	send_command_tracebacks=False,
+	send_not_ready_messages=True,
+	sync_interactions=False,
+	sync_ext=False,
+	logger=createLogger("client"),
 )
 client.started_at: datetime = datetime.now()  # type: ignore
 if do_rolling := get_config("bot.rolling.avatar", typecheck=bool) or get_config("bot.rolling.status"):
@@ -53,7 +58,7 @@ assign_events(client)
 
 @listen(Startup)
 async def on_startup(event: Startup):
-	# await set_status(client, "[ Loading... ]")
+	await set_status(client, "[ Loading... ]")
 	load_commands(client)
 	await connect_to_db()
 	await load_profile_assets()
@@ -65,6 +70,7 @@ async def on_startup(event: Startup):
 	print("\n\n─ The World Machine is ready! ─ 3/3\n\n")
 	startupped = datetime.now()
 	from extensions.events.Ready import ReadyEvent
+
 	await ReadyEvent.followup(startupped)
 
 

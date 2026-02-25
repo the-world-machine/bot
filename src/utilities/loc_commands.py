@@ -1,14 +1,15 @@
-import yaml
-import aiohttp
 from itertools import chain
-from termcolor import colored
+
+import aiohttp
+import yaml
 from interactions import Message
+from termcolor import colored
+
 from utilities.config import get_config
 from utilities.localization.localization import local_override
 
 
 async def execute_loc_command(message: Message):
-
 	if message.author.bot:
 		return
 
@@ -18,7 +19,7 @@ async def execute_loc_command(message: Message):
 	if str(message.author.id) not in list(chain(*get_config("localization.whitelist", typecheck=dict).values())):
 		return
 
-	prefix = get_config('dev.command-marker').split('.')
+	prefix = get_config("dev.command-marker").split(".")
 
 	if not (message.content[0] == prefix[0] and message.content[-1] == prefix[1]):
 		return
@@ -62,11 +63,13 @@ async def execute_loc_command(message: Message):
 
 		case _:
 			return {}
-	formatted_command_content = command_content.replace('\n', '\n' + colored('│ ', 'yellow'))
+	formatted_command_content = command_content.replace("\n", "\n" + colored("│ ", "yellow"))
 	if subcommand_name == "db":
 		subcommand_name += " ─"
 
 	print(
-	    f"{colored('┌ loc_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n" + f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n" +
-	    f"{colored('│', 'yellow')} {formatted_command_content}\n" + f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
+		f"{colored('┌ loc_commands', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ {subcommand_name}\n"
+		+ f"{colored('│', 'yellow')} {message.author.mention} ({message.author.username}) ran:\n"
+		+ f"{colored('│', 'yellow')} {formatted_command_content}\n"
+		+ f"{colored('└', 'yellow')} ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─"
 	)

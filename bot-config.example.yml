@@ -39,6 +39,13 @@ bot:
       translator-id: "1337522400367218758"
       supporter-id: "1044343502353481788"
 
+paths: # do not end any of these with a / to avoid bugs
+  localization:
+    root: "src/data/locales/bot"
+  textbox:
+    fonts: "src/data/fonts"
+    color-parser-binary: "src/utilities/textbox/csscolors/target/release/csscolors"
+
 modules:
   # whether the module is enabled or not
   welcome: true

@@ -1,10 +1,12 @@
 import os
 import random
+
 from interactions import Client, File
+from interactions.client.errors import TooManyChanges
 from termcolor import colored
+
 from utilities.config import debugging, get_config, on_prod
 from utilities.misc import set_avatar, set_status
-from interactions.client.errors import TooManyChanges
 
 available_avatars = os.listdir("src/data/images/profile_pictures")
 

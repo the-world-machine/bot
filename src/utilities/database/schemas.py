@@ -1,8 +1,9 @@
 import random
-from datetime import datetime
-from utilities.emojis import TreasureTypes
 from dataclasses import asdict, dataclass, field
-from utilities.database.main import DBDict, DBDynamicDict, DBList, Collection
+from datetime import datetime
+
+from utilities.database.main import Collection, DBDict, DBDynamicDict, DBList
+from utilities.emojis import TreasureTypes
 
 
 class TransmitConfig(DBDict):
@@ -18,9 +19,9 @@ class WelcomeConfig(DBDict):
 	disabled: bool = True
 	ping: bool = False
 	channel_id: str | None = None
-	#character: str = None
-	#face: str = None
-	#animated: bool = True
+	# character: str = None
+	# face: str = None
+	# animated: bool = True
 	message: str = ""
 	errored: bool = False
 
@@ -36,12 +37,12 @@ class UserData(Collection):
 	minis_shown: DBDynamicDict[str, int] = field(default_factory=lambda: DBDynamicDict())
 	wool: int = 0
 	suns: int = 0
-	equipped_bg: str = 'Default'
-	profile_description: str = 'Hello World!'
+	equipped_bg: str = "Default"
+	profile_description: str = "Hello World!"
 	badge_notifications: bool = True
-	owned_treasures: DBDynamicDict[TreasureTypes, int] = field(default_factory=lambda: DBDynamicDict({ 'journal': 5}))
+	owned_treasures: DBDynamicDict[TreasureTypes, int] = field(default_factory=lambda: DBDynamicDict({"journal": 5}))
 	owned_backgrounds: DBList[str] = field(
-	    default_factory=lambda: DBList([ 'Default', 'Blue', 'Red', 'Yellow', 'Green', 'Pink'])
+		default_factory=lambda: DBList(["Default", "Blue", "Red", "Yellow", "Green", "Pink"])
 	)
 	owned_badges: DBList[str] = field(default_factory=lambda: DBList())
 	ask_limit: int = 14
@@ -51,10 +52,9 @@ class UserData(Collection):
 	times_asked: int = 0
 	times_transmitted: int = 0
 	times_shattered: int = 0
-	translation_language: str = 'english'
+	translation_language: str = "english"
 
 	async def manage_wool(self, amount: int):
-
 		wool = self.wool + amount
 
 		if wool <= 0:
@@ -100,12 +100,11 @@ class Nikogotchi(Collection):
 	max_cleanliness: int = 50
 	max_happiness: int = 50
 
-	nid: str = '?'
-	name: str = 'NONAME'
+	nid: str = "?"
+	name: str = "NONAME"
 	pronouns: str = "it/its"
 
 	async def level_up(self, amount: int) -> list[StatUpdate]:
-
 		level = self.level + amount
 
 		stats: list[StatUpdate] = []
@@ -127,7 +126,13 @@ class Nikogotchi(Collection):
 		self.max_happiness += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate("🧽", int(self.max_cleanliness), int(self.max_cleanliness) + int(algorithm)))
+		stats.append(
+			StatUpdate(
+				"🧽",
+				int(self.max_cleanliness),
+				int(self.max_cleanliness) + int(algorithm),
+			)
+		)
 		self.max_cleanliness += algorithm
 
 		algorithm = int(amount * 2 * random.uniform(0.8, 1.4))

@@ -1,10 +1,18 @@
 import io
 import traceback as tb
-from interactions import TYPE_MESSAGEABLE_CHANNEL, AllowedMentions, Extension, File, listen
-from utilities.textbox.mediagen import Frame, render_frame
+
+from interactions import (
+	TYPE_MESSAGEABLE_CHANNEL,
+	AllowedMentions,
+	Extension,
+	File,
+	listen,
+)
 from interactions.api.events import MemberAdd
+
 from utilities.database.schemas import ServerData
 from utilities.localization.localization import Localization, assign_variables
+from utilities.textbox.mediagen import Frame, render_frame
 
 
 class MemberAddEvent(Extension):
@@ -28,7 +36,10 @@ class MemberAddEvent(Extension):
 
 		message = config.message or await loc.l("misc.welcome.placeholder_text", format=False, typecheck=str)
 		message = await assign_variables(
-		    message, user_name=event.member.display_name, server_name=guild.name, member_count=guild.member_count
+			message,
+			user_name=event.member.display_name,
+			server_name=guild.name,
+			member_count=guild.member_count,
 		)
 		buffer = io.BytesIO()
 		basic_facepic_command = "\\@"
@@ -45,9 +56,9 @@ class MemberAddEvent(Extension):
 			print(f"Trying to send welcome message for server {event.guild.id} in channel {event.guild.system_channel}")
 			if isinstance(target_channel, TYPE_MESSAGEABLE_CHANNEL):
 				return await target_channel.send(
-				    content=f"-# {event.member.mention}",
-				    files=File(file=buffer, file_name=f"welcome textbox.png"),
-				    allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none()
+					content=f"-# {event.member.mention}",
+					files=File(file=buffer, file_name=f"welcome textbox.png"),
+					allowed_mentions=AllowedMentions.all() if server_data.welcome.ping else AllowedMentions.none(),
 				)
 			raise TypeError("tried to send message in a channel where i can't send messages :mumawomp:")
 		except Exception as e:

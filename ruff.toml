@@ -1,0 +1,8 @@
+line-length = 120
+indent-width = 4
+
+[format]
+indent-style = "tab"
+
+quote-style = "double"
+skip-magic-trailing-comma = false

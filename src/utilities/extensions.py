@@ -1,11 +1,13 @@
 import os
+
 import interactions
-from utilities.config import debugging, get_config, on_prod
+
+from utilities.config import debugging, get_config
 
 
 def assign_events(client: interactions.Client):
-	files = [ f for f in os.listdir('src/extensions/events') if f != '__pycache__']
-	events = [f.replace('.py', '') for f in files]
+	files = [f for f in os.listdir("src/extensions/events") if f != "__pycache__"]
+	events = [f.replace(".py", "") for f in files]
 	events = [None if len(f) < 0 or f.startswith(".") else f for f in events]
 	if not get_config("modules.welcome", typecheck=bool) and "MemberAdd" in events:
 		print("Welcome Messages are disabled")
@@ -41,18 +43,21 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 	global loaded_commands
 	loaded_commands = []
 
-	files = [ f for f in os.listdir('src/extensions/commands') if f != '__pycache__']
-	commands = [f.replace('.py', '') for f in files]
+	files = [f for f in os.listdir("src/extensions/commands") if f != "__pycache__"]
+	commands = [f.replace(".py", "") for f in files]
 	commands = [None if len(f) < 0 or f.startswith(".") else f for f in commands]
 	commands.append("interactions.ext.jurigged")
-	if not get_config("modules.music", typecheck=bool) and 'music' in commands:
+	if not get_config("modules.music", typecheck=bool) and "music" in commands:
 		print("Music commands are disabled")
 		commands.remove("music")
 
 	if debugging():
 		print("Loading commands" if not unload else "Reloading commands")
 	else:
-		print(("Loading commands" if not unload else "Reloading commands") + " ... \033[s", flush=True)
+		print(
+			("Loading commands" if not unload else "Reloading commands") + " ... \033[s",
+			flush=True,
+		)
 	for cmd in commands:
 		if not cmd:
 			continue

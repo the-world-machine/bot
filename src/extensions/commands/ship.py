@@ -1,117 +1,140 @@
 import random
+
+from interactions import (
+	Embed,
+	Extension,
+	OptionType,
+	SlashContext,
+	contexts,
+	integration_types,
+	slash_command,
+	slash_option,
+)
+
 from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
-from interactions import Embed, Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
-
 from utilities.textbox.facepics import get_facepic
 
 
 class ShippingCommands(Extension):
-
 	@slash_command(description="Ship two people together")
 	@slash_option(
-	    name="who", description="First person (singular, can be a @user)", opt_type=OptionType.STRING, required=True
+		name="who",
+		description="First person (singular, can be a @user)",
+		opt_type=OptionType.STRING,
+		required=True,
 	)
 	@slash_option(
-	    argument_name="whomst",
-	    name="with",
-	    description="Second person (singular, can be a @user)",
-	    opt_type=OptionType.STRING,
-	    required=True
+		argument_name="whomst",
+		name="with",
+		description="Second person (singular, can be a @user)",
+		opt_type=OptionType.STRING,
+		required=True,
 	)
 	@slash_option(
-	    description="Whether you want the response to be visible for others in the channel (default: True)",
-	    name="public",
-	    opt_type=OptionType.BOOLEAN
+		description="Whether you want the response to be visible for others in the channel (default: True)",
+		name="public",
+		opt_type=OptionType.BOOLEAN,
 	)
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def ship(self, ctx: SlashContext, who: str, whomst: str, public: bool = True):
 		loc = Localization(ctx)
-		if '<' in who and '>' in who:
-			parsed_id = who.strip('<>')
+		if "<" in who and ">" in who:
+			parsed_id = who.strip("<>")
 			if parsed_id.count("@") > 1:
-				return await fancy_message(ctx, await loc.l("misc.ship.errors.idk"), color=Colors.BAD, ephemeral=True)
-			parsed_id = parsed_id.strip('@')
+				return await fancy_message(
+					ctx,
+					await loc.l("misc.ship.errors.idk"),
+					color=Colors.BAD,
+					ephemeral=True,
+				)
+			parsed_id = parsed_id.strip("@")
 			if not parsed_id.isdigit():
 				return await fancy_message(
-				    ctx, await loc.l("misc.ship.errors.failed_mention"), color=Colors.BAD, ephemeral=True
+					ctx,
+					await loc.l("misc.ship.errors.failed_mention"),
+					color=Colors.BAD,
+					ephemeral=True,
 				)
 			user = await ctx.client.fetch_user(int(parsed_id))
 			if not user:
 				return await fancy_message(
-				    ctx, await loc.l("misc.ship.errors.cant_find_one"), color=Colors.BAD, ephemeral=True
+					ctx,
+					await loc.l("misc.ship.errors.cant_find_one"),
+					color=Colors.BAD,
+					ephemeral=True,
 				)
 			who = user.display_name
-		if '<' in whomst and '>' in whomst:
-			parsed_id = whomst.strip('<>')
+		if "<" in whomst and ">" in whomst:
+			parsed_id = whomst.strip("<>")
 			if parsed_id.count("@") > 1:
 				return await fancy_message(
-				    ctx,
-				    await loc.l("misc.ship.errors.idk"),
-				    color=Colors.BAD,
-				    ephemeral=True,
-				    facepic=await get_facepic("OneShot/The World Machine/Upset left")
+					ctx,
+					await loc.l("misc.ship.errors.idk"),
+					color=Colors.BAD,
+					ephemeral=True,
+					facepic=await get_facepic("OneShot/The World Machine/Upset left"),
 				)
-			parsed_id = parsed_id.strip('@')
+			parsed_id = parsed_id.strip("@")
 			if not parsed_id.isdigit():
 				return await fancy_message(
-				    ctx,
-				    await loc.l("misc.ship.errors.failed_mention"),
-				    color=Colors.BAD,
-				    ephemeral=True,
-				    facepic=await get_facepic("OneShot/The World Machine/Looking Left")
+					ctx,
+					await loc.l("misc.ship.errors.failed_mention"),
+					color=Colors.BAD,
+					ephemeral=True,
+					facepic=await get_facepic("OneShot/The World Machine/Looking Left"),
 				)
 			user = await ctx.client.fetch_user(int(parsed_id))
 			if not user:
 				return await fancy_message(
-				    ctx,
-				    await loc.l("misc.ship.errors.cant_find_two"),
-				    color=Colors.BAD,
-				    ephemeral=True,
-				    facepic=await get_facepic("OneShot/The World Machine/Upset left")
+					ctx,
+					await loc.l("misc.ship.errors.cant_find_two"),
+					color=Colors.BAD,
+					ephemeral=True,
+					facepic=await get_facepic("OneShot/The World Machine/Upset left"),
 				)
 			whomst = user.display_name
 		if who == ctx.author.display_name and who == whomst:
 			return await fancy_message(
-			    ctx,
-			    await loc.l("misc.ship.errors.hugs_you"),
-			    color=Colors.BAD,
-			    ephemeral=True,
-			    facepic=await get_facepic("OneShot/The World Machine/Looking Left")
+				ctx,
+				await loc.l("misc.ship.errors.hugs_you"),
+				color=Colors.BAD,
+				ephemeral=True,
+				facepic=await get_facepic("OneShot/The World Machine/Looking Left"),
 			)
 
 		seed = len(who) + len(whomst)
 		random.seed(seed)
 		love_percentage = random.randint(0, 100)
 
-		name_a_part = who[0:len(who) // 2]  # Get the first half of the first name.
-		name_b_part = whomst[-len(whomst) // 2:]  # Get the last half of the second name.
+		name_a_part = who[0 : len(who) // 2]  # Get the first half of the first name.
+		name_b_part = whomst[-len(whomst) // 2 :]  # Get the last half of the second name.
 
 		name = name_a_part + name_b_part  # Combine the names together.
 
-		emoji = '💖'
-		footer = ''
+		emoji = "💖"
+		footer = ""
 		color = Colors.PASTEL_RED
 		if love_percentage == 100:
-			emoji = '💛'
+			emoji = "💛"
 			footer = await loc.l("misc.ship.compatibility.footer.perfect")
 			color = Colors.PURE_YELLOW
 		if love_percentage < 100:
-			emoji = '💖'
+			emoji = "💖"
 			footer = await loc.l("misc.ship.compatibility.footer.love")
 			color = Colors.PINK
 		if love_percentage < 70:
-			emoji = '❤'
+			emoji = "❤"
 			footer = await loc.l("misc.ship.compatibility.footer.interest")
 		if love_percentage <= 50:
-			emoji = '❓'
+			emoji = "❓"
 			footer = await loc.l("misc.ship.compatibility.footer.potential")
 		if love_percentage < 30:
-			emoji = '❌'
+			emoji = "❌"
 			footer = await loc.l("misc.ship.compatibility.footer.disinterest")
 		if love_percentage < 10:
-			emoji = '💔'
+			emoji = "💔"
 			footer = await loc.l("misc.ship.compatibility.footer.nope")
 			color = Colors.LIGHTER_BLACK
 
@@ -126,10 +149,9 @@ class ShippingCommands(Extension):
 			i += 1
 
 		embed = Embed(
-		    title=name,
-		    description=
-		    f'{await loc.l("misc.ship.compatibility.description", who=who, whomst=whomst, emoji=emoji, percentage=love_percentage)}\n{"".join(hearts_line)}\n-# {footer}',
-		    color=color
+			title=name,
+			description=f"{await loc.l('misc.ship.compatibility.description', who=who, whomst=whomst, emoji=emoji, percentage=love_percentage)}\n{''.join(hearts_line)}\n-# {footer}",
+			color=color,
 		)
 
 		await ctx.send(embeds=embed, ephemeral=not public)

@@ -1,13 +1,13 @@
-import asyncio
 from traceback import print_exc
 from typing import Any
+
+from babel import Locale
+from babel.numbers import format_currency, format_decimal, format_percent
 from interactions import GLOBAL_SCOPE, BaseContext, Snowflake, User
 from pyicumessageformat import Parser
-from babel import Locale
-from babel.numbers import format_decimal, format_percent, format_currency
 
 from utilities.config import get_token
-from utilities.emojis import flatten_emojis, on_emojis_update, emojis
+from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.localization.formatting import fnum
 from utilities.misc import decode_base64_padded
 
@@ -23,15 +23,15 @@ def edicted(emojis):
 edicted(emojis)
 on_emojis_update(edicted)
 
-icu_parser = Parser({ 'allow_tags': False, 'require_other': False})
+icu_parser = Parser({"allow_tags": False, "require_other": False})
 
 
 async def icu_emoji(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	global emoji_dict
 	prop = arguments[0]
@@ -43,18 +43,23 @@ async def icu_emoji(
 	return emoji_dict[prop]
 
 
-bot_id = decode_base64_padded(get_token().split('.')[0])
+bot_id = decode_base64_padded(get_token().split(".")[0])
 
 
 async def icu_user(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	user_id = str(found_var) if found_var else str(arguments[0])
-	if user_id.lower() in ("twm", "the world machine", "theworldmachine", "the-world-machine"):
+	if user_id.lower() in (
+		"twm",
+		"the world machine",
+		"theworldmachine",
+		"the-world-machine",
+	):
 		user_id = bot_id
 	try:
 		Snowflake(int(user_id))
@@ -72,27 +77,23 @@ async def icu_user(
 			return f"could not fetch user from userid, '{user}'"
 	if user:
 		user_data = {
-		    'mention+(@username)':
-		        f"<@{user.id}> (@{user.username})",
-		    'displayname+(@username)':
-		        f"{user.display_name} (@{user.username})" if user.display_name != user.username else "@{user.username}",
-		    'mention':
-		        f"<@{user.id}>",
-		    'id':
-		        str(user.id),
-		    'username':
-		        user.username,
-		    'display_name':
-		        user.display_name,
+			"mention+(@username)": f"<@{user.id}> (@{user.username})",
+			"displayname+(@username)": f"{user.display_name} (@{user.username})"
+			if user.display_name != user.username
+			else "@{user.username}",
+			"mention": f"<@{user.id}>",
+			"id": str(user.id),
+			"username": user.username,
+			"display_name": user.display_name,
 		}
 	elif user_id == str(bot_id):
 		user_data = {
-		    'mention+(@username)': f"<@{bot_id}> (@The World Machine)",
-		    'displayname+(@username)': f"The World Machine",
-		    'id': bot_id,
-		    'mention': f"<@{bot_id}>",
-		    'username': "The World Machine",
-		    'display_name': "The World Machine"
+			"mention+(@username)": f"<@{bot_id}> (@The World Machine)",
+			"displayname+(@username)": f"The World Machine",
+			"id": bot_id,
+			"mention": f"<@{bot_id}>",
+			"username": "The World Machine",
+			"display_name": "The World Machine",
 		}
 	else:
 		return Exception("all ways of getting the user have failed and the doom has come")
@@ -103,11 +104,11 @@ async def icu_user(
 
 
 async def icu_slash(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: BaseContext | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: BaseContext | None = None,
+	found_var: Any | None = None,
 ):
 	command_name = arguments[0][1:].replace("/", " ")
 	id = "0"
@@ -120,11 +121,11 @@ async def icu_slash(
 
 
 async def icu_pretty_num(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	input = str(found_var) if found_var else arguments[0]
 	try:
@@ -137,11 +138,11 @@ async def icu_pretty_num(
 
 
 async def icu_select(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	value = str(found_var) if found_var is not None else ""
 	options = arguments[2]
@@ -149,17 +150,17 @@ async def icu_select(
 	if not isinstance(options, dict):
 		return value
 
-	result_branch = options.get(value, options.get('other', ""))
+	result_branch = options.get(value, options.get("other", ""))
 
 	return await render_icu(result_branch, variables, locale, ctx)
 
 
 async def icu_notempty(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	print(arguments)
 	input = arguments[2]
@@ -169,7 +170,11 @@ async def icu_notempty(
 
 
 async def icu_selectordinal(
-    arguments: tuple, variables: dict, locale: str, ctx: Any | None = None, found_var: Any | None = None
+	arguments: tuple,
+	variables: dict,
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	try:
 		value = float(found_var) if found_var is not None else 0
@@ -188,7 +193,7 @@ async def icu_selectordinal(
 	else:
 		babel_locale = Locale.parse(locale, sep="-")
 		category = babel_locale.ordinal_form(value)
-		raw_result = options.get(category, options.get('other', ""))
+		raw_result = options.get(category, options.get("other", ""))
 
 	rendered_result = await render_icu(raw_result, variables, locale, ctx)
 
@@ -200,11 +205,11 @@ async def icu_selectordinal(
 
 
 async def icu_plural(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	try:
 		value = float(found_var) if found_var is not None else 0
@@ -222,7 +227,7 @@ async def icu_plural(
 		babel_locale = Locale.parse(locale, sep="-")
 		category = babel_locale.plural_form(value)
 
-		raw_result = options.get(category, options.get('other', ""))
+		raw_result = options.get(category, options.get("other", ""))
 
 	rendered_result = await render_icu(raw_result, variables, locale, ctx)
 
@@ -234,11 +239,11 @@ async def icu_plural(
 
 
 async def icu_number(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
 	try:
 		value = float(found_var) if found_var is not None else 0
@@ -248,11 +253,11 @@ async def icu_number(
 	style = arguments[2]
 	babel_locale = Locale.parse(locale, sep="-")
 
-	if style == 'percent':
+	if style == "percent":
 		return format_percent(value, locale=babel_locale)
-	elif style == 'integer':
+	elif style == "integer":
 		return format_decimal(value, format="#,##0", locale=babel_locale)
-	elif style == 'currency':
+	elif style == "currency":
 		return format_decimal(value, locale=babel_locale)
 	elif style and isinstance(style, str) and style.startswith("::currency/"):
 		currency_code = style.split("/")[1]
@@ -264,25 +269,25 @@ async def icu_number(
 
 
 async def icu_fallback(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    ctx: Any | None = None,
-    found_var: Any | None = None
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	ctx: Any | None = None,
+	found_var: Any | None = None,
 ):
-	return f"{{{arguments[0]}{" " if not arguments[1] else ', '+arguments[1]}{" " if not arguments[2] else ', '+str(arguments[2])}}}"
+	return f"{{{arguments[0]}{' ' if not arguments[1] else ', ' + arguments[1]}{' ' if not arguments[2] else ', ' + str(arguments[2])}}}"
 
 
 icu_formatters = {
-    'emoji': icu_emoji,
-    'user': icu_user,
-    'command': icu_slash,
-    'pretty_num': icu_pretty_num,
-    'selectordinal': icu_selectordinal,
-    'select': icu_select,
-    'plural': icu_plural,
-    'number': icu_number,
-    'notempty': icu_notempty
+	"emoji": icu_emoji,
+	"user": icu_user,
+	"command": icu_slash,
+	"pretty_num": icu_pretty_num,
+	"selectordinal": icu_selectordinal,
+	"select": icu_select,
+	"plural": icu_plural,
+	"number": icu_number,
+	"notempty": icu_notempty,
 }
 
 
@@ -302,10 +307,10 @@ async def parse_node(node: dict, variables, locale, ctx: Any | None = None):
 		command_name = variable[1:]
 		format_type = "command"
 
-	if isinstance(variable, str) and '{' in variable and '}' in variable:
+	if isinstance(variable, str) and "{" in variable and "}" in variable:
 		variable = await render_icu(variable, variables, locale, ctx)
 
-	if isinstance(format_type, str) and '{' in format_type and '}' in format_type:
+	if isinstance(format_type, str) and "{" in format_type and "}" in format_type:
 		format_type = await render_icu(format_type, variables, locale, ctx)
 
 	if variable in variables:
@@ -323,7 +328,13 @@ async def parse_node(node: dict, variables, locale, ctx: Any | None = None):
 	if format_type in icu_formatters:
 		try:
 			fn = icu_formatters[format_type]
-			return await fn((variable, format_type, arg3), variables, locale, ctx, found_var=found_var)
+			return await fn(
+				(variable, format_type, arg3),
+				variables,
+				locale,
+				ctx,
+				found_var=found_var,
+			)
 		except Exception as e:
 			print_exc()
 			errname = type(e).__name__
@@ -334,7 +345,13 @@ async def parse_node(node: dict, variables, locale, ctx: Any | None = None):
 		if var_exists:
 			return found_var
 		else:
-			return await icu_fallback((variable, format_type, arg3), variables, locale, ctx, found_var=found_var)
+			return await icu_fallback(
+				(variable, format_type, arg3),
+				variables,
+				locale,
+				ctx,
+				found_var=found_var,
+			)
 
 
 async def evaluate_ast(tree, variables, locale, ctx):

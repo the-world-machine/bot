@@ -34,10 +34,10 @@ async function updatePreview(force = false) {
       const errorData = await response.json();
       console.warn(
         `Server responded with status ${response.status}:`,
-        errorData.error
+        errorData.error,
       );
       throw new Error(
-        errorData.error || `HTTP error! status: ${response.status}`
+        errorData.error || `HTTP error! status: ${response.status}`,
       );
     }
 

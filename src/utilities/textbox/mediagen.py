@@ -1,28 +1,49 @@
+import inspect
 import io
 import re
-import apng
-import inspect
+from dataclasses import dataclass, field, fields
 from pathlib import Path
+from typing import Any, Callable, Literal, Sequence, get_args, get_origin
+
+import apng
 from grapheme import graphemes
-from interactions import Color
+from PIL import Image, ImageDraw, ImageFont
+
+from utilities.config import get_config
 from utilities.localization.localization import Localization
 from utilities.misc import cached_get
-from utilities.config import get_config
-from dataclasses import dataclass, field, fields
-from PIL import Image, ImageDraw, ImageFont
-from typing import Any, Callable, Literal, get_args, Sequence, get_origin
-
 from utilities.textbox.facepics import get_facepic
-from utilities.textbox.parsing import RGBA, CharCommand, CharSpeedModifier, ColorModifier, DelayCommand, FacepicChangeCommand, LineBreakCommand, LocaleCommand, init_token, parse_textbox_text
+from utilities.textbox.parsing import (
+	RGBA,
+	CharCommand,
+	CharSpeedModifier,
+	ColorModifier,
+	DelayCommand,
+	FacepicChangeCommand,
+	LineBreakCommand,
+	LocaleCommand,
+	init_token,
+	parse_textbox_text,
+)
 
 SupportedFiletypes = Literal["WEBP", "GIF", "APNG", "PNG", "JPEG"]
-SupportedLocations = Literal["aleft", "acenter", "aright", "left", "center", "right", "bleft", "bcenter", "bright"]
-sanitize: Callable[[str], str] = lambda text: text.replace('\\', '\\\\').replace('\n', '\\n')
-desanitize: Callable[[str], str] = lambda text: text.replace('\\n', '\n').replace('\\\\', '\\')
+SupportedLocations = Literal[
+	"aleft",
+	"acenter",
+	"aright",
+	"left",
+	"center",
+	"right",
+	"bleft",
+	"bcenter",
+	"bright",
+]
+sanitize: Callable[[str], str] = lambda text: text.replace("\\", "\\\\").replace("\n", "\\n")
+desanitize: Callable[[str], str] = lambda text: text.replace("\\n", "\n").replace("\\\\", "\\")
 
 
 class SerializableData:
-	_separator: str = ';'
+	_separator: str = ";"
 
 	def __str__(self) -> str:
 		"""Serializes the object to a string based on its fields."""
@@ -66,11 +87,11 @@ class SerializableData:
 			if not value_str:
 				return origin()
 			item_type = args[0] if args else str
-			return origin(SerializableData._parse_value(item.strip(), item_type) for item in value_str.split(','))
+			return origin(SerializableData._parse_value(item.strip(), item_type) for item in value_str.split(","))
 		if origin is not None and any(
 		    isinstance(arg, type) and issubclass(arg, type(None)) for arg in args
 		):  # Handles X | None
-			if value_str == 'None':
+			if value_str == "None":
 				return None
 			actual_type = next(arg for arg in args if not issubclass(arg, type(None)))
 			return SerializableData._parse_value(value_str, actual_type)
@@ -78,9 +99,9 @@ class SerializableData:
 		if value_str == "" and not field.type is str:
 			return None
 		if field.type is bool:
-			if value_str in ('True', 'true', '+', 'yes'):
+			if value_str in ("True", "true", "+", "yes"):
 				return True
-			if value_str == ('False', 'false', '-', 'no'):
+			if value_str == ("False", "false", "-", "no"):
 				return False
 			raise ValueError(f"couldn't parse '{value_str}' as bool.")
 		if field.type is int:
@@ -101,15 +122,15 @@ class FrameOptions(SerializableData):
 	end_arrow_bounces: int = 4
 	end_arrow_delay: int = 150
 
-	_separator: str = ';'
+	_separator: str = ";"
 
 	def __init__(
-	    self,
-	    animated: bool | None = None,
-	    end_delay: int | None = None,
-	    end_arrow_bounces: int | None = None,
-	    end_arrow_delay: int | None = None,
-	    _separator: str | None = ";"
+		self,
+		animated: bool | None = None,
+		end_delay: int | None = None,
+		end_arrow_bounces: int | None = None,
+		end_arrow_delay: int | None = None,
+		_separator: str | None = ";",
 	):
 		self.separator = ";"
 		self.animated = True if animated is None else bool(animated)
@@ -137,7 +158,7 @@ class Frame(SerializableData):
 	text: str | None = None
 	options: FrameOptions = field(default_factory=FrameOptions)
 
-	_separator: str = ';'
+	_separator: str = ";"
 
 	def __str__(self):
 		return f"{{{self.options}}};{sanitize(self.text or '')}"
@@ -145,11 +166,11 @@ class Frame(SerializableData):
 	@classmethod
 	def from_string(cls, frame_string: str):
 		try:
-			if not frame_string.startswith('{'):
+			if not frame_string.startswith("{"):
 				frame_string = "{;;;;};" + frame_string
-				#raise ValueError("String must start with '{' for options.")
+				# raise ValueError("String must start with '{' for options.")
 
-			end_brace_idx = frame_string.find('}')
+			end_brace_idx = frame_string.find("}")
 			if end_brace_idx == -1:
 				raise ValueError("Mismatched braces: missing '}'.")
 
@@ -271,9 +292,11 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 				message = f"[ ermm? unexpected type from command, got {type(message)} ]"
 			d = ImageDraw.Draw(text)
 			cumulative_text = ""
-			for word in re.findall(r'\S+\s*|\s+', message):  # TODO: regex alert
-				if text_offset[0] != 0 and word_wrap and (
-				    d.textlength(word, font=font) + text_x + text_offset[0] + 1 > max_text_width
+			for word in re.findall(r"\S+\s*|\s+", message):  # TODO: regex alert
+				if (
+					text_offset[0] != 0
+					and word_wrap
+					and (d.textlength(word, font=font) + text_x + text_offset[0] + 1 > max_text_width)
 				):
 					text_offset[1] += 25.0
 					text_offset[0] = 0.0
@@ -283,9 +306,9 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					cumulative_text += cluster
 					duration = 50
 					match cluster:
-						case '.' | '!' | '?' | '．' | '？' | '！':
+						case "." | "!" | "?" | "．" | "？" | "！":
 							duration = 600
-						case ',' | '，':
+						case "," | "，":
 							duration = 100
 					if text_offset[0] + 15 > max_text_width:
 						text_offset[1] += 25.0
@@ -293,10 +316,15 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 					if text_y + text_offset[1] > background.height - (17 * 2):
 						carriage_return()
 					try:
-						d.text((text_offset[0], text_offset[1]), cluster, font=font, fill=current_color)
-						text_offset[
-						    0
-						] += d.textlength(cluster, font=font)  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
+						d.text(
+							(text_offset[0], text_offset[1]),
+							cluster,
+							font=font,
+							fill=current_color,
+						)
+						text_offset[0] += d.textlength(
+							cluster, font=font
+						)  # TODO: there is a better way https://pillow.readthedocs.io/en/stable/reference/ImageText.html#example
 					except:
 						pass
 					if animated:
@@ -346,29 +374,29 @@ async def render_textbox_frames(
 		image = (await render_frame(frame, False))[0][0]
 		if filetype == "JPEG":
 			buffer = io.BytesIO()
-			if image.mode == 'RGBA':
-				rgb_image = Image.new('RGB', image.size, (255, 255, 255))
+			if image.mode == "RGBA":
+				rgb_image = Image.new("RGB", image.size, (255, 255, 255))
 				rgb_image.paste(image, mask=image.split()[3])
 				rgb_image.save(buffer, format="JPEG", quality=quality)
 			else:
 				image.save(buffer, format="JPEG", quality=quality)
 		else:
 			image.save(
-			    buffer,
-			    format="PNG",
-			    compress_level=9 - int(max(0, min(100, quality)) * 9 / 100)  #  quality = 0->100 = compress_level = 9->0
+				buffer,
+				format="PNG",
+				compress_level=9
+				- int(max(0, min(100, quality)) * 9 / 100),  #  quality = 0->100 = compress_level = 9->0
 			)
 		return buffer
 
 	for frame in frames:
-
 		images, durations = await render_frame(frame, frame.options.animated)
 		all_images.extend(images)
 		all_durations.extend(durations)
 
 		# make the ending thing
 		arrow = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal_arrow.png")))
-		arrow_rgba = arrow.convert('RGBA')
+		arrow_rgba = arrow.convert("RGBA")
 		last_frame = all_images[-1]
 		all_durations[-1] = frame.options.end_delay
 		bounce_frames = [
@@ -406,13 +434,13 @@ async def render_textbox_frames(
 	match filetype:
 		case "WEBP":
 			all_images[0].save(
-			    buffer,
-			    format="WEBP",
-			    save_all=True,
-			    append_images=all_images[1:],
-			    duration=all_durations,
-			    quality=quality,
-			    loops=loops
+				buffer,
+				format="WEBP",
+				save_all=True,
+				append_images=all_images[1:],
+				duration=all_durations,
+				quality=quality,
+				loops=loops,
 			)
 		case "APNG":
 			png_images = []
@@ -434,13 +462,13 @@ async def render_textbox_frames(
 			buffer = io.BytesIO(apng_bytes)
 		case "GIF":
 			all_images[0].save(
-			    buffer,
-			    format="GIF",
-			    save_all=True,
-			    append_images=all_images[1:],
-			    duration=all_durations,
-			    optimize=True,
-			    loops=loops
+				buffer,
+				format="GIF",
+				save_all=True,
+				append_images=all_images[1:],
+				duration=all_durations,
+				optimize=True,
+				loops=loops,
 			)
 	buffer.seek(0)
 	return buffer

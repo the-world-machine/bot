@@ -1,19 +1,18 @@
-import asyncio
 import re
-import yaml as yaml
-from pathlib import Path
-from termcolor import colored
-from traceback import print_exc
 from dataclasses import dataclass
 from datetime import datetime
-from utilities.data_watcher import subscribe
+from pathlib import Path
+from traceback import print_exc
+from typing import Any, Type, TypeVar, overload
+
+import yaml as yaml
+from termcolor import colored
+
 from extensions.events.Ready import ReadyEvent
-from typing import overload, TypeVar, Any, Type, Match
-from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.config import debugging, get_config, get_token, on_prod
 from utilities.localization.icu import render_icu
-from utilities.misc import FrozenDict, format_type_hint, decode_base64_padded, rabbit
-
+from utilities.misc import FrozenDict, decode_base64_padded, format_type_hint, rabbit
+from utilities.source_watcher import FileModifiedEvent, subscribe, toStartswith
 
 _locales: dict[str, dict] = {}
 debug: bool = bool(get_config("localization.debug", ignore_None=True))
@@ -29,25 +28,31 @@ def local_override(locale: str, data: dict):
 
 
 def load_locale(locale: str):
-	return yaml.full_load(open(Path('src/data/locales/bot/', locale + '.yml'), 'r', encoding='utf-8'))
+	path = Path(get_config("paths.localization.root"), locale + ".yml")
+	stream = open(path, "r", encoding="utf-8")
+	output = yaml.full_load(stream)
+	return {} if output is None else output
 
 
 last_update_timestamps = {}
 debounce_interval = 1  # seconds
 
 
-def on_file_update(filename: str):
+def on_file_update(event: FileModifiedEvent):
 	global fallback_locale
-	current_time = datetime.now()
+	filename = str(event.src_path)
+	print(filename)
 	if not filename.endswith(".yml"):
 		return
+	current_time = datetime.now()
 	locale = Path(filename).stem
-	if filename in last_update_timestamps and (
-	    current_time - last_update_timestamps[filename]
-	).seconds < debounce_interval:
+	if (
+		filename in last_update_timestamps
+		and (current_time - last_update_timestamps[filename]).seconds < debounce_interval
+	):
 		return print(".", end="")
 	last_update_timestamps[filename] = current_time
-	print(colored(f'─ Reloading locale {locale}', 'yellow'), end="")
+	print(colored(f"─ Reloading locale {locale}", "yellow"), end="")
 	try:
 		hello = load_locale(locale)
 		if hello is None:
@@ -64,8 +69,7 @@ def on_file_update(filename: str):
 		fallback_locale = _locales[locale]
 
 
-class UnknownLanguageError(Exception):
-	...
+class UnknownLanguageError(Exception): ...
 
 
 def parse_locale(locale):
@@ -75,7 +79,7 @@ def parse_locale(locale):
 	if locale in available_locales:
 		matched_locale = locale
 	else:
-		locale_prefix = locale.split('-')
+		locale_prefix = locale.split("-")
 
 		if locale_prefix in available_locales:
 			matched_locale = locale_prefix
@@ -100,9 +104,8 @@ if debugging():
 else:
 	print("Loading locales ... \033[s", flush=True)
 
-subscribe("locales/", on_file_update)
 loaded = 0
-for file in Path('src/data/locales/bot/').glob('*.yml'):
+for file in Path(get_config("paths.localization.root")).glob("*.yml"):
 	name = file.stem
 	try:
 		_loaded = load_locale(name)
@@ -126,6 +129,7 @@ if not debugging():
 else:
 	print(f"Done ({loaded})")
 
+subscribe(toStartswith(get_config("paths.localization.root")), on_file_update)
 if get_config("localization.main-locale") in _locales:
 	_uhh_loc = get_config("localization.main-locale")
 	fallback_locale = get_locale(_uhh_loc)
@@ -133,7 +137,7 @@ if get_config("localization.main-locale") in _locales:
 
 trailing_dots_regex = re.compile(r"\.*$")
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass
@@ -152,7 +156,7 @@ class Localization:
 		if source is not None and not isinstance(source, str):
 			# It's likely a context object
 			self.ctx = source
-			raw_locale = getattr(self.ctx, 'locale', None)
+			raw_locale = getattr(self.ctx, "locale", None)
 		else:
 			raw_locale = source
 
@@ -170,59 +174,60 @@ class Localization:
 		self.prefix = prefix
 
 	@overload
-	async def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T:
-		...
+	async def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T: ...
 
 	@overload
-	async def l(self, path: str, **variables: Any) -> str:
-		...
+	async def l(self, path: str, **variables: Any) -> str: ...
 
 	async def l(self, path: str, *, typecheck: Any = str, format: bool = True, **variables: Any) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
 		result = await self.sl(
-		    path=path, locale=self.locale, typecheck=typecheck, format=format, ctx=self.ctx, **variables
+			path=path,
+			locale=self.locale,
+			typecheck=typecheck,
+			format=format,
+			ctx=self.ctx,
+			**variables,
 		)
 		return result
 
 	@staticmethod
 	@overload
 	async def sl(
-	    path: str,
-	    locale: str | None,
-	    *,
-	    typecheck: Type[T],
-	    raise_on_not_found: bool = False,
-	    ctx: Any = None,
-	    format: bool = True,
-	    **variables: Any
-	) -> T:
-		...
+		path: str,
+		locale: str | None,
+		*,
+		typecheck: Type[T],
+		raise_on_not_found: bool = False,
+		ctx: Any = None,
+		format: bool = True,
+		**variables: Any,
+	) -> T: ...
 
 	@staticmethod
 	@overload
-	async def sl(path: str, locale: str | None, *, ctx: Any = None, **variables: Any) -> str:
-		...
+	async def sl(path: str, locale: str | None, *, ctx: Any = None, **variables: Any) -> str: ...
 
 	@staticmethod
 	async def sl(
-	    path: str,
-	    locale: str | None = None,
-	    *,  # ← makes all next args only accepted as keyword arguments
-	    typecheck: Any = str,
-	    raise_on_not_found: bool = False,
-	    ctx: Any = None,
-	    format: bool = True,
-	    **variables: Any
+		path: str,
+		locale: str | None = None,
+		*,  # ← makes all next args only accepted as keyword arguments
+		typecheck: Any = str,
+		raise_on_not_found: bool = False,
+		ctx: Any = None,
+		format: bool = True,
+		**variables: Any,
 	) -> Any:
 		if locale is None:
 			raise ValueError("No locale provided")
 		value = get_locale(locale)
 		result = raw_result = rabbit(
-		    value,
-		    path,
-		    fallback_value=fallback_locale if 'fallback_locale' in globals() and fallback_locale else None,
-		    raise_on_not_found=raise_on_not_found,
-		    _error_message="[path] ([error])" if debug else "[path]"
+			value,
+			path,
+			fallback_value=fallback_locale if "fallback_locale" in globals() and fallback_locale else None,
+			raise_on_not_found=raise_on_not_found,
+			_error_message="[path] ([error])" if debug else "[path]",
 		)
 		if format:
 			result = await assign_variables(raw_result, locale, ctx=ctx, **variables)
@@ -231,7 +236,7 @@ class Localization:
 			if result == None:
 				return "{path} not found in all attempted languages"
 			raise TypeError(
-			    f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
+				f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
 			)
 		return result
 
@@ -242,10 +247,10 @@ class Localization:
 		for locale in _locales.keys():
 			value = get_locale(locale)
 			value = rabbit(
-			    value,
-			    localization_path,
-			    raise_on_not_found=raise_on_not_found,
-			    _error_message="[path] ([error], debug mode ON)" if debug else "[path]"
+				value,
+				localization_path,
+				raise_on_not_found=raise_on_not_found,
+				_error_message="[path] ([error], debug mode ON)" if debug else "[path]",
 			)
 
 			results[locale] = await assign_variables(value, locale, **variables)
@@ -254,27 +259,38 @@ class Localization:
 
 
 token = get_token()
-bot_id = decode_base64_padded(token.split('.')[0])
-@overload
-async def assign_variables(
-    input: str, locale: str | None = ..., pretty_numbers: bool = ..., *, ctx: Any = None, **variables: Any
-) -> str:
-	...
+bot_id = decode_base64_padded(token.split(".")[0])
 
 
 @overload
 async def assign_variables(
-    input: T, locale: str | None = ..., pretty_numbers: bool = ..., *, ctx: Any = None, **variables: Any
-) -> T:
-	...
+	input: str,
+	locale: str | None = ...,
+	pretty_numbers: bool = ...,
+	*,
+	ctx: Any = None,
+	**variables: Any,
+) -> str: ...
+
+
+@overload
+async def assign_variables(
+	input: T,
+	locale: str | None = ...,
+	pretty_numbers: bool = ...,
+	*,
+	ctx: Any = None,
+	**variables: Any,
+) -> T: ...
+
 
 async def assign_variables(
-    input: Any,
-    locale: str | None = None,
-    pretty_numbers: bool = True,
-    *,
-    ctx: Any = None,
-    **variables: Any
+	input: Any,
+	locale: str | None = None,
+	pretty_numbers: bool = True,
+	*,
+	ctx: Any = None,
+	**variables: Any,
 ) -> Any:
 	if locale is None:
 		locale = get_config("localization.main-locale")
@@ -283,7 +299,17 @@ async def assign_variables(
 	elif isinstance(input, tuple):
 		out = []
 		for elem in input:
-			out.append((await assign_variables(elem, locale, pretty_numbers=pretty_numbers, ctx=ctx, **variables)))
+			out.append(
+				(
+					await assign_variables(
+						elem,
+						locale,
+						pretty_numbers=pretty_numbers,
+						ctx=ctx,
+						**variables,
+					)
+				)
+			)
 		return tuple(out)
 	elif isinstance(input, dict):
 		new_dict = {}

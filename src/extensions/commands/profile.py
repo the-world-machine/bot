@@ -1,35 +1,55 @@
-import time
 import asyncio
-from utilities.misc import fetch
-from aiohttp import ClientResponseError
+import time
 from datetime import datetime, timedelta
-from utilities.message_decorations import *
+
+from aiohttp import ClientResponseError
+from interactions import (
+	Button,
+	ButtonStyle,
+	Extension,
+	File,
+	Member,
+	OptionType,
+	SlashCommandChoice,
+	SlashContext,
+	User,
+	contexts,
+	integration_types,
+	slash_command,
+	slash_option,
+)
+
 import utilities.profile.badge_manager as bm
-from utilities.profile.main import draw_profile
+from utilities.config import debugging, get_config
 from utilities.database.schemas import UserData
 from utilities.localization.formatting import fnum
-from utilities.config import debugging, get_config
 from utilities.localization.localization import Localization
+from utilities.message_decorations import *
+from utilities.misc import fetch
+from utilities.profile.main import draw_profile
 from utilities.textbox.mediagen import Frame, render_textbox_frames
-from interactions import Button, ButtonStyle, Extension, File, Member, OptionType, SlashCommandChoice, SlashContext, User, contexts, integration_types, slash_command, slash_option
 
 
 class ProfileCommands(Extension):
-
-	@slash_command(description='All things to do with profiles')
+	@slash_command(description="All things to do with profiles")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def profile(self, ctx):
 		pass
 
-	@slash_command(description='All things to do with Suns')
+	@slash_command(description="All things to do with Suns")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def sun(self, ctx):
 		pass
 
-	@sun.subcommand(sub_cmd_description='Give someone a sun!')
-	@slash_option(description='Person to give the sun to', name='who', opt_type=OptionType.USER, required=True)
+	@sun.subcommand(sub_cmd_description="Give someone a sun!")
+	@slash_option(
+		description="Person to give the sun to",
+		name="who",
+		opt_type=OptionType.USER,
+		required=True,
+	)
 	async def give(self, ctx: SlashContext, who: User):
 		user_data: UserData = await UserData(_id=who.id).fetch()
 
@@ -46,10 +66,10 @@ class ProfileCommands(Extension):
 		if now < last_reset_time:
 			time_unix = last_reset_time.timestamp()
 			return await fancy_message(
-			    ctx,
-			    f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]",
-			    ephemeral=True,
-			    color=Colors.BAD
+				ctx,
+				f"[ You've already given a sun to someone! You can give one again <t:{int(time_unix)}:R>. ]",
+				ephemeral=True,
+				color=Colors.BAD,
 			)
 
 		# reset the limit if it is a new day
@@ -59,13 +79,17 @@ class ProfileCommands(Extension):
 		_ = ctx.author
 		if isinstance(_, Member):
 			_ = _.user
-		await bm.increment_value(ctx, 'suns', target=_)
-		await bm.increment_value(ctx, 'suns', target=who)
+		await bm.increment_value(ctx, "suns", target=_)
+		await bm.increment_value(ctx, "suns", target=who)
 
 		await ctx.send(f"[ {ctx.author.mention} gave {who.mention} a sun! {emojis['icons']['sun']} ]")
 
-	@profile.subcommand(sub_cmd_description='View a profile')
-	@slash_option(description="Person you want to see the profile of", name='user', opt_type=OptionType.USER)
+	@profile.subcommand(sub_cmd_description="View a profile")
+	@slash_option(
+		description="Person you want to see the profile of",
+		name="user",
+		opt_type=OptionType.USER,
+	)
 	async def view(self, ctx: SlashContext, user: User | None = None):
 		url = "https://theworldmachine.xyz/profile"
 
@@ -78,59 +102,80 @@ class ProfileCommands(Extension):
 		await fancy_message(ctx, await loc.l("profile.view.loading", target_id=user.id))
 
 		start_time = time.perf_counter()
-		image = await draw_profile(user, filename=await loc.l("profile.view.image.name", target_id=user.id), loc=loc)
+		image = await draw_profile(
+			user,
+			filename=await loc.l("profile.view.image.name", target_id=user.id),
+			loc=loc,
+		)
 		runtime = (time.perf_counter() - start_time) * 1000
 		components = []
 		if user == ctx.user:
-			components.append(Button(
-			    style=ButtonStyle.URL,
-			    url=url,
-			    label=await loc.l("profile.view.button"),
-			))
+			components.append(
+				Button(
+					style=ButtonStyle.URL,
+					url=url,
+					label=await loc.l("profile.view.button"),
+				)
+			)
 		content = await loc.l("profile.view.message", target_id=user.id)
 		await ctx.edit(
-		    content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
-		    files=image,
-		    components=components,
-		    allowed_mentions={ 'users': []},
-		    embeds=[]
+			content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
+			files=image,
+			components=components,
+			allowed_mentions={"users": []},
+			embeds=[],
 		)
 
-	@profile.subcommand(sub_cmd_description='Edit your profile')
+	@profile.subcommand(sub_cmd_description="Edit your profile")
 	async def edit(self, ctx: SlashContext):
 		loc = Localization(ctx)
 		components = [
-		    Button(
-		        style=ButtonStyle.URL,
-		        label=await loc.l('generic.buttons.open_site'),
-		        url=get_config("bot.links.website-root") + "/profile"
-		    )
+			Button(
+				style=ButtonStyle.URL,
+				label=await loc.l("generic.buttons.open_site"),
+				url=get_config("bot.links.website-root") + "/profile",
+			)
 		]
 		asyncio.create_task(
-		    fancy_message(ctx, message=await loc.l('profile.edit.text'), ephemeral=True, components=components)
+			fancy_message(
+				ctx,
+				message=await loc.l("profile.edit.text"),
+				ephemeral=True,
+				components=components,
+			)
 		)
 		try:
 			await fetch("https://theworldmachine.xyz/profile")
 		except ClientResponseError as e:
 			components.append(
-			 Button(
-			  style=ButtonStyle.URL,
-			  label=await loc.l('about.buttons["community server"]'),
-			  url=get_config("bot.links.discord-invite")
-			 )
+				Button(
+					style=ButtonStyle.URL,
+					label=await loc.l('about.buttons["community server"]'),
+					url=get_config("bot.links.discord-invite"),
+				)
 			)
 			buffer = await render_textbox_frames([Frame(str(await loc.l("profile.edit.down")))])
-			filename = await loc.l(f"textbox.alt.single_frame.filename", timestamp=str(round(datetime.now().timestamp())))+".webp"
+			filename = (
+				await loc.l(
+					f"textbox.alt.single_frame.filename",
+					timestamp=str(round(datetime.now().timestamp())),
+				)
+				+ ".webp"
+			)
 
-			await ctx.edit(files=File(file=buffer, file_name=filename), embeds=[], components=components)
+			await ctx.edit(
+				files=File(file=buffer, file_name=filename),
+				embeds=[],
+				components=components,
+			)
 		except Exception:
 			pass
 
 	choices = [
-	    SlashCommandChoice(name='Sun Amount', value='suns'),
-	    SlashCommandChoice(name='Wool Amount', value='wool'),
-	    SlashCommandChoice(name='Times Shattered', value='times_shattered'),
-	    SlashCommandChoice(name='Times Asked', value='times_asked'),
-	    SlashCommandChoice(name='Times Messaged', value='times_messaged'),
-	    SlashCommandChoice(name='Times Transmitted', value='times_transmitted')
+		SlashCommandChoice(name="Sun Amount", value="suns"),
+		SlashCommandChoice(name="Wool Amount", value="wool"),
+		SlashCommandChoice(name="Times Shattered", value="times_shattered"),
+		SlashCommandChoice(name="Times Asked", value="times_asked"),
+		SlashCommandChoice(name="Times Messaged", value="times_messaged"),
+		SlashCommandChoice(name="Times Transmitted", value="times_transmitted"),
 	]  # TODO: what is this

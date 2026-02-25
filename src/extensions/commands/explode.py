@@ -1,31 +1,41 @@
 import random
 from datetime import datetime, timedelta
-from utilities.localization.formatting import fnum
-from utilities.message_decorations import *
+
+from interactions import (
+	Extension,
+	OptionType,
+	SlashContext,
+	contexts,
+	integration_types,
+	slash_command,
+	slash_option,
+)
+
 import utilities.profile.badge_manager as bm
 from utilities.database.schemas import UserData
+from utilities.localization.formatting import fnum
 from utilities.localization.localization import Localization
-from interactions import Extension, OptionType, SlashContext, contexts, integration_types, slash_command, slash_option
+from utilities.message_decorations import *
 
 
 class ExplodeCommands(Extension):
 	explosion_image = [
-	    'https://st.depositphotos.com/1001877/4912/i/600/depositphotos_49123283-stock-photo-light-bulb-exploding-concept-of.jpg',
-	    'https://st4.depositphotos.com/6588418/39209/i/600/depositphotos_392090278-stock-photo-exploding-light-bulb-dark-blue.jpg',
-	    'https://st.depositphotos.com/1864689/1538/i/600/depositphotos_15388723-stock-photo-light-bulb.jpg',
-	    'https://st2.depositphotos.com/1001877/5180/i/600/depositphotos_51808361-stock-photo-light-bulb-exploding-concept-of.jpg',
-	    'https://static7.depositphotos.com/1206476/749/i/600/depositphotos_7492923-stock-photo-broken-light-bulb.jpg',
+		"https://st.depositphotos.com/1001877/4912/i/600/depositphotos_49123283-stock-photo-light-bulb-exploding-concept-of.jpg",
+		"https://st4.depositphotos.com/6588418/39209/i/600/depositphotos_392090278-stock-photo-exploding-light-bulb-dark-blue.jpg",
+		"https://st.depositphotos.com/1864689/1538/i/600/depositphotos_15388723-stock-photo-light-bulb.jpg",
+		"https://st2.depositphotos.com/1001877/5180/i/600/depositphotos_51808361-stock-photo-light-bulb-exploding-concept-of.jpg",
+		"https://static7.depositphotos.com/1206476/749/i/600/depositphotos_7492923-stock-photo-broken-light-bulb.jpg",
 	]
 
-	sad_image = 'https://images-ext-1.discordapp.net/external/47E2RmeY6Ro21ig0pkcd3HaYDPel0K8CWf6jumdJzr8/https/i.ibb.co/bKG17c2/image.png'
+	sad_image = "https://images-ext-1.discordapp.net/external/47E2RmeY6Ro21ig0pkcd3HaYDPel0K8CWf6jumdJzr8/https/i.ibb.co/bKG17c2/image.png"
 
 	last_called = {}
 
-	@slash_command(name='explode', description="💥💥💥💥💥💥💥💥💥")
+	@slash_command(name="explode", description="💥💥💥💥💥💥💥💥💥")
 	@slash_option(
-	    description="Whether you want the response to be visible for others in the channel",
-	    name="public",
-	    opt_type=OptionType.BOOLEAN
+		description="Whether you want the response to be visible for others in the channel",
+		name="public",
+		opt_type=OptionType.BOOLEAN,
 	)
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
@@ -36,11 +46,13 @@ class ExplodeCommands(Extension):
 		if uid in self.last_called:
 			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
-				    ctx,
-				    await
-				    loc.l("generic.command_cooldown", timestamp_relative=timestamp_relative(self.last_called[uid])),
-				    ephemeral=True,
-				    color=Colors.RED
+					ctx,
+					await loc.l(
+						"generic.command_cooldown",
+						timestamp_relative=timestamp_relative(self.last_called[uid]),
+					),
+					ephemeral=True,
+					color=Colors.RED,
 				)
 		await ctx.defer(ephemeral=not public)
 		self.last_called[uid] = datetime.now() + timedelta(seconds=20)
@@ -61,7 +73,7 @@ class ExplodeCommands(Extension):
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
 				dialogue = await loc.l("explode.dialogue.sixninefourtwo")
 
-			if len(str(explosion_amount)) > 3 and all(char == '9' for char in str(explosion_amount)):
+			if len(str(explosion_amount)) > 3 and all(char == "9" for char in str(explosion_amount)):
 				dialogue = await loc.l("explode.dialogue.nineninenineninenine")
 			if not dialogue:
 				dialogue = "." * random.randint(3, 9)
@@ -70,11 +82,11 @@ class ExplodeCommands(Extension):
 			embed.set_image(url=self.explosion_image[random_number])
 			embed.set_footer(await loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
 		else:
-			embed = Embed(title='...')
+			embed = Embed(title="...")
 			embed.set_image(url=self.sad_image)
 			embed.set_footer(await loc.l("explode.YouKilledNiko"))
 
 		if not sad:
-			await bm.increment_value(ctx, 'times_shattered', 1, ctx.user)
+			await bm.increment_value(ctx, "times_shattered", 1, ctx.user)
 
 		await ctx.send(embed=embed)

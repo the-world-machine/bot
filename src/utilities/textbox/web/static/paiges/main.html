@@ -1,15 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Textbox Preview</title>
-	<link rel="stylesheet" href="/static/style.css">
+	<link rel="stylesheet" href="/static/style.css" />
 	<script defer preload src="/static/script.js"></script>
 </head>
+
 <body>
 	<div class="control-options">
-		<div id="error-box" class="error" style="display:none;"></div>
+		<div id="error-box" class="error" style="display: none"></div>
 		<label for="textbox-text" class="textarea-label">.tbb file content:</label>
 		<pre contenteditable id="textbox-text"># documentation on this <a href="https://github.com/the-world-machine/bot/tree/main/md/en/textbox/index.md#File_editing">can be found here</a> (right click or hold)
 #> StateOptions <#
@@ -17,22 +19,23 @@ filetype=WEBP
 quality=100
 #> Frames <#
 \@[OneShot/Niko/83c]paws at u :3</pre>
-		<hr class="divider">
+		<hr class="divider" />
 		<div class="preferences-container">
 			<label for="tbb-file-input" class="file-input-label">.tbb file:</label>
-			<input type="file" id="tbb-file-input" accept=".tbb">
-			<br/>
-			<hr>
+			<input type="file" id="tbb-file-input" accept=".tbb" />
+			<br />
+			<hr />
 			<button id="download-tbb-button">Download as .tbb</button>
 			<button id="download-media-button">Download Output</button>
 		</div>
-</div>
-	<hr class="divider">
+	</div>
+	<hr class="divider" />
 	<div id="preview-container">
-			<div class="image-wrapper">
-					<span id="timer-display"></span>
-					<img id="preview-image" src="" alt="Waiting for input...">
-			</div>
+		<div class="image-wrapper">
+			<span id="timer-display"></span>
+			<img id="preview-image" src="" alt="Waiting for input..." />
+		</div>
 	</div>
 </body>
+
 </html>

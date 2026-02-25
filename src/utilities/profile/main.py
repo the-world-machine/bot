@@ -2,18 +2,20 @@ import asyncio
 import io
 import textwrap
 from typing import Any
-from termcolor import colored
+
 from interactions import File, User
-from utilities.emojis import make_emoji_cdn_url, emojis
-from utilities.localization.formatting import fnum
-from utilities.message_decorations import Colors
-from utilities.database.schemas import UserData
-from utilities.misc import cached_get, pretty_user
-from utilities.config import debugging, get_config
-from utilities.localization.localization import Localization
-from utilities.shop.fetch_items import fetch_background, fetch_badge
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageSequence
+from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageSequence
 from PIL.ImageFont import FreeTypeFont
+from termcolor import colored
+
+from utilities.config import debugging, get_config
+from utilities.database.schemas import UserData
+from utilities.emojis import emojis, make_emoji_cdn_url
+from utilities.localization.formatting import fnum
+from utilities.localization.localization import Localization
+from utilities.message_decorations import Colors
+from utilities.misc import cached_get, pretty_user
+from utilities.shop.fetch_items import fetch_background, fetch_badge
 
 icons: list[Image.Image] = []
 shop_icons: list[Image.Image] = []
@@ -50,8 +52,8 @@ async def load_profile_assets():
 
 	async def fetch_and_process_emoji(badge):
 		nonlocal assets
-		img = Image.open(await cached_get(make_emoji_cdn_url(f'<:i:{badge["emoji"]}>', size=128)))
-		img = img.convert('RGBA')
+		img = Image.open(await cached_get(make_emoji_cdn_url(f"<:i:{badge['emoji']}>", size=128)))
+		img = img.convert("RGBA")
 		img = img.resize((35, 35), Image.Resampling.NEAREST)
 		assets += 1
 		if debugging():
@@ -65,11 +67,11 @@ async def load_profile_assets():
 	if debugging():
 		print("done!")
 
-	wool_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis['icons']['wool'], size=32)))
+	wool_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis["icons"]["wool"], size=32)))
 	if debugging():
 		print(f"| Wool icon")
 	assets += 1
-	sun_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis['icons']['sun'], size=32)))
+	sun_icon = Image.open(await cached_get(make_emoji_cdn_url(emojis["icons"]["sun"], size=32)))
 	if debugging():
 		print(f"| Sun icon")
 	assets += 1
@@ -80,13 +82,21 @@ async def load_profile_assets():
 		print(f"Done ({assets})")
 
 
-async def draw_profile(user: User, filename: str, alt: str | None = None, loc: Localization = Localization()) -> File:
+async def draw_profile(
+	user: User,
+	filename: str,
+	alt: str | None = None,
+	loc: Localization = Localization(),
+) -> File:
 	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()
-	assert isinstance(wool_icon, Image.Image) and isinstance(sun_icon, Image.Image) and isinstance(
-	    font, FreeTypeFont
-	) and isinstance(badges, dict) and all(isinstance(icon, Image.Image) for icon in icons) and all(
-	    isinstance(icon, Image.Image) for icon in shop_icons
+	assert (
+		isinstance(wool_icon, Image.Image)
+		and isinstance(sun_icon, Image.Image)
+		and isinstance(font, FreeTypeFont)
+		and isinstance(badges, dict)
+		and all(isinstance(icon, Image.Image) for icon in icons)
+		and all(isinstance(icon, Image.Image) for icon in shop_icons)
 	), "linter pleasing failed"
 	user_id = user.id
 	user_pfp_url = user.display_avatar._url
@@ -103,21 +113,28 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	title = await loc.l("profile.view.image.title", target_id=user.id)
 
 	backgrounds = await fetch_background()
-	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]['image']))
+	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]["image"]))
 
 	base_profile = ImageDraw.Draw(image, "RGBA")
 
-	base_profile.text((42, 32), title, font=font, fill=(252, 186, 86), stroke_width=2, stroke_fill=(0, 0, 0))
+	base_profile.text(
+		(42, 32),
+		title,
+		font=font,
+		fill=(252, 186, 86),
+		stroke_width=2,
+		stroke_fill=(0, 0, 0),
+	)
 	if len(user_data.profile_description) > 0:
 		# textwrap.fill makes it so the text doesn't overflow out of the image
 		base_profile.text(
-		    (210, 140),
-		    textwrap.fill(user_data.profile_description, 35),
-		    font=font,
-		    fill=(255, 255, 255),
-		    stroke_width=2,
-		    stroke_fill=Colors.BLACK.hex,
-		    align='center'
+			(210, 140),
+			textwrap.fill(user_data.profile_description, 35),
+			font=font,
+			fill=(255, 255, 255),
+			stroke_width=2,
+			stroke_fill=Colors.BLACK.hex,
+			align="center",
 		)
 
 	init_x = 60  # Start with the first column (adjust as needed)
@@ -135,7 +152,6 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	badge_keys = list(badges.keys())
 
 	for i, icon in enumerate(icons):
-
 		enhancer = ImageEnhance.Brightness(icon)
 
 		icon = enhancer.enhance(0)
@@ -164,36 +180,36 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 			current_row = 0
 
 	base_profile.text(
-	    (648, 70),
-	    f'{fnum(user_data.wool, locale=loc.locale)} x',
-	    font=font,
-	    fill=(255, 255, 255),
-	    anchor='rt',
-	    align='right',
-	    stroke_width=2,
-	    stroke_fill=Colors.BLACK.hex
+		(648, 70),
+		f"{fnum(user_data.wool, locale=loc.locale)} x",
+		font=font,
+		fill=(255, 255, 255),
+		anchor="rt",
+		align="right",
+		stroke_width=2,
+		stroke_fill=Colors.BLACK.hex,
 	)
-	image.paste(wool_icon, (659, 63), wool_icon.convert('RGBA'))
+	image.paste(wool_icon, (659, 63), wool_icon.convert("RGBA"))
 
 	base_profile.text(
-	    (648, 32),
-	    f'{fnum(user_data.suns, locale=loc.locale)} x',
-	    font=font,
-	    fill=(255, 255, 255),
-	    anchor='rt',
-	    align='right',
-	    stroke_width=2,
-	    stroke_fill=Colors.BLACK.hex
+		(648, 32),
+		f"{fnum(user_data.suns, locale=loc.locale)} x",
+		font=font,
+		fill=(255, 255, 255),
+		anchor="rt",
+		align="right",
+		stroke_width=2,
+		stroke_fill=Colors.BLACK.hex,
 	)
-	image.paste(sun_icon, (659, 25), sun_icon.convert('RGBA'))
+	image.paste(sun_icon, (659, 25), sun_icon.convert("RGBA"))
 
 	base_profile.text(
-	    (42, 251),
-	    await loc.l("profile.view.image.unlocked.stamps", username=user.username),
-	    font=font,
-	    fill=(255, 255, 255),
-	    stroke_width=2,
-	    stroke_fill=Colors.BLACK.hex
+		(42, 251),
+		await loc.l("profile.view.image.unlocked.stamps", username=user.username),
+		font=font,
+		fill=(255, 255, 255),
+		stroke_width=2,
+		stroke_fill=Colors.BLACK.hex,
 	)
 
 	pfp = Image.open(await cached_get(user_pfp_url))
@@ -202,16 +218,23 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 		for pfp_frame in ImageSequence.Iterator(pfp):
 			temp_image = image.copy()
 			pfp_frame = pfp_frame.resize((148, 148))
-			temp_image.paste(pfp_frame, (42, 80), pfp_frame.convert('RGBA'))
+			temp_image.paste(pfp_frame, (42, 80), pfp_frame.convert("RGBA"))
 			frames.append(temp_image)
 	else:
 		pfp = pfp.resize((148, 148))
-		image.paste(pfp, (42, 80), pfp.convert('RGBA'))
+		image.paste(pfp, (42, 80), pfp.convert("RGBA"))
 		frames.append(image)
 
 	img_buffer = io.BytesIO()
 	if animated:
-		frames[0].save(img_buffer, format="GIF", save_all=True, append_images=frames[1:], loop=0, duration=100)
+		frames[0].save(
+			img_buffer,
+			format="GIF",
+			save_all=True,
+			append_images=frames[1:],
+			loop=0,
+			duration=100,
+		)
 	else:
 		image.save(img_buffer, format="PNG")
 	img_buffer.seek(0)
@@ -219,11 +242,19 @@ async def draw_profile(user: User, filename: str, alt: str | None = None, loc: L
 	# TODO: move this out of here sometime
 	username = pretty_user(user)
 
-	alt = alt if alt is not None else await loc.l(
-	    "profile.view.image.alt",
-	    username=username,
-	    suns=user_data.suns,
-	    wool=user_data.wool,
-	    description=user_data.profile_description,
+	alt = (
+		alt
+		if alt is not None
+		else await loc.l(
+			"profile.view.image.alt",
+			username=username,
+			suns=user_data.suns,
+			wool=user_data.wool,
+			description=user_data.profile_description,
+		)
 	)
-	return File(file=img_buffer, file_name=filename + (".gif" if animated else ".png"), description=alt)
+	return File(
+		file=img_buffer,
+		file_name=filename + (".gif" if animated else ".png"),
+		description=alt,
+	)

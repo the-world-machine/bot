@@ -1,8 +1,8 @@
 import asyncio
 from typing import Literal
+
 from utilities.database.schemas import UserData
 from utilities.localization.localization import Localization
-
 
 limits: dict[str, int] = {
 	"treasure.tip": 5,
@@ -24,7 +24,7 @@ async def put_mini(
 	user_id: str | int | None = None,
 	type: Literal["note", "tip", "warn", "err"] = "note",
 	pre: str = "",
-	markdown: bool = True
+	markdown: bool = True,
 ) -> str:
 	if user_id:
 		user_data: UserData = await UserData(str(user_id)).fetch()

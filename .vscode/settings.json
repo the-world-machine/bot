@@ -1,30 +1,41 @@
 {
-  "python.analysis.extraPaths": ["./src"],
-  "editor.tabSize": 2,
-  "editor.insertSpaces": false,
-  "editor.formatOnSave": true,
-  "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    "**/__pycache__": true,
-    "Pipfile.lock": true
-  },
-  "[python]": {
-    "editor.formatOnSaveMode": "modifications",
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "eeyore.yapf"
-  },
-  "yapf.args": ["--style", ".yapf.ini"],
-  "python-envs.defaultEnvManager": "ms-python.python:system",
-  "python-envs.pythonProjects": [
+	"python.analysis.extraPaths": [
+		"./src"
+	],
+	"editor.tabSize": 2,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/__pycache__": true,
+		"Pipfile.lock": true
+	},
+	"[python]": {
+		"editor.formatOnSaveMode": "modifications",
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "charliermarsh.ruff",
+		"editor.codeActionsOnSave": {
+			"source.organizeImports.ruff": "explicit",
+			"source.unusedImports": "explicit"
+		}
+	},
+	"python-envs.defaultEnvManager": "ms-python.python:system",
+	"python-envs.pythonProjects": [
 		{
 			"path": "",
 			"envManager": "ms-python.python:system",
 			"packageManager": "ms-python.python:pip"
 		}
-	]
+	],
+	"ruff.lint.select": [
+		"ERA001"
+	],
+	"ruff.importStrategy": "fromEnvironment",
+	"autoflake-extension.expand-star-imports": true,
+	"autoflake-extension.remove-all-unused-imports": true
 }

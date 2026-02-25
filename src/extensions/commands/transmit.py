@@ -1,25 +1,54 @@
-import uuid
 import asyncio
+import uuid
 from typing import Literal
-from utilities.emojis import emojis
+
+# ruff: noqa: ERA001
+from interactions import (
+	TYPE_ALL_CHANNEL,
+	TYPE_MESSAGEABLE_CHANNEL,
+	Button,
+	ButtonStyle,
+	ChannelType,
+	Embed,
+	Extension,
+	Guild,
+	Member,
+	Message,
+	SlashContext,
+	User,
+	contexts,
+	integration_types,
+	listen,
+	slash_command,
+)
+from interactions.api.events import Component, MessageCreate
+
 from utilities.database.schemas import ServerData
+from utilities.emojis import emojis
 from utilities.localization.formatting import ftime
 from utilities.localization.localization import Localization
-from utilities.profile.badge_manager import increment_value
-from interactions.api.events import MessageCreate, Component
 from utilities.message_decorations import Colors, fancy_message
-from utilities.transmission_connection_manager import Connection, Transmission, available_initial_connections, check_if_connected, connect_to_transmission, connection_alive, create_connection, get_transmission, remove_connection
-from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle, ChannelType, Embed, Extension, Guild, Member, Message, SlashContext, Snowflake, User, contexts, integration_types, listen, slash_command, TYPE_MESSAGEABLE_CHANNEL
+from utilities.profile.badge_manager import increment_value
+from utilities.transmission_connection_manager import (
+	Connection,
+	Transmission,
+	available_initial_connections,
+	connect_to_transmission,
+	connection_alive,
+	create_connection,
+	get_transmission,
+	remove_connection,
+)
 
 
 class TransmissionCommands(Extension):
-
-	@slash_command(description='Transmit to other servers!')
+	@slash_command(description="Transmit to other servers!")
 	@integration_types(guild=True, user=False)
 	@contexts(bot_dm=False)
 	async def transmit(self, ctx: SlashContext):
 		pass
 
+	#
 	# @transmit.subcommand(sub_cmd_description='Connect to a server you already know.')
 	# async def call(self, ctx: SlashContext):
 
@@ -29,7 +58,7 @@ class TransmissionCommands(Extension):
 	# 		await ctx.client.fetch_guild(id) or id
 	# 		for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))
 	# 	]
-	# 	# yapf: disable
+	#
 	# 	server_ids = {
 	# 		guild.id if isinstance(guild, Guild) else guild
 	# 		:
@@ -156,7 +185,7 @@ class TransmissionCommands(Extension):
 	# 			self.on_transmission(ctx.user, message, ctx.guild_id),
 	# 			self.on_transmission(other_server_ctx.user, other_server_message, other_server)
 	# 		) # type: ignore
-	@transmit.subcommand(sub_cmd_description='Transmit messages to another server')
+	@transmit.subcommand(sub_cmd_description="Transmit messages to another server")
 	@integration_types(guild=True, user=False)
 	@contexts(bot_dm=False)
 	async def connect(self, ctx: SlashContext):
@@ -168,16 +197,18 @@ class TransmissionCommands(Extension):
 		trans = get_transmission(ctx.guild_id)
 
 		if trans:
-
-			return await fancy_message(ctx, '[ This server is already transmitting! ]', ephemeral=True)
+			return await fancy_message(ctx, "[ This server is already transmitting! ]", ephemeral=True)
 
 		if available_initial_connections(server_data.transmissions.blocked_servers):
-
 			trans = create_connection(ctx.guild_id, ctx.channel_id)
 
-			embed = await self.embed_manager('initial_connection')
+			embed = await self.embed_manager("initial_connection")
 
-			cancel = Button(style=ButtonStyle.DANGER, label='Cancel', custom_id='haha cancel go brrr')
+			cancel = Button(
+				style=ButtonStyle.DANGER,
+				label="Cancel",
+				custom_id="haha cancel go brrr",
+			)
 
 			msg = await ctx.send(embeds=embed, components=cancel)
 
@@ -195,22 +226,22 @@ class TransmissionCommands(Extension):
 
 				await button_ctx.ctx.defer(edit_origin=True)
 
-				embed = make_cancel_embed('manual', ctx.guild.name, button_ctx.ctx)
+				embed = make_cancel_embed("manual", ctx.guild.name, button_ctx.ctx)
 
 				await msg.edit(embeds=embed, components=[])
 				return
 
-			await increment_value(ctx, 'times_transmitted', 1, ctx.user)
+			await increment_value(ctx, "times_transmitted", 1, ctx.user)
 
 			await self.on_transmission(ctx, msg)
 
 			return
 
-		embed = await self.embed_manager('initial_connection')
+		embed = await self.embed_manager("initial_connection")
 
 		msg = await ctx.send(embeds=embed)
 
-		await increment_value(ctx, 'times_transmitted', 1, ctx.user)
+		await increment_value(ctx, "times_transmitted", 1, ctx.user)
 
 		connect_to_transmission(ctx.guild_id, ctx.channel_id)
 		await self.on_transmission(ctx, msg)
@@ -225,9 +256,9 @@ class TransmissionCommands(Extension):
 		trans: Transmission | None = get_transmission(server_id)
 		if not trans:
 			return
-		if not connection_alive(
-		    trans
-		) or trans.connection_b is None:  # NOTE: part after "or" is for python linter i'm not sure why it says that connection_b may be null 5 lines below
+		if (
+			not connection_alive(trans) or trans.connection_b is None
+		):  # NOTE: part after "or" is for python linter i'm not sure why it says that connection_b may be null 5 lines below
 			return
 
 		other_server: Guild | None
@@ -242,28 +273,27 @@ class TransmissionCommands(Extension):
 		await server_data.transmissions.known_servers.append(str(other_server.id))
 
 		guilds = [
-		    await ctx.client.fetch_guild(id) or id
-		    for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))
+			await ctx.client.fetch_guild(id) or id
+			for id in list(set(server_data.transmissions.known_servers + server_data.transmissions.blocked_servers))
 		]
-		# yapf: disable
 		known_servers = {
-		 guild.id if isinstance(guild, Guild) else guild
-		 :
-                                                                                                                                                      guild.name if isinstance(guild, Guild) else (await loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
-		 for guild in guilds
+			guild.id if isinstance(guild, Guild) else guild: guild.name
+			if isinstance(guild, Guild)
+			else (await loc.l("transmit.autocomplete.unknown_server", server_id=guild), True)
+			for guild in guilds
 		}
-		# yapf: enable
 
 		btn_id = uuid.uuid4()
 
-		disconnect = Button(style=ButtonStyle.DANGER, label='Disconnect', custom_id=str(btn_id))
+		disconnect = Button(style=ButtonStyle.DANGER, label="Disconnect", custom_id=str(btn_id))
 
 		async def check_button(component: Component):
 			if user.id == component.ctx.user.id:
 				return True
 			else:
 				await component.ctx.send(
-				    f'[ Only the initiator of this transmission ({user.mention}) can cancel it! ]', ephemeral=True
+					f"[ Only the initiator of this transmission ({user.mention}) can cancel it! ]",
+					ephemeral=True,
 				)
 				return False
 
@@ -271,8 +301,8 @@ class TransmissionCommands(Extension):
 
 		disconnect_timer = 600
 
-		embed = await self.embed_manager('connected')
-		embed.description = f'[ Currently connected to **{other_server.name}**! ]'
+		embed = await self.embed_manager("connected")
+		embed.description = f"[ Currently connected to **{other_server.name}**! ]"
 
 		while connection_alive(trans):
 			done, _ = await asyncio.wait({task}, timeout=1)
@@ -281,17 +311,17 @@ class TransmissionCommands(Extension):
 				if disconnect_timer % 10 == 0:
 					time = ftime(disconnect_timer)
 
-					embed.set_footer(text=f'Transmission will end in {time}.')
+					embed.set_footer(text=f"Transmission will end in {time}.")
 
 					await msg.edit(embeds=embed, components=disconnect)
 
 				disconnect_timer -= 1
 
 				if disconnect_timer == 30:
-					await msg.reply('[ Transmission will end in 30 seconds. ]')
+					await msg.reply("[ Transmission will end in 30 seconds. ]")
 
 				if disconnect_timer == 0:
-					embed = make_cancel_embed('timeout', server_name=other_server.name)
+					embed = make_cancel_embed("timeout", server_name=other_server.name)
 
 					remove_connection(trans)
 					trans = None
@@ -303,13 +333,16 @@ class TransmissionCommands(Extension):
 
 			remove_connection(trans)
 			# what to show to server that did cancel ↓
-			await msg.edit(embeds=make_cancel_embed('casual', other_server.name, task.result().ctx), components=[])
-			await msg.reply(embeds=make_cancel_embed('manual', other_server.name, task.result().ctx))
+			await msg.edit(
+				embeds=make_cancel_embed("casual", other_server.name, task.result().ctx),
+				components=[],
+			)
+			await msg.reply(embeds=make_cancel_embed("manual", other_server.name, task.result().ctx))
 
 			return
 		# what to show to server who didn't cancel ↓
-		await msg.edit(embeds=make_cancel_embed('casual', other_server.name), components=[])
-		await msg.reply(embeds=make_cancel_embed('server', other_server.name))
+		await msg.edit(embeds=make_cancel_embed("casual", other_server.name), components=[])
+		await msg.reply(embeds=make_cancel_embed("server", other_server.name))
 
 		return remove_connection(trans)
 
@@ -324,31 +357,35 @@ class TransmissionCommands(Extension):
 			self.image = image
 
 	async def check_anonymous(
-	    self, guild_id: int, d_user: User | Member, connection: Connection, server_data: ServerData
+		self,
+		guild_id: int,
+		d_user: User | Member,
+		connection: Connection,
+		server_data: ServerData,
 	):
-
 		user: TransmissionCommands.TransmitUser
 		if isinstance(d_user, Member):
 			d_user = d_user.user
 		if server_data.transmissions.anonymous:
-
 			i = 0
 
 			selected_character = {}
 
 			for i, character in enumerate(connection.characters):
-				if character['id'] == 0 or character['id'] == d_user.id:
+				if character["id"] == 0 or character["id"] == d_user.id:
 					user = TransmissionCommands.TransmitUser(
-					    character['Name'], d_user.id, f'https://cdn.discordapp.com/emojis/{character["Image"]}.png'
+						character["Name"],
+						d_user.id,
+						f"https://cdn.discordapp.com/emojis/{character['Image']}.png",
 					)
 
-					connection.characters[i].update({ 'id': d_user.id})
+					connection.characters[i].update({"id": d_user.id})
 
 					selected_character = character
 
 					return user
 
-			user = TransmissionCommands.TransmitUser(selected_character['name'], d_user.id, selected_character['image'])
+			user = TransmissionCommands.TransmitUser(selected_character["name"], d_user.id, selected_character["image"])
 		else:
 			user = TransmissionCommands.TransmitUser(d_user.username, d_user.id, d_user.display_avatar.url)
 
@@ -356,7 +393,6 @@ class TransmissionCommands(Extension):
 
 	@listen()
 	async def on_message_create(self, event: MessageCreate):
-
 		message = event.message
 		channel = message.channel
 		guild = message.guild
@@ -403,7 +439,6 @@ class TransmissionCommands(Extension):
 			raise TypeError("tried to send message in a channel where i can't send messages :mumawomp:")
 
 	async def message_manager(self, message: Message, user: TransmitUser, allow_images: bool):
-
 		final_text = message.content
 
 		embed = Embed(
@@ -418,7 +453,7 @@ class TransmissionCommands(Extension):
 			nonlocal final_text
 			if overflow_check:
 				overflow_check = False
-				final_text += '\n\n'
+				final_text += "\n\n"
 
 		for attachment in message.attachments:
 			if attachment.content_type and attachment.content_type.startswith("image/"):
@@ -437,31 +472,43 @@ class TransmissionCommands(Extension):
 
 		return embed
 
-	async def embed_manager(self, embed_type: Literal['connected', 'initial_connection']):
-		if embed_type == 'initial_connection':
+	async def embed_manager(self, embed_type: Literal["connected", "initial_connection"]):
+		if embed_type == "initial_connection":
 			return Embed(
-			    title='Transmission Starting!',
-			    description=f"Waiting for a connection... {emojis['icons']['loading']}",
-			    color=Colors.DEFAULT
+				title="Transmission Starting!",
+				description=f"Waiting for a connection... {emojis['icons']['loading']}",
+				color=Colors.DEFAULT,
 			)
-		if embed_type == 'connected':
-			return Embed(title='Connected!', color=Colors.GREEN)
+		if embed_type == "connected":
+			return Embed(title="Connected!", color=Colors.GREEN)
 
 
 def make_cancel_embed(
-    cancel_reason: Literal['manual', 'server', 'timeout', 'casual'], server_name: str, button_ctx=None
+	cancel_reason: Literal["manual", "server", "timeout", "casual"],
+	server_name: str,
+	button_ctx=None,
 ):
 	author = button_ctx.author.mention if button_ctx else "Someone"
 	match cancel_reason:
 		case "manual":
 			return Embed(
-			    title='Transmission Cancelled.', description=f'{author} cancelled the transmission.', color=Colors.WARN
+				title="Transmission Cancelled.",
+				description=f"{author} cancelled the transmission.",
+				color=Colors.WARN,
 			)
-		case 'server':
-			return Embed(title='Transmission Cancelled.', description='The other server cancelled the transmission.', color=Colors.RED)
-		case 'timeout':
-			return Embed(title='Transmission Ended.', description='You ran out of transmission time.', color=Colors.DEFAULT)
-		case 'casual':
+		case "server":
+			return Embed(
+				title="Transmission Cancelled.",
+				description="The other server cancelled the transmission.",
+				color=Colors.RED,
+			)
+		case "timeout":
+			return Embed(
+				title="Transmission Ended.",
+				description="You ran out of transmission time.",
+				color=Colors.DEFAULT,
+			)
+		case "casual":
 			return Embed(description=f"-# the transmission with {server_name} has ended")
 		case _:
 			raise ValueError("cancel_reason argument must be one of 'manual', 'server' or 'timeout'")

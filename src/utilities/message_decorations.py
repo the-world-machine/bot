@@ -1,8 +1,9 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Literal, Optional
+
+from interactions import BaseComponent, Color, Embed, Message, ModalContext
+
 from utilities.emojis import emojis, make_emoji_cdn_url
-from typing import Any, Dict, Iterable, List, Literal
-from interactions import Color, Message, BaseComponent, Embed, ModalContext
-from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
 	from utilities.textbox.facepics import Face
@@ -35,22 +36,25 @@ class Colors:
 
 
 def timestamp_relative(datetime: datetime):
-	return f'<t:{round(datetime.timestamp())}:R>'
+	return f"<t:{round(datetime.timestamp())}:R>"
 
 
 def fancy_message(
-    ctx,
-    message: str | None = None,
-    edit: bool = False,
-    edit_origin: bool = False,
-    content: str | None = None,
-    ephemeral=False,
-    components: Iterable[Iterable[BaseComponent | dict[Any, Any]]] | Iterable[BaseComponent | dict[Any, Any]] |
-    BaseComponent | dict[Any, Any] | None = None,
-    color: Color = Colors.DEFAULT,
-    facepic: Optional[Face] = None,  # only emoji supported
-    embed: Embed | Dict | None = None,
-    embeds: List[Embed | Dict] | None = None
+	ctx,
+	message: str | None = None,
+	edit: bool = False,
+	edit_origin: bool = False,
+	content: str | None = None,
+	ephemeral=False,
+	components: Iterable[Iterable[BaseComponent | dict[Any, Any]]]
+	| Iterable[BaseComponent | dict[Any, Any]]
+	| BaseComponent
+	| dict[Any, Any]
+	| None = None,
+	color: Color = Colors.DEFAULT,
+	facepic: Optional[Face] = None,  # only emoji supported
+	embed: Embed | Dict | None = None,
+	embeds: List[Embed | Dict] | None = None,
 ):
 	if embeds is None:
 		embeds = []
@@ -68,7 +72,12 @@ def fancy_message(
 	if edit and ctx:
 		return ctx.edit(content=content, embeds=embeds, components=components)
 	if type(ctx) == Message:
-		kwargs = { 'content': content, 'embeds': embeds, 'components': components, 'ephemeral': ephemeral}
+		kwargs = {
+			"content": content,
+			"embeds": embeds,
+			"components": components,
+			"ephemeral": ephemeral,
+		}
 		return ctx.reply(**kwargs)
 	elif type(ctx) == ModalContext:
 		return ctx.respond(content=content, embeds=embeds, components=components, ephemeral=ephemeral)
@@ -84,13 +93,13 @@ def make_progress_bar(position: int, total: int, length: int, shape: Literal["sq
 	out = ""
 
 	for i in range(length):
-		bar_section = 'middle'
+		bar_section = "middle"
 
 		if i == 0:
-			bar_section = 'start'
+			bar_section = "start"
 		elif i == length - 1:
-			bar_section = 'end'
+			bar_section = "end"
 
-		out += emojis['progress_bars'][shape]['filled' if i < filled_length else 'empty'][bar_section]
+		out += emojis["progress_bars"][shape]["filled" if i < filled_length else "empty"][bar_section]
 
 	return out

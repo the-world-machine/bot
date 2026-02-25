@@ -1,11 +1,37 @@
 from __future__ import annotations
+
 import asyncio
-from dataclasses import dataclass
 import random
 import re
 from traceback import print_exc
 from typing import Any
-from interactions import ActionRow, Button, ButtonStyle, ComponentContext, ContextMenuContext, ContextType, Embed, Extension, Member, MentionType, Message, OptionType, PartialEmoji, SlashContext, Snowflake_Type, User, component_callback, contexts, integration_types, message_context_menu, slash_command, slash_option, user_context_menu, AllowedMentions
+
+from interactions import (
+	ActionRow,
+	AllowedMentions,
+	Button,
+	ButtonStyle,
+	ComponentContext,
+	ContextMenuContext,
+	ContextType,
+	Embed,
+	Extension,
+	Member,
+	Message,
+	OptionType,
+	PartialEmoji,
+	SlashContext,
+	Snowflake_Type,
+	User,
+	component_callback,
+	contexts,
+	integration_types,
+	message_context_menu,
+	slash_command,
+	slash_option,
+	user_context_menu,
+)
+
 from utilities.config import debugging
 from utilities.emojis import emojis
 from utilities.localization.localization import Localization
@@ -22,7 +48,9 @@ class InteractionEntry:
 	phrases: list[InteractionEntry | str]
 
 	def __init__(
-	    self, name: str | None, phrases: list[InteractionEntry | dict | str] | tuple[InteractionEntry | dict | str]
+		self,
+		name: str | None,
+		phrases: list[InteractionEntry | dict | str] | tuple[InteractionEntry | dict | str],
 	):
 		self.name = name
 		self.phrases = []
@@ -31,7 +59,7 @@ class InteractionEntry:
 				if not isinstance(entry, (str, dict)):
 					raise ValueError(f"Entry '{entry}' is not a string or a dict")
 				if isinstance(entry, dict):
-					entry = InteractionEntry(entry['name'], entry['phrases'])
+					entry = InteractionEntry(entry["name"], entry["phrases"])
 			self.phrases.append(entry)
 
 
@@ -43,8 +71,7 @@ def fill_with_none(arr, target_index):
 
 
 class InteractCommands(Extension):
-
-	@user_context_menu(name='💡 interact...')
+	@user_context_menu(name="💡 interact...")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def user_context(self, ctx: ContextMenuContext):
@@ -58,7 +85,7 @@ class InteractCommands(Extension):
 			invoker = invoker.user
 		return await self.start(ctx, invoker, who)
 
-	@message_context_menu(name='💡 interact w/sender...')
+	@message_context_menu(name="💡 interact w/sender...")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def message_context(self, ctx: ContextMenuContext):
@@ -72,25 +99,33 @@ class InteractCommands(Extension):
 			invoker = invoker.user
 		return await self.start(ctx, invoker, who)
 
-	@slash_command(name="interact", description="Interact with others in various ways (sends a message in chat)")
-	@slash_option(
-	    name='with',
-	    description="The interactee (can be @, won't ping everyone/here/roles though)",
-	    opt_type=OptionType.STRING,
-	    required=True,
-	    max_length=128,
-	    argument_name="user_two"
+	@slash_command(
+		name="interact",
+		description="Interact with others in various ways (sends a message in chat)",
 	)
 	@slash_option(
-	    name='user_one',
-	    description="Optional replacement for the first user (same as interactee, but message won't ping anyone)",
-	    opt_type=OptionType.STRING,
-	    max_length=128,
-	    argument_name="user_one"
+		name="with",
+		description="The interactee (can be @, won't ping everyone/here/roles though)",
+		opt_type=OptionType.STRING,
+		required=True,
+		max_length=128,
+		argument_name="user_two",
+	)
+	@slash_option(
+		name="user_one",
+		description="Optional replacement for the first user (same as interactee, but message won't ping anyone)",
+		opt_type=OptionType.STRING,
+		max_length=128,
+		argument_name="user_one",
 	)
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
-	async def slash_context(self, ctx: SlashContext, user_two: str | User, user_one: str | User | None = None):
+	async def slash_context(
+		self,
+		ctx: SlashContext,
+		user_two: str | User,
+		user_one: str | User | None = None,
+	):
 		user_one, user_two = await self.parse_args(ctx, user_one, user_two)
 		return await self.start(ctx, user_one, user_two)
 
@@ -105,21 +140,29 @@ class InteractCommands(Extension):
 		global invis_char
 		if isinstance(user, str):
 			user = user.replace("``", f"`{invis_char}`")
-			if (user.startswith("<") and user.endswith(">")) or user in [ "@everyone", "@here", "@someone"]:
+			if (user.startswith("<") and user.endswith(">")) or user in [
+				"@everyone",
+				"@here",
+				"@someone",
+			]:
 				return user
-			return ("``" + user + "``")
+			return "``" + user + "``"
 		elif isinstance(user, User):
-			return f'<@{user.id}>'
+			return f"<@{user.id}>"
 		else:
 			return "someone"
 
-	async def parse_args(self, ctx: SlashContext | ComponentContext, user_one: str | User | None,
-	                     user_two: str | User) -> tuple[str | User, str | User]:
+	async def parse_args(
+		self,
+		ctx: SlashContext | ComponentContext,
+		user_one: str | User | None,
+		user_two: str | User,
+	) -> tuple[str | User, str | User]:
 		if user_one:
 			try:
-				assert isinstance(
-				    user_one, str
-				), "meow"  # this is to use user_one/two as the variables to send to self.start instead of creating new one's (this function (slash_context) will never trigger with User objects in arguments)
+				assert isinstance(user_one, str), (
+					"meow"
+				)  # this is to use user_one/two as the variables to send to self.start instead of creating new one's (this function (slash_context) will never trigger with User objects in arguments)
 				_user = await ctx.client.fetch_user(user_one.strip("<@>"))
 				if _user:
 					user_one = _user
@@ -141,9 +184,14 @@ class InteractCommands(Extension):
 			...
 		return (user_one, user_two)
 
-	async def start(self, ctx: ContextMenuContext | SlashContext, user_one: str | User, user_two: str | User):
+	async def start(
+		self,
+		ctx: ContextMenuContext | SlashContext,
+		user_one: str | User,
+		user_two: str | User,
+	):
 		loc = Localization(ctx)
-		await ctx.respond(content=await loc.l('generic.loading.generic'), ephemeral=True)
+		await ctx.respond(content=await loc.l("generic.loading.generic"), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
@@ -186,14 +234,19 @@ class InteractCommands(Extension):
 	async def handle_components(self, ctx: ComponentContext):
 		loc = Localization(ctx)
 		if ctx.message is None:
-			return await fancy_message(ctx, await loc.l("generic.errors.expired"), color=Colors.BAD, ephemeral=True)
+			return await fancy_message(
+				ctx,
+				await loc.l("generic.errors.expired"),
+				color=Colors.BAD,
+				ephemeral=True,
+			)
 		content = ctx.message.content
 		content = content.replace("→ :i: →", "→ ❔ →")
 		content = content.replace(f"→ {emojis['icons']['loading']} →", "→ ❔ →")
 		stuff = content.partition("→ ❔ →")
 		await ctx.edit_origin(
-		    content=stuff[0] + stuff[1].replace("❔", emojis['icons']['loading']) + stuff[2],
-		    allowed_mentions=none_allowed
+			content=stuff[0] + stuff[1].replace("❔", emojis["icons"]["loading"]) + stuff[2],
+			allowed_mentions=none_allowed,
 		)
 		match = self.handle_components_regex.match(ctx.custom_id)
 		if match:
@@ -211,34 +264,39 @@ class InteractCommands(Extension):
 		try:
 			interaction_raw = await loc.l(f"interact{path}", typecheck=Any)
 			assert not isinstance(interaction_raw, str), "Assertion failed: " + interaction_raw
-			interaction = InteractionEntry(interaction_raw['name'], phrases=interaction_raw['phrases']) if isinstance(
-			    interaction_raw, dict
-			) else InteractionEntry(None, interaction_raw)
+			interaction = (
+				InteractionEntry(interaction_raw["name"], phrases=interaction_raw["phrases"])
+				if isinstance(interaction_raw, dict)
+				else InteractionEntry(None, interaction_raw)
+			)
 		except BaseException as e:
 			print_exc()
 			return await ctx.send(
-			    embeds=Embed(
-			        description=f"[ {await loc.l('interact.errors.no_path')} ]" +
-			        ("" if not debugging() else f"\n-# Debug: {e}"),
-			        color=Colors.BAD
-			    )
+				embeds=Embed(
+					description=f"[ {await loc.l('interact.errors.no_path')} ]"
+					+ ("" if not debugging() else f"\n-# Debug: {e}"),
+					color=Colors.BAD,
+				)
 			)
 		if not isinstance(interaction, tuple) and self.ie_only_basic(interaction.phrases):
 			await self.send_phrase((ctx, loc), (path, user_one, user_two))
-			return await ctx.message.edit(content=''.join(stuff), allowed_mentions=none_allowed)
+			return await ctx.message.edit(content="".join(stuff), allowed_mentions=none_allowed)
 		return await self.respond((ctx, loc), (int(page), path, user_one, user_two))
 
 	async def respond(
-	    self, cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
-	    state: tuple[int, str, str | User, str | User]
+		self,
+		cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
+		state: tuple[int, str, str | User, str | User],
 	):
 		ctx, loc = cx
 		page, path, user_one, user_two = state
 		interaction_raw: dict | tuple = await loc.l(f"interact{path}", typecheck=Any)  # type:ignore
 		assert not isinstance(interaction_raw, str)
-		interaction = InteractionEntry(interaction_raw['name'], phrases=interaction_raw['phrases']) if isinstance(
-		    interaction_raw, dict
-		) else InteractionEntry(None, interaction_raw)
+		interaction = (
+			InteractionEntry(interaction_raw["name"], phrases=interaction_raw["phrases"])
+			if isinstance(interaction_raw, dict)
+			else InteractionEntry(None, interaction_raw)
+		)
 		phrases = interaction.phrases
 		all_buttons: list[Button] = []
 		path_prefix = f"{path}.phrases" if isinstance(interaction_raw, dict) else path
@@ -246,18 +304,28 @@ class InteractCommands(Extension):
 			phrase = phrases[i]
 			if isinstance(phrase, str):
 				return await ctx.send(
-				    embeds=Embed(description=f"[ {await loc.l('interact.errors.500')} ]", color=Colors.BAD)
+					embeds=Embed(
+						description=f"[ {await loc.l('interact.errors.500')} ]",
+						color=Colors.BAD,
+					)
 				)
 			new_path = f"{path_prefix}[{i}]"
-			button = Button(style=ButtonStyle.GRAY, label=phrase.name, custom_id=f"interact {page} {new_path}")
+			button = Button(
+				style=ButtonStyle.GRAY,
+				label=phrase.name,
+				custom_id=f"interact {page} {new_path}",
+			)
 			if not self.ie_only_basic(phrase.phrases):
 				button.style = ButtonStyle.BLURPLE
 				button.emoji = PartialEmoji(name="🔢")
 			all_buttons.append(button)
 
 		all_buttons = sorted(
-		    all_buttons,
-		    key=lambda button: ((button.emoji.name != "🔢" if button.emoji is not None else True), button.label)
+			all_buttons,
+			key=lambda button: (
+				(button.emoji.name != "🔢" if button.emoji is not None else True),
+				button.label,
+			),
 		)
 
 		MAX_BUTTONS = 25
@@ -294,23 +362,41 @@ class InteractCommands(Extension):
 		first_row: list[Button] = []
 
 		if page > 0:
-			first_row.append(Button(custom_id=f"interact {page-1} {path}", style=ButtonStyle.BLURPLE, emoji="⬅️"))
+			first_row.append(
+				Button(
+					custom_id=f"interact {page - 1} {path}",
+					style=ButtonStyle.BLURPLE,
+					emoji="⬅️",
+				)
+			)
 		if interaction.name is not None:
-			out = path.rpartition('[')
-			first_row.append(Button(style=ButtonStyle.BLURPLE, emoji="⬆️", custom_id=f"interact 0 {out[0]}"))
+			out = path.rpartition("[")
+			first_row.append(
+				Button(
+					style=ButtonStyle.BLURPLE,
+					emoji="⬆️",
+					custom_id=f"interact 0 {out[0]}",
+				)
+			)
 
 		end_controls: list[Button] = []
 		if paging_active:
 			end_controls.append(
-			    Button(
-			        label=replace_numbers_with_emojis(str(page + 1)),
-			        style=ButtonStyle.GRAY,
-			        disabled=True,
-			        custom_id="unused"
-			    )
+				Button(
+					label=replace_numbers_with_emojis(str(page + 1)),
+					style=ButtonStyle.GRAY,
+					disabled=True,
+					custom_id="unused",
+				)
 			)
 		if has_next_page:
-			end_controls.append(Button(custom_id=f"interact {page+1} {path}", style=ButtonStyle.BLURPLE, emoji="➡️"))
+			end_controls.append(
+				Button(
+					custom_id=f"interact {page + 1} {path}",
+					style=ButtonStyle.BLURPLE,
+					emoji="➡️",
+				)
+			)
 
 		actions_to_add = min(len(page_actions), MAX_PER_ROW - len(first_row) - len(end_controls))
 		first_row.extend(page_actions[:actions_to_add])
@@ -325,30 +411,37 @@ class InteractCommands(Extension):
 
 		if len(rows) == 0:
 			rows.append(
-			    ActionRow(Button(style=ButtonStyle.DANGER, emoji="🔝", label=await loc.l("generic.buttons.top")))
+				ActionRow(
+					Button(
+						style=ButtonStyle.DANGER,
+						emoji="🔝",
+						label=await loc.l("generic.buttons.top"),
+					)
+				)
 			)
 
 		return await ctx.edit(
-		    content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
-		    embeds=[],
-		    components=rows,
-		    allowed_mentions=none_allowed
+			content=f"[ {self.format_mention(user_one)} → ❔ → {self.format_mention(user_two)} ]",
+			embeds=[],
+			components=rows,
+			allowed_mentions=none_allowed,
 		)
 
 	async def send_phrase(
-	    self, cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
-	    state: tuple[str, str | User, str | User]
+		self,
+		cx: tuple[ComponentContext | ContextMenuContext | SlashContext, Localization],
+		state: tuple[str, str | User, str | User],
 	):
 		ctx, loc = cx
 		quote_path, user_one, user_two = state
 
 		interaction: Any = await loc.l(
-		    f"interact{quote_path}",
-		    typecheck=Any,
-		    user_one=self.format_mention(user_one),
-		    user_two=self.format_mention(user_two)
+			f"interact{quote_path}",
+			typecheck=Any,
+			user_one=self.format_mention(user_one),
+			user_two=self.format_mention(user_two),
 		)
-		phrase = random.choice(interaction['phrases'])
+		phrase = random.choice(interaction["phrases"])
 		# whether the user set a custom user_one
 		custom_u1 = (user_one if isinstance(user_one, str) else user_one.id) != ctx.author.id
 
@@ -373,12 +466,19 @@ class InteractCommands(Extension):
 				msg = await ctx.respond(content=phrase, ephemeral=False, allowed_mentions=allowed_mentions)
 		except Exception as e:
 			return await ctx.send(
-			    embeds=Embed(description=f"[ {await loc.l('interact.errors.fail')} ]", color=Colors.BAD)
+				embeds=Embed(
+					description=f"[ {await loc.l('interact.errors.fail')} ]",
+					color=Colors.BAD,
+				)
 			)
 			raise e
 		if user_two.lower() in [
-		    f"<@{ctx.client.user.id}>", "@twm", "@the world machine", "@world machine", "@theworldmachine",
-		    "@worldmachine"
+			f"<@{ctx.client.user.id}>",
+			"@twm",
+			"@the world machine",
+			"@world machine",
+			"@theworldmachine",
+			"@worldmachine",
 		]:
 			await asyncio.sleep(random.choice([ 2, 1.5, 0.5, 0 ]))
 			await msg.add_reaction("1023573456664662066")

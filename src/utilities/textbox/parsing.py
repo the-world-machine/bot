@@ -1,12 +1,14 @@
 import subprocess
-#import sys
+from dataclasses import dataclass, field
+
+# import sys
 from traceback import print_exc
 from typing import Literal, NamedTuple, Type
-from dataclasses import dataclass, field
+
 from utilities.config import get_config
 from utilities.misc import ReprMixin
 
-ALL_COMMAND_TYPES = Literal['c', 'u', 'f', 's', 'd', '@']
+ALL_COMMAND_TYPES = Literal["c", "u", "f", "s", "d", "@"]
 
 
 @dataclass
@@ -23,10 +25,10 @@ class FormatModifier(ReprMixin):
 			self.underline = False
 			self.strikethrough = False
 			return
-		self.unbolded = 'b' in args
-		self.italic = 'i' in args
-		self.underline = 'u' in args
-		self.strikethrough = 's' in args
+		self.unbolded = "b" in args
+		self.italic = "i" in args
+		self.underline = "u" in args
+		self.strikethrough = "s" in args
 
 
 class RGBA(NamedTuple):
@@ -39,11 +41,11 @@ class RGBA(NamedTuple):
 def csscolor(color: str) -> RGBA:
 	try:
 		result = subprocess.run(
-		    [get_config("textbox.color-parser-binary"), color],
-		    stdout=subprocess.PIPE,
-		    stderr=subprocess.STDOUT,
-		    text=True,
-		    check=True
+			[get_config("textbox.color-parser-binary"), color],
+			stdout=subprocess.PIPE,
+			stderr=subprocess.STDOUT,
+			text=True,
+			check=True,
 		)
 		output = result.stdout.strip()
 	except subprocess.CalledProcessError as e:
@@ -59,7 +61,7 @@ def csscolor(color: str) -> RGBA:
 	except Exception as e:
 		print_exc()
 		raise ValueError(
-		    f"Kittystrophically failed to parse color: '{color}', output: '{output}'. Report this to the devs please"
+			f"Kittystrophically failed to parse color: '{color}', output: '{output}'. Report this to the devs please"
 		) from e
 
 
@@ -83,7 +85,6 @@ class LocaleCommand(ReprMixin):
 
 @dataclass
 class LineBreakCommand(ReprMixin):
-
 	def parse_input(self, args):
 		return
 
@@ -97,14 +98,14 @@ class CharCommand(ReprMixin):
 		self.text = args
 		try:
 			value: int
-			if args.startswith('#'):
-				value = int(args.lstrip('#'), 16)
+			if args.startswith("#"):
+				value = int(args.lstrip("#"), 16)
 			else:
 				value = int(args)
 			self.text = chr(value)
 		except ValueError as e:
 			raise ValueError(
-			    f"Invalid value passed to character command. Expected a hex value (e.g. #1F408) or an integer (e.g. 128008), got '{args}'"
+				f"Invalid value passed to character command. Expected a hex value (e.g. #1F408) or an integer (e.g. 128008), got '{args}'"
 			) from e
 
 
@@ -130,7 +131,7 @@ class CharSpeedModifier(ReprMixin):
 			self.speed = float(args)
 		except ValueError as e:
 			raise ValueError(
-			    f"Invalid value passed to character speed modifier. Expected a float (1.0), got '{args}'"
+				f"Invalid value passed to character speed modifier. Expected a float (1.0), got '{args}'"
 			) from e
 
 
@@ -141,16 +142,24 @@ class FacepicChangeCommand(ReprMixin):
 		self.facepic = args
 
 
-TOKENS = FormatModifier | ColorModifier | CharCommand | DelayCommand | CharSpeedModifier | FacepicChangeCommand | LineBreakCommand
+TOKENS = (
+	FormatModifier
+	| ColorModifier
+	| CharCommand
+	| DelayCommand
+	| CharSpeedModifier
+	| FacepicChangeCommand
+	| LineBreakCommand
+)
 COMMAND_MAP: dict[str, Type] = {
-    '@': FacepicChangeCommand,
-    'f': FormatModifier,
-    'u': CharCommand,
-    'c': ColorModifier,
-    's': CharSpeedModifier,
-    'd': DelayCommand,
-    'n': LineBreakCommand,
-    'l': LocaleCommand
+	"@": FacepicChangeCommand,
+	"f": FormatModifier,
+	"u": CharCommand,
+	"c": ColorModifier,
+	"s": CharSpeedModifier,
+	"d": DelayCommand,
+	"n": LineBreakCommand,
+	"l": LocaleCommand,
 }
 
 
@@ -161,12 +170,11 @@ def init_token(type: str) -> TOKENS:
 		return token_class()
 	else:
 		raise ValueError(
-		    f"Invalid token type '{type}'. Expected one of: {", ".join(COMMAND_MAP.keys())}"
+			f"Invalid token type '{type}'. Expected one of: {', '.join(COMMAND_MAP.keys())}"
 		)  # TODO: remove this
 
 
 class TokenParseError(ValueError):
-
 	def __init__(self, message, position=None, command=None):
 		super().__init__(message)
 		self.position = position  # TODO: make this have two ints signifying start and end for red overlay in the output
@@ -184,22 +192,22 @@ class TokenParseError(ValueError):
 def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 	"""
 	Parses a string of textbox text syntax into a list of tokens in the form of modifier/command classes or bare strings for normal text. Making thsi function lowered the amount of my braincells down to 12 from 5 :aga:
-	
+
 	Raises:
-			TokenParseError: Whenever there is an unclosed bracket
+	                TokenParseError: Whenever there is an unclosed bracket
 	"""
 	tokens = []
 	pos = 0
 	length = len(input_str)
 	input_str = input_str.replace("\n", "\\n")
 	while pos < length:
-		if input_str[pos] == '\\':
+		if input_str[pos] == "\\":
 			# Handle escaped backslash ('\\')
-			if pos + 1 < length and input_str[pos + 1] == '\\':
+			if pos + 1 < length and input_str[pos + 1] == "\\":
 				if tokens and isinstance(tokens[-1], str):
-					tokens[-1] += '\\'
+					tokens[-1] += "\\"
 				else:
-					tokens.append('\\')
+					tokens.append("\\")
 				pos += 2
 				continue
 
@@ -210,15 +218,15 @@ def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 					token = init_token(type=cmd_char)
 					args_start = pos + 2
 
-					if args_start < length and input_str[args_start] == '[':
+					if args_start < length and input_str[args_start] == "[":
 						bracket_pos = args_start
 						bracket_depth = 1
 						scan_pos = args_start + 1
 
 						while scan_pos < length and bracket_depth > 0:
-							if input_str[scan_pos] == '[':
+							if input_str[scan_pos] == "[":
 								bracket_depth += 1
-							elif input_str[scan_pos] == ']':
+							elif input_str[scan_pos] == "]":
 								bracket_depth -= 1
 								if bracket_depth == 0:
 									token.parse_input(input_str[args_start + 1:scan_pos])
@@ -227,7 +235,11 @@ def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 							scan_pos += 1
 
 						if bracket_depth > 0:
-							raise TokenParseError("Unclosed bracket", position=bracket_pos, command=f"\\{cmd_char}")
+							raise TokenParseError(
+								"Unclosed bracket",
+								position=bracket_pos,
+								command=f"\\{cmd_char}",
+							)
 
 						tokens.append(token)
 						continue
@@ -250,13 +262,13 @@ def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 
 			# lone backslash (e.g., at the end of the string)
 			if tokens and isinstance(tokens[-1], str):
-				tokens[-1] += '\\'
+				tokens[-1] += "\\"
 			else:
-				tokens.append('\\')
+				tokens.append("\\")
 			pos += 1
 			continue
 
-		next_cmd = input_str.find('\\', pos)
+		next_cmd = input_str.find("\\", pos)
 		if next_cmd == -1:
 			text = input_str[pos:]
 			pos = length

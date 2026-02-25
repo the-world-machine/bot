@@ -10,16 +10,16 @@ import lavalink
 from interactions import *
 from interactions.api.events import *
 from interactions_lavalink import Lavalink, Player
-from interactions_lavalink.events import TrackStart, TrackException
+from interactions_lavalink.events import TrackException, TrackStart
 
+from utilities.config import get_config
 from utilities.emojis import emojis
 from utilities.localization.localization import Localization
-from utilities.music.music_loaders import CustomSearch
 from utilities.message_decorations import *
+from utilities.music.music_loaders import CustomSearch
 
 # Utilities
 from utilities.music.spotify_api import Spotify
-from utilities.config import get_config
 
 spotify_creds: dict = get_config("music.spotify", typecheck=dict)
 spotify = Spotify(client_id=spotify_creds["id"], secret=spotify_creds["secret"])
@@ -64,7 +64,6 @@ class MusicCommands(Extension):
 		self.lavalink.client.register_source(CustomSearch())
 
 	async def get_playing_embed(self, player_status: str, player: Player, allowed_control: bool):
-
 		track: lavalink.AudioTrack = player.current
 
 		if track is None:
@@ -92,7 +91,7 @@ class MusicCommands(Extension):
 
 		requester = await self.client.fetch_user(track.requester)
 
-		control_text = ("Everyone can control" if allowed_control else "Currently has control")
+		control_text = "Everyone can control" if allowed_control else "Currently has control"
 		embed.set_footer(
 		    text=f"Requested by {requester.username}  ●  {control_text}",
 		    icon_url=requester.avatar_url,
@@ -154,7 +153,6 @@ class MusicCommands(Extension):
 		return queue_embed
 
 	async def can_modify(self, track_author: int, author: Member, guild_id: Snowflake):
-
 		track_author_member: Member = await self.client.fetch_member(track_author, guild_id)
 
 		if Permissions.MANAGE_CHANNELS in author.guild_permissions:
@@ -171,7 +169,6 @@ class MusicCommands(Extension):
 	player_user_cooldown = {}
 
 	async def on_cooldown(self, author: Member):
-
 		if Permissions.MANAGE_CHANNELS in author.guild_permissions:
 			return False
 
@@ -212,12 +209,11 @@ class MusicCommands(Extension):
 			try:
 				player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 			except:
-
 				if tries > 2:
 					return await fancy_message(
-					    ctx,
-					    "[ An error has occurred, please try again later. ]",
-					    color=Colors.BAD,
+						ctx,
+						"[ An error has occurred, please try again later. ]",
+						color=Colors.BAD,
 					)
 
 				self.assign_node()
@@ -240,7 +236,6 @@ class MusicCommands(Extension):
 			add_to_queue_embed = self.added_to_playlist_embed(ctx, player, tracks[0])
 			return await message.edit(embeds=add_to_queue_embed)
 		else:
-
 			try:
 				await player.play()
 			except:
@@ -321,7 +316,6 @@ class MusicCommands(Extension):
 
 	@music.subcommand(sub_cmd_description="Stop the music!")
 	async def stop(self, ctx: SlashContext):
-
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None:
@@ -345,7 +339,6 @@ class MusicCommands(Extension):
 	    required=True,
 	)
 	async def jump(self, ctx: SlashContext, position: int):
-
 		if await self.on_cooldown(ctx.author):
 			return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
 
@@ -399,7 +392,6 @@ class MusicCommands(Extension):
 	    argument_name="own",
 	)
 	async def remove(self, ctx: SlashContext, position: int = -1, own: bool = False):
-
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
 			return await fancy_message(
@@ -478,7 +470,6 @@ class MusicCommands(Extension):
 
 	@remove.autocomplete("position")
 	async def autocomplete_remove(self, ctx: AutocompleteContext):
-
 		input_text = ctx.input_text
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
@@ -511,7 +502,6 @@ class MusicCommands(Extension):
 
 	@jump.autocomplete("position")
 	async def autocomplete_jump(self, ctx: AutocompleteContext):
-
 		input_text = ctx.input_text
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
@@ -572,7 +562,6 @@ class MusicCommands(Extension):
 
 	@play.autocomplete("song")
 	async def autocomplete(self, ctx: AutocompleteContext):
-
 		text = ctx.input_text
 
 		if text == "":
@@ -585,7 +574,7 @@ class MusicCommands(Extension):
 
 		items = await self.load_spotify_search(text)
 
-		if ("https://youtu.be" in text or "https://www.youtube.com" in text or "https://m.youtube.com" in text):
+		if "https://youtu.be" in text or "https://www.youtube.com" in text or "https://m.youtube.com" in text:
 			choices = [{ "name": "🔗 Youtube URL", "value": raw_text}]
 		elif "http://open.spotify.com/" in text or "https://open.spotify.com/" in text:
 			choices = [{ "name": "🔗 Spotify URL", "value": raw_text}]
@@ -601,7 +590,6 @@ class MusicCommands(Extension):
 
 	@listen()
 	async def on_track_start(self, event: TrackStart):
-
 		player: Player = event.player
 
 		channel: GuildText = player.fetch("Channel")
@@ -610,7 +598,6 @@ class MusicCommands(Extension):
 
 	@listen()
 	async def on_track_error(self, event: TrackException):
-
 		player: Player = event.player
 
 		message: Message = player.fetch("Message")
@@ -651,7 +638,6 @@ class MusicCommands(Extension):
 
 	@staticmethod
 	def get_buttons():
-
 		return [
 		    Button(
 		        style=ButtonStyle.RED,
@@ -741,7 +727,7 @@ class MusicCommands(Extension):
 		lyrics = lyric_data["lyrics"]
 
 		if len(lyrics) > 4080:
-			song = (f"{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})")
+			song = f"{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})"
 
 		return await ctx.send(
 		    embed=Embed(
@@ -766,7 +752,6 @@ class MusicCommands(Extension):
 		await self.on_player(player, ctx.channel)
 
 	async def on_player(self, player: Player, channel: GuildText):
-
 		if player.loop == 1:
 			return
 
@@ -786,7 +771,6 @@ class MusicCommands(Extension):
 		stopped_track = player.current
 
 		while player.current is not None and player_uid == player.fetch("uid"):
-
 			if player.paused:
 				player_state = "Paused"
 				niko = emojis["icons"]["sleep"]
@@ -825,7 +809,6 @@ class MusicCommands(Extension):
 			return
 
 		if stopped_track is None:
-
 			embed = Embed(
 			    title="An error occurred when playing this track.",
 			    description=f"Please try again later.",
@@ -848,18 +831,16 @@ class MusicCommands(Extension):
 			requester = await self.client.fetch_user(stopped_track.requester)
 			embed.set_footer(text="Requested by " + requester.username, icon_url=requester.avatar_url)
 
-		message = await message.edit(content=emojis['icons']['sleep'], embed=embed, components=[])
+		message = await message.edit(content=emojis["icons"]["sleep"], embed=embed, components=[])
 
 	@component_callback("queue", "loop", "playpause", "skip", "lyrics")
 	async def buttons(self, ctx: ComponentContext):
-
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None:
 			return
 
 		if ctx.custom_id == "queue":
-
 			player.store("current_page", 1)
 
 			if len(player.queue) < 1:
@@ -911,7 +892,6 @@ class MusicCommands(Extension):
 					return await send_update(f"[ {ctx.author.mention} Resumed. ]")
 
 			case "skip":
-
 				player.set_loop(0)
 
 				await player.skip()
@@ -920,7 +900,6 @@ class MusicCommands(Extension):
 
 	@component_callback("shuffle", "loopqueue", "left", "right")
 	async def queue_buttons(self, ctx: ComponentContext):
-
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
 		page = player.fetch("current_page")
@@ -934,7 +913,7 @@ class MusicCommands(Extension):
 		max_pages = (len(player.queue) + 9) // 10
 
 		if ctx.custom_id == "right":
-			if (page < max_pages): # Only allow moving to the right if there are more pages to display
+			if page < max_pages:  # Only allow moving to the right if there are more pages to display
 				page += 1
 
 		player.store("current_page", page)
@@ -942,7 +921,6 @@ class MusicCommands(Extension):
 		message = None
 
 		if ctx.custom_id == "shuffle":
-
 			if await self.on_cooldown(ctx.author):
 				return await fancy_message(ctx, "[ You are on cooldown! ]", color=Colors.BAD, ephemeral=True)
 

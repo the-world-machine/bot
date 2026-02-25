@@ -1,14 +1,17 @@
 import re
+import asyncio
+
 from interactions import (
-    ActionRow,
-    Button,
-    ButtonStyle,
-    ComponentContext,
-    PartialEmoji,
-    component_callback,
+	ActionRow,
+	Button,
+	ButtonStyle,
+	ComponentContext,
+	PartialEmoji,
+	component_callback,
 )
+
 from utilities.misc import replace_numbers_with_emojis
-from utilities.textbox.facepics import Face, f_storage, get_facepic
+from utilities.textbox.facepics import f_storage, get_facepic
 from utilities.textbox.states import StateShortcutError, state_shortcut
 
 FACEPIC_AT_START_REGEX = re.compile(r"^\\@\[[^\]]*\]")
@@ -24,7 +27,13 @@ def set_facepic_in_frame_text(text: str | None, face_path: str) -> str:
 		return f"{new_face_command}{text.lstrip()}"
 
 
-async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: int, path: list[str], page: int = 0):
+async def render_selector_ui(
+	ctx: ComponentContext,
+	state_id: str,
+	frame_index: int,
+	path: list[str],
+	page: int = 0,
+):
 	current_level = f_storage.facepics
 	for part in path:
 		current_level = current_level.get(part, {})
@@ -39,22 +48,22 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 
 		if isinstance(value, dict):
 			emoji = PartialEmoji(name="📂")
-			if 'icon' in value:
-				emoji = PartialEmoji(id=value['icon'])
-			elif 'Normal' in value:
-				emoji = PartialEmoji(id=value['Normal'])
+			if "icon" in value:
+				emoji = PartialEmoji(id=value["icon"])
+			elif "Normal" in value:
+				emoji = PartialEmoji(id=value["Normal"])
 			button = Button(
-			    style=ButtonStyle.BLURPLE,
-			    label=key + "/",
-			    emoji=emoji,
-			    custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{new_path_str}"
+				style=ButtonStyle.BLURPLE,
+				label=key + "/",
+				emoji=emoji,
+				custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{new_path_str}",
 			)
 		else:
 			button = Button(
-			    style=ButtonStyle.GRAY,
-			    label=key,
-			    emoji=PartialEmoji(id=value) if value else PartialEmoji(name="❔"),
-			    custom_id=f"textbox_fs select {state_id} {frame_index} {page} {new_path_str}"
+				style=ButtonStyle.GRAY,
+				label=key,
+				emoji=PartialEmoji(id=value) if value else PartialEmoji(name="❔"),
+				custom_id=f"textbox_fs select {state_id} {frame_index} {page} {new_path_str}",
 			)
 		all_buttons.append(button)
 
@@ -71,22 +80,22 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 
 	if page > 0:
 		first_row.append(
-		    Button(
-		        style=ButtonStyle.BLURPLE,
-		        emoji="⬅️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} {page - 1} #{path_str}"
-		    )
+			Button(
+				style=ButtonStyle.BLURPLE,
+				emoji="⬅️",
+				custom_id=f"textbox_fs select {state_id} {frame_index} {page - 1} #{path_str}",
+			)
 		)
 		free_slots -= 1
 
 	if path:
 		parent_path = "/".join(path[:-1])
 		first_row.append(
-		    Button(
-		        style=ButtonStyle.BLURPLE,
-		        emoji="⬆️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{parent_path}"
-		    )
+			Button(
+				style=ButtonStyle.BLURPLE,
+				emoji="⬆️",
+				custom_id=f"textbox_fs select {state_id} {frame_index} 0 #{parent_path}",
+			)
 		)
 		free_slots -= 1
 
@@ -106,29 +115,29 @@ async def render_selector_ui(ctx: ComponentContext, state_id: str, frame_index: 
 
 	if paging_active:
 		first_row.append(
-		    Button(
-		        style=ButtonStyle.GRAY,
-		        label=replace_numbers_with_emojis(str(page + 1)),
-		        custom_id="ignore",
-		        disabled=True
-		    )
+			Button(
+				style=ButtonStyle.GRAY,
+				label=replace_numbers_with_emojis(str(page + 1)),
+				custom_id="ignore",
+				disabled=True,
+			)
 		)
 	if has_next_page:
 		first_row.append(
-		    Button(
-		        style=ButtonStyle.BLURPLE,
-		        emoji="➡️",
-		        custom_id=f"textbox_fs select {state_id} {frame_index} {page + 1} #{path_str}"
-		    )
+			Button(
+				style=ButtonStyle.BLURPLE,
+				emoji="➡️",
+				custom_id=f"textbox_fs select {state_id} {frame_index} {page + 1} #{path_str}",
+			)
 		)
 
 	if first_row:
 		rows.append(ActionRow(*first_row))
 
 	for i in range(0, len(remaining_page_actions), MAX_PER_ROW):
-		rows.append(ActionRow(*remaining_page_actions[i:i + MAX_PER_ROW]))
+		rows.append(ActionRow(*remaining_page_actions[i : i + MAX_PER_ROW]))
 
-	content = f"Picking a face for frame #{frame_index+1}"
+	content = f"Picking a face for frame #{frame_index + 1}"
 	await ctx.edit_origin(content=content, components=rows)
 
 
@@ -146,7 +155,7 @@ async def init_facepic_selector(self, ctx: ComponentContext):
 
 
 select_regex = re.compile(
-    r"textbox_fs select (?P<state_id>-?\d+) (?P<frame_index>-?\d+) (?P<page>\d+)(?: (?P<noupd>\#)?(?P<path>.*))?$"
+	r"textbox_fs select (?P<state_id>-?\d+) (?P<frame_index>-?\d+) (?P<page>\d+)(?: (?P<noupd>\#)?(?P<path>.*))?$"
 )
 
 
@@ -162,7 +171,7 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 	state_id, frame_index_str, page_str, noupd, path_str = match.groups()
 	frame_index = int(frame_index_str)
 	page = int(page_str)
-	path = path_str.strip().split('/') if path_str and path_str.strip() else []
+	path = path_str.strip().split("/") if path_str and path_str.strip() else []
 
 	if not noupd and path_str.strip():
 		try:
@@ -176,8 +185,7 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 				face_path = ctx.user.avatar_url
 		frame_data.text = set_facepic_in_frame_text(frame_data.text, face_path)
 
-		import asyncio
-		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))  #type:ignore
+		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))  # type:ignore
 
 	selected_item = f_storage.facepics
 	for part in path:

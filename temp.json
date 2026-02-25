@@ -1,0 +1,171 @@
+{
+	"id": "772163491385442334",
+	"name": "quad",
+	"icon": "c877eb4ebff948afef1313ab7526e77c",
+	"description": "**Description (maximum 400 characters)**\nYour description will appear in the About Me section of your bot's profile.",
+	"type": null,
+	"bot": {
+		"id": "772163491385442334",
+		"username": "quad",
+		"avatar": null,
+		"discriminator": "3806",
+		"public_flags": 0,
+		"flags": 0,
+		"bot": true,
+		"banner": null,
+		"accent_color": null,
+		"global_name": null,
+		"avatar_decoration_data": null,
+		"collectibles": null,
+		"display_name_styles": null,
+		"banner_color": null,
+		"clan": null,
+		"primary_guild": null
+	},
+	"summary": "",
+	"is_monetized": false,
+	"is_verified": false,
+	"is_discoverable": false,
+	"guild_id": "757359458308587681",
+	"bot_public": true,
+	"bot_require_code_grant": false,
+	"terms_of_service_url": "https://kutt.it/rickroll",
+	"privacy_policy_url": "https://kutt.it/rickroll",
+	"integration_types_config": {
+		"1": {
+			"oauth2_install_params": {
+				"scopes": [
+					"applications.commands"
+				],
+				"permissions": "0"
+			}
+		}
+	},
+	"verify_key": "05485f4eeafd8791bce38634641cd9094257156fe7ff661af07d1affab55341d",
+	"flags": 44605440,
+	"hook": true,
+	"storefront_available": false,
+	"redirect_uris": [],
+	"interactions_endpoint_url": null,
+	"role_connections_verification_url": null,
+	"owner": {
+		"id": "1341109755355336714",
+		"username": "team1341109755355336714",
+		"avatar": null,
+		"discriminator": "0000",
+		"public_flags": 1024,
+		"flags": 1024,
+		"banner": null,
+		"accent_color": null,
+		"global_name": null,
+		"avatar_decoration_data": null,
+		"collectibles": null,
+		"display_name_styles": null,
+		"banner_color": null,
+		"clan": null,
+		"primary_guild": null
+	},
+	"approximate_guild_count": 22,
+	"approximate_user_install_count": 8,
+	"approximate_user_authorization_count": 8,
+	"interactions_event_types": [],
+	"interactions_version": 1,
+	"explicit_content_filter": 0,
+	"rpc_application_state": 0,
+	"store_application_state": 1,
+	"verification_state": 1,
+	"integration_public": true,
+	"integration_require_code_grant": false,
+	"discoverability_state": 1,
+	"discovery_eligibility_flags": 3068,
+	"monetization_state": 1,
+	"verification_eligibility_flags": 123902,
+	"monetization_eligibility_flags": 247550,
+	"bot_approximate_guild_count": 23,
+	"team": {
+		"id": "1341109755355336714",
+		"icon": null,
+		"name": "gay apps",
+		"owner_user_id": "744276454946242723",
+		"members": [
+			{
+				"user": {
+					"id": "744276454946242723",
+					"username": "meqativ",
+					"avatar": "e89bfeb92356413b359a9c9fc121d0a7",
+					"discriminator": "0",
+					"public_flags": 128,
+					"flags": 128,
+					"banner": null,
+					"accent_color": null,
+					"global_name": "meqa",
+					"avatar_decoration_data": {
+						"asset": "a_e08b43c436272bc2c1e6ae85e71ab884",
+						"sku_id": "1402472280596152340",
+						"expires_at": null
+					},
+					"collectibles": {
+						"nameplate": {
+							"sku_id": "1417311919487848619",
+							"asset": "nameplates/nameplate_bonanza/starfall_tides_void/",
+							"label": "COLLECTIBLES_NAMEPLATE_BONANZA_STARFALL_TIDES_VOID_NP_A11Y",
+							"palette": "violet"
+						}
+					},
+					"display_name_styles": null,
+					"banner_color": null,
+					"clan": null,
+					"primary_guild": null
+				},
+				"team_id": "1341109755355336714",
+				"membership_state": 2,
+				"role": "admin",
+				"permissions": [
+					"*"
+				]
+			},
+			{
+				"user": {
+					"id": "843448897737064448",
+					"username": "slugcatwawa",
+					"avatar": "eeec8b24fd69e76069460533a0c82d6f",
+					"discriminator": "0",
+					"public_flags": 0,
+					"flags": 0,
+					"banner": null,
+					"accent_color": null,
+					"global_name": "fres",
+					"avatar_decoration_data": {
+						"asset": "a_33656b7ed12cde00c1826b654cf65590",
+						"sku_id": "1287835633485877369",
+						"expires_at": null
+					},
+					"collectibles": null,
+					"display_name_styles": null,
+					"banner_color": null,
+					"clan": {
+						"identity_guild_id": "291184728944410624",
+						"identity_enabled": true,
+						"tag": "SCUG",
+						"badge": "a87fa83494be55ae251f08b02c02454f"
+					},
+					"primary_guild": {
+						"identity_guild_id": "291184728944410624",
+						"identity_enabled": true,
+						"tag": "SCUG",
+						"badge": "a87fa83494be55ae251f08b02c02454f"
+					}
+				},
+				"team_id": "1341109755355336714",
+				"membership_state": 2,
+				"role": "admin",
+				"permissions": [
+					"*"
+				]
+			}
+		]
+	},
+	"internal_guild_restriction": 1,
+	"approved_consoles": [],
+	"pricing_localization_strategy": "localized_price_sets"
+}
