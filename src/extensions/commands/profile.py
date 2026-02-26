@@ -154,7 +154,7 @@ class ProfileCommands(Extension):
 					url=get_config("bot.links.discord-invite"),
 				)
 			)
-			buffer = await render_textbox_frames([Frame(str(await loc.l("profile.edit.down")))])
+			buffer = await render_textbox_frames([Frame(str(await loc.l("profile.edit.down")))], loops=1)
 			filename = (
 				await loc.l(
 					f"textbox.alt.single_frame.filename",

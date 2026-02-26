@@ -5,6 +5,7 @@ from traceback import print_exc
 from typing import Any, Type, TypeVar, overload
 
 import yaml as yaml
+from interactions import BaseInteractionContext, Client, Message
 from termcolor import colored
 
 from extensions.events.Ready import ReadyEvent
@@ -135,18 +136,24 @@ class Localization:
 	global _locales
 	locale: str
 	prefix: str
-	ctx: Any
+	client: Client | None
 
-	def __init__(self, source: str | Any | None = None, prefix: str = ""):
-		self.ctx: Any = None
-		raw_locale: str | None
+	def __init__(
+		self,
+		locale_source: str | Client | BaseInteractionContext | Message | None = None,
+		raw_locale: str | None = None,
+		prefix: str = "",
+	):
+		self.client = locale_source if isinstance(locale_source, Client) else None
 
-		if source is not None and not isinstance(source, str):
-			# It's likely a context object
-			self.ctx = source
-			raw_locale = getattr(self.ctx, "locale", None)
-		else:
-			raw_locale = source
+		if isinstance(locale_source, BaseInteractionContext):
+			self.client = locale_source.bot
+			raw_locale = locale_source.locale
+		if isinstance(locale_source, Message):
+			self.client = locale_source.bot
+			raw_locale = locale_source.guild.preferred_locale
+		elif isinstance(locale_source, str):
+			raw_locale = locale_source
 
 		final_locale: str
 		if raw_locale is None:
@@ -174,7 +181,7 @@ class Localization:
 			locale=self.locale,
 			typecheck=typecheck,
 			format=format,
-			ctx=self.ctx,
+			client=self.client,
 			**variables,
 		)
 		return result
@@ -187,14 +194,14 @@ class Localization:
 		*,
 		typecheck: Type[T],
 		raise_on_not_found: bool = False,
-		ctx: Any = None,
+		client: Client | None = None,
 		format: bool = True,
 		**variables: Any,
 	) -> T: ...
 
 	@staticmethod
 	@overload
-	async def sl(path: str, locale: str | None, *, ctx: Any = None, **variables: Any) -> str: ...
+	async def sl(path: str, locale: str | None, *, client: Client | None = None, **variables: Any) -> str: ...
 
 	@staticmethod
 	async def sl(
@@ -203,7 +210,7 @@ class Localization:
 		*,  # ← makes all next args only accepted as keyword arguments
 		typecheck: Any = str,
 		raise_on_not_found: bool = False,
-		ctx: Any = None,
+		client: Client | None = None,
 		format: bool = True,
 		**variables: Any,
 	) -> Any:
@@ -218,7 +225,7 @@ class Localization:
 			_error_message="[path] ([error])" if debug else "[path]",
 		)
 		if format:
-			result = await assign_variables(raw_result, locale, ctx=ctx, **variables)
+			result = await assign_variables(raw_result, locale, client=client, **variables)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
 			if result == None:
@@ -254,9 +261,8 @@ bot_id = decode_base64_padded(token.split(".")[0])
 async def assign_variables(
 	input: str,
 	locale: str | None = ...,
-	pretty_numbers: bool = ...,
 	*,
-	ctx: Any = None,
+	client: Client | None = None,
 	**variables: Any,
 ) -> str: ...
 
@@ -265,9 +271,8 @@ async def assign_variables(
 async def assign_variables(
 	input: T,
 	locale: str | None = ...,
-	pretty_numbers: bool = ...,
 	*,
-	ctx: Any = None,
+	client: Client | None = None,
 	**variables: Any,
 ) -> T: ...
 
@@ -275,15 +280,14 @@ async def assign_variables(
 async def assign_variables(
 	input: Any,
 	locale: str | None = None,
-	pretty_numbers: bool = True,
 	*,
-	ctx: Any = None,
+	client: Client | None = None,
 	**variables: Any,
 ) -> Any:
 	if locale is None:
 		locale = get_config("localization.main-locale")
 	if isinstance(input, str):
-		return await render_icu(input, variables, locale, ctx)
+		return await render_icu(input, variables, locale, client)
 	elif isinstance(input, tuple):
 		out = []
 		for elem in input:
@@ -292,8 +296,7 @@ async def assign_variables(
 					await assign_variables(
 						elem,
 						locale,
-						pretty_numbers=pretty_numbers,
-						ctx=ctx,
+						client=client,
 						**variables,
 					)
 				)
@@ -302,7 +305,7 @@ async def assign_variables(
 	elif isinstance(input, dict):
 		new_dict = {}
 		for key, value in input.items():
-			new_dict[key] = await assign_variables(value, locale, pretty_numbers=pretty_numbers, ctx=ctx, **variables)
+			new_dict[key] = await assign_variables(value, locale, client=client, **variables)
 		return new_dict
 	else:
 		return input

@@ -65,12 +65,11 @@ class State:
 		frames = "\n".join([str(f) for f in self.frames])
 		processed: str = await assign_variables(
 			state_template,
-			pretty_numbers=False,
 			locale=loc.locale,
 			**{
 				"comment": await loc.l(
 					"textbox.ttb.comment",
-					link=f"https://github.com/the-world-machine/bot/blob/main/md/{loc.locale}/textbox/index.md#raw-file-editing-tbb",
+					link=f"https://github.com/the-world-machine/bot/blob/main/md/en/textbox/index.md#raw-file-editing-tbb",  # /md/{loc.locale}/textbox
 				),
 				"filetype": self.options.filetype,
 				"send_to": self.options.send_to,

@@ -41,13 +41,12 @@ async def error_middleware(request, handler):
 			) as f:
 				error_paige = f.read()
 			return web.Response(
-			    text=await assign_variables(
-			        error_paige,
-			        pretty_numbers=False,
-			        status=status,
-			        status_description=http_status_names[status],
-			    ),
-			    headers={ "Content-Type": "text/html"},
+				text=await assign_variables(
+					error_paige,
+					status=status,
+					status_description=http_status_names[status],
+				),
+				headers={"Content-Type": "text/html"},
 			)
 		raise
 	except Exception:

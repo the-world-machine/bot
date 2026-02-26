@@ -21,6 +21,7 @@ async def generate_route(request: web.Request):
 			quality=state.options.quality,
 			filetype=state.options.filetype,
 			frame_index=int(frame_index) if frame_index is not None else None,
+			loops=state.options.loops,
 		)
 
 		file_size = io_buffer_bettell(image_buffer)
