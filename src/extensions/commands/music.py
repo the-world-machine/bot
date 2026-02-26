@@ -219,7 +219,7 @@ class MusicCommands(Extension):
 				self.assign_node()
 				tries += 1
 
-		message = await fancy_message(ctx, await loc.l("music.loading.search"))
+		message = await fancy_message(ctx, await loc.format(loc.l("music.loading.search")))
 
 		result = await self.lavalink.client.get_tracks(song, check_local=True)
 		tracks = result.tracks
@@ -279,7 +279,7 @@ class MusicCommands(Extension):
 			    ephemeral=True,
 			)
 
-		message = await fancy_message(ctx, await loc.l("music.loading.file"))
+		message = await fancy_message(ctx, await loc.format(loc.l("music.loading.file")))
 
 		player = await self.lavalink.connect(voice_state.guild.id, voice_state.channel.id)
 

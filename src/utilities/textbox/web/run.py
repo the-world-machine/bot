@@ -6,9 +6,9 @@ from pathlib import Path
 from aiohttp import web
 
 from utilities.config import get_config
-from utilities.localization.localization import assign_variables
+from utilities.localization.localization import Localization
 
-from .misc import http_status_names
+from .misc import get_browser_locale, http_status_names
 
 app = web.Application()
 
@@ -33,7 +33,8 @@ async def error_middleware(request, handler):
 	except web.HTTPException as ex:
 		status = ex.status
 		if status in http_status_names:
-			# Read the content of the HTML file
+			loc = Localization(get_browser_locale(request))
+
 			with open(
 			    Path("src/utilities/textbox/web/static/paiges/error.html"),
 			    "r",
@@ -41,7 +42,7 @@ async def error_middleware(request, handler):
 			) as f:
 				error_paige = f.read()
 			return web.Response(
-				text=await assign_variables(
+				text=await loc.format(
 					error_paige,
 					status=status,
 					status_description=http_status_names[status],

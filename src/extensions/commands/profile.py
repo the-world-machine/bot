@@ -97,14 +97,14 @@ class ProfileCommands(Extension):
 		if user is None:
 			user = ctx.user
 		if user.bot and ctx.client.user != user:
-			return await ctx.send(await loc.l("profile.view.bots"), ephemeral=True)
+			return await ctx.send(await loc.format(loc.l("profile.view.bots")), ephemeral=True)
 
-		await fancy_message(ctx, await loc.l("profile.view.loading", target_id=user.id))
+		await fancy_message(ctx, await loc.format(loc.l("profile.view.loading"), target_id=user.id))
 
 		start_time = time.perf_counter()
 		image = await draw_profile(
 			user,
-			filename=await loc.l("profile.view.image.name", target_id=user.id),
+			filename=await loc.format(loc.l("profile.view.image.name"), target_id=user.id),
 			loc=loc,
 		)
 		runtime = (time.perf_counter() - start_time) * 1000
@@ -114,10 +114,10 @@ class ProfileCommands(Extension):
 				Button(
 					style=ButtonStyle.URL,
 					url=url,
-					label=await loc.l("profile.view.button"),
+					label=await loc.format(loc.l("profile.view.button")),
 				)
 			)
-		content = await loc.l("profile.view.message", target_id=user.id)
+		content = await loc.format(loc.l("profile.view.message"), target_id=user.id)
 		await ctx.edit(
 			content=f"-# Took {fnum(runtime, locale=loc.locale)}ms. {content}" if debugging() else f"-# {content}",
 			files=image,
@@ -132,14 +132,14 @@ class ProfileCommands(Extension):
 		components = [
 			Button(
 				style=ButtonStyle.URL,
-				label=await loc.l("generic.buttons.open_site"),
+				label=await loc.format(loc.l("generic.buttons.open_site")),
 				url=get_config("bot.links.website-root") + "/profile",
 			)
 		]
 		asyncio.create_task(
 			fancy_message(
 				ctx,
-				message=await loc.l("profile.edit.text"),
+				message=await loc.format(loc.l("profile.edit.text")),
 				ephemeral=True,
 				components=components,
 			)
@@ -150,14 +150,16 @@ class ProfileCommands(Extension):
 			components.append(
 				Button(
 					style=ButtonStyle.URL,
-					label=await loc.l('about.buttons["community server"]'),
+					label=await loc.format(loc.l('about.buttons["community server"]')),
 					url=get_config("bot.links.discord-invite"),
 				)
 			)
-			buffer = await render_textbox_frames([Frame(str(await loc.l("profile.edit.down")))], loops=1)
+			buffer = await render_textbox_frames(
+				[Frame(str(await loc.format(loc.l("profile.edit.down"))))], loops=1, loc=loc
+			)
 			filename = (
-				await loc.l(
-					f"textbox.alt.single_frame.filename",
+				await loc.format(
+					loc.l(f"textbox.alt.single_frame.filename"),
 					timestamp=str(round(datetime.now().timestamp())),
 				)
 				+ ".webp"

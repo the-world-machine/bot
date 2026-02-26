@@ -43,7 +43,7 @@ class AboutCommand(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
 		start_time = datetime.now(timezone.utc)
-		_ = await fancy_message(ctx, await loc.l("generic.loading.hint"), ephemeral=not public)
+		_ = await fancy_message(ctx, await loc.format(loc.l("generic.loading.hint")), ephemeral=not public)
 		if not isinstance(_, Message):
 			return
 
@@ -72,7 +72,7 @@ class AboutCommand(Extension):
 						name, url = line.split(":", 1)
 						name = name.strip()
 
-						loc_name = await loc.l(f"about.buttons['{name.lower()}']")
+						loc_name = await loc.format(loc.l(f"about.buttons['{name.lower()}']"))
 						if not loc_name.startswith("`"):
 							name = loc_name
 
@@ -83,8 +83,10 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = await loc.l("about.mes", typecheck=tuple)
-							translated_lines = await Localization().l("about.mes", typecheck=tuple)
+							original_lines = await loc.format(loc.l("about.mes", typecheck=tuple))
+							translated_lines = await Localization().format(
+								Localization().l("about.mes", typecheck=tuple)
+							)
 
 							for i in range(0, len(original_lines)):
 								if not (len(translated_lines) > i) and original_lines[i] == line:
@@ -118,46 +120,46 @@ class AboutCommand(Extension):
 		embed = Embed(description=description, color=Colors.DEFAULT)
 		embed.add_fields(
 			EmbedField(
-				name=await loc.l("about.names.avg_ping"),
-				value=await loc.l("about.values.time", sec=fnum(ctx.client.latency, ctx.locale)),
+				name=await loc.format(loc.l("about.names.avg_ping")),
+				value=await loc.format(loc.l("about.values.time"), sec=fnum(ctx.client.latency, ctx.locale)),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.l("about.names.latency"),
-				value=f"{await loc.l('about.values.time', sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.l('about.values.time', sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
+				name=await loc.format(loc.l("about.names.latency")),
+				value=f"{await loc.format(loc.l('about.values.time'), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.format(loc.l('about.values.time'), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.l("about.names.commit_hash"),
-				value=commit_hash if commit_hash else await loc.l("misc.status.values.failed_commit_hash"),
+				name=await loc.format(loc.l("about.names.commit_hash")),
+				value=commit_hash if commit_hash else await loc.format(loc.l("misc.status.values.failed_commit_hash")),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.l("about.names.mem_usg"),
-				value=await loc.l(
-					"about.values.percent",
+				name=await loc.format(loc.l("about.names.mem_usg")),
+				value=await loc.format(
+					loc.l("about.values.percent"),
 					percentage=psutil.virtual_memory().percent / 100,
 				),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.l("about.names.server_count"),
+				name=await loc.format(loc.l("about.names.server_count")),
 				value=str(ctx.client.guild_count),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.l("about.names.cpu_usg"),
-				value=await loc.l("about.values.percent", percentage=psutil.cpu_percent() / 100),
+				name=await loc.format(loc.l("about.names.cpu_usg")),
+				value=await loc.format(loc.l("about.values.percent"), percentage=psutil.cpu_percent() / 100),
 				inline=True,
 			),
 			EmbedField(
-				await loc.l("about.names.uptime"),
+				await loc.format(loc.l("about.names.uptime")),
 				ftime(datetime.now() - ctx.client.start_time, ctx.locale),
 				inline=True,
 			),
 		)
-		# embed.add_field(await loc.l("about.names.user_installs"), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
-		embed.add_field(await loc.l("about.names.host"), host, inline=True)
+		# embed.add_field(await loc.format(loc.l("about.names.user_installs")), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
+		embed.add_field(await loc.format(loc.l("about.names.host")), host, inline=True)
 		rows = []
 		for i in range(0, len(buttons), 5):
 			rows.append(ActionRow(*buttons[i : i + 5]))

@@ -32,6 +32,6 @@ async def put_mini(
 		if limits.get(message) != -1 and limits.get(message, 0) <= reacher:
 			return ""
 		asyncio.create_task(user_data.minis_shown.increment_key(message))
-	name: str = await loc.l(f"generic.minis.{type}")
-	msg: str = await loc.l(message)
+	name: str = await loc.format(loc.l(f"generic.minis.{type}"))
+	msg: str = await loc.format(loc.l(message))
 	return f"{pre}{'-# ' if markdown else ''}{name} {msg}"

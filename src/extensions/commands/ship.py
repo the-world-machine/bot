@@ -45,7 +45,7 @@ class ShippingCommands(Extension):
 			if parsed_id.count("@") > 1:
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.idk"),
+					await loc.format(loc.l("misc.ship.errors.idk")),
 					color=Colors.BAD,
 					ephemeral=True,
 				)
@@ -53,7 +53,7 @@ class ShippingCommands(Extension):
 			if not parsed_id.isdigit():
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.failed_mention"),
+					await loc.format(loc.l("misc.ship.errors.failed_mention")),
 					color=Colors.BAD,
 					ephemeral=True,
 				)
@@ -61,7 +61,7 @@ class ShippingCommands(Extension):
 			if not user:
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.cant_find_one"),
+					await loc.format(loc.l("misc.ship.errors.cant_find_one")),
 					color=Colors.BAD,
 					ephemeral=True,
 				)
@@ -71,7 +71,7 @@ class ShippingCommands(Extension):
 			if parsed_id.count("@") > 1:
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.idk"),
+					await loc.format(loc.l("misc.ship.errors.idk")),
 					color=Colors.BAD,
 					ephemeral=True,
 					facepic=await get_facepic("OneShot/The World Machine/Upset left"),
@@ -80,7 +80,7 @@ class ShippingCommands(Extension):
 			if not parsed_id.isdigit():
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.failed_mention"),
+					await loc.format(loc.l("misc.ship.errors.failed_mention")),
 					color=Colors.BAD,
 					ephemeral=True,
 					facepic=await get_facepic("OneShot/The World Machine/Looking Left"),
@@ -89,7 +89,7 @@ class ShippingCommands(Extension):
 			if not user:
 				return await fancy_message(
 					ctx,
-					await loc.l("misc.ship.errors.cant_find_two"),
+					await loc.format(loc.l("misc.ship.errors.cant_find_two")),
 					color=Colors.BAD,
 					ephemeral=True,
 					facepic=await get_facepic("OneShot/The World Machine/Upset left"),
@@ -98,7 +98,7 @@ class ShippingCommands(Extension):
 		if who == ctx.author.display_name and who == whomst:
 			return await fancy_message(
 				ctx,
-				await loc.l("misc.ship.errors.hugs_you"),
+				await loc.format(loc.l("misc.ship.errors.hugs_you")),
 				color=Colors.BAD,
 				ephemeral=True,
 				facepic=await get_facepic("OneShot/The World Machine/Looking Left"),
@@ -118,24 +118,24 @@ class ShippingCommands(Extension):
 		color = Colors.PASTEL_RED
 		if love_percentage == 100:
 			emoji = "💛"
-			footer = await loc.l("misc.ship.compatibility.footer.perfect")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.perfect"))
 			color = Colors.PURE_YELLOW
 		if love_percentage < 100:
 			emoji = "💖"
-			footer = await loc.l("misc.ship.compatibility.footer.love")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.love"))
 			color = Colors.PINK
 		if love_percentage < 70:
 			emoji = "❤"
-			footer = await loc.l("misc.ship.compatibility.footer.interest")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.interest"))
 		if love_percentage <= 50:
 			emoji = "❓"
-			footer = await loc.l("misc.ship.compatibility.footer.potential")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.potential"))
 		if love_percentage < 30:
 			emoji = "❌"
-			footer = await loc.l("misc.ship.compatibility.footer.disinterest")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.disinterest"))
 		if love_percentage < 10:
 			emoji = "💔"
-			footer = await loc.l("misc.ship.compatibility.footer.nope")
+			footer = await loc.format(loc.l("misc.ship.compatibility.footer.nope"))
 			color = Colors.LIGHTER_BLACK
 
 		hearts_line = list("🤍🤍🤍🤍🤍🤍🤍🤍🤍🤍")
@@ -150,7 +150,7 @@ class ShippingCommands(Extension):
 
 		embed = Embed(
 			title=name,
-			description=f"{await loc.l('misc.ship.compatibility.description', who=who, whomst=whomst, emoji=emoji, percentage=love_percentage)}\n{''.join(hearts_line)}\n-# {footer}",
+			description=f"{await loc.format(loc.l('misc.ship.compatibility.description'), who=who, whomst=whomst, emoji=emoji, percentage=love_percentage)}\n{''.join(hearts_line)}\n-# {footer}",
 			color=color,
 		)
 

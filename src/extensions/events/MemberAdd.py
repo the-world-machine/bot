@@ -11,7 +11,7 @@ from interactions import (
 from interactions.api.events import MemberAdd
 
 from utilities.database.schemas import ServerData
-from utilities.localization.localization import Localization, assign_variables
+from utilities.localization.localization import Localization
 from utilities.textbox.mediagen import Frame, render_frame
 
 
@@ -20,7 +20,7 @@ class MemberAddEvent(Extension):
 	@listen(MemberAdd, delay_until_ready=True)
 	async def handler(self, event: MemberAdd):
 		guild = event.guild
-		loc = Localization(guild.preferred_locale)
+		loc = Localization(guild)
 		server_data: ServerData = await ServerData(_id=guild.id).fetch()
 		config = server_data.welcome
 
@@ -34,8 +34,8 @@ class MemberAddEvent(Extension):
 		if not target_channel:
 			return
 
-		message = config.message or await loc.l("misc.welcome.placeholder_text", format=False, typecheck=str)
-		message = await assign_variables(
+		message = config.message or loc.l("misc.welcome.placeholder_text", typecheck=str)
+		message = await loc.format(
 			message,
 			user_name=event.member.display_name,
 			server_name=guild.name,
@@ -47,7 +47,7 @@ class MemberAddEvent(Extension):
 			# default to this face unless they have some in their message already
 			message = f"\\@[OneShot/The World Machine/Pancakes]{message}"
 
-		images, durations = await render_frame(Frame(str(message)), False)
+		images, durations = await render_frame(Frame(str(message)), False, loc)
 		images[0].save(buffer, format="PNG")
 		buffer.seek(0)
 		try:

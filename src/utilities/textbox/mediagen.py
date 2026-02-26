@@ -194,7 +194,9 @@ not_empty_empty_face: FacepicChangeCommand = init_token(type="@")  # type:ignore
 not_empty_empty_face.parse_input("clear")
 
 
-async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.Image], list[int]]:
+async def render_frame(
+	frame: Frame, animated: bool = True, loc: Localization = Localization()
+) -> tuple[list[Image.Image], list[int]]:
 	global not_empty_empty_face
 	word_wrap = True
 	background = Image.open(await cached_get(Path("src/data/images/textbox/backgrounds/", "normal.png")))
@@ -276,7 +278,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 		elif isinstance(command, LocaleCommand):
 			out = None
 			try:
-				out = parse_textbox_text(await Localization().l(command.path))
+				out = parse_textbox_text(await loc.format(loc.l(command.path)))
 			except Exception as e:
 				out = ["[ " + str(e) + " ]"]
 			i += 1
@@ -356,11 +358,12 @@ def bounce(times, height=3):
 
 
 async def render_textbox_frames(
-    frames: list[Frame],
-    quality: int = 100,
-    filetype: SupportedFiletypes = "WEBP",
-    frame_index: int | None = None,
-    loops: int = 0,
+	frames: list[Frame],
+	quality: int = 100,
+	filetype: SupportedFiletypes = "WEBP",
+	frame_index: int | None = None,
+	loops: int = 0,
+	loc: Localization = Localization(),
 ) -> io.BytesIO:
 	if len(frames) == 0:
 		raise ValueError("Provide atleast one frame")
@@ -371,7 +374,7 @@ async def render_textbox_frames(
 		if not frame_index:
 			frame_index = 0
 		frame = frames[int(frame_index)]
-		image = (await render_frame(frame, False))[0][0]
+		image = (await render_frame(frame, False, loc))[0][0]
 		if filetype == "JPEG":
 			buffer = io.BytesIO()
 			if image.mode == "RGBA":

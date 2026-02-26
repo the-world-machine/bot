@@ -66,7 +66,7 @@ async def reset_shop_data():
 			backgrounds[bg] = all_bgs[bg]
 
 	treasures = items["treasures"]
-	motds = await Localization().l("shop.motds", typecheck=tuple)
+	motds = await Localization().format(Localization().l("shop.motds", typecheck=tuple))
 
 	data["backgrounds"] = []
 	data["treasures"] = []

@@ -5,7 +5,7 @@ from traceback import print_exc
 from typing import Any, Type, TypeVar, overload
 
 import yaml as yaml
-from interactions import BaseInteractionContext, Client, Message
+from interactions import BaseInteractionContext, Client, Guild, Message
 from termcolor import colored
 
 from extensions.events.Ready import ReadyEvent
@@ -148,7 +148,7 @@ class Localization:
 
 	def __init__(
 		self,
-		locale_source: str | Client | BaseInteractionContext | Message | None = None,
+		locale_source: str | Client | Guild | BaseInteractionContext | Message | None = None,
 		raw_locale: str | None = None,
 		prefix: str = "",
 	):
@@ -160,6 +160,9 @@ class Localization:
 		if isinstance(locale_source, Message):
 			self.client = locale_source.bot
 			raw_locale = locale_source.guild.preferred_locale
+		if isinstance(locale_source, Guild):
+			self.client = locale_source.bot
+			raw_locale = locale_source.preferred_locale
 		elif isinstance(locale_source, str):
 			raw_locale = locale_source
 
@@ -168,7 +171,6 @@ class Localization:
 			final_locale = get_config("localization.main-locale")
 		else:
 			try:
-				# It might be a discord.Locale object, so we stringify it
 				final_locale = parse_locale(str(raw_locale))
 			except UnknownLanguageError:
 				final_locale = get_config("localization.main-locale")
@@ -177,143 +179,98 @@ class Localization:
 		self.prefix = prefix
 
 	@overload
-	async def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T: ...
+	async def format(self, input: str, **variables: Any) -> str: ...
 
 	@overload
-	async def l(self, path: str, **variables: Any) -> str: ...
+	async def format(self, input: T, **variables: Any) -> T: ...
 
-	async def l(self, path: str, *, typecheck: Any = str, format: bool = True, **variables: Any) -> Any:
+	async def format(self, input: Any, **variables: Any) -> Any:
+		if isinstance(input, str):
+			return await render_icu(input, variables, self.locale, self.client)
+		elif isinstance(input, tuple):
+			out = []
+			for elem in input:
+				out.append(await self.format(elem, **variables))
+			return tuple(out)
+		elif isinstance(input, dict):
+			new_dict = {}
+			for key, value in input.items():
+				new_dict[key] = await self.format(value, **variables)
+			return new_dict
+		else:
+			return input
+
+	@overload
+	def l(self, path: str, *, typecheck: Type[T]) -> T: ...
+
+	@overload
+	def l(self, path: str) -> str: ...
+
+	def l(self, path: str, *, typecheck: Any = str) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
-		result = await self.sl(
+		return self.sl(
 			path=path,
 			locale=self.locale,
 			typecheck=typecheck,
-			format=format,
-			client=self.client,
-			**variables,
 		)
-		return result
 
 	@staticmethod
 	@overload
-	async def sl(
+	def sl(
 		path: str,
 		locale: str | None,
 		*,
 		typecheck: Type[T],
 		raise_on_not_found: bool = False,
-		client: Client | None = None,
-		format: bool = True,
-		**variables: Any,
 	) -> T: ...
 
 	@staticmethod
 	@overload
-	async def sl(path: str, locale: str | None, *, client: Client | None = None, **variables: Any) -> str: ...
+	def sl(path: str, locale: str | None) -> str: ...
 
 	@staticmethod
-	async def sl(
+	def sl(
 		path: str,
 		locale: str | None = None,
-		*,  # ← makes all next args only accepted as keyword arguments
+		*,
 		typecheck: Any = str,
 		raise_on_not_found: bool = False,
-		client: Client | None = None,
-		format: bool = True,
-		**variables: Any,
 	) -> Any:
 		if locale is None:
 			raise ValueError("No locale provided")
 		value = get_locale(locale)
-		result = raw_result = rabbit(
+		result = rabbit(
 			value,
 			path,
 			fallback_value=fallback_locale if "fallback_locale" in globals() and fallback_locale else None,
 			raise_on_not_found=raise_on_not_found,
 			_error_message="[path] ([error])" if debug else "[path]",
 		)
-		if format:
-			result = await assign_variables(raw_result, locale, client=client, **variables)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
 			if result == None:
-				return "{path} not found in all attempted languages"
+				return f"**{path}** not found in all attempted languages"
 			raise TypeError(
 				f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
 			)
 		return result
 
 	@staticmethod
-	async def sl_all(localization_path: str, raise_on_not_found: bool = False, **variables: Any) -> dict[str, Any]:
+	def sl_all(localization_path: str, raise_on_not_found: bool = False) -> dict[str, Any]:
 		results = {}
 
 		for locale in _locales.keys():
 			value = get_locale(locale)
-			value = rabbit(
+			result = rabbit(
 				value,
 				localization_path,
 				raise_on_not_found=raise_on_not_found,
 				_error_message="[path] ([error], debug mode ON)" if debug else "[path]",
 			)
-
-			results[locale] = await assign_variables(value, locale, **variables)
+			results[locale] = result
 
 		return results
 
 
 token = get_token()
 bot_id = decode_base64_padded(token.split(".")[0])
-
-
-@overload
-async def assign_variables(
-	input: str,
-	locale: str | None = ...,
-	*,
-	client: Client | None = None,
-	**variables: Any,
-) -> str: ...
-
-
-@overload
-async def assign_variables(
-	input: T,
-	locale: str | None = ...,
-	*,
-	client: Client | None = None,
-	**variables: Any,
-) -> T: ...
-
-
-async def assign_variables(
-	input: Any,
-	locale: str | None = None,
-	*,
-	client: Client | None = None,
-	**variables: Any,
-) -> Any:
-	if locale is None:
-		locale = get_config("localization.main-locale")
-	if isinstance(input, str):
-		return await render_icu(input, variables, locale, client)
-	elif isinstance(input, tuple):
-		out = []
-		for elem in input:
-			out.append(
-				(
-					await assign_variables(
-						elem,
-						locale,
-						client=client,
-						**variables,
-					)
-				)
-			)
-		return tuple(out)
-	elif isinstance(input, dict):
-		new_dict = {}
-		for key, value in input.items():
-			new_dict[key] = await assign_variables(value, locale, client=client, **variables)
-		return new_dict
-	else:
-		return input

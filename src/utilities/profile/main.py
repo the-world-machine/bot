@@ -110,7 +110,7 @@ async def draw_profile(
 
 	user_data: UserData = await UserData(_id=user_id).fetch()
 
-	title = await loc.l("profile.view.image.title", target_id=user.id)
+	title = await loc.format(loc.l("profile.view.image.title"), target_id=user.id)
 
 	backgrounds = await fetch_background()
 	image = Image.open(await cached_get(backgrounds[user_data.equipped_bg]["image"]))
@@ -205,7 +205,7 @@ async def draw_profile(
 
 	base_profile.text(
 		(42, 251),
-		await loc.l("profile.view.image.unlocked.stamps", username=user.username),
+		await loc.format(loc.l("profile.view.image.unlocked.stamps"), username=user.username),
 		font=font,
 		fill=(255, 255, 255),
 		stroke_width=2,
@@ -239,14 +239,14 @@ async def draw_profile(
 		image.save(img_buffer, format="PNG")
 	img_buffer.seek(0)
 
-	# TODO: move this out of here sometime
+	# TODO: move this out of here sometime # noqa: ERA001
 	username = pretty_user(user)
 
 	alt = (
 		alt
 		if alt is not None
-		else await loc.l(
-			"profile.view.image.alt",
+		else await loc.format(
+			loc.l("profile.view.image.alt"),
 			username=username,
 			suns=user_data.suns,
 			wool=user_data.wool,

@@ -5,13 +5,16 @@ import time
 from aiohttp import web
 
 from utilities.config import get_config
+from utilities.localization.localization import Localization
 from utilities.misc import io_buffer_bettell
 from utilities.textbox.mediagen import render_textbox_frames
 from utilities.textbox.states import State
+from utilities.textbox.web.misc import get_browser_locale
 
 
 async def generate_route(request: web.Request):
 	try:
+		loc = Localization(get_browser_locale(request))
 		start_time = time.perf_counter()
 		print(await request.text())
 		state_parse = State.from_string(await request.text(), owner=0)
@@ -23,6 +26,7 @@ async def generate_route(request: web.Request):
 			filetype=state.options.filetype,
 			frame_index=int(frame_index) if frame_index is not None else None,
 			loops=state.options.loops,
+			loc=loc,
 		)
 
 		file_size = io_buffer_bettell(image_buffer)

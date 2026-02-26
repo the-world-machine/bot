@@ -81,8 +81,8 @@ class WoolCommands(Extension):
 			who_path = "bot"
 		return await fancy_message(
 			ctx,
-			await loc.l(
-				f"wool.balance.{who_path}.{'none' if wool == 0 else 'some'}",
+			await loc.format(
+				loc.l(f"wool.balance.{who_path}.{'none' if wool == 0 else 'some'}"),
 				account_holder_id=of.id,
 				balance=fnum(wool, locale=ctx.locale),
 			),
@@ -115,7 +115,7 @@ class WoolCommands(Extension):
 		if to.id == ctx.author.id:
 			return await fancy_message(
 				ctx,
-				await loc.l("wool.transfer.errors.self_transfer"),
+				await loc.format(loc.l("wool.transfer.errors.self_transfer")),
 				ephemeral=True,
 				color=Colors.BAD,
 			)
@@ -124,19 +124,19 @@ class WoolCommands(Extension):
 			buttons = [
 				Button(
 					style=ButtonStyle.RED,
-					label=await loc.l("generic.buttons.yes"),
+					label=await loc.format(loc.l("generic.buttons.yes")),
 					custom_id=f"yes",
 				),
 				Button(
 					style=ButtonStyle.GRAY,
-					label=await loc.l("generic.buttons.cancel"),
+					label=await loc.format(loc.l("generic.buttons.cancel")),
 					custom_id=f"cancel",
 				),
 			]
 
 			confirmation_m = await fancy_message(
 				ctx,
-				message=await loc.l("wool.transfer.to.bot.confirmation")
+				message=await loc.format(loc.l("wool.transfer.to.bot.confirmation"))
 				+ await put_mini(
 					loc,
 					"wool.transfer.to.bot.notefirmation",
@@ -154,20 +154,22 @@ class WoolCommands(Extension):
 				if response.ctx.custom_id == "cancel":
 					return
 			except asyncio.TimeoutError:
-				await confirmation_m.edit(content=await loc.l("generic.responses.timeout.yn"), components=[])
+				await confirmation_m.edit(
+					content=await loc.format(loc.l("generic.responses.timeout.yn")), components=[]
+				)
 				await ctx.delete()
 				await asyncio.sleep(15)
 				return await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, await loc.l("generic.loading.generic"))
+		loading = await fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 
 		if from_user.wool < amount:
 			return await fancy_message(
 				ctx,
-				await loc.l(
-					"wool.transfer.errors.not_enough",
+				await loc.format(
+					loc.l("wool.transfer.errors.not_enough"),
 					balance=from_user.wool,
 					sender_id=from_user._id,
 					receiver_id=to_user._id,
@@ -184,8 +186,8 @@ class WoolCommands(Extension):
 		if amount < 0:
 			return await fancy_message(
 				loading,
-				await loc.l(
-					"wool.transfer.steal",
+				await loc.format(
+					loc.l("wool.transfer.steal"),
 					sender_id=from_user._id,
 					receiver_id=to_user._id,
 				),
@@ -193,8 +195,8 @@ class WoolCommands(Extension):
 			)
 		await fancy_message(
 			loading,
-			await loc.l(
-				f"wool.transfer.to.{'bot' if to.bot else 'user'}.{'none' if amount == 0 else 'some'}",
+			await loc.format(
+				loc.l(f"wool.transfer.to.{'bot' if to.bot else 'user'}.{'none' if amount == 0 else 'some'}"),
 				sender_id=from_user._id,
 				receiver_id=to_user._id,
 				amount=amount,
@@ -217,8 +219,8 @@ class WoolCommands(Extension):
 			time_unix = reset_timestamp.timestamp()
 			return await fancy_message(
 				ctx,
-				await loc.l(
-					"wool.pray.errors.timeout",
+				await loc.format(
+					loc.l("wool.pray.errors.timeout"),
 					timestamp_relative=f"<t:{int(time_unix)}:R>",
 				),
 				ephemeral=True,
@@ -241,10 +243,10 @@ class WoolCommands(Extension):
 		await ctx.send(
 			embed=Embed(
 				thumbnail=EmbedAttachment(make_emoji_cdn_url(emojis["treasures"]["die"])),
-				title=await loc.l("wool.pray.title"),
-				description=f"{await loc.l(f'wool.pray.finds.{finding[0]}')}\n-# "
-				+ await loc.l(
-					f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}",
+				title=await loc.format(loc.l("wool.pray.title")),
+				description=f"{await loc.format(loc.l(f'wool.pray.finds.{finding[0]}'))}\n-# "
+				+ await loc.format(
+					loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}"),
 					amount=abs(amount),
 				),
 				color=Colors.GREEN if amount > 0 else Colors.BAD,

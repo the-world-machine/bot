@@ -47,8 +47,8 @@ class ExplodeCommands(Extension):
 			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 					ctx,
-					await loc.l(
-						"generic.command_cooldown",
+					await loc.format(
+						loc.l("generic.command_cooldown"),
 						timestamp_relative=timestamp_relative(self.last_called[uid]),
 					),
 					ephemeral=True,
@@ -67,24 +67,24 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues: tuple[str] = await loc.l("explode.dialogue.why", typecheck=tuple)
+			dialogues: tuple[str] = await loc.format(loc.l("explode.dialogue.why", typecheck=tuple))
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
-				dialogue = await loc.l("explode.dialogue.sixninefourtwo")
+				dialogue = await loc.format(loc.l("explode.dialogue.sixninefourtwo"))
 
 			if len(str(explosion_amount)) > 3 and all(char == "9" for char in str(explosion_amount)):
-				dialogue = await loc.l("explode.dialogue.nineninenineninenine")
+				dialogue = await loc.format(loc.l("explode.dialogue.nineninenineninenine"))
 			if not dialogue:
 				dialogue = "." * random.randint(3, 9)
 
 			embed.description = "-# " + dialogue
 			embed.set_image(url=self.explosion_image[random_number])
-			embed.set_footer(await loc.l("explode.info", amount=fnum(explosion_amount, ctx.locale)))
+			embed.set_footer(await loc.format(loc.l("explode.info"), amount=fnum(explosion_amount, ctx.locale)))
 		else:
 			embed = Embed(title="...")
 			embed.set_image(url=self.sad_image)
-			embed.set_footer(await loc.l("explode.YouKilledNiko"))
+			embed.set_footer(await loc.format(loc.l("explode.YouKilledNiko")))
 
 		if not sad:
 			await bm.increment_value(ctx, "times_shattered", 1, ctx.user)

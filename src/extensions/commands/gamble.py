@@ -80,13 +80,13 @@ class GambleCommands(Extension):
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		loc = Localization(ctx)
-		await fancy_message(ctx, await loc.l("generic.loading.generic"))
+		await fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
 			return await fancy_message(
 				ctx,
-				await loc.l("wool.gamble.errors.not_enough_wool"),
+				await loc.format(loc.l("wool.gamble.errors.not_enough_wool")),
 				ephemeral=True,
 				color=Colors.BAD,
 			)
@@ -176,9 +176,9 @@ class GambleCommands(Extension):
 					else:
 						ticker += f"{s} ┋ "
 			return Embed(
-				description=f"## {await loc.l('wool.gamble.slots.title')}\n\n"
-				+ await loc.l(
-					f"wool.gamble.slots.description_{'running' if not result else 'result'}",
+				description=f"## {await loc.format(loc.l('wool.gamble.slots.title'))}\n\n"
+				+ await loc.format(
+					loc.l(f"wool.gamble.slots.description_{'running' if not result else 'result'}"),
 					bettor_id=ctx.author.id,
 					bet_amount=bet,
 					result=result[0] if result else None,
@@ -220,11 +220,11 @@ class GambleCommands(Extension):
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_color = Colors.PURE_YELLOW
-				result = "jackpot"  # result_embed.set_footer(text=await loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount))))
+				result = "jackpot"  # result_embed.set_footer(text=await loc.format(loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount)))))
 			else:
 				if win_amount < bet:
 					result_color = Colors.PURE_ORANGE
-					result = "lost_some"  # result_embed.set_footer(text=await loc.l("wool.gamble.slots.result.lost_some", username=ctx.author.username, amount=fnum(abs(win_amount))))
+					result = "lost_some"  # result_embed.set_footer(text=await loc.format(loc.l("wool.gamble.slots.result.lost_some"), username=ctx.author.username, amount=fnum(abs(win_amount))))
 				else:
 					result_color = Colors.PURE_GREEN
 					result = "won_some"
@@ -249,8 +249,8 @@ class GambleCommands(Extension):
 		for slot in sorted(set(slots)):
 			value = int(abs(slot.value) * 100)
 			tasks.append(
-				loc.l(
-					"wool.gamble.slots.guide.value_entry",
+				loc.format(
+					loc.l("wool.gamble.slots.guide.value_entry"),
 					icon=slot.emoji,
 					value=value,
 					value_sign="negative" if slot.value < 0 else "positive",
@@ -261,6 +261,6 @@ class GambleCommands(Extension):
 
 		await fancy_message(
 			ctx,
-			f"## {await loc.l('wool.gamble.slots.title')}\n"
-			+ await loc.l("wool.gamble.slots.guide.description", slot_values="\n".join(point_rows)),
+			f"## {await loc.format(loc.l('wool.gamble.slots.title'))}\n"
+			+ await loc.format(loc.l("wool.gamble.slots.guide.description"), slot_values="\n".join(point_rows)),
 		)

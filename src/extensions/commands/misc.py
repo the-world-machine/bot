@@ -48,8 +48,8 @@ class MiscellaneousCommands(Extension):
 
 					await fancy_message(
 						ctx,
-						await loc.l(
-							"misc.wikipedia",
+						await loc.format(
+							loc.l("misc.wikipedia"),
 							link=get_search["content_urls"]["desktop"]["page"],
 							title=get_search["title"],
 						),
@@ -113,16 +113,16 @@ class MiscellaneousCommands(Extension):
 		rolls = [random.randint(1, sides) for _ in range(amount)]
 
 		result = amperjoin([str(roll) for roll in rolls])
-		description = await loc.l("misc.roll.desc", result=result)
+		description = await loc.format(loc.l("misc.roll.desc"), result=result)
 
 		if len(rolls) > 1:
-			description += "\n\n" + await loc.l("misc.roll.multi", total=sum(rolls))
+			description += "\n\n" + await loc.format(loc.l("misc.roll.multi"), total=sum(rolls))
 
 		await ctx.send(
 			embeds=Embed(
 				color=Colors.DEFAULT,
 				thumbnail=EmbedAttachment(url=make_emoji_cdn_url(emojis["treasures"]["die"])),
-				title=await loc.l("misc.roll.title", amount=amount if amount > 1 else "", sides=sides),
+				title=await loc.format(loc.l("misc.roll.title"), amount=amount if amount > 1 else "", sides=sides),
 				description=description,
 			),
 			ephemeral=not public,
@@ -138,14 +138,14 @@ class MiscellaneousCommands(Extension):
 	@contexts(bot_dm=True)
 	async def cat(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
-		embed = Embed(title=await loc.l("misc.miaou.title"), color=Colors.DEFAULT)
+		embed = Embed(title=await loc.format(loc.l("misc.miaou.title")), color=Colors.DEFAULT)
 
 		if random.randint(0, 100) == 30 + 6 + 14:
-			embed.description = await loc.l("misc.miaou.finding.noik")
+			embed.description = await loc.format(loc.l("misc.miaou.finding.noik"))
 			embed.set_image(
 				"https://cdn.discordapp.com/attachments/1028022857877422120/1075445796113219694/ezgif.com-gif-maker_1.gif"
 			)
-			embed.set_footer(await loc.l("misc.miaou.finding.footer"))
+			embed.set_footer(await loc.format(loc.l("misc.miaou.finding.footer")))
 			return await ctx.send(embed=embed)
 
 		async with aiohttp.ClientSession() as session:
@@ -154,7 +154,7 @@ class MiscellaneousCommands(Extension):
 
 		image = data[0]["url"]
 
-		embed.description = await loc.l("misc.miaou.finding.cat")
+		embed.description = await loc.format(loc.l("misc.miaou.finding.cat"))
 		embed.set_image(image)
 		return await ctx.send(embed=embed, ephemeral=not public)
 
@@ -171,7 +171,7 @@ class MiscellaneousCommands(Extension):
 		loc = Localization(ctx)
 		await fancy_message(
 			ctx,
-			await loc.l("generic.loading.checking_developer_status"),
+			await loc.format(loc.l("generic.loading.checking_developer_status")),
 			ephemeral=True,
 		)
 
@@ -179,12 +179,14 @@ class MiscellaneousCommands(Extension):
 			await asyncio.sleep(3)
 			return await fancy_message(
 				ctx,
-				await loc.l("generic.errors.not_a_developer"),
+				await loc.format(loc.l("generic.errors.not_a_developer")),
 				facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
 				edit=True,
 			)
 
-		asyncio.create_task(fancy_message(ctx, await loc.l("generic.loading.generic"), ephemeral=not public))
+		asyncio.create_task(
+			fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")), ephemeral=not public)
+		)
 
 		method = "eval"
 		if "\n" in code or "import " in code or "await " in code or "return " in code:

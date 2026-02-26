@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Literal, Optional, Tuple, Union, get_args, overload
 
-from utilities.localization.localization import Localization, assign_variables
+from utilities.localization.localization import Localization
 from utilities.message_decorations import fancy_message
 from utilities.textbox.mediagen import Frame
 
@@ -50,7 +50,7 @@ class StateOptions:
 		self.loops = loops
 
 	def __repr__(self):
-		attrs = { k: getattr(self, k) for k in self.__annotations__ }
+		attrs = {k: getattr(self, k) for k in self.__annotations__}
 		attrs_str = ", ".join(f"{k}={repr(v)}" for k, v in attrs.items())
 		return f"StateOptions({attrs_str})"
 
@@ -63,20 +63,17 @@ class State:
 
 	async def to_string(self, loc: Localization) -> str:
 		frames = "\n".join([str(f) for f in self.frames])
-		processed: str = await assign_variables(
+		processed: str = await loc.format(
 			state_template,
-			locale=loc.locale,
-			**{
-				"comment": await loc.l(
-					"textbox.ttb.comment",
-					link=f"https://github.com/the-world-machine/bot/blob/main/md/en/textbox/index.md#raw-file-editing-tbb",  # /md/{loc.locale}/textbox
-				),
-				"filetype": self.options.filetype,
-				"send_to": self.options.send_to,
-				"force_send": False,
-				"quality": self.options.quality,
-				"frames": frames,
-			},
+			comment=await loc.format(
+				loc.l("textbox.ttb.comment"),
+				link=f"https://github.com/the-world-machine/bot/blob/main/md/en/textbox/index.md#raw-file-editing-tbb",  # /md/{loc.locale}/textbox
+			),
+			filetype=self.options.filetype,
+			send_to=self.options.send_to,
+			force_send=False,
+			quality=self.options.quality,
+			frames=frames,
 		)
 		return processed
 
@@ -117,7 +114,7 @@ class State:
 				key, value = line.split("=", maxsplit=1)
 				if key not in StateOptions_allowed_keys:
 					raise KeyError(
-					    f"Received invalid key '{key}' at line {i}, it should be one of: {','.join(StateOptions_allowed_keys)}"
+						f"Received invalid key '{key}' at line {i}, it should be one of: {','.join(StateOptions_allowed_keys)}"
 					)
 
 				try:
@@ -201,9 +198,13 @@ class State:
 
 	def __repr__(self):
 		return (
-		    f"State(\n" + f"  owner={self.owner},\n" + f"  frames: len()={len(self.frames)}; [\n" +
-		    f"{',\n'.join(f'      {repr(frame)}' for frame in self.frames)}\n" + f"  ]\n" + f"  {self.options}\n"
-		    f")"
+			f"State(\n"
+			+ f"  owner={self.owner},\n"
+			+ f"  frames: len()={len(self.frames)}; [\n"
+			+ f"{',\n'.join(f'      {repr(frame)}' for frame in self.frames)}\n"
+			+ f"  ]\n"
+			+ f"  {self.options}\n"
+			f")"
 		)
 
 	def get_frame(self, index: int) -> Frame:
@@ -228,15 +229,13 @@ class StateShortcutError(Exception):
 
 
 @overload
-async def state_shortcut(ctx, state_id: str | int, frame_index: Literal[None]) -> Tuple["Localization", "State"]:
-	...
+async def state_shortcut(ctx, state_id: str | int, frame_index: Literal[None]) -> Tuple["Localization", "State"]: ...
 
 
 @overload
 async def state_shortcut(
 	ctx, state_id: str | int, frame_index: str | int
-) -> Tuple["Localization", "State", "Frame"]:
-	...
+) -> Tuple["Localization", "State", "Frame"]: ...
 
 
 async def state_shortcut(
@@ -255,7 +254,7 @@ async def state_shortcut(
 	except KeyError:
 		await fancy_message(
 			ctx,
-			await loc.l("general.errors.expired") + f"\n-# **sid:** {str(state_id)}",
+			await loc.format(loc.l("general.errors.expired")) + f"\n-# **sid:** {str(state_id)}",
 			ephemeral=True,
 		)
 		raise StateShortcutError(f"State with ID '{state_id}' not found.")
@@ -268,7 +267,7 @@ async def state_shortcut(
 	except ValueError:
 		await fancy_message(
 			ctx,
-			await loc.l("textbox.errors.invalid_frame_index", index=str(frame_index)),
+			await loc.format(loc.l("textbox.errors.invalid_frame_index"), index=str(frame_index)),
 			ephemeral=True,
 		)
 		raise StateShortcutError(f"Frame index '{frame_index}' is not a valid integer.")
@@ -281,7 +280,7 @@ async def state_shortcut(
 		else:
 			await fancy_message(
 				ctx,
-				await loc.l("textbox.errors.unknown_frame", id=str(frame_index)),
+				await loc.format(loc.l("textbox.errors.unknown_frame"), id=str(frame_index)),
 				ephemeral=True,
 			)
 			raise StateShortcutError(f"Frame with index '{idx}' not found in state '{state_id}'.")

@@ -290,11 +290,11 @@ def get_current_branch() -> str:
 
 
 async def set_status(client: Client, text: str | list | None):
-	from utilities.localization.localization import assign_variables
+	from utilities.localization.localization import Localization
 
 	if text is not None:
 		status = str(
-			await assign_variables(
+			await Localization().format(
 				input=text,
 				shard_count=len(client.shards) if hasattr(client, "shards") else 1,  # type: ignore
 				guild_count=len(client.guilds),

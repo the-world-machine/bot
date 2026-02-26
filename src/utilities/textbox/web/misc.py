@@ -1,3 +1,7 @@
+from aiohttp import web
+
+from utilities.config import get_config
+
 http_status_names = {
 	100: "Continue",
 	101: "Switching Protocols",
@@ -62,3 +66,10 @@ http_status_names = {
 	510: "Not Extended",
 	511: "Network Authentication Required",
 }
+
+def get_browser_locale(request: web.Request) -> str:
+	accept_lang = request.headers.get("Accept-Language", get_config("localization.main-locale"))
+
+	raw_locale = accept_lang.split(",")[0].split(";")[0].strip()
+
+	return raw_locale
