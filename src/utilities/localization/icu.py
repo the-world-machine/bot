@@ -113,7 +113,7 @@ async def icu_slash(
 	command_name = arguments[0][1:].replace("/", " ")
 	id = "0"
 	if isinstance(client, Client) and hasattr(client, "_interaction_lookup"):
-		command = client.client._interaction_lookup.get(command_name)
+		command = client._interaction_lookup.get(command_name)
 		if command:
 			id = command.get_cmd_id(GLOBAL_SCOPE)
 			command_name = command.get_localised_name(locale)
