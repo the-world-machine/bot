@@ -34,53 +34,72 @@ def load_locale(locale: str):
 	return {} if output is None else output
 
 
-def on_file_update(event: FileModifiedEvent):
+def register_locale(locale: str, is_reload: bool = False) -> bool:
 	global fallback_locale
+	if is_reload:
+		print(colored(f"─ Reloading locale {locale}", "yellow"), end="")
+	try:
+		data = load_locale(locale)
+		if data is None:
+			raise ValueError("Couldn't read for some reason?")
+		_locales[locale] = FrozenDict(data)
+
+		if locale == get_config("localization.main-locale"):
+			fallback_locale = _locales[locale]
+
+		if is_reload:
+			print(" ─ ─ ─ ")
+		return True
+	except Exception as e:
+		if is_reload:
+			print(colored(" FAILED TO RELOAD", "red"))
+		else:
+			if get_config("localization.main-locale") == locale:
+				raise e
+			if debugging():
+				print(colored("| FAILED TO REGISTER MAIN LOCALE " + locale))
+		print_exc()
+		ReadyEvent.queue(e)
+		return False
+
+
+def on_file_update(event: FileModifiedEvent):
 	filename = str(event.src_path)
 	if not filename.endswith(".yml"):
 		return
 	locale = Path(filename).stem
-	print(colored(f"─ Reloading locale {locale}", "yellow"), end="")
-	try:
-		hello = load_locale(locale)
-		if hello is None:
-			raise ValueError("Couldn't read for some reason?")
-	except Exception as e:
-		print(colored(" FAILED", "red"))
-		print_exc()
-		ReadyEvent.queue(e)
-		return
-	_locales[locale] = FrozenDict(hello)
-	print(" ─ ─ ─ ")
-
-	if locale == get_config("localization.main-locale"):
-		fallback_locale = _locales[locale]
+	register_locale(locale, is_reload=True)
 
 
 class UnknownLanguageError(Exception): ...
 
+PREFERRED_LOCS = {
+	"en": "en-GB",
+	"es": "es-ES",
+	"zh": "zh-TW",
+}
 
-def parse_locale(locale):
-	matched_locale = None
+def parse_locale(locale: str) -> str:
 	available_locales = list(_locales.keys())
 
+	if locale in PREFERRED_LOCS:
+		mapped_locale = PREFERRED_LOCS[locale]
+		if mapped_locale in available_locales:
+			return mapped_locale
+
 	if locale in available_locales:
-		matched_locale = locale
-	else:
-		locale_prefix = locale.split("-")
+		return locale
 
-		if locale_prefix in available_locales:
-			matched_locale = locale_prefix
-		else:
-			for possible_locale in available_locales:
-				if possible_locale.startswith(f"{locale_prefix}-"):
-					matched_locale = possible_locale
-					break
+	prefix = locale.split("-")[0]
 
-	if not matched_locale:
-		raise UnknownLanguageError(f"Language '{locale}' not found in {available_locales}")
+	if prefix in available_locales:
+		return prefix
 
-	return matched_locale
+	for possible_locale in available_locales:
+		if possible_locale.startswith(f"{prefix}-"):
+			return possible_locale
+
+	raise UnknownLanguageError(f"Language '{locale}' not found in {available_locales}")
 
 
 def get_locale(locale):
@@ -95,22 +114,11 @@ else:
 loaded = 0
 for file in Path(get_config("paths.localization.root")).glob("*.yml"):
 	name = file.stem
-	try:
-		_loaded = load_locale(name)
-		if _loaded is None:
-			raise ValueError("Couldn't read locale for some reason?")
-		_locales[name] = FrozenDict(_loaded)
-	except Exception as e:
-		if get_config("localization.main-locale") == name:
-			raise e
+	if register_locale(name, is_reload=False):
 		if debugging():
-			print("| FAILED " + name)
-		print_exc()
-		ReadyEvent.queue(e)
+			print("| " + name)
+		loaded += 1
 
-	if debugging():
-		print("| " + name)
-	loaded += 1
 if not debugging():
 	print(f"\033[udone ({loaded})", flush=True)
 	print("\033[999B", end="", flush=True)

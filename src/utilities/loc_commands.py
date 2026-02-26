@@ -31,7 +31,10 @@ async def execute_loc_command(message: Message):
 	subcommand_name = args[0]
 
 	match subcommand_name:
+		case "locale_update":
+			...
 		case "locale_override":
+			return {}
 			if not message.attachments:
 				return await message.reply("`[ Please attach a locale file ]`")
 
