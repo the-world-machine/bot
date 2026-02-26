@@ -1,23 +1,31 @@
-"""
-import asyncio
+import sys
+from typing import Literal
 
-async def temp():
+run: Literal["bot", "textboxweb"] = "bot"
+if len(sys.argv) > 1:
+	if sys.argv[1] not in ("bot", "textboxweb"):
+		raise ValueError(f"Invalid project passed to run script (available: bot / textboxweb, passed: {run})")
+	run = sys.argv[1]
 
-if __name__ == "__main__":
-        asyncio.run(temp())
-"""
 
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
 from datetime import datetime
 
+from utilities.config import get_config, get_token
+from utilities.logging import createLogger
+
+if run == "textboxweb":
+	from utilities.textbox.web.run import run_server
+
+	run_server()
+	exit(0)
+
 from interactions import Client, Intents, IntervalTrigger, Task, listen
 from interactions.api.events import Startup
 
-from utilities.config import get_config, get_token
 from utilities.database.main import connect_to_db
 from utilities.extensions import assign_events, load_commands
-from utilities.logging import createLogger
 from utilities.misc import set_status
 from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_avatar, roll_status

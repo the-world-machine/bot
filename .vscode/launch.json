@@ -8,19 +8,16 @@
 			"name": "Run bot",
 			"type": "debugpy",
 			"request": "launch",
-			"program": "${workspaceFolder}/src/run.py",
+			"program": "${workspaceFolder}/src/main.py",
 			"cwd": "${workspaceFolder}",
 			"justMyCode": false,
 			"console": "integratedTerminal",
-			"args": [
-				"bot"
-			]
 		},
 		{
 			"name": "Run textbox test server",
 			"type": "debugpy",
 			"request": "launch",
-			"program": "${workspaceFolder}/src/run.py",
+			"program": "${workspaceFolder}/src/main.py",
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal",
 			"args": [
