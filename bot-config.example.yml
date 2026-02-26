@@ -39,7 +39,11 @@ bot:
       translator-id: "1337522400367218758"
       supporter-id: "1044343502353481788"
 
-paths: # do not end any of these with a / to avoid bugs
+paths:
+# to avoid bugs - do not end any of these with a /
+# files outside the src folder will not be tracked properly for edits. you may use the "src/data/ignored" folder if you want to have files that are not tracked by git
+  emojis: "src/data/emojis.yml"
+  facepics: "src/data/facepics.yml"
   localization:
     root: "src/data/locales/bot"
   textbox:
