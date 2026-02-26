@@ -14,7 +14,7 @@ from extensions.events.Ready import ReadyEvent
 from utilities.config import debugging, get_config
 from utilities.emojis import make_emoji_cdn_url
 from utilities.misc import cached_get, is_domain_allowed
-from utilities.source_watcher import subscribe, toEndswith
+from utilities.source_watcher import filter_path, subscribe
 
 
 class Facepics:
@@ -115,7 +115,7 @@ def on_file_update(filename):
 	print(" ─ ─ ─ ")
 
 
-subscribe(toEndswith("data/facepics.yml"), on_file_update)
+subscribe(filter_path(get_config("paths.facepics")), on_file_update)
 
 invalid_path = "Other/NAVI"
 

@@ -6,7 +6,8 @@ from urllib.parse import urlencode
 from termcolor import colored
 from yaml import safe_load
 
-from utilities.source_watcher import subscribe, toEndswith
+from utilities.config import get_config
+from utilities.source_watcher import all_of, filter_file_suffix, filter_path, subscribe
 
 
 class ProgressBar(TypedDict):
@@ -119,7 +120,7 @@ def make_emoji_cdn_url(
 
 
 def load_emojis() -> Emojis:
-	with open("src/data/emojis.yml", "r") as f:
+	with open(get_config("paths.emojis"), "r") as f:
 		emojis_data = safe_load(f)
 		return minify_emoji_names(emojis_data)
 
@@ -156,7 +157,7 @@ def update_emojis(flat_key, emoji_value: str | None = None):
 
 def on_file_update(path):
 	global emojis
-	print(f"{colored('─ Reloading emojis.yml', 'yellow')}", end=" ─ ─ ─ ")
+	print(f"{colored('─ Reloading emojis', 'yellow')}", end=" ─ ─ ─ ")
 	old_emojis = emojis
 	try:
 		new_emojis = load_emojis()
@@ -185,7 +186,7 @@ def on_file_update(path):
 		update_emojis(key, emoji_value=new_flat[key])
 	for callback in emoji_subs:
 		callback(new_emojis)
-	print("done", f"Changes: {', '.join(changes)}")
+	print("done.", "No changes." if len(changes) == 0 else f"Changes: {', '.join(changes)}")
 
 
-subscribe(toEndswith("data/emojis.yml"), on_file_update)
+subscribe(all_of(filter_path(get_config("paths.emojis")), filter_file_suffix((".yml"))), on_file_update)

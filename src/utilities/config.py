@@ -103,16 +103,15 @@ def get_config(
 cl = get_config("config-check-level", typecheck=int, ignore_None=True)
 if cl is not None:
 	to_check: list[tuple[str, bool]] = [
-	    #   (key,                       required)
-	    ("bot.token", True),
-	    ("database.uri", True),
-	    ("localization.main-locale", True),
-	    ("bot.prod.token", False),
-	    ("bot.rolling.avatar", False),
-	    ("bot.rolling.status", False),
-	    ("bot.rolling.interval", False),
-	    ("music.spotify.secret", False),
-	    ("music.spotify.id", False),
+		("bot.token", True),
+		("database.uri", True),
+		("localization.main-locale", True),
+		("bot.prod.token", False),
+		("bot.rolling.avatar", False),
+		("bot.rolling.status", False),
+		("bot.rolling.interval", False),
+		("music.spotify.secret", False),
+		("music.spotify.id", False),
 	]
 	for key, required in to_check:
 		got = get_config(key, ignore_None=True)

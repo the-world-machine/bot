@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from traceback import print_exc
 from typing import Any, Type, TypeVar, overload
@@ -12,7 +11,7 @@ from extensions.events.Ready import ReadyEvent
 from utilities.config import debugging, get_config, get_token, on_prod
 from utilities.localization.icu import render_icu
 from utilities.misc import FrozenDict, decode_base64_padded, format_type_hint, rabbit
-from utilities.source_watcher import FileModifiedEvent, subscribe, toStartswith
+from utilities.source_watcher import FileModifiedEvent, all_of, filter_file_suffix, filter_path, subscribe
 
 _locales: dict[str, dict] = {}
 debug: bool = bool(get_config("localization.debug", ignore_None=True))
@@ -34,24 +33,12 @@ def load_locale(locale: str):
 	return {} if output is None else output
 
 
-last_update_timestamps = {}
-debounce_interval = 1  # seconds
-
-
 def on_file_update(event: FileModifiedEvent):
 	global fallback_locale
 	filename = str(event.src_path)
-	print(filename)
 	if not filename.endswith(".yml"):
 		return
-	current_time = datetime.now()
 	locale = Path(filename).stem
-	if (
-		filename in last_update_timestamps
-		and (current_time - last_update_timestamps[filename]).seconds < debounce_interval
-	):
-		return print(".", end="")
-	last_update_timestamps[filename] = current_time
 	print(colored(f"─ Reloading locale {locale}", "yellow"), end="")
 	try:
 		hello = load_locale(locale)
@@ -129,7 +116,8 @@ if not debugging():
 else:
 	print(f"Done ({loaded})")
 
-subscribe(toStartswith(get_config("paths.localization.root")), on_file_update)
+subscribe(all_of(filter_file_suffix(".yml"), filter_path(get_config("paths.localization.root"))), on_file_update)
+
 if get_config("localization.main-locale") in _locales:
 	_uhh_loc = get_config("localization.main-locale")
 	fallback_locale = get_locale(_uhh_loc)

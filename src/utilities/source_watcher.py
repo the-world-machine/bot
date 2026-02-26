@@ -1,5 +1,6 @@
 import threading
 import time
+from pathlib import Path
 from threading import Thread
 from typing import Callable
 
@@ -46,6 +47,7 @@ class FileWatcher(FileSystemEventHandler):
 
 		for _, predicate, callback in subscribers:
 			if predicate(event):
+				print(f"predicate hit for {event.src_path} {Path(str(event.src_path)).suffix}")
 				callback(event)
 
 
@@ -76,14 +78,28 @@ def watch():
 	observer.join()
 
 
-def toStartswith(a: str) -> Predicate:
-	return lambda e: str(e.src_path).startswith(a)
+def filter_startswith(starts: str) -> Predicate:
+	return lambda event: str(event.src_path).startswith(starts)
 
-def toPathWithFileStem(a: str) -> Predicate:
-	return lambda e: str(e.src_path).startswith(a)
 
-def toEndswith(a: str) -> Predicate:
-	return lambda e: str(e.src_path).endswith(a)
+def filter_file_suffix(suffix: str) -> Predicate:
+	return lambda event: Path(str(event.src_path)).suffix == suffix
+
+
+def filter_endswith(ends: str) -> Predicate:
+	return lambda event: str(event.src_path).endswith(ends)
+
+
+def filter_path(path: str) -> Predicate:
+	return lambda event: str(event.src_path).startswith(path)
+
+
+def all_of(*predicates) -> Predicate:
+	return lambda event: all(p(event) for p in predicates)
+
+def any_of(*predicates) -> Predicate:
+	return lambda event: any(p(event) for p in predicates)
+
 
 
 watcher_thread = Thread(target=watch)
