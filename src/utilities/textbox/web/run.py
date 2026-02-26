@@ -1,18 +1,14 @@
 import asyncio
 import importlib
 import os
-import sys
 from pathlib import Path
 
 from aiohttp import web
 
-project_root = Path(__file__).parent.parent.parent.parent  # 😵‍💫
-sys.path.insert(0, str(project_root))
-
-from misc import http_status_names
-
 from utilities.config import get_config
 from utilities.localization.localization import assign_variables
+
+from .misc import http_status_names
 
 app = web.Application()
 
@@ -24,7 +20,7 @@ print("Processing endpoints")
 i = 0
 for endpoint in endpoints:
 	i = +1
-	imported = importlib.import_module("endpoints." + endpoint)
+	imported = importlib.import_module("utilities.textbox.web.endpoints." + endpoint)
 	imported.process(app)
 	print(f"| {endpoint}")
 print(f"Done ({i})")
@@ -92,6 +88,5 @@ async def main():
 
 	await asyncio.Event().wait()
 
-
-if __name__ == "main":
+def run_server():
 	asyncio.run(main())
