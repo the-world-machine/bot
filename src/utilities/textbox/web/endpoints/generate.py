@@ -13,8 +13,9 @@ from utilities.textbox.states import State
 async def generate_route(request: web.Request):
 	try:
 		start_time = time.perf_counter()
-
+		print(await request.text())
 		state_parse = State.from_string(await request.text(), owner=0)
+
 		state, _, frame_index = state_parse
 		image_buffer: io.BytesIO = await render_textbox_frames(
 			frames=state.frames,

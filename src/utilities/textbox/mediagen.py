@@ -168,7 +168,7 @@ class Frame(SerializableData):
 		try:
 			if not frame_string.startswith("{"):
 				frame_string = "{;;;;};" + frame_string
-				# raise ValueError("String must start with '{' for options.")
+				# raise ValueError("String must start with '{' for options.")  # noqa: ERA001
 
 			end_brace_idx = frame_string.find("}")
 			if end_brace_idx == -1:
@@ -336,7 +336,7 @@ async def render_frame(frame: Frame, animated: bool = True) -> tuple[list[Image.
 
 
 # >>> bounce(2, 3)
-# [1, 2, 3, 2, 1, 2, 3, 2, 1]
+# [1, 2, 3, 2, 1, 2, 3, 2, 1]  # noqa: ERA001
 def bounce(times, height=3):
 	pattern = []
 	length = ((height + (height - 2)) * times) + 1
@@ -425,7 +425,7 @@ async def render_textbox_frames(
 			lowest_fastest = 11
 	# flooring the durations, because if it's lower than a certain number the browser/app just slows it down to 100ms i think? i'm not sure
 	# here's a thing one of the developer working on webp said about this
-	# https://groups.google.com/a/webmproject.org/g/webp-discuss/c/Yd0sstcZGlU/m/4PfkB4aVa8cJ?pli=1
+	# https://groups.google.com/a/webmproject.org/g/webp-discuss/c/Yd0sstcZGlU/m/4PfkB4aVa8cJ?pli=1  # noqa: ERA001
 	#
 	# all of these are the lowest i could get in firefox/android discord app
 	for i in range(len(all_durations)):

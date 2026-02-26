@@ -307,7 +307,7 @@ async def render_to_file(
 		timestamp=str(round(datetime.now().timestamp())),
 	)
 
-	buffer = await render_textbox_frames(frames, state.options.quality, filetype)
+	buffer = await render_textbox_frames(frames, state.options.quality, filetype, loops=state.options.loops)
 	buffer.seek(0)
 	filename = filename + ("" if filetype == "APNG" else "." + filetype)
 

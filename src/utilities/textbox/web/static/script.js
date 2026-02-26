@@ -6,19 +6,15 @@ const tbbFileInput = document.getElementById("tbb-file-input");
 const downloadTbbButton = document.getElementById("download-tbb-button");
 const downloadMediaButton = document.getElementById("download-media-button");
 
-let lastOptions = {};
+let lastText;
 let isFetching = false;
-
-function getOptions() {
-  return textarea.innerText;
-}
 
 async function updatePreview(force = false) {
   if (isFetching) return;
 
-  const currentOptions = getOptions();
+  const currentText = textarea.value;
 
-  if (!force && currentOptions === lastOptions) {
+  if (!force && currentText === lastText) {
     return;
   }
   isFetching = true;
@@ -27,7 +23,7 @@ async function updatePreview(force = false) {
     const response = await fetch("/generate", {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
-      body: currentOptions,
+      body: currentText,
     });
 
     if (!response.ok) {
@@ -53,10 +49,10 @@ async function updatePreview(force = false) {
     console.error("Failed to update preview:", error);
     previewImage.src = "";
     errorBox.style.display = "block";
-    errorBox.textContent = "Error: " + error.message;
+    errorBox.textContent = `Error: ${error.message}`;
   } finally {
     isFetching = false;
-    lastOptions = currentOptions;
+    lastText = currentText;
   }
 }
 
@@ -68,16 +64,16 @@ function scrollToPreviewTop() {
 window.addEventListener("resize", scrollToPreviewTop);
 
 document.addEventListener("DOMContentLoaded", () => {
-  textarea.contentEditable = true;
   updatePreview(true);
   scrollToPreviewTop();
+  textarea.readOnly = false;
 });
 setInterval(() => {
   updatePreview(false);
   scrollToPreviewTop();
 }, 300);
 
-tbbFileInput.addEventListener("change", function (event) {
+tbbFileInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) {
     return;
@@ -85,13 +81,13 @@ tbbFileInput.addEventListener("change", function (event) {
 
   const reader = new FileReader();
 
-  reader.onload = function (e) {
-    textarea.innerText = e.target.result;
+  reader.onload = (e) => {
+    textarea.value = e.target.result;
     updatePreview(true);
   };
 
-  reader.onerror = function (e) {
-    console.error("File could not be read! Code " + e.target.error.code);
+  reader.onerror = (e) => {
+    console.error(`File could not be read! Err: ${e.target.error}`);
     errorBox.style.display = "block";
     errorBox.textContent = "Error reading file.";
   };
@@ -100,7 +96,7 @@ tbbFileInput.addEventListener("change", function (event) {
 });
 
 downloadTbbButton.addEventListener("click", () => {
-  const textContent = textarea.innerText;
+  const textContent = textarea.value;
   const timestamp = Math.floor(Date.now() / 1000);
   const filename = `TWM_web_textbox_${timestamp}.tbb`;
 

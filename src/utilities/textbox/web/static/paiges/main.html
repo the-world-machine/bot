@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="color-scheme" content="dark light" />
 	<title>Textbox Preview</title>
 	<link rel="stylesheet" href="/static/style.css" />
 	<script defer preload src="/static/script.js"></script>
@@ -12,13 +13,16 @@
 <body>
 	<div class="control-options">
 		<div id="error-box" class="error" style="display: none"></div>
-		<label for="textbox-text" class="textarea-label">.tbb file content:</label>
-		<pre contenteditable id="textbox-text"># documentation on this <a href="https://github.com/the-world-machine/bot/tree/main/md/en/textbox/index.md#File_editing">can be found here</a> (right click or hold)
-#> StateOptions <#
+
+		<div style="width: 100%;display: flex;"><label for="textbox-text" class="textarea-label"
+				style="margin-right:auto;width: max-content;">.tbb file content here</label><a style="display: block;"
+				href="https://github.com/the-world-machine/bot/tree/main/md/en/textbox/index.md#File_editing">documentation on
+				the .tbb syntax</a></div>
+		<textarea id="textbox-text">#&gt; StateOptions &lt;#
 filetype=WEBP
 quality=100
-#> Frames <#
-\@[OneShot/Niko/83c]paws at u :3</pre>
+#&gt; Frames &lt;#
+\@[OneShot/Niko/83c]paws at u :3</textarea>
 		<hr class="divider" />
 		<div class="preferences-container">
 			<label for="tbb-file-input" class="file-input-label">.tbb file:</label>
