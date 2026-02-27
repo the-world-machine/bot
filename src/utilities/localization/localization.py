@@ -27,11 +27,31 @@ def local_override(locale: str, data: dict):
 	_locales[locale] = FrozenDict(data)
 
 
-def load_locale(locale: str):
-	path = Path(get_config("paths.localization.root"), locale + ".yml")
-	stream = open(path, "r", encoding="utf-8")
-	output = yaml.full_load(stream)
-	return {} if output is None else output
+def load_locale_folder(locale: str) -> dict:
+	root = Path(get_config("paths.localization.root"))
+	locale_dir = root / locale
+
+	if not locale_dir.is_dir():
+		return {}
+
+	combined_data = {}
+	for file in locale_dir.rglob("*.yml"):
+		relative_path = file.relative_to(locale_dir)
+		keys = list(relative_path.with_suffix("").parts)
+
+		try:
+			with open(file, "r", encoding="utf-8") as f:
+				data = yaml.full_load(f) or {}
+		except Exception as e:
+			print(colored(f"Error loading {file}: {e}", "red"))
+			continue
+
+		curr = combined_data
+		for key in keys[:-1]:
+			curr = curr.setdefault(key, {})
+		curr[keys[-1]] = data
+
+	return combined_data
 
 
 def register_locale(locale: str, is_reload: bool = False) -> bool:
@@ -39,9 +59,13 @@ def register_locale(locale: str, is_reload: bool = False) -> bool:
 	if is_reload:
 		print(colored(f"─ Reloading locale {locale}", "yellow"), end="")
 	try:
-		data = load_locale(locale)
-		if data is None:
-			raise ValueError("Couldn't read for some reason?")
+		data = load_locale_folder(locale)
+		if not data:
+			root = Path(get_config("paths.localization.root"))
+			if (root / f"{locale}.yml").exists():
+				raise ValueError(f"Locale '{locale}' must be a directory, but a .yml file was found instead.")
+			raise ValueError(f"No translation data found in directory for '{locale}'")
+
 		_locales[locale] = FrozenDict(data)
 
 		if locale == get_config("localization.main-locale"):
@@ -57,27 +81,34 @@ def register_locale(locale: str, is_reload: bool = False) -> bool:
 			if get_config("localization.main-locale") == locale:
 				raise e
 			if debugging():
-				print(colored("| FAILED TO REGISTER MAIN LOCALE " + locale))
+				print(colored("| FAILED TO REGISTER MAIN LOCALE " + locale, "red"))
 		print_exc()
 		ReadyEvent.queue(e)
 		return False
 
 
 def on_file_update(event: FileModifiedEvent):
-	filename = str(event.src_path)
-	if not filename.endswith(".yml"):
+	path = Path(str(event.src_path))
+	root = Path(get_config("paths.localization.root"))
+
+	try:
+		relative = path.relative_to(root)
+		locale = relative.parts[0]
+		if (root / locale).is_dir():
+			register_locale(locale, is_reload=True)
+	except Exception:
 		return
-	locale = Path(filename).stem
-	register_locale(locale, is_reload=True)
 
 
 class UnknownLanguageError(Exception): ...
+
 
 PREFERRED_LOCS = {
 	"en": "en-GB",
 	"es": "es-ES",
 	"zh": "zh-TW",
 }
+
 
 def parse_locale(locale: str) -> str:
 	available_locales = list(_locales.keys())
@@ -112,12 +143,14 @@ else:
 	print("Loading locales ... \033[s", flush=True)
 
 loaded = 0
-for file in Path(get_config("paths.localization.root")).glob("*.yml"):
-	name = file.stem
-	if register_locale(name, is_reload=False):
-		if debugging():
-			print("| " + name)
-		loaded += 1
+root_path = Path(get_config("paths.localization.root"))
+for folder in root_path.iterdir():
+	if folder.is_dir():
+		name = folder.name
+		if register_locale(name, is_reload=False):
+			if debugging():
+				print("| " + name)
+			loaded += 1
 
 if not debugging():
 	print(f"\033[udone ({loaded})", flush=True)
@@ -150,7 +183,7 @@ class Localization:
 		self,
 		locale_source: str | Client | Guild | BaseInteractionContext | Message | None = None,
 		raw_locale: str | None = None,
-		prefix: str = "",
+		prefix: str = "main",
 	):
 		self.client = locale_source if isinstance(locale_source, Client) else None
 
@@ -207,7 +240,7 @@ class Localization:
 	def l(self, path: str) -> str: ...
 
 	def l(self, path: str, *, typecheck: Any = str) -> Any:
-		path = f"{trailing_dots_regex.sub('', self.prefix)}.{path}" if len(self.prefix) > 0 else path
+		path = f"{trailing_dots_regex.sub('', self.prefix)}/{path}" if len(self.prefix) > 0 else path
 		return self.sl(
 			path=path,
 			locale=self.locale,
@@ -248,7 +281,7 @@ class Localization:
 		)
 
 		if not typecheck == Any and not isinstance(result, typecheck):
-			if result == None:
+			if result is None:
 				return f"**{path}** not found in all attempted languages"
 			raise TypeError(
 				f"Expected {format_type_hint(typecheck)}, got {format_type_hint(type(result))} for path '{path}'"
@@ -262,12 +295,11 @@ class Localization:
 		for locale in _locales.keys():
 			value = get_locale(locale)
 			result = rabbit(
-				value,
-				localization_path,
-				raise_on_not_found=raise_on_not_found,
-				_error_message="[path] ([error], debug mode ON)" if debug else "[path]",
+				value, localization_path, raise_on_not_found=False, return_None_on_not_found=True, fallback_value=None
 			)
-			results[locale] = result
+
+			if result is not None:
+				results[locale] = result
 
 		return results
 
