@@ -48,7 +48,8 @@ paths:
     root: "src/data/locales/bot"
   textbox:
     fonts: "src/data/fonts"
-    color-parser-binary: "src/utilities/textbox/csscolors/target/release/csscolors"
+    color-parser-binary: "src/utilities/textbox/csscolors/target/release/csscolors" # you have to run `cargo build --release` in the csscolors directory for this binary to appear. setup Rust on your system first: https://rustup.rs/ (install cargo)
+
 
 modules:
   # whether the module is enabled or not
@@ -107,9 +108,7 @@ textbox:
     - discordapp.net
     - discord.com
     - github.com
-    - githubusercontent.com
-  color-parser-binary: "./src/utilities/textbox/csscolors/target/release/csscolors" # you have to run `cargp build --release` in the csscolors folder for this binary to appear. setup Rust on your system first: https://rustup.rs/ (this will install cargo)
-
+    - githubusercontent.com 
 music: # deprecated
   spotify:
     secret: ~
