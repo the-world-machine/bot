@@ -320,7 +320,7 @@ async def util_datetime(
 		try:
 			seconds = int(float(val))
 		except (ValueError, TypeError):
-			seconds = int(datetime.now().timestamp())
+			return Exception(f"invalid time passed '{val}'")
 
 	icu_type = str(arguments[1]).lower() if arguments[1] else "date"
 	icu_style = str(arguments[2]).lower() if arguments[2] else "long"
