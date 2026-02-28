@@ -127,11 +127,12 @@ async def icu_pretty_num(
 	client: Any | None = None,
 	found_var: Any | None = None,
 ):
-	input = str(found_var) if found_var else arguments[0]
+	input = found_var if found_var else arguments[0]
 	try:
-		val = float(input)
-		if val.is_integer():
-			val = int(val)
+		if isinstance(found_var, str):
+			input = float(input)
+			if input.is_integer():
+				input = int(input)
 		return fnum(val, locale)
 	except (ValueError, TypeError):
 		return input
