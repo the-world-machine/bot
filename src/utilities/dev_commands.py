@@ -20,7 +20,7 @@ from utilities.emojis import emojis
 from utilities.localization.formatting import fnum
 from utilities.message_decorations import Colors
 from utilities.misc import shell
-from utilities.shop.fetch_shop_data import reset_shop_data
+from utilities.shop.fetch_shop_data import get_shop_data
 
 ansi_escape_pattern = re.compile(r"\033\[[0-9;]*[A-Za-z]")
 
@@ -301,7 +301,7 @@ async def _execute_dev_command(message: Message):
 					)
 				case "reset":
 					try:
-						await reset_shop_data()
+						await get_shop_data()
 						return await message.reply("`[ Successfully reset shop ]`")
 					except Exception as e:
 						return await message.reply(f"`[ {e} ]`")

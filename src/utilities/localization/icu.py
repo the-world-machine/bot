@@ -162,18 +162,6 @@ async def util_pretty_num(
 	arguments: tuple[Any, Any, Any],
 	variables: dict[str, Any],
 	locale: str,
-	client: BaseContext | None = None,
-	found_var: Any | None = None,
-):
-	input = found_var if found_var is not None else arguments[0]
-	if not isinstance(input, str):
-		input = str(input)
-	return "\n".join(f"> {line}" for line in input.split("\n"))
-
-async def icu_pretty_num(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
 	client: Any | None = None,
 	found_var: Any | None = None,
 ):

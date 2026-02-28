@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Literal
 
 from utilities.database.main import fetch_items, update_shop
@@ -43,62 +43,61 @@ async def fetch_shop_data():
 	assert items is not None
 
 	shop_data = ShopData(
-		items["shop"]["last_updated"],
-		items["shop"]["backgrounds"],
-		items["shop"]["treasures"],
-		StockData(items["shop"]["stock"]["price"], items["shop"]["stock"]["value"]),
-		items["shop"]["motd"],
+		last_updated=items["shop"]["last_updated"],
+		background_stock=items["shop"]["backgrounds"],
+		treasure_stock=items["shop"]["treasures"],
+		stock=StockData(items["shop"]["stock"]["price"], items["shop"]["stock"]["value"]),
+		motd=items["shop"]["motd"],
 	)
 
 	return shop_data
 
 
-async def reset_shop_data():
+async def get_shop_data():
+	data = await fetch_shop_data()
+
+	if (data.last_updated + timedelta(days=1)) > datetime.now():
+		return data
+
 	items = await fetch_items()
 	assert items is not None
-	data = items["shop"]
-
+	
 	all_bgs = items["backgrounds"]
-	backgrounds = {}
-
-	for bg in all_bgs:
-		if all_bgs[bg]["purchasable"]:
-			backgrounds[bg] = all_bgs[bg]
-
+	backgrounds = {bg: val for bg, val in all_bgs.items() if val["purchasable"]}
 	treasures = items["treasures"]
-	motds = await Localization().format(Localization().l("shop.motds", typecheck=tuple))
+	motds = Localization().l("shop.motds", typecheck=tuple)
 
-	data["backgrounds"] = []
-	data["treasures"] = []
-
-	n_backgrounds = random.sample(list(backgrounds.keys()), 3)
-	n_treasures = random.sample(list(treasures.keys()), 3)
-
-	data["backgrounds"] = n_backgrounds
-	data["treasures"] = n_treasures
-	data["motd"] = random.randint(0, len(motds) - 1)
+	data.background_stock = random.sample(list(backgrounds.keys()), 3)
+	data.treasure_stock = random.sample(list(treasures.keys()), 3)
+	data.motd = random.randint(0, len(motds) - 1)
 
 	now = datetime.now()
+	data.last_updated = datetime(now.year, now.month, now.day, hour=0, minute=0, second=0)
 
-	data["last_updated"] = datetime(now.year, now.month, now.day, hour=0, minute=0, second=0)
+	is_positive = random.choice([True, False])
 
-	is_positive = random.choice([ True, False ])
-
-	if data["stock"]["price"] < 0.5:
+	if data.stock.price < 0.5:
 		is_positive = True
-
-	if data["stock"]["price"] > 1.5:
+	elif data.stock.price > 1.5:
 		is_positive = False
 
 	if is_positive:
-		data["stock"]["value"] = round(random.uniform(0.3, 0.7), 1)
+		data.stock.value = round(random.uniform(0.3, 0.7), 1)
 	else:
-		data["stock"]["value"] = round(random.uniform(-0.3, -0.7), 1)
+		data.stock.value = round(random.uniform(-0.3, -0.7), 1)
 
-	price_change = data["stock"]["price"] + data["stock"]["value"]
+	price_change = data.stock.price + data.stock.value
+	data.stock.price = round(min(2, max(0.2, price_change)), 1)
 
-	data["stock"]["price"] = round(min(2, max(0.2, price_change)), 1)
+	await update_shop({
+		"last_updated": data.last_updated,
+		"backgrounds": data.background_stock,
+		"treasures": data.treasure_stock,
+		"motd": data.motd,
+		"stock": {
+			"price": data.stock.price,
+			"value": data.stock.value
+		}
+	})
 
-	await update_shop(data)
-
-	return await fetch_shop_data()
+	return data

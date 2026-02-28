@@ -2,7 +2,6 @@ import random
 import re
 from collections import Counter
 from dataclasses import asdict
-from datetime import datetime, timedelta
 from typing import get_args
 
 from interactions import (
@@ -32,11 +31,8 @@ from utilities.message_decorations import *
 from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treasure
 from utilities.shop.fetch_shop_data import (
 	Item,
-	ShopData,
-	StockData,
 	TreasureTypes,
 	fetch_shop_data,
-	reset_shop_data,
 )
 
 
@@ -51,38 +47,21 @@ def pancake_id_to_emoji_index_please_rename_them_in_db(
 		return "glitched"
 
 
-daily_shop: ShopData = ShopData(
-	last_updated=datetime(2000, 1, 1),
-	background_stock=[],
-	treasure_stock=[],
-	stock=StockData(0, 0),
-	motd=0,
-)
-
-
 class ShopCommands(Extension):
-	global daily_shop
 	max_buy_sell_limit = 1000000000000000000000000
 
 	@listen(Ready)
 	async def loadde_shoppe(self, event: Ready):
-		await self.load_shop()
+		await self.get_shop()
 
-	async def load_shop(self):
-		global daily_shop
-		data = await fetch_shop_data()
-		if daily_shop.last_updated.year == 2000:
-			daily_shop = data
-		elif datetime.now() > data.last_updated + timedelta(days=1):
-			print("Resetting daily shop")
-			daily_shop = await reset_shop_data()
-		print("Got daily_shop")
+	async def get_shop(self):
+		return await fetch_shop_data()
 
 	@component_callback("select_treasure_sell")
 	async def select_treasure_sell_callback(self, ctx: ComponentContext):
 		await ctx.defer(edit_origin=True)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		treasure = ctx.values[0]
 
@@ -94,7 +73,7 @@ class ShopCommands(Extension):
 	async def select_treasure_callback(self, ctx: ComponentContext):
 		await ctx.defer(edit_origin=True)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		treasure = ctx.values[0]
 
@@ -106,7 +85,7 @@ class ShopCommands(Extension):
 	async def sell_treasure_callback(self, ctx: ComponentContext):
 		await ctx.defer(edit_origin=True)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		embeds, components = await self.embed_manager(ctx, "Sell_Treasures", selected_treasure=None)
 
@@ -116,13 +95,13 @@ class ShopCommands(Extension):
 
 	@component_callback(r_treasure_sell)
 	async def treasure_sell_action_callback(self, ctx: ComponentContext):
-		global daily_shop
+		daily_shop = await self.get_shop()
 
 		await ctx.defer(edit_origin=True)
 
 		loc = Localization(ctx)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		match = self.r_treasure_sell.search(ctx.custom_id)
 
@@ -192,13 +171,13 @@ class ShopCommands(Extension):
 
 	@component_callback(r_treasure_buy)
 	async def buy_treasure_callback(self, ctx: ComponentContext):
-		global daily_shop
+		daily_shop = await self.get_shop()
 
 		await ctx.defer(edit_origin=True)
 
 		loc = Localization(ctx)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
@@ -383,7 +362,7 @@ class ShopCommands(Extension):
 	async def main_shop_callbacks(self, ctx: ComponentContext):
 		await ctx.defer(edit_origin=True)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		embeds, components = await self.embed_manager(ctx, ctx.custom_id, page=0)
 		await ctx.edit(embeds=embeds, components=components)
@@ -392,9 +371,9 @@ class ShopCommands(Extension):
 
 	@component_callback(r_page)
 	async def page_callback(self, ctx: ComponentContext):
-		await self.load_shop()
-
-		await ctx.defer(edit_origin=True)
+		loc = Localization(ctx)
+		await fancy_message(ctx, await loc.format(loc.l("generic.loading.shop")), edit_origin=True)
+		daily_shop = await self.get_shop()
 
 		match = self.r_page.match(ctx.custom_id)
 
@@ -425,9 +404,9 @@ class ShopCommands(Extension):
 	## EMBED MANAGER ---------------------------------------------------------------
 
 	async def embed_manager(self, ctx: SlashContext | ComponentContext, category: str, **kwargs):
-		global daily_shop
+		daily_shop = await self.get_shop()
 
-		await self.load_shop()
+		await self.get_shop()
 
 		loc = Localization(ctx)
 
@@ -919,13 +898,13 @@ class ShopCommands(Extension):
 
 		return (embeds, components)
 
-	@slash_command(description="Open the Shop")
+	@slash_command(description="Open Magpie's Shop")
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def shop(self, ctx: SlashContext):
 		await ctx.defer(ephemeral=True)
 
-		await self.load_shop()
+		await self.get_shop()
 
 		embeds, button = await self.embed_manager(ctx, "main_shop")
 
