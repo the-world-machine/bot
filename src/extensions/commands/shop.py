@@ -168,7 +168,7 @@ class ShopCommands(Extension):
 			item_name=treasure_loc["name"],
 			amount=amount,
 			price=sell_price,
-			limit=limit_reached,
+			limit_reached=limit_reached,
 		)
 
 		await user_data.manage_wool(sell_price)
@@ -243,7 +243,7 @@ class ShopCommands(Extension):
 
 		return await update(
 			await loc.format(
-				loc.l("shop.traded"), item_name=name, amount=int(amount), price=int(price), limit=limit_reached
+				loc.l("shop.traded"), item_name=name, amount=int(amount), price=int(price), limit_reached=limit_reached
 			)
 		)
 
@@ -682,7 +682,7 @@ class ShopCommands(Extension):
 					price_one=buy_price_one,
 					price_all=buy_price_all,
 					amount=amount,
-					limit=limit_reached,
+					limit_reached=limit_reached,
 				)
 
 			treasure_stock: list[TreasureTypes] = daily_shop.treasure_stock
@@ -829,7 +829,7 @@ class ShopCommands(Extension):
 						price_one=sell_price_one,
 						price_all=sell_price_all,
 						amount=amount_selected,
-						limit=limit_reached,
+						limit_reached=limit_reached,
 					)
 
 			treasure_selection = []
