@@ -5,6 +5,7 @@ from interactions import (
 	Extension,
 	OptionType,
 	SlashContext,
+	Snowflake,
 	contexts,
 	integration_types,
 	slash_command,
@@ -29,7 +30,7 @@ class ExplodeCommands(Extension):
 
 	sad_image = "https://images-ext-1.discordapp.net/external/47E2RmeY6Ro21ig0pkcd3HaYDPel0K8CWf6jumdJzr8/https/i.ibb.co/bKG17c2/image.png"
 
-	last_called = {}
+	last_called: dict[Snowflake, datetime] = {}
 
 	@slash_command(name="explode", description="💥💥💥💥💥💥💥💥💥")
 	@slash_option(
@@ -49,7 +50,7 @@ class ExplodeCommands(Extension):
 					ctx,
 					await loc.format(
 						loc.l("generic.command_cooldown"),
-						timestamp_relative=timestamp_relative(self.last_called[uid]),
+						cooldown_end=self.last_called[uid],
 					),
 					ephemeral=True,
 					color=Colors.RED,

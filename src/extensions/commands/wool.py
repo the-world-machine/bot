@@ -216,25 +216,23 @@ class WoolCommands(Extension):
 		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
-		reset_timestamp = user_data.daily_wool_timestamp
+		unable_until = user_data.daily_wool_timestamp
 
 		now = datetime.now()
 
-		if reset_timestamp and now < reset_timestamp:
-			time_unix = reset_timestamp.timestamp()
+		if unable_until and now < unable_until:
 			return await fancy_message(
 				ctx,
 				await loc.format(
 					loc.l("wool.pray.errors.timeout"),
-					timestamp_relative=f"<t:{int(time_unix)}:R>",
+					unable_until=unable_until,
 				),
 				ephemeral=True,
 				color=Colors.BAD,
 			)
-		# TODO: use silly relative timestamp function # noqa: ERA001
 
 		# reset the limit if it is a new day
-		if now >= reset_timestamp:
+		if now >= unable_until:
 			reset_time = datetime.combine(now.date(), now.time()) + timedelta(days=1)
 			await user_data.update(daily_wool_timestamp=reset_time)
 		rolled = random.randint(0, 100)

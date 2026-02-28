@@ -11,6 +11,7 @@ from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.localization.formatting import fnum
 from utilities.misc import decode_base64_padded
 
+from datetime import datetime
 emoji_dict = {}
 
 
@@ -25,128 +26,6 @@ on_emojis_update(edicted)
 
 icu_parser = Parser({"allow_tags": False, "require_other": False})
 
-
-async def icu_emoji(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
-	client: Any | None = None,
-	found_var: Any | None = None,
-):
-	global emoji_dict
-	prop = arguments[0]
-	if not prop:
-		raise ValueError("no emoji name passed")
-	if prop not in emoji_dict:
-		raise ValueError(f"unknown emoji '{prop}'")
-
-	return emoji_dict[prop]
-
-
-bot_id = decode_base64_padded(get_token().split(".")[0])
-
-
-async def icu_user(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
-	client: Any | None = None,
-	found_var: Any | None = None,
-):
-	user_id = str(found_var) if found_var else str(arguments[0])
-	if user_id.lower() in (
-		"twm",
-		"the world machine",
-		"theworldmachine",
-		"the-world-machine",
-	):
-		user_id = bot_id
-	try:
-		Snowflake(int(user_id))
-	except:
-		return f"'{user_id}' is not a valid user id"
-	prop = arguments[2]
-	if user_id != str(bot_id):
-		if not isinstance(client, Client):
-			return ValueError("function unsupported")
-		try:
-			user = await client.fetch_user(user_id)
-		except Exception as e:
-			user = e
-		if not isinstance(user, User):
-			return f"could not fetch user from userid, '{user}'"
-	if user:
-		user_data = {
-			"mention+(@username)": f"<@{user.id}> (@{user.username})",
-			"displayname+(@username)": f"{user.display_name} (@{user.username})"
-			if user.display_name != user.username
-			else "@{user.username}",
-			"mention": f"<@{user.id}>",
-			"id": str(user.id),
-			"username": user.username,
-			"display_name": user.display_name,
-		}
-	elif user_id == str(bot_id):
-		user_data = {
-			"mention+(@username)": f"<@{bot_id}> (@The World Machine)",
-			"displayname+(@username)": f"The World Machine",
-			"id": bot_id,
-			"mention": f"<@{bot_id}>",
-			"username": "The World Machine",
-			"display_name": "The World Machine",
-		}
-	else:
-		return Exception("all ways of getting the user have failed and the doom has come")
-	if prop not in user_data:
-		raise ValueError(f"property '{prop}' not found in user ({user_data['username']}, {user_data['id']}) data")
-
-	return user_data[prop]
-
-
-async def icu_slash(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
-	client: BaseContext | None = None,
-	found_var: Any | None = None,
-):
-	command_name = arguments[0][1:].replace("/", " ")
-	id = "0"
-	if isinstance(client, Client) and hasattr(client, "_interaction_lookup"):
-		command = client._interaction_lookup.get(command_name)
-		if command:
-			id = command.get_cmd_id(GLOBAL_SCOPE)
-			command_name = command.get_localised_name(locale)
-	return f"</{command_name}:{id}>"
-
-async def icu_quote(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
-	client: BaseContext | None = None,
-	found_var: Any | None = None,
-):
-	input = found_var if found_var is not None else arguments[0]
-	if not isinstance(input, str):
-		input = str(input)
-	return "\n".join(f"> {line}" for line in input.split("\n"))
-
-async def icu_pretty_num(
-	arguments: tuple[Any, Any, Any],
-	variables: dict[str, Any],
-	locale: str,
-	client: Any | None = None,
-	found_var: Any | None = None,
-):
-	input = found_var if found_var is not None else arguments[0]
-	try:
-		if isinstance(found_var, str):
-			input = float(input)
-			if input.is_integer():
-				input = int(input)
-		return fnum(input, locale)
-	except (ValueError, TypeError):
-		return input
 
 
 async def icu_select(
@@ -279,8 +158,185 @@ async def icu_number(
 	else:
 		return format_decimal(value, format=style if style else None, locale=babel_locale)
 
+async def util_pretty_num(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: BaseContext | None = None,
+	found_var: Any | None = None,
+):
+	input = found_var if found_var is not None else arguments[0]
+	if not isinstance(input, str):
+		input = str(input)
+	return "\n".join(f"> {line}" for line in input.split("\n"))
 
-async def icu_fallback(
+async def icu_pretty_num(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: Any | None = None,
+	found_var: Any | None = None,
+):
+	input = found_var if found_var is not None else arguments[0]
+	try:
+		if isinstance(found_var, str):
+			input = float(input)
+			if input.is_integer():
+				input = int(input)
+		return fnum(input, locale)
+	except (ValueError, TypeError):
+		return input
+	
+
+async def icu_emoji(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: Any | None = None,
+	found_var: Any | None = None,
+):
+	global emoji_dict
+	prop = arguments[0]
+	if not prop:
+		raise ValueError("no emoji name passed")
+	if prop not in emoji_dict:
+		raise ValueError(f"unknown emoji '{prop}'")
+
+	return emoji_dict[prop]
+
+
+bot_id = decode_base64_padded(get_token().split(".")[0])
+
+
+async def util_user(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: Any | None = None,
+	found_var: Any | None = None,
+):
+	user_id = str(found_var) if found_var else str(arguments[0])
+	if user_id.lower() in (
+		"twm",
+		"the world machine",
+		"theworldmachine",
+		"the-world-machine",
+	):
+		user_id = bot_id
+	try:
+		Snowflake(int(user_id))
+	except:
+		return f"'{user_id}' is not a valid user id"
+	prop = arguments[2]
+	if user_id != str(bot_id):
+		if not isinstance(client, Client):
+			return ValueError("function unsupported")
+		try:
+			user = await client.fetch_user(user_id)
+		except Exception as e:
+			user = e
+		if not isinstance(user, User):
+			return f"could not fetch user from userid, '{user}'"
+	if user:
+		user_data = {
+			"mention+(@username)": f"<@{user.id}> (@{user.username})",
+			"displayname+(@username)": f"{user.display_name} (@{user.username})"
+			if user.display_name != user.username
+			else "@{user.username}",
+			"mention": f"<@{user.id}>",
+			"id": str(user.id),
+			"username": user.username,
+			"display_name": user.display_name,
+		}
+	elif user_id == str(bot_id):
+		user_data = {
+			"mention+(@username)": f"<@{bot_id}> (@The World Machine)",
+			"displayname+(@username)": f"The World Machine",
+			"id": bot_id,
+			"mention": f"<@{bot_id}>",
+			"username": "The World Machine",
+			"display_name": "The World Machine",
+		}
+	else:
+		return Exception("all ways of getting the user have failed and the doom has come")
+	if prop not in user_data:
+		raise ValueError(f"property '{prop}' not found in user ({user_data['username']}, {user_data['id']}) data")
+
+	return user_data[prop]
+
+
+async def util_slash(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: BaseContext | None = None,
+	found_var: Any | None = None,
+):
+	command_name = arguments[0][1:].replace("/", " ")
+	id = "0"
+	if isinstance(client, Client) and hasattr(client, "_interaction_lookup"):
+		command = client._interaction_lookup.get(command_name)
+		if command:
+			id = command.get_cmd_id(GLOBAL_SCOPE)
+			command_name = command.get_localised_name(locale)
+	return f"</{command_name}:{id}>"
+
+async def util_quote(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: BaseContext | None = None,
+	found_var: Any | None = None,
+):
+	input = found_var if found_var is not None else arguments[0]
+	if not isinstance(input, str):
+		input = str(input)
+	return "\n".join(f"> {line}" for line in input.split("\n"))
+
+DISCORD_TIMESTAMP_MAP = {
+    ("date", "short"): "d",
+    ("date", "medium"): "D",
+    ("date", "long"): ":3",
+    ("date", "full"): "F",
+
+    ("time", "short"): "t",
+    ("time", "medium"): "T",
+    ("time", "long"): ":3",
+
+    ("date", "relative"): "R", 
+    ("time", "relative"): "R",
+}
+async def util_datetime(
+    arguments: tuple[Any, Any, Any],
+    variables: dict[str, Any],
+    locale: str,
+    client: Any | None = None,
+    found_var: Any | None = None
+):    
+	val = found_var if found_var is not None else datetime.now().timestamp()
+	if isinstance(val, datetime):
+		seconds = int(val.timestamp())
+	else:
+		try:
+			seconds = int(float(val))
+		except (ValueError, TypeError):
+			seconds = int(datetime.now().timestamp())
+
+	icu_type = str(arguments[1]).lower() if arguments[1] else "date"
+	icu_style = str(arguments[2]).lower() if arguments[2] else "long"
+
+	discord_style = DISCORD_TIMESTAMP_MAP.get((icu_type, icu_style))
+	
+	if discord_style == ":3":
+		return f"<t:{seconds}:f> (<t:{seconds}:R>)"
+
+	if not discord_style:
+		discord_style = "f" 
+
+	return f"<t:{seconds}:{discord_style}>"
+
+
+async def util_fallback(
 	arguments: tuple[Any, Any, Any],
 	variables: dict[str, Any],
 	locale: str,
@@ -292,15 +348,17 @@ async def icu_fallback(
 
 icu_formatters = {
 	"emoji": icu_emoji,
-	"user": icu_user,
-	"command": icu_slash,
-	"pretty_num": icu_pretty_num,
+	"user": util_user,
+	"command": util_slash,
+	"pretty_num": util_pretty_num,
 	"selectordinal": icu_selectordinal,
 	"select": icu_select,
 	"plural": icu_plural,
 	"number": icu_number,
 	"notempty": icu_notempty,
-	"quote": icu_quote,
+	"quote": util_quote,
+	"time": util_datetime,
+	"date": util_datetime
 }
 
 
@@ -361,7 +419,7 @@ async def parse_node(node: dict, variables, locale, client: Any | None = None):
 		if var_exists:
 			return found_var
 		else:
-			return await icu_fallback(
+			return await util_fallback(
 				(variable, format_type, arg3),
 				variables,
 				locale,
