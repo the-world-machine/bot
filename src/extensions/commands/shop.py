@@ -660,7 +660,7 @@ class ShopCommands(Extension):
 					loc.l(f"items.treasures.{selected_treasure}", typecheck=dict)
 				)
 
-				amount_selected = owned.get(selected_treasure, 0)
+				amount_owned = owned.get(selected_treasure, 0)
 
 				buy_price_one = int(get_selected_treasure["price"] * daily_shop.stock.price)
 
@@ -678,7 +678,8 @@ class ShopCommands(Extension):
 					loc.l("shop.treasures.selection"),
 					treasure_icon=emojis["treasures"][selected_treasure],
 					treasure_name=selected_treasure_loc["name"],
-					amount_selected=amount_selected,
+					owned_count=amount_owned,
+					amount_selected=amount_owned,
 					price_one=buy_price_one,
 					price_all=buy_price_all,
 					amount=amount,
@@ -725,7 +726,9 @@ class ShopCommands(Extension):
 				)
 
 				button_all = Button(
-					label=await loc.format(loc.l("shop.buttons.buy_all")),
+					label=await loc.format(
+						loc.l("shop.buttons.buy_amount"), amount=amount, limit_reached=limit_reached
+					),
 					emoji=emojis["treasures"][selected_treasure],
 					style=ButtonStyle.BLURPLE,
 					custom_id=f"treasure_buy_{selected_treasure}_All",
@@ -826,6 +829,8 @@ class ShopCommands(Extension):
 						treasure_icon=emojis["treasures"][selected_treasure],
 						treasure_name=selected_treasure_loc["name"],
 						owned=await loc.format(loc.l("shop.owned"), amount=amount_owned),
+						owned_count=amount_owned,
+						amount_selected=amount_owned,
 						price_one=sell_price_one,
 						price_all=sell_price_all,
 						amount=amount_selected,
@@ -868,7 +873,9 @@ class ShopCommands(Extension):
 						style=ButtonStyle.GREEN,
 					),
 					Button(
-						label=await loc.format(loc.l("shop.buttons.sell_all")),
+						label=await loc.format(
+							loc.l("shop.buttons.sell_amount"), amount=amount_selected, limit_reached=limit_reached
+						),
 						custom_id=f"treasure_sell_{treasure_id}_all",
 						style=ButtonStyle.GREEN,
 					),
