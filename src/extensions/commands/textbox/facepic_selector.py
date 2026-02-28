@@ -1,8 +1,9 @@
-import re
 import asyncio
+import re
 
 from interactions import (
 	ActionRow,
+	AllowedMentions,
 	Button,
 	ButtonStyle,
 	ComponentContext,
@@ -10,6 +11,7 @@ from interactions import (
 	component_callback,
 )
 
+from utilities.localization.localization import Localization
 from utilities.misc import replace_numbers_with_emojis
 from utilities.textbox.facepics import f_storage, get_facepic
 from utilities.textbox.states import StateShortcutError, state_shortcut
@@ -34,6 +36,7 @@ async def render_selector_ui(
 	path: list[str],
 	page: int = 0,
 ):
+	loc = Localization(ctx)
 	current_level = f_storage.facepics
 	for part in path:
 		current_level = current_level.get(part, {})
@@ -137,8 +140,11 @@ async def render_selector_ui(
 	for i in range(0, len(remaining_page_actions), MAX_PER_ROW):
 		rows.append(ActionRow(*remaining_page_actions[i : i + MAX_PER_ROW]))
 
-	content = f"Picking a face for frame #{frame_index + 1}"
-	await ctx.edit_origin(content=content, components=rows)
+	await ctx.edit_origin(
+		content=await loc.format(loc.l("textbox.picking_facepic"), frame_index=(frame_index + 1)),
+		components=rows,
+		allowed_mentions=AllowedMentions(parse=[], roles=[], users=[]),
+	)
 
 
 init_selector_regex = re.compile(r"textbox_fs init (?P<state_id>-?\d+) (?P<frame_index>-?\d+)")
