@@ -83,14 +83,12 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = await loc.format(loc.l("about.mes", typecheck=tuple))
-							translated_lines = await Localization().format(
-								Localization().l("about.mes", typecheck=tuple)
+							original_lines = list(await loc.format(loc.l("about.mes", typecheck=tuple)))
+							translated_lines = list(
+								await Localization().format(Localization().l("about.mes", typecheck=tuple))
 							)
-
-							for i in range(0, len(original_lines)):
-								if not (len(translated_lines) > i) and original_lines[i] == line:
-									line = translated_lines[i]
+							index = original_lines.index(line)
+							line = translated_lines[index]
 						processed_lines.append(line)
 				except ValueError:
 					processed_lines.append(line)
