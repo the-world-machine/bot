@@ -105,7 +105,11 @@ class WoolCommands(Extension):
 	)
 	async def give(self, ctx: SlashContext, to: User, amount: int):
 		loc = Localization(ctx)
-
+		ephemeral_override = None
+		if ctx.guild:
+				bot_member = ctx.guild.get_member(ctx.client.user.id)
+				if bot_member:
+					ephemeral_override = False
 		if str(ctx.author.id) in wool_give_blacklist:
 			return await ctx.send(
 				"https://cdn.discordapp.com/attachments/1336864890706595852/1433821383435223233/TWM_textbox_1761920034.png",
@@ -161,7 +165,7 @@ class WoolCommands(Extension):
 				await asyncio.sleep(15)
 				return await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, await loc.format(loc.l("generic.loading.hint")))
+		loading = await fancy_message(ctx, await loc.format(loc.l("generic.loading.hint")), ephemeral=ephemeral_override if ephemeral_override is not None else False)
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 
@@ -179,13 +183,14 @@ class WoolCommands(Extension):
 				ephemeral=True,
 				color=Colors.BAD,
 			)
-
-		await from_user.manage_wool(-amount)
-		await to_user.manage_wool(amount)
+		
+		if not amount == 0:
+			await from_user.manage_wool(-amount)
+			await to_user.manage_wool(amount)
 
 		if amount < 0:
 			return await fancy_message(
-				loading,
+				ctx,
 				await loc.format(
 					loc.l("wool.transfer.steal"),
 					sender_id=from_user._id,
@@ -194,7 +199,7 @@ class WoolCommands(Extension):
 				edit=True,
 			)
 		await fancy_message(
-			loading,
+			ctx,
 			await loc.format(
 				loc.l(f"wool.transfer.to.{'bot' if to.bot else 'user'}.{'none' if amount == 0 else 'some'}"),
 				sender_id=from_user._id,

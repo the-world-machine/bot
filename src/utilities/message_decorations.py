@@ -43,6 +43,7 @@ def fancy_message(
 	ctx,
 	message: str | None = None,
 	edit: bool = False,
+	allow_edit_origin: bool = False,
 	edit_origin: bool = False,
 	content: str | None = None,
 	ephemeral=False,
@@ -67,7 +68,7 @@ def fancy_message(
 		embeds.append(embed)
 	if len(embeds) == 0:
 		embeds = None
-	if edit_origin:
+	if edit_origin or (not ctx.guild and allow_edit_origin):
 		return ctx.edit_origin(content=content, embeds=embeds, components=components)
 	if edit and ctx:
 		return ctx.edit(content=content, embeds=embeds, components=components)
