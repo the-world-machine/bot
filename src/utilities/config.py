@@ -25,13 +25,11 @@ C = TypeVar("C")
 
 # all of these overloads were made by google gemini bytheway i'm too lazy to learn how this works
 @overload
-def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Literal[False] = False) -> str:
-	...
+def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Literal[False] = False) -> str: ...
 
 
 @overload
-def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Literal[True]) -> str | None:
-	...
+def get_config(path: str, *, raise_on_not_found: bool = True, ignore_None: Literal[True]) -> str | None: ...
 
 
 @overload
@@ -41,8 +39,7 @@ def get_config(
 	typecheck: Type[C],
 	raise_on_not_found: bool = True,
 	ignore_None: Literal[False] = False,
-) -> C:
-	...
+) -> C: ...
 
 
 @overload
@@ -52,16 +49,15 @@ def get_config(
 	typecheck: Type[C],
 	raise_on_not_found: bool = True,
 	ignore_None: Literal[True],
-) -> C | None:
-	...
+) -> C | None: ...
 
 
 def get_config(
-    path: str,
-    *,
-    typecheck: Type[C] | None = None,
-    raise_on_not_found: bool = True,
-    ignore_None: bool = False,
+	path: str,
+	*,
+	typecheck: Type[C] | None = None,
+	raise_on_not_found: bool = True,
+	ignore_None: bool = False,
 ) -> C | str | None:
 	"""
 	Retrieves a value from the configuration file.

@@ -64,7 +64,7 @@ class SerializableData:
 
 		if len(parts) != num_expected:
 			raise ValueError(
-			    f"Invalid format for {cls.__name__}. Expected {num_expected} parts separated by '{cls._separator}', but got {len(parts)} in '{data_string}'"
+				f"Invalid format for {cls.__name__}. Expected {num_expected} parts separated by '{cls._separator}', but got {len(parts)} in '{data_string}'"
 			)
 
 		kwargs = {}
@@ -89,7 +89,7 @@ class SerializableData:
 			item_type = args[0] if args else str
 			return origin(SerializableData._parse_value(item.strip(), item_type) for item in value_str.split(","))
 		if origin is not None and any(
-		    isinstance(arg, type) and issubclass(arg, type(None)) for arg in args
+			isinstance(arg, type) and issubclass(arg, type(None)) for arg in args
 		):  # Handles X | None
 			if value_str == "None":
 				return None
@@ -148,7 +148,7 @@ class FrameOptions(SerializableData):
 		self.end_arrow_delay = 150 if end_arrow_delay is None else end_arrow_delay
 
 	def __repr__(self):
-		attrs = { k: getattr(self, k) for k in self.__annotations__ }
+		attrs = {k: getattr(self, k) for k in self.__annotations__}
 		attrs_str = ", ".join(f"{k}={repr(v)}" for k, v in attrs.items())
 		return f"StateOptions({attrs_str})"
 
@@ -178,7 +178,7 @@ class Frame(SerializableData):
 				raise ValueError(f"Options block must be followed by a '{cls._separator}'.")
 
 			options_raw = frame_string[1:end_brace_idx]
-			sanitized_text = frame_string[end_brace_idx + 2:]
+			sanitized_text = frame_string[end_brace_idx + 2 :]
 
 			options = FrameOptions.from_string(options_raw)
 			text = desanitize(sanitized_text) if sanitized_text else None
@@ -186,7 +186,7 @@ class Frame(SerializableData):
 			return cls(options=options, text=text)
 		except (ValueError, IndexError) as e:
 			raise ValueError(
-			    f"Invalid Frame format. Expected '{{options}}{cls._separator}text', but got '{frame_string}'. {e}"
+				f"Invalid Frame format. Expected '{{options}}{cls._separator}text', but got '{frame_string}'. {e}"
 			) from e
 
 
@@ -256,7 +256,7 @@ async def render_frame(
 
 	parsed = parse_textbox_text(frame.text) if frame.text else []
 	print(parsed)
-	text_offset = [ 0.0, 0.0 ]
+	text_offset = [0.0, 0.0]
 	first_facepic_command = next((cmd for cmd in parsed if isinstance(cmd, FacepicChangeCommand)), None)
 	if first_facepic_command and first_facepic_command.facepic != "":
 		await update_facepic(not_empty_empty_face)
@@ -403,10 +403,10 @@ async def render_textbox_frames(
 		last_frame = all_images[-1]
 		all_durations[-1] = frame.options.end_delay
 		bounce_frames = [
-		    ":3",
-		    last_frame.copy(),
-		    last_frame.copy(),
-		    last_frame.copy(),
+			":3",
+			last_frame.copy(),
+			last_frame.copy(),
+			last_frame.copy(),
 		]
 		bounce_frames[1].paste(arrow, (299, 119), arrow_rgba)
 		bounce_frames[2].paste(arrow, (299, 119 - 1), arrow_rgba)
@@ -455,7 +455,7 @@ async def render_textbox_frames(
 				png_images.append(png_obj)
 
 			animation = apng.APNG(
-			    num_plays=loops,
+				num_plays=loops,
 			)
 
 			for i, png_obj in enumerate(png_images):

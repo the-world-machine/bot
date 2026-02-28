@@ -34,7 +34,6 @@ class CustomAudioTrack(DeferredAudioTrack):
 
 
 class CustomSearch(Source):
-
 	def __init__(self):
 		super().__init__(name="custom")  # Initialising our custom source with the name 'custom'.
 

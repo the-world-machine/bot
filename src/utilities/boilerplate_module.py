@@ -12,7 +12,6 @@ from utilities.message_decorations import fancy_message
 
 
 class _Module(Extension):
-
 	@slash_command(description="This is a Boilerplate Command.")
 	@slash_option(
 		name="option_name",

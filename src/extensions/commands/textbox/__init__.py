@@ -78,7 +78,6 @@ class TextboxCommands(Extension):
 	@contexts(bot_dm=True)
 	async def textbox(self, ctx: SlashContext):
 		"""Base command for textboxes."""
-		pass
 
 	@textbox.subcommand(
 		sub_cmd_name="create",

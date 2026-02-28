@@ -442,7 +442,7 @@ class TransmissionCommands(Extension):
 		final_text = message.content
 
 		embed = Embed(
-		    color=Colors.DARKER_WHITE, url="https://theworldmachine.xyz"
+			color=Colors.DARKER_WHITE, url="https://theworldmachine.xyz"
 		)  # url used for putting more than 1 image into the embed, see Embed.add_image method description
 		embed.set_author(name=user.name, icon_url=user.image)
 

@@ -16,7 +16,6 @@ from utilities.textbox.mediagen import Frame, render_frame
 
 
 class MemberAddEvent(Extension):
-
 	@listen(MemberAdd, delay_until_ready=True)
 	async def handler(self, event: MemberAdd):
 		guild = event.guild

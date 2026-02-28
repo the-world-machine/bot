@@ -1,3 +1,4 @@
+from datetime import datetime
 from traceback import print_exc
 from typing import Any
 
@@ -11,7 +12,6 @@ from utilities.emojis import emojis, flatten_emojis, on_emojis_update
 from utilities.localization.formatting import fnum
 from utilities.misc import decode_base64_padded
 
-from datetime import datetime
 emoji_dict = {}
 
 
@@ -25,7 +25,6 @@ edicted(emojis)
 on_emojis_update(edicted)
 
 icu_parser = Parser({"allow_tags": False, "require_other": False})
-
 
 
 async def icu_select(
@@ -158,6 +157,7 @@ async def icu_number(
 	else:
 		return format_decimal(value, format=style if style else None, locale=babel_locale)
 
+
 async def util_pretty_num(
 	arguments: tuple[Any, Any, Any],
 	variables: dict[str, Any],
@@ -174,7 +174,7 @@ async def util_pretty_num(
 		return fnum(input, locale)
 	except (ValueError, TypeError):
 		return input
-	
+
 
 async def icu_emoji(
 	arguments: tuple[Any, Any, Any],
@@ -269,6 +269,7 @@ async def util_slash(
 			command_name = command.get_localised_name(locale)
 	return f"</{command_name}:{id}>"
 
+
 async def util_quote(
 	arguments: tuple[Any, Any, Any],
 	variables: dict[str, Any],
@@ -281,26 +282,27 @@ async def util_quote(
 		input = str(input)
 	return "\n".join(f"> {line}" for line in input.split("\n"))
 
+
 DISCORD_TIMESTAMP_MAP = {
-    ("date", "short"): "d",
-    ("date", "medium"): "D",
-    ("date", "long"): ":3",
-    ("date", "full"): "F",
-
-    ("time", "short"): "t",
-    ("time", "medium"): "T",
-    ("time", "long"): ":3",
-
-    ("date", "relative"): "R", 
-    ("time", "relative"): "R",
+	("date", "short"): "d",
+	("date", "medium"): "D",
+	("date", "long"): ":3",
+	("date", "full"): "F",
+	("time", "short"): "t",
+	("time", "medium"): "T",
+	("time", "long"): ":3",
+	("date", "relative"): "R",
+	("time", "relative"): "R",
 }
+
+
 async def util_datetime(
-    arguments: tuple[Any, Any, Any],
-    variables: dict[str, Any],
-    locale: str,
-    client: Any | None = None,
-    found_var: Any | None = None
-):    
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: Any | None = None,
+	found_var: Any | None = None,
+):
 	val = found_var if found_var is not None else datetime.now().timestamp()
 	if isinstance(val, datetime):
 		seconds = int(val.timestamp())
@@ -314,12 +316,12 @@ async def util_datetime(
 	icu_style = str(arguments[2]).lower() if arguments[2] else "long"
 
 	discord_style = DISCORD_TIMESTAMP_MAP.get((icu_type, icu_style))
-	
+
 	if discord_style == ":3":
 		return f"<t:{seconds}:f> (<t:{seconds}:R>)"
 
 	if not discord_style:
-		discord_style = "f" 
+		discord_style = "f"
 
 	return f"<t:{seconds}:{discord_style}>"
 
@@ -346,7 +348,7 @@ icu_formatters = {
 	"notempty": icu_notempty,
 	"quote": util_quote,
 	"time": util_datetime,
-	"date": util_datetime
+	"date": util_datetime,
 }
 
 
@@ -417,7 +419,7 @@ async def parse_node(node: dict, variables, locale, client: Any | None = None):
 
 
 async def evaluate_ast(tree, variables, locale, client: Client | None):
-	variables = { **variables, "_locale": locale}
+	variables = {**variables, "_locale": locale}
 	output = []
 	for node in tree:
 		parsed_node = None

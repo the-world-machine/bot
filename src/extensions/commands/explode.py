@@ -16,7 +16,7 @@ import utilities.profile.badge_manager as bm
 from utilities.database.schemas import UserData
 from utilities.localization.formatting import fnum
 from utilities.localization.localization import Localization
-from utilities.message_decorations import *
+from utilities.message_decorations import Colors, Embed, fancy_message
 
 
 class ExplodeCommands(Extension):

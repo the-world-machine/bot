@@ -61,7 +61,7 @@ async def get_shop_data():
 
 	items = await fetch_items()
 	assert items is not None
-	
+
 	all_bgs = items["backgrounds"]
 	backgrounds = {bg: val for bg, val in all_bgs.items() if val["purchasable"]}
 	treasures = items["treasures"]
@@ -89,15 +89,14 @@ async def get_shop_data():
 	price_change = data.stock.price + data.stock.value
 	data.stock.price = round(min(2, max(0.2, price_change)), 1)
 
-	await update_shop({
-		"last_updated": data.last_updated,
-		"backgrounds": data.background_stock,
-		"treasures": data.treasure_stock,
-		"motd": data.motd,
-		"stock": {
-			"price": data.stock.price,
-			"value": data.stock.value
+	await update_shop(
+		{
+			"last_updated": data.last_updated,
+			"backgrounds": data.background_stock,
+			"treasures": data.treasure_stock,
+			"motd": data.motd,
+			"stock": {"price": data.stock.price, "value": data.stock.value},
 		}
-	})
+	)
 
 	return data

@@ -118,11 +118,13 @@ class Nikogotchi(Collection):
 		self.max_hunger += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))
-		stats.append(StatUpdate(
-		    "🫂",
-		    int(self.max_happiness),
-		    int(self.max_happiness) + int(algorithm),
-		))
+		stats.append(
+			StatUpdate(
+				"🫂",
+				int(self.max_happiness),
+				int(self.max_happiness) + int(algorithm),
+			)
+		)
 		self.max_happiness += algorithm
 
 		algorithm = int(amount * 5 * random.uniform(0.8, 1.4))

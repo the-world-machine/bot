@@ -50,11 +50,10 @@ class MiscellaneousCommands(Extension):
 			return await fancy_message(
 				ctx, edit=True, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public
 			)
-		
 
 		await fancy_message(
 			ctx,
-		await loc.format(
+			await loc.format(
 				loc.l("misc.wikipedia"),
 				link=response["content_urls"]["desktop"]["page"],
 				title=response["title"],

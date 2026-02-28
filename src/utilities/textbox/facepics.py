@@ -44,8 +44,9 @@ class Face:
 		if not os.path.exists(loc):
 			loc = None
 		return Image.open(
-		    self._custom if self.
-		    _custom else await cached_get(loc if loc else make_emoji_cdn_url(emoji_id=self.icon, size=size))
+			self._custom
+			if self._custom
+			else await cached_get(loc if loc else make_emoji_cdn_url(emoji_id=self.icon, size=size))
 		)
 
 	def __init__(self, path: str, icon: str | None = None):
@@ -64,7 +65,7 @@ def parse_recursive(data: dict) -> dict:
 	sub_content = data.get("faces", data.get("characters", data))
 
 	for key, value in sub_content.items():
-		if key in [ "icon", "faces", "characters"]:
+		if key in ["icon", "faces", "characters"]:
 			continue
 
 		if isinstance(value, dict):

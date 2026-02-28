@@ -12,10 +12,10 @@ from .misc import get_browser_locale, http_status_names
 
 app = web.Application()
 
-files = [ f for f in os.listdir("src/utilities/textbox/web/endpoints") if f != "__pycache__"]
+files = [f for f in os.listdir("src/utilities/textbox/web/endpoints") if f != "__pycache__"]
 endpoints = [f.replace(".py", "") for f in files]
 endpoints = [None if len(f) < 0 or f.startswith(".") else f for f in endpoints]
-endpoints = [ e for e in endpoints if e is not None ]
+endpoints = [e for e in endpoints if e is not None]
 print("Processing endpoints")
 i = 0
 for endpoint in endpoints:
@@ -36,9 +36,9 @@ async def error_middleware(request, handler):
 			loc = Localization(get_browser_locale(request))
 
 			with open(
-			    Path("src/utilities/textbox/web/static/paiges/error.html"),
-			    "r",
-			    encoding="utf-8",
+				Path("src/utilities/textbox/web/static/paiges/error.html"),
+				"r",
+				encoding="utf-8",
 			) as f:
 				error_paige = f.read()
 			return web.Response(
@@ -53,8 +53,8 @@ async def error_middleware(request, handler):
 	except Exception:
 		request.protocol.logger.exception("Error handling request")
 		return web.Response(
-		    text=f"<h1 style='text-align: center'> 500: Internal Machine Error </h1>",
-		    headers={ "Content-Type": "text/html"},
+			text=f"<h1 style='text-align: center'> 500: Internal Machine Error </h1>",
+			headers={"Content-Type": "text/html"},
 		)
 
 
@@ -73,7 +73,7 @@ async def logging_middleware(request, handler):
 
 
 app.router.add_static("/static/", path="src/utilities/textbox/web/static/", name="static")
-app.middlewares.extend([ error_middleware, logging_middleware ])
+app.middlewares.extend([error_middleware, logging_middleware])
 
 
 async def main():
@@ -87,6 +87,7 @@ async def main():
 		print(f"- Textboxweb server started ( http://localhost:{PORT} )")
 
 	await asyncio.Event().wait()
+
 
 def run_server():
 	asyncio.run(main())

@@ -229,7 +229,7 @@ def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 							elif input_str[scan_pos] == "]":
 								bracket_depth -= 1
 								if bracket_depth == 0:
-									token.parse_input(input_str[args_start + 1:scan_pos])
+									token.parse_input(input_str[args_start + 1 : scan_pos])
 									pos = scan_pos + 1
 									break
 							scan_pos += 1
@@ -250,7 +250,7 @@ def parse_textbox_text(input_str: str) -> list[str | TOKENS]:
 				except ValueError as e:
 					print(e)
 					if str(e).startswith("Invalid token type"):
-						text_to_add = input_str[pos:pos + 2]
+						text_to_add = input_str[pos : pos + 2]
 						if tokens and isinstance(tokens[-1], str):
 							tokens[-1] += text_to_add
 						else:

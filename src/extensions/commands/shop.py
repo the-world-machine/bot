@@ -48,7 +48,8 @@ def pancake_id_to_emoji_index_please_rename_them_in_db(
 
 
 class ShopCommands(Extension):
-	max_buy_sell_limit = 1000000000000000000000000
+	max_buy_sell_limit = 250
+	max_wool_limit = 75_000
 
 	@listen(Ready)
 	async def loadde_shoppe(self, event: Ready):
@@ -126,7 +127,7 @@ class ShopCommands(Extension):
 
 		result_text = ""
 
-		treasure_loc: dict = await loc.format(loc.l(f"items.treasures.{treasure_id}", typecheck=Dict))
+		treasure_loc: dict = await loc.format(loc.l(f"items.treasures.{treasure_id}", typecheck=dict))
 
 		async def update():
 			if amount_to_sell == "all":
@@ -143,24 +144,31 @@ class ShopCommands(Extension):
 			await update()
 			return
 
-		sell_price = 0
+		sell_price_one = int(treasure["price"] * stock_price)
+
+		# allow to sell atleast one item
+		max_allowed = max(1, min(self.max_buy_sell_limit, self.max_wool_limit // max(1, sell_price_one)))
+		limit_reached = None
 
 		if amount_to_sell == "all":
-			amount = int(amount_of_treasure)
+			amount = min(int(amount_of_treasure), max_allowed)
+			if amount_of_treasure > max_allowed:
+				limit_reached = "yes"
 
-			sell_price = int(amount_of_treasure * treasure["price"] * stock_price)
-			owned_treasure[treasure_id] = 0
+			sell_price = int(amount * sell_price_one)
+			owned_treasure[treasure_id] -= amount
 		else:
 			amount = 1
-
-			sell_price = int(treasure["price"] * stock_price)
+			sell_price = sell_price_one
 			owned_treasure[treasure_id] -= 1
+
 		await user_data.update(owned_treasures=owned_treasure)
 		result_text = await loc.format(
 			loc.l("shop.traded_sell"),
 			item_name=treasure_loc["name"],
 			amount=amount,
 			price=sell_price,
+			limit=limit_reached,
 		)
 
 		await user_data.manage_wool(sell_price)
@@ -196,8 +204,6 @@ class ShopCommands(Extension):
 
 		treasure = all_treasures[treasure_id]
 
-		result_text = ""
-
 		treasure_price = int(treasure["price"] * daily_shop.stock.price)
 
 		async def update(text: str):
@@ -210,17 +216,20 @@ class ShopCommands(Extension):
 			return await update(await loc.format(loc.l("shop.traded_fail")))
 
 		current_balance = user_data.wool
-		price = 0
-		amount = 0
+		max_allowed = max(1, min(self.max_buy_sell_limit, self.max_wool_limit // max(1, treasure_price)))
+		limit_reached = None
 
 		treasure_loc: dict = await loc.format(loc.l(f"items.treasures.{treasure_id}", typecheck=dict))
-
 		name = treasure_loc["name"]
 
 		if amount_to_buy == "All":
-			amount = min(self.max_buy_sell_limit, current_balance // treasure_price)
-			price = treasure_price * amount
+			affordable = current_balance // max(1, treasure_price)
+			amount = min(affordable, max_allowed)
 
+			if affordable > max_allowed:
+				limit_reached = "yes"
+
+			price = treasure_price * amount
 		else:
 			price = int(treasure_price)
 			amount = 1
@@ -233,7 +242,9 @@ class ShopCommands(Extension):
 		await user_data.manage_wool(-price)
 
 		return await update(
-			await loc.format(loc.l("shop.traded"), item_name=name, amount=int(amount), price=int(price))
+			await loc.format(
+				loc.l("shop.traded"), item_name=name, amount=int(amount), price=int(price), limit=limit_reached
+			)
 		)
 
 	r_buy_bg = re.compile(r"buy_bg_(.*)_(\d+)")
@@ -406,8 +417,6 @@ class ShopCommands(Extension):
 	async def embed_manager(self, ctx: SlashContext | ComponentContext, category: str, **kwargs):
 		daily_shop = await self.get_shop()
 
-		await self.get_shop()
-
 		loc = Localization(ctx)
 
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
@@ -575,7 +584,6 @@ class ShopCommands(Extension):
 			components.append(ActionRow(*buttons))
 		elif category == "Backgrounds":
 			bg_page = kwargs["page"]
-			print(daily_shop)
 			background = daily_shop.background_stock[bg_page]
 			all_bgs = await fetch_background()
 			fetched_background = all_bgs[background]
@@ -658,14 +666,13 @@ class ShopCommands(Extension):
 
 				current_balance = user_data.wool
 
-				amount = 0
+				max_allowed = max(1, min(self.max_buy_sell_limit, self.max_wool_limit // max(1, buy_price_one)))
+				affordable = current_balance // max(1, buy_price_one)
 
-				i = 0
+				amount = min(max_allowed, affordable)
+				buy_price_all = int(amount * buy_price_one)
 
-				max_items = min(self.max_buy_sell_limit, current_balance // buy_price_one)
-
-				amount = int(max_items)
-				buy_price_all = int(max_items * buy_price_one)
+				limit_reached = "yes" if affordable > max_allowed else None
 
 				treasure_details = await loc.format(
 					loc.l("shop.treasures.selection"),
@@ -674,8 +681,8 @@ class ShopCommands(Extension):
 					amount_selected=amount_selected,
 					price_one=buy_price_one,
 					price_all=buy_price_all,
-					limit=self.max_buy_sell_limit,
 					amount=amount,
+					limit=limit_reached,
 				)
 
 			treasure_stock: list[TreasureTypes] = daily_shop.treasure_stock
@@ -786,7 +793,7 @@ class ShopCommands(Extension):
 				style=ButtonStyle.GRAY,
 				custom_id="Treasures",
 			)
-			selected_treasure = kwargs["selected_treasure"]
+			selected_treasure = kwargs.get("selected_treasure", None)
 			selected_treasure_loc: dict = {"name": "???"}
 			sell_price_one = 0
 			sell_price_all = 0
@@ -805,19 +812,24 @@ class ShopCommands(Extension):
 				)
 
 				sell_price_one = int(get_selected_treasure["price"] * daily_shop.stock.price)
-				sell_price_all = int(get_selected_treasure["price"] * daily_shop.stock.price * owned[selected_treasure])
+				amount_owned = int(owned.get(selected_treasure, 0))
 
-				amount_selected = int(owned.get(selected_treasure, 0))
+				max_allowed = max(1, min(self.max_buy_sell_limit, self.max_wool_limit // max(1, sell_price_one)))
+				amount_selected = min(amount_owned, max_allowed)
+				sell_price_all = amount_selected * sell_price_one
 
-				if amount_selected > 0:
+				limit_reached = "yes" if amount_owned > max_allowed else None
+
+				if amount_owned > 0:
 					treasure_details = await loc.format(
 						loc.l("shop.treasures.selection"),
 						treasure_icon=emojis["treasures"][selected_treasure],
 						treasure_name=selected_treasure_loc["name"],
-						owned=await loc.format(loc.l("shop.owned"), amount=amount_selected),
+						owned=await loc.format(loc.l("shop.owned"), amount=amount_owned),
 						price_one=sell_price_one,
 						price_all=sell_price_all,
 						amount=amount_selected,
+						limit=limit_reached,
 					)
 
 			treasure_selection = []

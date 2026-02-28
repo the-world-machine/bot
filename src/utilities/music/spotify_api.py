@@ -32,7 +32,6 @@ def create_track(data: dict):
 
 
 class Spotify:
-
 	def __init__(self, client_id, secret):
 		self.client_id = client_id
 		self.secret = secret

@@ -407,7 +407,7 @@ class InteractCommands(Extension):
 			rows.append(ActionRow(*first_row))
 
 		for i in range(0, len(page_actions), MAX_PER_ROW):
-			rows.append(ActionRow(*page_actions[i:i + MAX_PER_ROW]))
+			rows.append(ActionRow(*page_actions[i : i + MAX_PER_ROW]))
 
 		if len(rows) == 0:
 			rows.append(
@@ -479,5 +479,5 @@ class InteractCommands(Extension):
 			"@theworldmachine",
 			"@worldmachine",
 		]:
-			await asyncio.sleep(random.choice([ 2, 1.5, 0.5, 0 ]))
+			await asyncio.sleep(random.choice([2, 1.5, 0.5, 0]))
 			await msg.add_reaction("1023573456664662066")

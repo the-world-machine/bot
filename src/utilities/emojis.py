@@ -172,15 +172,15 @@ def on_file_update(path):
 	old_flat = flatten_emojis(dict(old_emojis))
 	new_flat = flatten_emojis(dict(new_emojis))
 	changes = []
-	for key in [ key for key in old_flat if key not in new_flat ]:
+	for key in [key for key in old_flat if key not in new_flat]:
 		# removed
 		changes.append(f"-{key}")
 		update_emojis(key)
-	for key in [ key for key in new_flat if key not in old_flat ]:
+	for key in [key for key in new_flat if key not in old_flat]:
 		# added
 		changes.append(f"+{key}")
 		update_emojis(key, emoji_value=new_flat[key])
-	for key in [ key for key in new_flat if key in old_flat and new_flat[key] != old_flat[key] ]:
+	for key in [key for key in new_flat if key in old_flat and new_flat[key] != old_flat[key]]:
 		# modified
 		changes.append(f"*{key}")
 		update_emojis(key, emoji_value=new_flat[key])

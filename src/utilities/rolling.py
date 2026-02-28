@@ -56,8 +56,11 @@ statuses = get_config("bot.rolling.statuses", typecheck=list, ignore_None=True)
 
 async def roll_status(client: Client, log=True, print=print) -> None:
 	status = (
-	    statuses if isinstance(statuses, str) else
-	    random.choice(statuses if statuses is not None else [None]) if isinstance(statuses, list) else None
+		statuses
+		if isinstance(statuses, str)
+		else random.choice(statuses if statuses is not None else [None])
+		if isinstance(statuses, list)
+		else None
 	)
 	if log:
 		if not debugging():

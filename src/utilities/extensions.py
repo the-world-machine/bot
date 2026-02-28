@@ -63,12 +63,12 @@ def load_commands(client: interactions.Client, unload: bool = False, print=print
 			continue
 		if unload:
 			client.unload_extension(
-			    f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
+				f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
 			)
 		if debugging():
 			print("| " + cmd)
 		client.load_extension(
-		    f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
+			f"extensions.commands.{cmd}" if not cmd == "interactions.ext.jurigged" else "interactions.ext.jurigged"
 		)
 		loaded_commands.append(cmd)
 

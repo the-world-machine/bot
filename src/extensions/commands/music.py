@@ -27,9 +27,9 @@ spotify = Spotify(client_id=spotify_creds["id"], secret=spotify_creds["secret"])
 
 async def get_lavalink_stats():
 	return {
-	    "playing_players": "placeholder",
-	    "played_time": "placeholder",
-	    "played_songs": "placeholder",
+		"playing_players": "placeholder",
+		"played_time": "placeholder",
+		"played_songs": "placeholder",
 	}
 
 
@@ -54,10 +54,10 @@ class MusicCommands(Extension):
 			assert "Unable to grab Lavalink Object."
 
 		node = self.lavalink.add_node(
-		    node_information["ip"],
-		    node_information["port"],
-		    node_information["password"],
-		    "eu",
+			node_information["ip"],
+			node_information["port"],
+			node_information["password"],
+			"eu",
 		)
 		if node:
 			print(f'Lavalink node "{node.name}" inititalized')
@@ -81,10 +81,10 @@ class MusicCommands(Extension):
 		description = f"From **{track.author}**\n\n{current} {emojis['icons']['sun']} {total}\n{progress_bar}\n\n"
 
 		embed = Embed(
-		    title=track.title,
-		    description=description,
-		    url=track.uri,
-		    color=Colors.DEFAULT,
+			title=track.title,
+			description=description,
+			url=track.uri,
+			color=Colors.DEFAULT,
 		)
 		embed.set_author(name=player_status)
 		embed.set_thumbnail(self.get_cover_image(track.identifier))
@@ -93,8 +93,8 @@ class MusicCommands(Extension):
 
 		control_text = "Everyone can control" if allowed_control else "Currently has control"
 		embed.set_footer(
-		    text=f"Requested by {requester.username}  ●  {control_text}",
-		    icon_url=requester.avatar_url,
+			text=f"Requested by {requester.username}  ●  {control_text}",
+			icon_url=requester.avatar_url,
 		)
 
 		return embed
@@ -102,13 +102,13 @@ class MusicCommands(Extension):
 	async def get_queue_embed(self, player: Player, page: int):
 		queue_list = []
 
-		queue = player.queue[(page * 10) - 10:(page * 10)]
+		queue = player.queue[(page * 10) - 10 : (page * 10)]
 		i = (page * 10) - 9
 
 		if player.current is None:
 			return Embed(
-			    description="[ There are no tracks in the player! ]",
-			    color=Colors.DEFAULT,
+				description="[ There are no tracks in the player! ]",
+				color=Colors.DEFAULT,
 			)
 
 		for song in queue:
@@ -119,11 +119,11 @@ class MusicCommands(Extension):
 			user = await self.client.fetch_user(requester)
 
 			queue_list.append(
-			    EmbedField(
-			        name=f"{i}. {title}",
-			        value=f"*by {author}* - Requested by {user.mention}",
-			        inline=False,
-			    )
+				EmbedField(
+					name=f"{i}. {title}",
+					value=f"*by {author}* - Requested by {user.mention}",
+					inline=False,
+				)
 			)
 
 			i += 1
@@ -146,7 +146,7 @@ class MusicCommands(Extension):
 		queue_embed.set_author(name=f"Queue for {guild.name}", icon_url=guild.icon.url)
 		queue_embed.set_thumbnail(url=self.get_cover_image(track.identifier))
 		queue_embed.set_footer(
-		    text="Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track."
+			text="Use /music_queue remove to remove a track.\nUse /music_queue jump to jump to a track."
 		)
 		queue_embed.fields = queue_list
 
@@ -183,11 +183,11 @@ class MusicCommands(Extension):
 
 	@music.subcommand(sub_cmd_description="Play a song!")
 	@slash_option(
-	    name="song",
-	    description="Input a search term, or paste a link.",
-	    opt_type=OptionType.STRING,
-	    required=True,
-	    autocomplete=True,
+		name="song",
+		description="Input a search term, or paste a link.",
+		opt_type=OptionType.STRING,
+		required=True,
+		autocomplete=True,
 	)
 	async def play(self, ctx: SlashContext, song: str):
 		loc = Localization(ctx)
@@ -195,10 +195,10 @@ class MusicCommands(Extension):
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
 			return await fancy_message(
-			    ctx,
-			    "[ You're not connected to a voice channel. ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ You're not connected to a voice channel. ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		player = None
@@ -244,27 +244,27 @@ class MusicCommands(Extension):
 
 	def added_to_playlist_embed(self, ctx: SlashContext, player: Player, track: lavalink.AudioTrack):
 		add_to_queue_embed = Embed(
-		    title=track.title,
-		    url=track.uri,
-		    description=f"From **{track.author}** was added to the queue.",
-		    color=Colors.GREEN,
+			title=track.title,
+			url=track.uri,
+			description=f"From **{track.author}** was added to the queue.",
+			color=Colors.GREEN,
 		)
 
 		add_to_queue_embed.set_author(name=f"Requested by {ctx.member.username}", icon_url=ctx.member.avatar.url)
 
 		add_to_queue_embed.set_thumbnail(self.get_cover_image(track.identifier))
 		add_to_queue_embed.set_footer(
-		    text="Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song."
+			text="Was this a mistake? You can use [ /music remove position:-1 mine:True ] to remove your last song."
 		)
 
 		return add_to_queue_embed
 
 	@music.subcommand(sub_cmd_description="Play a file!")
 	@slash_option(
-	    name="file",
-	    description="Input a file to play.",
-	    opt_type=OptionType.ATTACHMENT,
-	    required=True,
+		name="file",
+		description="Input a file to play.",
+		opt_type=OptionType.ATTACHMENT,
+		required=True,
 	)
 	async def file(self, ctx: SlashContext, file: Attachment):
 		loc = Localization(ctx)
@@ -273,10 +273,10 @@ class MusicCommands(Extension):
 
 		if not voice_state or not voice_state.channel:
 			return await fancy_message(
-			    ctx,
-			    "[ You're not connected to a voice channel. ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ You're not connected to a voice channel. ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		message = await fancy_message(ctx, await loc.format(loc.l("music.loading.file")))
@@ -287,10 +287,10 @@ class MusicCommands(Extension):
 
 		if len(fetched_tracks) == 0:
 			return await fancy_message(
-			    ctx,
-			    "[ Attachment must either be a video or audio file. ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ Attachment must either be a video or audio file. ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		track: lavalink.AudioTrack = fetched_tracks[0]
@@ -320,10 +320,10 @@ class MusicCommands(Extension):
 
 		if player is None:
 			return await fancy_message(
-			    ctx,
-			    "[ Player not found, try putting on some music! ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ Player not found, try putting on some music! ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		player.current = None
@@ -333,10 +333,10 @@ class MusicCommands(Extension):
 
 	@music.subcommand(sub_cmd_description="Go to a specific song in the queue!")
 	@slash_option(
-	    name="position",
-	    description="Which song to jump to",
-	    opt_type=OptionType.INTEGER,
-	    required=True,
+		name="position",
+		description="Which song to jump to",
+		opt_type=OptionType.INTEGER,
+		required=True,
 	)
 	async def jump(self, ctx: SlashContext, position: int):
 		if await self.on_cooldown(ctx.author):
@@ -345,20 +345,20 @@ class MusicCommands(Extension):
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
 			return await fancy_message(
-			    ctx,
-			    "[ You're not connected to a voice channel. ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ You're not connected to a voice channel. ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None:
 			return await fancy_message(
-			    ctx,
-			    "[ Player not found, try putting on some music! ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ Player not found, try putting on some music! ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		if len(player.queue) == 0:
@@ -381,44 +381,44 @@ class MusicCommands(Extension):
 
 	@music.subcommand(sub_cmd_description="Remove a song from the queue.")
 	@slash_option(
-	    name="position",
-	    description="The position of the song you want to remove.",
-	    opt_type=OptionType.INTEGER,
+		name="position",
+		description="The position of the song you want to remove.",
+		opt_type=OptionType.INTEGER,
 	)
 	@slash_option(
-	    name="mine",
-	    description="Whether you want to browse only your songs.",
-	    opt_type=OptionType.BOOLEAN,
-	    argument_name="own",
+		name="mine",
+		description="Whether you want to browse only your songs.",
+		opt_type=OptionType.BOOLEAN,
+		argument_name="own",
 	)
 	async def remove(self, ctx: SlashContext, position: int = -1, own: bool = False):
 		voice_state = ctx.member.voice
 		if not voice_state or not voice_state.channel:
 			return await fancy_message(
-			    ctx,
-			    "[ You're not connected to a voice channel. ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ You're not connected to a voice channel. ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 
 		player: Player = self.lavalink.get_player(ctx.guild_id)
 
 		if player is None:
 			return await fancy_message(
-			    ctx,
-			    "[ Player not found, start playing some music first! ]",
-			    color=Colors.BAD,
-			    ephemeral=True,
+				ctx,
+				"[ Player not found, start playing some music first! ]",
+				color=Colors.BAD,
+				ephemeral=True,
 			)
 		queue = player.queue
 		if len(queue) == 0:
 			return await fancy_message(ctx, "[ The queue is empty! ]", color=Colors.WARN, ephemeral=True)
 		if own and any(track.requester == int(ctx.user.id) for track in queue):
 			return await fancy_message(
-			    ctx,
-			    "[ You haven't queued any songs yet! ]",
-			    color=Colors.WARN,
-			    ephemeral=True,
+				ctx,
+				"[ You haven't queued any songs yet! ]",
+				color=Colors.WARN,
+				ephemeral=True,
 			)
 		if position < 0:
 			position = -position
@@ -432,10 +432,10 @@ class MusicCommands(Extension):
 			if position == index + 1:
 				if not self.can_modify(track.requester, ctx.author, ctx.guild_id):
 					return await fancy_message(
-					    ctx,
-					    "[ You can't remove this song. ]",
-					    color=Colors.BAD,
-					    ephemeral=True,
+						ctx,
+						"[ You can't remove this song. ]",
+						color=Colors.BAD,
+						ephemeral=True,
 					)
 
 			song = track
@@ -443,10 +443,10 @@ class MusicCommands(Extension):
 			return await ctx.send(f"[ {ctx.user.mention} removed **{song.title}** from the queue. ]")
 
 		return await fancy_message(
-		    ctx,
-		    f"[ Invalid position or no matching song found. The queue length is {len(queue)}! ]",
-		    color=Colors.BAD,
-		    ephemeral=True,
+			ctx,
+			f"[ Invalid position or no matching song found. The queue length is {len(queue)}! ]",
+			color=Colors.BAD,
+			ephemeral=True,
 		)
 
 	@music.subcommand(sub_cmd_description="Remove the most recent song from the queue added by you.")
@@ -455,10 +455,10 @@ class MusicCommands(Extension):
 
 		if not player:
 			return await fancy_message(
-			    ctx,
-			    "[ An error occurred, please try again later. ]",
-			    ephemeral=True,
-			    color=Colors.BAD,
+				ctx,
+				"[ An error occurred, please try again later. ]",
+				ephemeral=True,
+				color=Colors.BAD,
 			)
 
 		queue = player.queue[::-1]
@@ -490,10 +490,10 @@ class MusicCommands(Extension):
 
 		for i, item in enumerate(queue):
 			if show_first_results:
-				choices.append({ "name": item, "value": i})
+				choices.append({"name": item, "value": i})
 			else:
 				if input_text.lower() in item.lower():
-					choices.append({ "name": item, "value": i})
+					choices.append({"name": item, "value": i})
 
 		if len(choices) > 24:
 			choices = choices[:24]
@@ -522,10 +522,10 @@ class MusicCommands(Extension):
 
 		for i, item in enumerate(queue):
 			if show_first_results:
-				choices.append({ "name": item, "value": i})
+				choices.append({"name": item, "value": i})
 			else:
 				if input_text.lower() in item.lower():
-					choices.append({ "name": item, "value": i})
+					choices.append({"name": item, "value": i})
 
 		if len(choices) > 24:
 			choices = choices[:24]
@@ -536,10 +536,12 @@ class MusicCommands(Extension):
 		search_: dict = await spotify.search(content, limit=25, type="track")
 
 		if search_ == "error":
-			return [{
-			    "Text": "An error occurred within the search.",
-			    "URL": "ef9hur39fh3ehgurifjehiie",
-			}]
+			return [
+				{
+					"Text": "An error occurred within the search.",
+					"URL": "ef9hur39fh3ehgurifjehiie",
+				}
+			]
 
 		tracks = []
 
@@ -552,10 +554,10 @@ class MusicCommands(Extension):
 				continue
 
 			tracks.append(
-			    {
-			        "Text": f'"{song_name}"\n by {artists["name"]}',
-			        "URL": f"http://open.spotify.com/track/{url}",
-			    }
+				{
+					"Text": f'"{song_name}"\n by {artists["name"]}',
+					"URL": f"http://open.spotify.com/track/{url}",
+				}
 			)
 
 		return tracks
@@ -575,13 +577,13 @@ class MusicCommands(Extension):
 		items = await self.load_spotify_search(text)
 
 		if "https://youtu.be" in text or "https://www.youtube.com" in text or "https://m.youtube.com" in text:
-			choices = [{ "name": "🔗 Youtube URL", "value": raw_text}]
+			choices = [{"name": "🔗 Youtube URL", "value": raw_text}]
 		elif "http://open.spotify.com/" in text or "https://open.spotify.com/" in text:
-			choices = [{ "name": "🔗 Spotify URL", "value": raw_text}]
+			choices = [{"name": "🔗 Spotify URL", "value": raw_text}]
 		elif "https://soundcloud.com" in text:
-			choices = [{ "name": "🔗 Soundcloud URL", "value": raw_text}]
+			choices = [{"name": "🔗 Soundcloud URL", "value": raw_text}]
 		else:
-			choices = [{ "name": item["Text"], "value": item["URL"]} for item in items]
+			choices = [{"name": item["Text"], "value": item["URL"]} for item in items]
 
 		try:
 			await ctx.send(choices)
@@ -604,9 +606,9 @@ class MusicCommands(Extension):
 		player.store("Error", True)
 
 		embed = Embed(
-		    title="An error occurred when playing this track.",
-		    description=f"Please try again later.",
-		    color=Colors.RED,
+			title="An error occurred when playing this track.",
+			description=f"Please try again later.",
+			color=Colors.RED,
 		)
 
 		print(f'Error occurred when playing a track. "{event.message}"')
@@ -632,64 +634,64 @@ class MusicCommands(Extension):
 			text_channel = player.fetch("Channel")
 
 			await fancy_message(
-			    text_channel,
-			    f"[ Everyone has disconnected from {channel.mention}. To stop playing music, please use ``/music stop``. ]",
+				text_channel,
+				f"[ Everyone has disconnected from {channel.mention}. To stop playing music, please use ``/music stop``. ]",
 			)
 
 	@staticmethod
 	def get_buttons():
 		return [
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1019286929059086418),
-		        custom_id="queue",
-		        label="Open Queue",
-		    ),
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1019286926404091914),
-		        custom_id="loop",
-		        label="Loop Track",
-		    ),
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1019286927888883802),
-		        custom_id="playpause",
-		        label="Pause",
-		    ),
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1019286930296410133),
-		        custom_id="skip",
-		        label="Skip",
-		    ),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1019286929059086418),
+				custom_id="queue",
+				label="Open Queue",
+			),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1019286926404091914),
+				custom_id="loop",
+				label="Loop Track",
+			),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1019286927888883802),
+				custom_id="playpause",
+				label="Pause",
+			),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1019286930296410133),
+				custom_id="skip",
+				label="Skip",
+			),
 		]
 
 	@staticmethod
 	async def get_queue_buttons():
 		options = [
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1031309494946385920),
-		        custom_id="left",
-		    ),
-		    Button(
-		        style=ButtonStyle.BLUE,
-		        emoji=PartialEmoji(id=1031309497706225814),
-		        custom_id="shuffle",
-		        label="Shuffle Queue",
-		    ),
-		    Button(
-		        style=ButtonStyle.GREY,
-		        emoji=PartialEmoji(id=1019286926404091914),
-		        custom_id="loopqueue",
-		        label="Loop Queue",
-		    ),
-		    Button(
-		        style=ButtonStyle.RED,
-		        emoji=PartialEmoji(id=1031309496401793064),
-		        custom_id="right",
-		    ),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1031309494946385920),
+				custom_id="left",
+			),
+			Button(
+				style=ButtonStyle.BLUE,
+				emoji=PartialEmoji(id=1031309497706225814),
+				custom_id="shuffle",
+				label="Shuffle Queue",
+			),
+			Button(
+				style=ButtonStyle.GREY,
+				emoji=PartialEmoji(id=1019286926404091914),
+				custom_id="loopqueue",
+				label="Loop Queue",
+			),
+			Button(
+				style=ButtonStyle.RED,
+				emoji=PartialEmoji(id=1031309496401793064),
+				custom_id="right",
+			),
 		]
 
 		return options
@@ -717,11 +719,11 @@ class MusicCommands(Extension):
 
 		if "error" in lyric_data.keys():
 			return await ctx.send(
-			    embed=Embed(
-			        title=f"{track.title} Lyrics",
-			        description="`[ No Lyrics found. ]`",
-			        color=Colors.BAD,
-			    )
+				embed=Embed(
+					title=f"{track.title} Lyrics",
+					description="`[ No Lyrics found. ]`",
+					color=Colors.BAD,
+				)
 			)
 
 		lyrics = lyric_data["lyrics"]
@@ -730,12 +732,12 @@ class MusicCommands(Extension):
 			song = f"{lyric_data[:2080]}...\n\nGet the full lyrics [here.]({lyrics.url})"
 
 		return await ctx.send(
-		    embed=Embed(
-		        title=f"{track.title} Lyrics",
-		        description=f"```{lyrics}```",
-		        color=Colors.DEFAULT,
-		        footer=EmbedFooter(text=f"Lyrics provided by Some Random API"),
-		    )
+			embed=Embed(
+				title=f"{track.title} Lyrics",
+				description=f"```{lyrics}```",
+				color=Colors.DEFAULT,
+				footer=EmbedFooter(text=f"Lyrics provided by Some Random API"),
+			)
 		)
 
 	@music.subcommand()
@@ -810,19 +812,19 @@ class MusicCommands(Extension):
 
 		if stopped_track is None:
 			embed = Embed(
-			    title="An error occurred when playing this track.",
-			    description=f"Please try again later.",
-			    color=Colors.RED,
+				title="An error occurred when playing this track.",
+				description=f"Please try again later.",
+				color=Colors.RED,
 			)
 
 			embed.set_author(name="Stopped Playing...")
 
 		else:
 			embed = Embed(
-			    title=stopped_track.title,
-			    url=stopped_track.uri,
-			    description=f"From **{stopped_track.author}**",
-			    color=Colors.GRAY,
+				title=stopped_track.title,
+				url=stopped_track.uri,
+				description=f"From **{stopped_track.author}**",
+				color=Colors.GRAY,
 			)
 
 			embed.set_author(name="Stopped Playing...")
@@ -845,10 +847,10 @@ class MusicCommands(Extension):
 
 			if len(player.queue) < 1:
 				return await fancy_message(
-				    ctx,
-				    "[ No songs in queue, use ``/music play`` to add some! ]",
-				    ephemeral=True,
-				    color=Colors.BAD,
+					ctx,
+					"[ No songs in queue, use ``/music play`` to add some! ]",
+					ephemeral=True,
+					color=Colors.BAD,
 				)
 
 			embed = await self.get_queue_embed(player, 1)
@@ -863,16 +865,16 @@ class MusicCommands(Extension):
 
 		if not await self.can_modify(player.current.requester, ctx.author, ctx.guild.id):
 			return await fancy_message(
-			    ctx,
-			    "[ You cannot modify the player. ]",
-			    ephemeral=True,
-			    color=Colors.RED,
+				ctx,
+				"[ You cannot modify the player. ]",
+				ephemeral=True,
+				color=Colors.RED,
 			)
 
 		await ctx.defer(edit_origin=True)
 
 		async def send_update(str):
-			return await ctx.channel.send(str, allowed_mentions={ "users": []})
+			return await ctx.channel.send(str, allowed_mentions={"users": []})
 
 		match ctx.custom_id:
 			case "loop":

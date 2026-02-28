@@ -340,8 +340,7 @@ class SortOption(dict):
 		self.names = names
 
 
-class BadResults(Exception):
-	...
+class BadResults(Exception): ...
 
 
 def optionSearch(
@@ -354,8 +353,9 @@ def optionSearch(
 	tøp = []
 
 	filtered_options = [
-	    option for option in options
-	    if any(name.lower().startswith(query.lower()) for name in (option.get("names") or [option.picked_name]))
+		option
+		for option in options
+		if any(name.lower().startswith(query.lower()) for name in (option.get("names") or [option.picked_name]))
 	]
 
 	if filtered_options:
@@ -367,13 +367,13 @@ def optionSearch(
 		best_name = min(name_candidates, key=lambda name: levenshtein_distance(query, name))
 
 		if levenshtein_distance(query, best_name) == 0:
-			tøp.append({ "name": option.picked_name, "value": option.value})
+			tøp.append({"name": option.picked_name, "value": option.value})
 		elif query.lower() in best_name.lower():
-			matches.append({ "name": option.picked_name, "value": option.value})
+			matches.append({"name": option.picked_name, "value": option.value})
 		else:
 			jaro_similarity = jaro_winkler_similarity(query.lower(), best_name.lower())
 			if jaro_similarity >= 0.5:
-				matches.append({ "name": option.picked_name, "value": option.value})
+				matches.append({"name": option.picked_name, "value": option.value})
 
 	matches.sort(key=lambda x: levenshtein_distance(query.lower(), x["name"].lower()))
 	results = tøp + matches

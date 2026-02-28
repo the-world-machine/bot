@@ -24,7 +24,7 @@ from utilities.config import debugging, get_config
 from utilities.database.schemas import UserData
 from utilities.localization.formatting import fnum
 from utilities.localization.localization import Localization
-from utilities.message_decorations import *
+from utilities.message_decorations import Colors, emojis, fancy_message
 from utilities.misc import fetch
 from utilities.profile.main import draw_profile
 from utilities.textbox.mediagen import Frame, render_textbox_frames

@@ -4,7 +4,6 @@ from interactions import Snowflake
 
 
 class Connection:
-
 	def __init__(self, server_id, channel_id):
 		self.server_id = server_id
 		self.channel_id = channel_id
@@ -20,7 +19,6 @@ class Connection:
 
 
 class Transmission:
-
 	def __init__(self, a: Connection, b: Union[Connection, None]):
 		self.connection_a = a
 		self.connection_b = b

@@ -67,6 +67,7 @@ http_status_names = {
 	511: "Network Authentication Required",
 }
 
+
 def get_browser_locale(request: web.Request) -> str:
 	accept_lang = request.headers.get("Accept-Language", get_config("localization.main-locale"))
 

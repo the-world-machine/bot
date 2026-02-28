@@ -97,9 +97,9 @@ def filter_path(path: str) -> Predicate:
 def all_of(*predicates) -> Predicate:
 	return lambda event: all(p(event) for p in predicates)
 
+
 def any_of(*predicates) -> Predicate:
 	return lambda event: any(p(event) for p in predicates)
-
 
 
 watcher_thread = Thread(target=watch)

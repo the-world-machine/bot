@@ -33,6 +33,7 @@ class Colors:
 	PURE_GREEN = Color.from_hex("#00FF00")
 	PASTEL_RED = Color.from_hex("#FF6961")
 
+
 def fancy_message(
 	ctx,
 	message: str | None = None,

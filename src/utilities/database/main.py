@@ -359,7 +359,7 @@ async def new_entry(collection: Collection):
 async def update_in_database(collection: TCollection, **kwargs) -> TCollection:
 	db = await get_database()
 	existing_data = to_dict(collection)
-	updated_data = { **existing_data, **kwargs }  # pyright: ignore[reportGeneralTypeIssues]
+	updated_data = {**existing_data, **kwargs}  # pyright: ignore[reportGeneralTypeIssues]
 	await db.get_collection(collection.__class__.__name__).update_one(
 		{"_id": str(collection._id)}, {"$set": updated_data}, upsert=True
 	)
@@ -388,48 +388,39 @@ T_Primitive = TypeVar("T_Primitive", str, int, float, bool)
 
 
 @overload
-def to_dict(obj: "Collection") -> dict[str, Serializable]:
-	...
+def to_dict(obj: "Collection") -> dict[str, Serializable]: ...
 
 
 @overload
-def to_dict(obj: DBDict) -> dict[str, Serializable]:
-	...
+def to_dict(obj: DBDict) -> dict[str, Serializable]: ...
 
 
 @overload
-def to_dict(obj: DBDynamicDict) -> dict[str, Serializable]:
-	...
+def to_dict(obj: DBDynamicDict) -> dict[str, Serializable]: ...
 
 
 @overload
-def to_dict(obj: dict[Any, Any]) -> dict[str, Serializable]:
-	...
+def to_dict(obj: dict[Any, Any]) -> dict[str, Serializable]: ...
 
 
 @overload
-def to_dict(obj: DBList) -> list[Serializable]:
-	...
+def to_dict(obj: DBList) -> list[Serializable]: ...
 
 
 @overload
-def to_dict(obj: list[Any]) -> list[Serializable]:
-	...
+def to_dict(obj: list[Any]) -> list[Serializable]: ...
 
 
 @overload
-def to_dict(obj: tuple[Any, ...]) -> tuple[Serializable, ...]:
-	...
+def to_dict(obj: tuple[Any, ...]) -> tuple[Serializable, ...]: ...
 
 
 @overload
-def to_dict(obj: T_Primitive) -> T_Primitive:
-	...
+def to_dict(obj: T_Primitive) -> T_Primitive: ...
 
 
 @overload
-def to_dict(obj: None) -> None:
-	...
+def to_dict(obj: None) -> None: ...
 
 
 def to_dict(obj: Any) -> Serializable:
@@ -439,7 +430,7 @@ def to_dict(obj: Any) -> Serializable:
 	if is_dataclass(obj):
 		result: dict[str, Serializable] = {}
 		for f in fields(obj):
-			if f.name in [ "_parent", "_parent_field", "_field_name"]:
+			if f.name in ["_parent", "_parent_field", "_field_name"]:
 				continue
 			value = getattr(obj, f.name)
 			result[f.name] = to_dict(value)
