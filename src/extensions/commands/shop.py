@@ -27,7 +27,6 @@ from interactions.api.events import Ready
 
 from utilities.database.schemas import Nikogotchi, UserData
 from utilities.emojis import emojis
-from utilities.localization.formatting import fnum
 from utilities.localization.localization import Localization
 from utilities.message_decorations import *
 from utilities.shop.fetch_items import fetch_background, fetch_item, fetch_treasure
@@ -546,20 +545,25 @@ class ShopCommands(Extension):
 			pancake_data = await fetch_item()
 
 			nikogotchi_data: Nikogotchi = await Nikogotchi(ctx.author.id).fetch()
-			json_data = asdict(nikogotchi_data)
 
-			pancake_text = ""
+			pancake_text_parts = []
 			buttons: list[Button] = []
 			for id_, pancake in enumerate(pancake_data["pancakes"]):
 				pancake = Item(**pancake)
 				pancake_id = pancake_id_to_emoji_index_please_rename_them_in_db(pancake.id)
-				owned = json_data[pancake.id]
+				owned = nikogotchi_data.__getattribute__(pancake.id) or 0
 
-				amount_owned = await loc.format(loc.l("shop.owned"), amount=owned)
 				pancake_loc: dict = await loc.format(loc.l(f"items.pancakes.{pancake_id}", typecheck=dict))
-
-				pancake_text += f"{emojis['pancakes'][pancake_id]} **{pancake_loc['name']}** - {emojis['icons']['wool']}{fnum(pancake.cost)} - {amount_owned}\n{pancake_loc['description']}\n"
-
+				pancake_text_parts.append(
+					await loc.format(
+						loc.l("shop.pancakes.pancake"),
+						pancake_emoji=emojis["pancakes"][pancake_id],
+						name=pancake_loc["name"],
+						cost=pancake.cost,
+						amount_owned=owned,
+						description=pancake_loc["description"],
+					)
+				)
 				button = Button(
 					label=await loc.format(loc.l("shop.buttons.buy")),
 					emoji=emojis["pancakes"][pancake_id],
@@ -577,7 +581,9 @@ class ShopCommands(Extension):
 			buttons.append(go_back)
 
 			title = await loc.format(loc.l("shop.pancakes.title"))
-			description = await loc.format(loc.l("shop.pancakes.main"), items=pancake_text, user_wool=user_wool)
+			description = await loc.format(
+				loc.l("shop.pancakes.main"), items="\n".join(pancake_text_parts), user_wool=user_wool
+			)
 
 			embeds.append(
 				Embed(
@@ -686,7 +692,7 @@ class ShopCommands(Extension):
 					loc.l("shop.treasures.selection"),
 					treasure_icon=emojis["treasures"][selected_treasure],
 					treasure_name=selected_treasure_loc["name"],
-					owned=await loc.format(loc.l("shop.owned"), amount=amount_selected),
+					amount_selected=amount_selected,
 					price_one=buy_price_one,
 					price_all=buy_price_all,
 					limit=self.max_buy_sell_limit,
@@ -712,7 +718,7 @@ class ShopCommands(Extension):
 				treasure_list.append(
 					StringSelectOption(
 						label=await loc.format(
-							loc.l("shop.treasures.buy.option"),
+							loc.l("shop.treasures.buy.select_menu.option"),
 							name=treasure_loc["name"],
 							price=get_treasure["price"],
 						),
@@ -783,7 +789,7 @@ class ShopCommands(Extension):
 			if len(treasure_list) > 0:
 				select_menu = StringSelectMenu(
 					*treasure_list,
-					placeholder=await loc.format(loc.l("shop.treasures.buy.placeholder")),
+					placeholder=await loc.format(loc.l("shop.treasures.buy.select_menu.placeholder")),
 					custom_id=f"select_treasure",
 				)
 			else:
@@ -898,13 +904,13 @@ class ShopCommands(Extension):
 			if len(treasure_selection) > 0:
 				select_menu = StringSelectMenu(
 					*treasure_selection,
-					placeholder=await loc.format(loc.l("shop.treasures.sell.placeholder")),
+					placeholder=await loc.format(loc.l("shop.treasures.sell.select_menu.placeholder")),
 					custom_id=f"select_treasure_sell",
 				)
 			else:
 				select_menu = StringSelectMenu(
 					"💥💥💥💥💥💥💥💥💥💥💥💥",
-					placeholder=await loc.format(loc.l("shop.treasures.sell.no_treasures")),
+					placeholder=await loc.format(loc.l("shop.treasures.sell.select_menu.no_treasures")),
 					custom_id=f"select_treasure_sell",
 					disabled=True,
 				)
