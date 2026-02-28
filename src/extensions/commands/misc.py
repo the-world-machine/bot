@@ -47,7 +47,9 @@ class MiscellaneousCommands(Extension):
 			response = await fetch("https://en.wikipedia.org/api/rest_v1/page/random/summary", output="json")
 		except:
 			print_exc()
-			return await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public)
+			return await fancy_message(
+				ctx, edit=True, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public
+			)
 		
 
 		await fancy_message(
