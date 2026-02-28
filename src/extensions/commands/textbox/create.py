@@ -394,7 +394,7 @@ edit_regex = re.compile(r"textbox edit_finish (?P<state_id>-?\d+) (?P<frame_inde
 
 @modal_callback(edit_regex)
 async def handle_edit_modal(self, ctx: ModalContext, updated_frames: str):
-	match = self.edit_regex.match(ctx.custom_id)
+	match = edit_regex.match(ctx.custom_id)
 	if match == None or len(match.groups()) < 2:
 		return
 	state_id, frame_index = match.group("state_id", "frame_index")
