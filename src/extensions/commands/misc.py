@@ -3,6 +3,7 @@ import random
 import re
 import time
 import traceback as tb
+from traceback import print_exc
 
 import aiohttp
 from aioconsole import aexec
@@ -24,6 +25,7 @@ from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization.formatting import amperjoin, fnum
 from utilities.localization.localization import Localization
 from utilities.message_decorations import Colors, fancy_message
+from utilities.misc import fetch
 from utilities.textbox.facepics import get_facepic
 
 ansi_escape_pattern = re.compile(r"\033\[[0-9;]*[A-Za-z]")
@@ -40,21 +42,23 @@ class MiscellaneousCommands(Extension):
 	@contexts(bot_dm=True)
 	async def random_wikipedia(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
-		await ctx.defer(ephemeral=not public)
-		async with aiohttp.ClientSession() as session:
-			async with session.get(f"https://en.wikipedia.org/api/rest_v1/page/random/summary") as resp:
-				if resp.status == 200:
-					get_search = await resp.json()
+		await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.generic")), ephemeral=not public)
+		try:
+		  response = await fetch("https://en.wikipedia.org/api/rest_v1/page/random/summary", output="json")
+		except:
+			print_exc()
+			return await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public)
+		
 
-					await fancy_message(
-						ctx,
-						await loc.format(
-							loc.l("misc.wikipedia"),
-							link=get_search["content_urls"]["desktop"]["page"],
-							title=get_search["title"],
-						),
-						edit=True,
-					)
+		await fancy_message(
+			ctx,
+		await loc.format(
+				loc.l("misc.wikipedia"),
+				link=response["content_urls"]["desktop"]["page"],
+				title=response["title"],
+			),
+			edit=True,
+		)
 
 	@slash_command(description="bogus")
 	@slash_option(
