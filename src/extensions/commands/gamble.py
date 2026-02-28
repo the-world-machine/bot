@@ -92,7 +92,7 @@ class GambleCommands(Extension):
 			)
 
 		# TAKE the wool
-		await user_data.update(wool=user_data.wool - bet)
+		await user_data.manage_wool(-bet)
 
 		rows = [random.sample(slots, len(slots)) for _ in range(3)]
 
@@ -208,7 +208,8 @@ class GambleCommands(Extension):
 		if all(x == slot_values[0] for x in slot_values):
 			jackpot = True
 			additional_scoring = 100
-
+		if user_data.wool < 25:
+			additional_scoring += 14
 		win_amount = int(sum(slot_values) * additional_scoring * (bet / 2))
 
 		if win_amount < 0:
