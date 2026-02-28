@@ -160,12 +160,12 @@ class NikogotchiCommands(Extension):
 			for tid, amount in treasure_seek_results.found_treasure.items():
 				total += amount
 				num = fnum(amount, loc.locale)
-				rjust = num.rjust(max_amount_length)
+				rjust = num.rjust(max_amount_length, " ")
 				treasures += (
 					await loc.format(
 						loc.l("treasure.item"),
 						spacer=rjust.replace(num, ""),
-						amount=num,
+						amount=amount,
 						icon=emojis["treasures"][tid],
 						name=await loc.format(loc.l(f"items.treasures.{tid}.name")),
 					)
@@ -953,10 +953,13 @@ class NikogotchiCommands(Extension):
 
 			name = treasure_loc[treasure_nid]["name"]
 
+			num = fnum(owned_treasures.get(treasure_nid, 0), loc.locale)
+			rjust = num.rjust(max_amount_length, " ")
 			treasure_string += (
 				await loc.format(
 					loc.l("treasure.item"),
-					amount=fnum(owned_treasures.get(treasure_nid, 0), locale=loc.locale).rjust(max_amount_length),
+					spacer=rjust.replace(num, ""),
+					amount=num,
 					icon=emojis["treasures"][treasure_nid],
 					name=name,
 				)
