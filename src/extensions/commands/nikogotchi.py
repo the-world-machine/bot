@@ -270,7 +270,7 @@ class NikogotchiCommands(Extension):
 
 		metadata = await fetch_nikogotchi_metadata(nikogotchi.nid)
 		if nikogotchi.status > -1 and metadata:
-			msg = await fancy_message(ctx, await loc.format(loc.l("nikogotchi.loading")))
+			msg = await fancy_message(ctx, await loc.format(loc.l("generic.loading.nikogotchi")))
 		else:
 			if not metadata and nikogotchi.nid != "?":
 				buttons: list[BaseComponent | dict] = [
@@ -939,7 +939,7 @@ class NikogotchiCommands(Extension):
 		if user.bot:
 			return await ctx.send(await loc.format(loc.l("treasure.empty"), user_id=user.id), ephemeral=True)
 
-		await fancy_message(ctx, await loc.format(loc.l("nikogotchi.loading")), ephemeral=not public)
+		await fancy_message(ctx, await loc.format(loc.l("generic.loading.treasures")), ephemeral=not public)
 		all_treasures = await fetch_treasure()
 		treasure_string = ""
 

@@ -161,7 +161,7 @@ class WoolCommands(Extension):
 				await asyncio.sleep(15)
 				return await confirmation_m.delete()
 
-		loading = await fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")))
+		loading = await fancy_message(ctx, await loc.format(loc.l("generic.loading.hint")))
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
 		to_user: UserData = await UserData(_id=to.id).fetch()
 

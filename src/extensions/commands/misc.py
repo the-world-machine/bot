@@ -44,7 +44,7 @@ class MiscellaneousCommands(Extension):
 		loc = Localization(ctx)
 		await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.generic")), ephemeral=not public)
 		try:
-		  response = await fetch("https://en.wikipedia.org/api/rest_v1/page/random/summary", output="json")
+			response = await fetch("https://en.wikipedia.org/api/rest_v1/page/random/summary", output="json")
 		except:
 			print_exc()
 			return await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public)
@@ -189,7 +189,7 @@ class MiscellaneousCommands(Extension):
 			)
 
 		asyncio.create_task(
-			fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")), ephemeral=not public)
+			fancy_message(ctx, await loc.format(loc.l("generic.loading.evaluating")), ephemeral=not public)
 		)
 
 		method = "eval"
