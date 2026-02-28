@@ -119,6 +119,17 @@ async def icu_slash(
 			command_name = command.get_localised_name(locale)
 	return f"</{command_name}:{id}>"
 
+async def icu_quote(
+	arguments: tuple[Any, Any, Any],
+	variables: dict[str, Any],
+	locale: str,
+	client: BaseContext | None = None,
+	found_var: Any | None = None,
+):
+	input = found_var if found_var is not None else arguments[0]
+	if not isinstance(input, str):
+		input = str(input)
+	return "\n".join(f"> {line}" for line in input.split("\n"))
 
 async def icu_pretty_num(
 	arguments: tuple[Any, Any, Any],
@@ -127,13 +138,13 @@ async def icu_pretty_num(
 	client: Any | None = None,
 	found_var: Any | None = None,
 ):
-	input = found_var if found_var else arguments[0]
+	input = found_var if found_var is not None else arguments[0]
 	try:
 		if isinstance(found_var, str):
 			input = float(input)
 			if input.is_integer():
 				input = int(input)
-		return fnum(val, locale)
+		return fnum(input, locale)
 	except (ValueError, TypeError):
 		return input
 
@@ -276,7 +287,7 @@ async def icu_fallback(
 	client: Any | None = None,
 	found_var: Any | None = None,
 ):
-	return f"{{{arguments[0]}{' ' if not arguments[1] else ', ' + arguments[1]}{' ' if not arguments[2] else ', ' + str(arguments[2])}}}"
+	return f"{{{arguments[0]}{'' if not arguments[1] else ' , ' + arguments[1]}{'' if not arguments[2] else ' , ' + str(arguments[2])}}}"
 
 
 icu_formatters = {
@@ -289,6 +300,7 @@ icu_formatters = {
 	"plural": icu_plural,
 	"number": icu_number,
 	"notempty": icu_notempty,
+	"quote": icu_quote,
 }
 
 
@@ -305,8 +317,11 @@ async def parse_node(node: dict, variables, locale, client: Any | None = None):
 	arg3 = options if options is not None else extra_format_arguments
 
 	if variable.startswith("/"):
-		command_name = variable[1:]
 		format_type = "command"
+
+	if variable.startswith(">"):
+		variable = variable[1:]
+		format_type = "quote"
 
 	if isinstance(variable, str) and "{" in variable and "}" in variable:
 		variable = await render_icu(variable, variables, locale, client)
