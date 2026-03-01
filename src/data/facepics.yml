@@ -271,13 +271,13 @@ OneShot:
         Fed Up: "1408324949923594260" # OSCF of Niko face
         Blush: "1408324951798448209" # OSCF of Niko face
         Shrug: "1411246759447105637" # OSCF of Niko face
-      Jolly: # https://www.reddit.com/r/oneshot/s/CQcjS8Baj9
-        icon: "1454374382603604019"
-        faces:
-          Normal: "1454374382603604019" # @meqativ edit
-          ":3": "1454374460944679118" # @meqativ edit
-          83c: "1454374543249637544" # @RitualDashh
-          snowballed: "1454374564569153580" # @RitualDashh
+        Jolly: # https://www.reddit.com/r/oneshot/s/CQcjS8Baj9
+          icon: "1454374382603604019"
+          faces:
+            Normal: "1454374382603604019" # @meqativ edit
+            ":3": "1454374460944679118" # @meqativ edit
+            83c: "1454374543249637544" # @RitualDashh
+            snowballed: "1454374564569153580" # @RitualDashh
     Niko:
       icon: "1394387133330096228" # OneShot, niko
       faces:
