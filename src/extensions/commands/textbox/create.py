@@ -10,6 +10,7 @@ from interactions import (
 	AllowedMentions,
 	Attachment,
 	AutocompleteContext,
+	BaseContext,
 	Button,
 	ButtonStyle,
 	ComponentContext,
@@ -58,6 +59,22 @@ from utilities.textbox.states import (
 from .facepic_selector import set_facepic_in_frame_text
 
 nomentions = AllowedMentions(parse=[])
+from interactions import BaseContext
+
+
+async def get_avatar_from_mention(ctx: BaseContext, mention: str):
+	try:
+		user_id = mention.strip("<@!>")
+
+		if not user_id.isdigit():
+			raise Exception()
+
+		user = await ctx.client.fetch_user(user_id)
+		if not user:
+			raise Exception()
+		return user.avatar_url
+	except:
+		return "Other/NAVI"
 
 
 async def start(
@@ -107,6 +124,9 @@ async def start(
 		if face_path:
 			if face_path == "Other/Your Avatar":
 				face_path = ctx.user.avatar_url
+			elif face_path.startswith("<@"):
+				face_path = await get_avatar_from_mention(ctx, face_path)
+
 			text = set_facepic_in_frame_text(text, face_path)
 
 		# init state
@@ -151,7 +171,7 @@ async def facepic_autocomplete(self, ctx: AutocompleteContext):
 	if not search_query or search_query == "":
 		tøp.append(
 			SlashCommandChoice(
-				name="Start by selecting a folder (focus back on input to continue)",
+				name="Start by selecting a folder, or @ someone (focus back on input to continue)",
 				value="",
 			)
 		)
