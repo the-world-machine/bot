@@ -154,7 +154,7 @@ OneShot:
         Sigh Alt: "1394487292835659888" # OneShot, cedric_sigh2
         Smile: "1394487291862585426" # OneShot, cedric_smile
         Upset: "1394487288959991808" # OneShot, cedric_upset
-    Kip:
+    Kip Silverpoint:
       icon: "1394389376859115580" # OneShot, kip
       faces:
         Ah: "1394389281719586946" # OneShot, kip2
