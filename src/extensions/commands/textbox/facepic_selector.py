@@ -1,5 +1,6 @@
 import asyncio
 import re
+from typing import Any
 
 from interactions import (
 	ActionRow,
@@ -7,11 +8,14 @@ from interactions import (
 	Button,
 	ButtonStyle,
 	ComponentContext,
+	Embed,
 	PartialEmoji,
 	component_callback,
 )
 
+from utilities.emojis import make_emoji_cdn_url
 from utilities.localization.localization import Localization
+from utilities.message_decorations import Colors
 from utilities.misc import replace_numbers_with_emojis
 from utilities.textbox.facepics import f_storage, get_facepic
 from utilities.textbox.states import StateShortcutError, state_shortcut
@@ -37,14 +41,46 @@ async def render_selector_ui(
 	page: int = 0,
 ):
 	loc = Localization(ctx)
+	loc_facepics = Localization(ctx, prefix="facepics")
 	current_level = f_storage.facepics
+	previous_level = {}
+	location = "root"
 	for part in path:
+		location = "child"
+		previous_level = current_level
 		current_level = current_level.get(part, {})
+
+	print(path)
+	description = loc_facepics.l(f"{path}._description", typecheck=Any, return_None_on_not_found=True)
+	name = (
+		loc_facepics.l(f"{path}._name", typecheck=Any, return_None_on_not_found=True) or path[-1]
+		if len(path) > 0
+		else None
+	)
+	credits = loc_facepics.l(f"{path}._credits", typecheck=Any, return_None_on_not_found=True)
+	icon = current_level.get(
+		"icon", current_level.get("Normal", previous_level.get("icon", previous_level.get("Normal")))
+	)
+
+	embed = Embed(
+		description=await loc.format(
+			loc.l("textbox.facepic_picker.layout"),
+			location=location,
+			name=name,
+			description=description,
+			credits=credits,
+			frame_index=frame_index + 1,
+		),
+		color=Colors.DEFAULT,
+	)
+
+	if icon:
+		embed.set_thumbnail(make_emoji_cdn_url(emoji_id=str(icon)))
 
 	all_buttons: list[Button] = []
 
 	for key, value in current_level.items():
-		if key.startswith("__"):
+		if key.startswith("__") or key.startswith("_"):
 			continue
 
 		new_path_str = "/".join(path + [key])
@@ -141,7 +177,7 @@ async def render_selector_ui(
 		rows.append(ActionRow(*remaining_page_actions[i : i + MAX_PER_ROW]))
 
 	await ctx.edit_origin(
-		content=await loc.format(loc.l("textbox.picking_facepic"), frame_index=(frame_index + 1)),
+		embed=embed,
 		components=rows,
 		allowed_mentions=AllowedMentions(parse=[], roles=[], users=[]),
 	)
