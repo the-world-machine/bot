@@ -105,6 +105,8 @@ async def start(
 			filetype = "WEBP"
 
 		if face_path:
+			if face_path == "Other/Your Avatar":
+				face_path = ctx.user.avatar_url
 			text = set_facepic_in_frame_text(text, face_path)
 
 		# init state
@@ -117,9 +119,9 @@ async def start(
 				frames=Frame(text=text),
 			),
 		)
-	if force_send != None:
-		if force_send or (send_to != 1 and (len(text) != 0 and face_path != None)):
-			await send_output(ctx, state_id, 0)
+
+	if force_send or (send_to != 1 and (len(text) != 0 and face_path != None)):
+		await send_output(ctx, state_id, 0)
 
 	return await respond(ctx, state_id, frame_index or 0)
 
