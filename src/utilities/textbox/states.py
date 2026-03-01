@@ -255,6 +255,7 @@ async def state_shortcut(
 		await fancy_message(
 			ctx,
 			await loc.format(loc.l("generic.errors.expired")) + f"\n-# **sid:** {str(state_id)}",
+			components=[],
 			ephemeral=True,
 		)
 		raise StateShortcutError(f"State with ID '{state_id}' not found.")
