@@ -234,18 +234,14 @@ class Localization:
 			return input
 
 	@overload
-	def l(self, path: str, *, typecheck: Type[T]) -> T: ...
+	def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T: ...
 
 	@overload
-	def l(self, path: str) -> str: ...
+	def l(self, path: str, **variables: Any) -> str: ...
 
-	def l(self, path: str, *, typecheck: Any = str) -> Any:
+	def l(self, path: str, *, typecheck: Any = str, **variables: Any) -> Any:
 		path = f"{trailing_dots_regex.sub('', self.prefix)}/{path}" if len(self.prefix) > 0 else path
-		return self.sl(
-			path=path,
-			locale=self.locale,
-			typecheck=typecheck,
-		)
+		return self.sl(path=path, locale=self.locale, typecheck=typecheck, **variables)
 
 	@staticmethod
 	@overload
@@ -254,6 +250,7 @@ class Localization:
 		locale: str | None,
 		*,
 		typecheck: Type[T],
+		return_None_on_not_found: bool = False,
 		raise_on_not_found: bool = False,
 	) -> T: ...
 
@@ -267,6 +264,7 @@ class Localization:
 		locale: str | None = None,
 		*,
 		typecheck: Any = str,
+		return_None_on_not_found: bool = False,
 		raise_on_not_found: bool = False,
 	) -> Any:
 		if locale is None:
@@ -276,6 +274,7 @@ class Localization:
 			value,
 			path,
 			fallback_value=fallback_locale if "fallback_locale" in globals() and fallback_locale else None,
+			return_None_on_not_found=return_None_on_not_found,
 			raise_on_not_found=raise_on_not_found,
 			_error_message="[path] ([error])" if debug else "[path]",
 		)
