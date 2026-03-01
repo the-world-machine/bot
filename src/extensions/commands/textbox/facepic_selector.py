@@ -227,7 +227,7 @@ async def handle_facepic_selection(self, ctx: ComponentContext):
 				face_path = ctx.user.avatar_url
 		frame_data.text = set_facepic_in_frame_text(frame_data.text, face_path)
 
-		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))  # type:ignore
+		asyncio.create_task(update_textbox(state.memory_leak, state_id, frame_index, edit=True))
 
 	selected_item = f_storage.facepics
 	for part in path:
