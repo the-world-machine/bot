@@ -50,14 +50,14 @@ async def render_selector_ui(
 		previous_level = current_level
 		current_level = current_level.get(part, {})
 
-	print(path)
-	description = loc_facepics.l(f"{path}._description", typecheck=Any, return_None_on_not_found=True)
+	loc_path = ".".join(f'["{name}"]' for name in path)
+	description = loc_facepics.l(f"{loc_path}._description", typecheck=Any, return_None_on_not_found=True)
 	name = (
-		loc_facepics.l(f"{path}._name", typecheck=Any, return_None_on_not_found=True) or path[-1]
+		loc_facepics.l(f"{loc_path}._name", typecheck=Any, return_None_on_not_found=True) or path[-1]
 		if len(path) > 0
 		else None
 	)
-	credits = loc_facepics.l(f"{path}._credits", typecheck=Any, return_None_on_not_found=True)
+	credits = loc_facepics.l(f"{loc_path}._credits", typecheck=Any, return_None_on_not_found=True)
 	icon = current_level.get(
 		"icon", current_level.get("Normal", previous_level.get("icon", previous_level.get("Normal")))
 	)
