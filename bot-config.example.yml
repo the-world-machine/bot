@@ -80,13 +80,10 @@ database:
   uri: ~ # string, example: mongodb+srv://meqativ:miaouw@---.mongodb.net  or  mongodb+srv://localhost
 
 localization:
-  crowdin-token:
+  weblate-token:
     "..."
-    # ↑ https://crowdin.com/settings#api-key
-    #   Permissions:
-    #     Projects → { Translation status (read only), Source files & strings (Read and Write), Translations (Read only) }
-    #   Granular access: Enable
-    #   go to Select projects and pick twm or whatevr you called it
+    # ↑ https://translate.theworldmachine.xyz/access/the-world-machine/#api
+    #   go to Personal API key and copypaste it here
   main-locale: en-GB # string, make sure the locale is 100% complete
   debug: ~ # boolean, defaults to false on prod, shows detailed error messages for not found paths if true
   whitelist:
