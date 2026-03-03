@@ -25,11 +25,30 @@
 			]
 		},
 		{
+			"name": "Debug Script (Dynamic Prompt)",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/src/main.py",
+			"console": "integratedTerminal",
+			"args": [
+				"script",
+				"${input:scriptInput}"
+			]
+		},
+		{
 			"name": "Python Debugger: Current File",
 			"type": "debugpy",
 			"request": "launch",
 			"program": "${file}",
 			"console": "integratedTerminal"
+		},
+	],
+	"inputs": [
+		{
+			"id": "scriptInput",
+			"type": "promptString",
+			"description": "Enter the name of the script (e.g. weblate.sync_file_structure)",
+			"default": "sync_file_structure"
 		}
 	]
 }

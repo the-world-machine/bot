@@ -1,12 +1,34 @@
+import asyncio
+import importlib
 import sys
-from typing import Literal
 
-run: Literal["bot", "textboxweb"] = "bot"
+# Handled commands
+VALID_COMMANDS = ("bot", "textboxweb", "script")
+
+run: str = "bot"
 if len(sys.argv) > 1:
-	if sys.argv[1] not in ("bot", "textboxweb"):
-		raise ValueError(f"Invalid project passed to run script (available: bot / textboxweb, passed: {run})")
 	run = sys.argv[1]
+	if run not in VALID_COMMANDS:
+		raise ValueError(f"Invalid value passed to run script (available: {', '.join(VALID_COMMANDS)}, passed: {run})")
 
+if run == "script":
+	if len(sys.argv) < 3:
+		print("Usage: python src/main.py script <script_name>")
+		sys.exit(1)
+
+	script_name = sys.argv[2]
+	try:
+		module = importlib.import_module(f"scripts.{script_name}")
+		if hasattr(module, "run"):
+			if asyncio.iscoroutinefunction(module.run):
+				asyncio.run(module.run())
+			else:
+				module.run()
+		else:
+			print(f"Error: Script '{script_name}' has no run() function.")
+	except ImportError:
+		print(f"Error: Could not find script '{script_name}' in src/scripts/")
+	sys.exit(0)
 
 print("\033[999B", end="", flush=True)
 print("\n─ Starting The World Machine... 1/3")
