@@ -1,3 +1,4 @@
+import asyncio
 import math
 import random
 import re
@@ -939,15 +940,19 @@ class NikogotchiCommands(Extension):
 		if user.bot:
 			return await ctx.send(await loc.format(loc.l("treasure.empty"), user_id=user.id), ephemeral=True)
 
-		await fancy_message(ctx, await loc.format(loc.l("generic.loading.treasures")), ephemeral=not public)
-		all_treasures = await fetch_treasure()
-		treasure_string = ""
+		message = asyncio.create_task(
+			fancy_message(ctx, await loc.format(loc.l("generic.loading.treasures")), ephemeral=not public)
+		)
 
+		all_treasures = await fetch_treasure()
 		user_data: UserData = await UserData(_id=user.id).fetch()
 		owned_treasures = user_data.owned_treasures
-		max_amount_length = len(fnum(max(owned_treasures.values(), default=0), locale=loc.locale))
 		if len(list(user_data.owned_treasures.items())) == 0:
-			return await ctx.send(await loc.format(loc.l("treasure.empty"), user_id=user.id), ephemeral=True)
+			await message
+			return await fancy_message(ctx, await loc.format(loc.l("treasure.empty"), user_id=user.id), edit=True)
+
+		max_amount_length = len(fnum(max(owned_treasures.values(), default=0), locale=loc.locale))
+		treasure_string = ""
 		for treasure_nid, item in all_treasures.items():
 			treasure_loc: dict = await loc.format(loc.l(f"items.treasures", typecheck=dict))
 
@@ -973,7 +978,7 @@ class NikogotchiCommands(Extension):
 					await put_mini(loc, "treasure.tip", type="tip", user_id=ctx.user.id, pre="\n") if not public else ""
 				),
 				color=Colors.DEFAULT,
-			)
+			),
 		)
 
 	async def init_repronoun_flow(
