@@ -70,7 +70,7 @@ class ReadyEvent(Extension):
 			message = await channel.send(
 				embed=Embed(
 					description=f"Ready in **{fnum(ready_delta.total_seconds())}**s {emojis['icons']['loading']}\n"
-					+ f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>. git pushed <t:{round(version['last_updated_at'].timestamp())}:R> (#{version['commit']})"  # type: ignore
+					+ f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>. git pushed <t:{round(version.last_updated_at.timestamp())}:R> (#{version.commit})"  # type: ignore
 				)
 			)
 
