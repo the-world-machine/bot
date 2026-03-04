@@ -10,7 +10,7 @@ from grapheme import graphemes
 from PIL import Image, ImageDraw, ImageFont
 
 from utilities.config import get_config
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, source_loc
 from utilities.misc import cached_get
 from utilities.textbox.facepics import get_facepic
 from utilities.textbox.parsing import (
@@ -195,7 +195,7 @@ not_empty_empty_face.parse_input("clear")
 
 
 async def render_frame(
-	frame: Frame, animated: bool = True, loc: Localization = Localization()
+	frame: Frame, animated: bool = True, loc: Localization = source_loc
 ) -> tuple[list[Image.Image], list[int]]:
 	global not_empty_empty_face
 	word_wrap = True
@@ -363,7 +363,7 @@ async def render_textbox_frames(
 	filetype: SupportedFiletypes = "WEBP",
 	frame_index: int | None = None,
 	loops: int = 0,
-	loc: Localization = Localization(),
+	loc: Localization = source_loc,
 ) -> io.BytesIO:
 	if len(frames) == 0:
 		raise ValueError("Provide atleast one frame")

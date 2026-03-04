@@ -12,7 +12,7 @@ from utilities.config import debugging, get_config
 from utilities.database.schemas import UserData
 from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization.formatting import fnum
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, source_loc
 from utilities.message_decorations import Colors
 from utilities.misc import cached_get, pretty_user
 from utilities.shop.fetch_items import fetch_background, fetch_badge
@@ -86,7 +86,7 @@ async def draw_profile(
 	user: User,
 	filename: str,
 	alt: str | None = None,
-	loc: Localization = Localization(),
+	loc: Localization = source_loc,
 ) -> File:
 	if wool_icon == None or sun_icon == None or font == None:
 		await load_profile_assets()

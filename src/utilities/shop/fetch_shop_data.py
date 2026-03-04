@@ -5,7 +5,7 @@ from typing import Literal
 
 from utilities.database.main import fetch_items, update_shop
 from utilities.emojis import TreasureTypes
-from utilities.localization.localization import Localization
+from utilities.localization.localization import source_loc
 
 
 @dataclass
@@ -65,7 +65,7 @@ async def get_shop_data():
 	all_bgs = items["backgrounds"]
 	backgrounds = {bg: val for bg, val in all_bgs.items() if val["purchasable"]}
 	treasures = items["treasures"]
-	motds = Localization().l("shop.motds", typecheck=tuple)
+	motds = source_loc.l("shop.motds", typecheck=tuple)
 
 	data.background_stock = random.sample(list(backgrounds.keys()), 3)
 	data.treasure_stock = random.sample(list(treasures.keys()), 3)

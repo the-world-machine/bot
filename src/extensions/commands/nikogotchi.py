@@ -1,4 +1,3 @@
-import asyncio
 import math
 import random
 import re
@@ -47,7 +46,6 @@ from utilities.nikogotchi_metadata import (
 	fetch_nikogotchi_metadata,
 	pick_random_nikogotchi,
 )
-from utilities.shop.fetch_items import fetch_treasure
 
 
 @dataclass
@@ -319,6 +317,7 @@ class NikogotchiCommands(Extension):
 					+ await put_mini(
 						loc,
 						"nikogotchi.tipnvalid",
+						show_up_amount=5,
 						type="tip",
 						user_id=ctx.user.id,
 						pre="\n\n",
@@ -354,7 +353,7 @@ class NikogotchiCommands(Extension):
 				title=await loc.format(loc.l("nikogotchi.found.title"), name=nikogotchi.name),
 				color=Colors.GREEN,
 				description=await loc.format(loc.l("nikogotchi.found.description"))
-				+ await put_mini(loc, "nikogotchi.found.renamenote", user_id=ctx.user.id, pre="\n\n"),
+				+ await put_mini(loc, "nikogotchi.found.renamenote", show_up_amount=5, user_id=ctx.user.id, pre="\n\n"),
 			)
 
 			hatched_embed.set_thumbnail(url=selected_nikogotchi.image_url)
@@ -546,6 +545,7 @@ class NikogotchiCommands(Extension):
 					loc,
 					"nikogotchi.treasured.dialogues.senote",
 					user_id=ctx.user.id,
+					show_up_amount=25,
 					pre="\n\n",
 				)
 				nikogotchi.status = 3
@@ -919,67 +919,6 @@ class NikogotchiCommands(Extension):
                 ctx.edit(embed=sender_embed),
                 button_ctx.edit_origin(embed=receiver_embed, components=[])
             )"""
-
-	@slash_command(description="View what treasure someone has")
-	@integration_types(guild=True, user=True)
-	@contexts(bot_dm=True)
-	@slash_option(
-		"user",
-		description="The person you would like to see treasure of",
-		opt_type=OptionType.USER,
-	)
-	@slash_option(
-		description="Whether you want the response to be visible for others in the channel",
-		name="public",
-		opt_type=OptionType.BOOLEAN,
-	)
-	async def treasures(self, ctx: SlashContext, user: User | None = None, public: bool = True):
-		loc = Localization(ctx)
-		if user is None:
-			user = ctx.user
-		if user.bot:
-			return await ctx.send(await loc.format(loc.l("treasure.empty"), user_id=user.id), ephemeral=True)
-
-		message = asyncio.create_task(
-			fancy_message(ctx, await loc.format(loc.l("generic.loading.treasures")), ephemeral=not public)
-		)
-
-		all_treasures = await fetch_treasure()
-		user_data: UserData = await UserData(_id=user.id).fetch()
-		owned_treasures = user_data.owned_treasures
-		if len(list(user_data.owned_treasures.items())) == 0:
-			await message
-			return await fancy_message(ctx, await loc.format(loc.l("treasure.empty"), user_id=user.id), edit=True)
-
-		max_amount_length = len(fnum(max(owned_treasures.values(), default=0), locale=loc.locale))
-		treasure_string = ""
-		for treasure_nid, item in all_treasures.items():
-			treasure_loc: dict = await loc.format(loc.l(f"items.treasures", typecheck=dict))
-
-			name = treasure_loc[treasure_nid]["name"]
-
-			num = fnum(owned_treasures.get(treasure_nid, 0), loc.locale)
-			rjust = num.rjust(max_amount_length, " ")
-			treasure_string += (
-				await loc.format(
-					loc.l("treasure.item"),
-					spacer=rjust.replace(num, ""),
-					amount=num,
-					icon=emojis["treasures"][treasure_nid],
-					name=name,
-				)
-				+ "\n"
-			)
-
-		await ctx.edit(
-			embed=Embed(
-				description=await loc.format(loc.l("treasure.message"), user=user.mention, treasures=treasure_string)
-				+ (
-					await put_mini(loc, "treasure.tip", type="tip", user_id=ctx.user.id, pre="\n") if not public else ""
-				),
-				color=Colors.DEFAULT,
-			),
-		)
 
 	async def init_repronoun_flow(
 		self,

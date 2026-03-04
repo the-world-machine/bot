@@ -145,6 +145,7 @@ class WoolCommands(Extension):
 					loc,
 					"wool.transfer.to.bot.notefirmation",
 					user_id=ctx.user.id,
+					show_up_amount=10,
 					pre="\n\n",
 				),
 				color=Colors.WARN,

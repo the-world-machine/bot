@@ -9,18 +9,17 @@ from interactions import (
 	Embed,
 	EmbedField,
 	Extension,
-	Message,
 	OptionType,
 	SlashContext,
-	User,
 	contexts,
 	integration_types,
 	slash_command,
 	slash_option,
 )
 
-from utilities.localization.formatting import amperjoin, fnum, ftime
-from utilities.localization.localization import Localization
+from utilities.emojis import emojis
+from utilities.localization.formatting import fnum, ftime
+from utilities.localization.localization import Localization, source_loc
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import get_git_hash
 
@@ -41,26 +40,18 @@ class AboutCommand(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def about(self, ctx: SlashContext, public: bool = False):
-		loc = Localization(ctx)
 		start_time = datetime.now(timezone.utc)
-		_ = await fancy_message(ctx, await loc.format(loc.l("generic.loading.hint")), ephemeral=not public)
-		if not isinstance(_, Message):
-			return
+
+
+		loading_message = await fancy_message(ctx, f"-# {emojis["icons"]["loading"]}", ephemeral=not public)
 
 		reception_latency = start_time - datetime.fromtimestamp(ctx.id.created_at.timestamp(), tz=timezone.utc)
 
-		reply_latency = datetime.fromtimestamp(_.created_at.timestamp(), tz=timezone.utc) - start_time
+		reply_latency = datetime.fromtimestamp(loading_message.created_at.timestamp(), tz=timezone.utc) - start_time
 
-		host = f"{platform.system()} {platform.release()} ({platform.architecture()[0]})"
 
-		def users_to_mentions(users: list[User], detail: bool = False) -> list[str]:
-			return list(
-				map(
-					lambda user: f"<@{user.id}>" + (f" (@{user.username})" if detail else ""),
-					users,
-				)
-			)
-
+		loc = Localization(ctx)
+		stats_loc = Localization(ctx, prefix="commands.stats.commands.about")
 		buttons: list[Button] = []
 		strbuttons: list[str] = []
 		processed_lines: list[str] = []
@@ -68,11 +59,11 @@ class AboutCommand(Extension):
 		if ctx.client.app.description:
 			for line in ctx.client.app.description.splitlines():
 				try:
-					if ": http" in line:
+					if ": http" in line or ":http" in line:
 						name, url = line.split(":", 1)
 						name = name.strip()
 
-						loc_name = await loc.format(loc.l(f"about.buttons['{name.lower()}']"))
+						loc_name = await loc.format(stats_loc.l(f"buttons['{name.lower()}']"))
 						if not loc_name.startswith("`"):
 							name = loc_name
 
@@ -83,10 +74,8 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = list(
-								await Localization().format(Localization().l("about.mes", typecheck=tuple))
-							)
-							translated_lines = list(await loc.format(loc.l("about.mes", typecheck=tuple)))
+							original_lines = list(await source_loc.format(source_loc.l("mes", typecheck=tuple)))
+							translated_lines = list(await loc.format(stats_loc.l("mes", typecheck=tuple)))
 							index = original_lines.index(line)
 							line = translated_lines[index]
 						processed_lines.append(line)
@@ -94,70 +83,60 @@ class AboutCommand(Extension):
 					processed_lines.append(line)
 
 		team = ctx.client.app.team
-		developers: list[User] = [ctx.client.app.owner]
-		if team:
-			developers = [member.user for member in team.members]
-		contributors: list[User] = []
-		translators: list[User] = []
-		donators: list[User] = []
+		processed_description = "\n".join(processed_lines)
 
-		description = "\n".join(
-			[
-				s
-				for s in (
-					f"👑 {amperjoin(users_to_mentions(developers, detail=True))}",
-					f"🧑‍💻 {amperjoin(users_to_mentions(contributors))}" if len(contributors) > 0 else None,
-					f"✍️ {amperjoin(users_to_mentions(translators))}" if len(translators) > 0 else None,
-					f"💸 {amperjoin(users_to_mentions(donators))}" if len(donators) > 0 else None,
-					"",
-					"\n".join(processed_lines),
-				)
-				if s is not None
-			]
-		)
-		embed = Embed(description=description, color=Colors.DEFAULT)
+		if len(strbuttons) != 0:
+			processed_description += "\n" + (" · ".join(strbuttons))
+
+		embed = Embed(description=processed_description, color=Colors.DEFAULT)
 		embed.add_fields(
 			EmbedField(
-				name=await loc.format(loc.l("about.names.avg_ping")),
-				value=await loc.format(loc.l("about.values.time"), sec=fnum(ctx.client.latency, ctx.locale)),
+				name=await loc.format(stats_loc.l("fields.avg_ping.name")),
+				value=await loc.format(stats_loc.l("generic_values.time"), sec=fnum(ctx.client.latency, ctx.locale)),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(loc.l("about.names.latency")),
-				value=f"{await loc.format(loc.l('about.values.time'), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.format(loc.l('about.values.time'), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
+				name=await loc.format(stats_loc.l("fields.latency.name")),
+				value=f"{await loc.format(stats_loc.l("generic_values.time"), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.format(stats_loc.l("generic_values.time"), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(loc.l("about.names.commit_hash")),
-				value=commit_hash if commit_hash else await loc.format(loc.l("misc.status.values.failed_commit_hash")),
+				await loc.format(stats_loc.l("fields.uptime.name")),
+				ftime(datetime.now() - ctx.client.start_time, ctx.locale),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(loc.l("about.names.mem_usg")),
+				name=await loc.format(stats_loc.l("fields.mem_usg.name")),
 				value=await loc.format(
-					loc.l("about.values.percent"),
+					stats_loc.l("generic_values.percent"),
 					percentage=psutil.virtual_memory().percent / 100,
 				),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(loc.l("about.names.server_count")),
+				name=await loc.format(stats_loc.l("fields.server_count.name")),
 				value=str(ctx.client.guild_count),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(loc.l("about.names.cpu_usg")),
-				value=await loc.format(loc.l("about.values.percent"), percentage=psutil.cpu_percent() / 100),
+				name=await loc.format(stats_loc.l("fields.cpu_usg.name")),
+				value=await loc.format(stats_loc.l("generic_values.percent"), percentage=psutil.cpu_percent() / 100),
 				inline=True,
 			),
 			EmbedField(
-				await loc.format(loc.l("about.names.uptime")),
-				ftime(datetime.now() - ctx.client.start_time, ctx.locale),
+				name=await loc.format(stats_loc.l("fields.version.name")),
+				value=await loc.format(stats_loc.l("fields.version.value"),
+													 commit_hash=commit_hash if commit_hash else "XXXXXX",
+													 last_updated_at=datetime.now()),
+				inline=True,
+			),
+			EmbedField(
+				await loc.format(stats_loc.l("fields.host.name")),
+				f"{platform.system()} {platform.release()} ({platform.architecture()[0]})",
 				inline=True,
 			),
 		)
-		# embed.add_field(await loc.format(loc.l("about.names.user_installs")), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
-		embed.add_field(await loc.format(loc.l("about.names.host")), host, inline=True)
+		# embed.add_field(await loc.format(stats_loc.l("fields.user_installs.name")), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
 		rows = []
 		for i in range(0, len(buttons), 5):
 			rows.append(ActionRow(*buttons[i : i + 5]))

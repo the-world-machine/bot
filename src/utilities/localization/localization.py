@@ -9,10 +9,12 @@ from interactions import BaseInteractionContext, Client, Guild, Message
 from termcolor import colored
 
 from extensions.events.Ready import ReadyEvent
-from utilities.config import debugging, get_config, get_token, on_prod
+from utilities.config import debugging, get_config, on_prod
 from utilities.localization.icu import render_icu
-from utilities.misc import FrozenDict, decode_base64_padded, format_type_hint, rabbit
+from utilities.misc import FrozenDict, format_type_hint, rabbit
 from utilities.source_watcher import FileModifiedEvent, all_of, filter_file_suffix, filter_path, subscribe
+
+__all__ = ["Localization", "source_loc", "local_override"]
 
 _locales: dict[str, dict] = {}
 debug: bool = bool(get_config("localization.debug", ignore_None=True))
@@ -209,7 +211,7 @@ class Localization:
 				final_locale = get_config("localization.main-locale")
 
 		self.locale = final_locale
-		self.prefix = prefix
+		self.prefix = trailing_dots_regex.sub("", prefix)
 
 	@overload
 	async def format(self, input: str, **variables: Any) -> str: ...
@@ -237,10 +239,13 @@ class Localization:
 	def l(self, path: str, *, typecheck: Type[T], **variables: Any) -> T: ...
 
 	@overload
-	def l(self, path: str, **variables: Any) -> str: ...
+	def l(self, path: str, *, prefix_override: str | None = None, **variables: Any) -> str: ...
 
-	def l(self, path: str, *, typecheck: Any = str, **variables: Any) -> Any:
-		path = f"{trailing_dots_regex.sub('', self.prefix)}/{path}" if len(self.prefix) > 0 else path
+	def l(self, path: str, *, prefix_override: str | None = None, typecheck: Any = str, **variables: Any) -> Any:
+		prefix = self.prefix
+		if prefix_override:
+			prefix = prefix_override
+		path = f"{prefix}.{path}" if len(prefix) > 0 else path
 		return self.sl(path=path, locale=self.locale, typecheck=typecheck, **variables)
 
 	@staticmethod
@@ -302,6 +307,4 @@ class Localization:
 
 		return results
 
-
-token = get_token()
-bot_id = decode_base64_padded(token.split(".")[0])
+source_loc = Localization()

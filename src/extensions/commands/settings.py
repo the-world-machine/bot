@@ -440,6 +440,7 @@ class SettingsCommands(Extension):
 				loc,
 				"settings.welcome.enabled.default_tip",
 				user_id=ctx.user.id,
+				show_up_amount=15,
 				pre="\n\n",
 			)
 		await config.update(channel_id=str(channel.id), errored=False)

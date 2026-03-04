@@ -300,7 +300,9 @@ async def send_output(
 		and sent_message
 		and MessageFlags.EPHEMERAL in sent_message.flags
 	):
-		mini = await put_mini(loc, "textbox.errors.ephemeral_warnote", ctx.user.id, type="warn")
+		mini = await put_mini(
+			loc, "textbox.errors.ephemeral_warnote", user_id=ctx.user.id, show_up_amount=9, type="warn"
+		)
 		if mini != "":
 			await ctx.edit(
 				message=sent_message,
