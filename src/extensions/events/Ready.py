@@ -8,7 +8,7 @@ from interactions.api.events import Ready
 from utilities.config import get_config
 from utilities.emojis import emojis
 from utilities.message_decorations import Colors
-from utilities.misc import git_log
+from utilities.stats import git_log
 
 stuff = {
 	"started": False,

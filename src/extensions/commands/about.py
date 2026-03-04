@@ -20,14 +20,7 @@ from utilities.emojis import emojis
 from utilities.localization.formatting import fnum, ftime
 from utilities.localization.localization import Localization, source_loc
 from utilities.message_decorations import Colors, fancy_message
-from utilities.misc import git_log
-from utilities.stats import get_stats
-
-try:
-	version = git_log()
-	print(f"Got git log: {version}")
-except Exception as e:
-	print(f"Error retrieving git log: {e}")
+from utilities.stats import get_stats, get_version
 
 
 class AboutCommand(Extension):
@@ -86,6 +79,7 @@ class AboutCommand(Extension):
 		if len(strbuttons) != 0:
 			processed_description += "\n" + (" · ".join(strbuttons))
 		sys_stats = get_stats()
+		version = get_version()
 		embed = Embed(description=processed_description, color=Colors.DEFAULT)  # fixme: no way to see owners now
 		embed.add_fields(
 			EmbedField(
@@ -121,8 +115,10 @@ class AboutCommand(Extension):
 				name=await loc.format(stats_loc.l("fields.version.name")),
 				value=await loc.format(
 					stats_loc.l("fields.version.value"),
-					commit_hash=version["commit"],
-					last_updated_at=version["last_updated_at"],
+					version_type="tag" if version.tag is None else "commit",
+					tag=version.tag,
+					commit_hash=version.commit,
+					last_updated_at=version.last_updated_at,
 				),
 				inline=True,
 			),

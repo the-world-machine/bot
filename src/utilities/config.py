@@ -4,7 +4,8 @@ from typing import Literal, Type, TypeVar, overload
 from termcolor import colored
 from yaml import safe_load as load_yml_file
 
-from utilities.misc import get_current_branch, rabbit
+from utilities.misc import rabbit
+from utilities.stats import get_current_branch
 
 bcpath = Path("bot-config.yml")
 try:
