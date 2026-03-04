@@ -104,23 +104,16 @@ class AboutCommand(Extension):
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(stats_loc.l("fields.mem_usg.name")),
-				value=await loc.format(
-					stats_loc.l("generic_values.percent"),
-					percentage=psutil.virtual_memory().percent / 100,  # fixme
-				),
-				inline=True,
-			),
-			EmbedField(
 				name=await loc.format(stats_loc.l("fields.server_count.name")),
 				value=str(ctx.client.guild_count),
 				inline=True,
 			),
 			EmbedField(
-				name=await loc.format(stats_loc.l("fields.cpu_usg.name")),
+				name=await loc.format(stats_loc.l("fields.load.name")),
 				value=await loc.format(
-					stats_loc.l("generic_values.percent"),
-					percentage=psutil.cpu_percent() / 100,  # fixme
+					stats_loc.l("fields.load.value"),
+					cpu_load=psutil.cpu_percent() / 100,
+					mem_load=psutil.virtual_memory().percent / 100,
 				),
 				inline=True,
 			),
@@ -129,7 +122,7 @@ class AboutCommand(Extension):
 				value=await loc.format(
 					stats_loc.l("fields.version.value"),
 					commit_hash=version["commit"],
-					last_updated_at=version["last_updated_at"],  # fixme
+					last_updated_at=version["last_updated_at"],
 				),
 				inline=True,
 			),
