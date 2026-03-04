@@ -4,6 +4,7 @@ import re
 import subprocess
 from base64 import b64decode
 from dataclasses import dataclass
+from datetime import datetime
 from os import path
 from pathlib import Path
 from typing import (
@@ -11,6 +12,7 @@ from typing import (
 	Iterable,
 	Literal,
 	Optional,
+	TypedDict,
 	Union,
 	Unpack,
 )
@@ -281,8 +283,16 @@ def shell(command: str) -> str:
 	return exec(["sh", "-c", command])
 
 
-def get_git_hash(long: bool = False) -> str:
-	return exec([x for x in ["git", "rev-parse", "--short" if not long else None, "HEAD"] if x is not None]).strip()
+class Version(TypedDict):
+	commit: str
+	commit_long: str
+	last_updated_at: datetime
+
+
+def git_log() -> Version:
+	fmt = "%h/%H/%ct"
+	output = exec(["git", "log", "-1", f"--pretty={fmt}", "--no-patch"]).strip().split("/")
+	return {"commit": output[0], "commit_long": output[0], "last_updated_at": datetime.fromtimestamp(float(output[2]))}
 
 
 def get_current_branch() -> str:

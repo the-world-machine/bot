@@ -8,7 +8,7 @@ from interactions.api.events import Ready
 from utilities.config import get_config
 from utilities.emojis import emojis
 from utilities.message_decorations import Colors
-from utilities.misc import get_git_hash
+from utilities.misc import git_log
 
 stuff = {
 	"started": False,
@@ -66,13 +66,11 @@ class ReadyEvent(Extension):
 		ready_delta: timedelta = client.ready_at - client.started_at  # type: ignore
 		message: Message | None  # type:ignore
 		if get_config("dev.send-startup-message", typecheck=bool):
+			version = git_log()
 			message = await channel.send(
 				embed=Embed(
-					description=f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>"  # type: ignore
-					+  # type: ignore
-					f"(Ready: **{fnum(ready_delta.total_seconds())}**s {emojis['icons']['loading']})"
-					+ "\n"
-					+ f"Git hash: {get_git_hash()}"
+					description=f"Ready in **{fnum(ready_delta.total_seconds())}**s {emojis['icons']['loading']}\n"
+					+ f"<t:{round(client.started_at.timestamp())}:D> <t:{round(client.started_at.timestamp())}:T>. git pushed <t:{round(version['last_updated_at'].timestamp())}:R> (#{version['commit']})"  # type: ignore
 				)
 			)
 
@@ -103,8 +101,8 @@ class ReadyEvent(Extension):
 				assert embed.description is not None
 				embed.description = embed.description.replace(
 					" " + emojis["icons"]["loading"],
-					f", loading took **{fnum(loadup_delta.total_seconds())}**s.",
-				).replace(" :i:", f", loading took **{fnum(loadup_delta.total_seconds())}**s.")
+					f", loaded in **{fnum(loadup_delta.total_seconds())}**s.",
+				).replace(" :i:", f", loaded in **{fnum(loadup_delta.total_seconds())}**s.")
 
 				message = await message.edit(embed=embed)
 				client.followup_message_edited_at = message.edited_timestamp  # type: ignore

@@ -21,13 +21,13 @@ from utilities.emojis import emojis
 from utilities.localization.formatting import fnum, ftime
 from utilities.localization.localization import Localization, source_loc
 from utilities.message_decorations import Colors, fancy_message
-from utilities.misc import get_git_hash
+from utilities.misc import git_log
 
 try:
-	commit_hash = get_git_hash()
-	print(f"Found git hash: {commit_hash}")
+	version = git_log()
+	print(f"Got git log: {version}")
 except Exception as e:
-	print(f"Error retrieving git hash: {e}")
+	print(f"Error retrieving git log: {e}")
 
 
 class AboutCommand(Extension):
@@ -128,8 +128,8 @@ class AboutCommand(Extension):
 				name=await loc.format(stats_loc.l("fields.version.name")),
 				value=await loc.format(
 					stats_loc.l("fields.version.value"),
-					commit_hash=commit_hash if commit_hash else "XXXXXX",
-					last_updated_at=datetime.now(),  # fixme
+					commit_hash=version["commit"],
+					last_updated_at=version["last_updated_at"],  # fixme
 				),
 				inline=True,
 			),
