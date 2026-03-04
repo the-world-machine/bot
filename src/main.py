@@ -1,3 +1,17 @@
+print(10, "\033[999B", end="", flush=True)
+
+from datetime import datetime
+from logging import INFO
+
+from termcolor import colored
+
+from utilities.config import get_config, get_token
+from utilities.logging import createLogger
+
+logger = createLogger(__name__)
+logger.log(INFO, colored("Starting The World Machine... 1/3\n\n", "light_cyan"))
+
+
 import asyncio
 import importlib
 import sys
@@ -30,13 +44,6 @@ if run == "script":
 		print(f"Error: Could not find script '{script_name}' in src/scripts/")
 	sys.exit(0)
 
-print("\033[999B", end="", flush=True)
-print("\n─ Starting The World Machine... 1/3")
-from datetime import datetime
-
-from utilities.config import get_config, get_token
-from utilities.logging import createLogger
-
 if run == "textboxweb":
 	from utilities.textbox.web.run import run_server
 
@@ -51,8 +58,7 @@ from utilities.extensions import assign_events, load_commands
 from utilities.misc import set_status
 from utilities.profile.main import load_profile_assets
 from utilities.rolling import roll_avatar, roll_status
-
-logger = createLogger(__name__)
+from utilities.stats import system_monitor_task
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
 
@@ -88,21 +94,22 @@ assign_events(client)
 
 @listen(Startup)
 async def on_startup(event: Startup):
-	await set_status(client, "[ Loading... ]")
+	asyncio.create_task(system_monitor_task())
+	asyncio.create_task(set_status(client, "[ Loading... ]"))
 	load_commands(client)
 	await connect_to_db()
-	await load_profile_assets()
+	asyncio.create_task(load_profile_assets())
 	await client.wait_until_ready()
-	await client._cache_interactions()
+	asyncio.create_task(client._cache_interactions())
 	if do_rolling:
 		await roll()
 		roll.start()
-	print("\n\n─ The World Machine is ready! ─ 3/3\n\n")
+	logger.log(INFO, colored("The World Machine is ready! ─ 3/3\n\n", "light_magenta"))
 	startupped = datetime.now()
 	from extensions.events.Ready import ReadyEvent
 
 	await ReadyEvent.followup(startupped)
 
 
-print("\n─ Finalizing... ─ ─ ─ ─ ─ ─ ─ ─ 2/3")
+logger.log(INFO, colored("Finalizing... ─ ─ ─ ─ ─ ─ ─ ─ 2/3\n\n", "light_yellow"))
 client.start(get_token())

@@ -25,7 +25,7 @@ ignored = [
 loggingLevel = logging.getLevelName(get_config(f"bot{'' if debugging() else '.prod'}.logging-level").upper())
 
 
-def createLogger(name):
+def createLogger(name: str):
 	logger = logging.getLogger(name)
 	logger.setLevel(loggingLevel)
 

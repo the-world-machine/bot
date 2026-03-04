@@ -1,7 +1,6 @@
 import platform
 from datetime import datetime, timezone
 
-import psutil
 from interactions import (
 	ActionRow,
 	Button,
@@ -22,6 +21,7 @@ from utilities.localization.formatting import fnum, ftime
 from utilities.localization.localization import Localization, source_loc
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import git_log
+from utilities.stats import get_stats
 
 try:
 	version = git_log()
@@ -85,7 +85,7 @@ class AboutCommand(Extension):
 
 		if len(strbuttons) != 0:
 			processed_description += "\n" + (" · ".join(strbuttons))
-
+		sys_stats = get_stats()
 		embed = Embed(description=processed_description, color=Colors.DEFAULT)  # fixme: no way to see owners now
 		embed.add_fields(
 			EmbedField(
@@ -112,8 +112,8 @@ class AboutCommand(Extension):
 				name=await loc.format(stats_loc.l("fields.load.name")),
 				value=await loc.format(
 					stats_loc.l("fields.load.value"),
-					cpu_load=psutil.cpu_percent() / 100,
-					mem_load=psutil.virtual_memory().percent / 100,
+					cpu_load=sys_stats.cpu / 100,
+					mem_load=sys_stats.ram / 100,
 				),
 				inline=True,
 			),
