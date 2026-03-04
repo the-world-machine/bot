@@ -41,7 +41,7 @@ def git_log() -> Version:
 	fmt = "%h/%H/%ct"
 	output = exec(["git", "log", "-1", f"--pretty={fmt}", "--no-patch"]).strip().split("/")
 	tag = exec(["git", "describe", "--tags", "--abbrev=0"]).strip()
-	return Version(output[0], output[1], datetime.fromtimestamp(float(output[2])), tag if tag is not "" else None)
+	return Version(output[0], output[1], datetime.fromtimestamp(float(output[2])), tag if tag != "" else None)
 
 
 current_version: Version = git_log()
