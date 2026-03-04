@@ -42,13 +42,11 @@ class AboutCommand(Extension):
 	async def about(self, ctx: SlashContext, public: bool = False):
 		start_time = datetime.now(timezone.utc)
 
-
-		loading_message = await fancy_message(ctx, f"-# {emojis["icons"]["loading"]}", ephemeral=not public)
+		loading_message = await fancy_message(ctx, f"-# {emojis['icons']['loading']}", ephemeral=not public)
 
 		reception_latency = start_time - datetime.fromtimestamp(ctx.id.created_at.timestamp(), tz=timezone.utc)
 
 		reply_latency = datetime.fromtimestamp(loading_message.created_at.timestamp(), tz=timezone.utc) - start_time
-
 
 		loc = Localization(ctx)
 		stats_loc = Localization(ctx, prefix="commands.stats.commands.about")
@@ -88,7 +86,7 @@ class AboutCommand(Extension):
 		if len(strbuttons) != 0:
 			processed_description += "\n" + (" · ".join(strbuttons))
 
-		embed = Embed(description=processed_description, color=Colors.DEFAULT)
+		embed = Embed(description=processed_description, color=Colors.DEFAULT)  # fixme: no way to see owners now
 		embed.add_fields(
 			EmbedField(
 				name=await loc.format(stats_loc.l("fields.avg_ping.name")),
@@ -97,7 +95,7 @@ class AboutCommand(Extension):
 			),
 			EmbedField(
 				name=await loc.format(stats_loc.l("fields.latency.name")),
-				value=f"{await loc.format(stats_loc.l("generic_values.time"), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.format(stats_loc.l("generic_values.time"), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
+				value=f"{await loc.format(stats_loc.l('generic_values.time'), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await loc.format(stats_loc.l('generic_values.time'), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
 				inline=True,
 			),
 			EmbedField(
@@ -109,7 +107,7 @@ class AboutCommand(Extension):
 				name=await loc.format(stats_loc.l("fields.mem_usg.name")),
 				value=await loc.format(
 					stats_loc.l("generic_values.percent"),
-					percentage=psutil.virtual_memory().percent / 100,
+					percentage=psutil.virtual_memory().percent / 100,  # fixme
 				),
 				inline=True,
 			),
@@ -120,14 +118,19 @@ class AboutCommand(Extension):
 			),
 			EmbedField(
 				name=await loc.format(stats_loc.l("fields.cpu_usg.name")),
-				value=await loc.format(stats_loc.l("generic_values.percent"), percentage=psutil.cpu_percent() / 100),
+				value=await loc.format(
+					stats_loc.l("generic_values.percent"),
+					percentage=psutil.cpu_percent() / 100,  # fixme
+				),
 				inline=True,
 			),
 			EmbedField(
 				name=await loc.format(stats_loc.l("fields.version.name")),
-				value=await loc.format(stats_loc.l("fields.version.value"),
-													 commit_hash=commit_hash if commit_hash else "XXXXXX",
-													 last_updated_at=datetime.now()),
+				value=await loc.format(
+					stats_loc.l("fields.version.value"),
+					commit_hash=commit_hash if commit_hash else "XXXXXX",
+					last_updated_at=datetime.now(),  # fixme
+				),
 				inline=True,
 			),
 			EmbedField(
