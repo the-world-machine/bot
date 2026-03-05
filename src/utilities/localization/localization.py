@@ -225,12 +225,12 @@ class Localization:
 		elif isinstance(input, tuple):
 			out = []
 			for elem in input:
-				out.append(await self.format(elem, **variables))
+				out.append(await lformat(self, elem, **variables))
 			return tuple(out)
 		elif isinstance(input, dict):
 			new_dict = {}
 			for key, value in input.items():
-				new_dict[key] = await self.format(value, **variables)
+				new_dict[key] = await lformat(self, value, **variables)
 			return new_dict
 		else:
 			return input
@@ -308,3 +308,28 @@ class Localization:
 		return results
 
 source_loc = Localization()
+
+
+@overload
+async def lformat(loc: Localization, input: str, **variables: Any) -> str: ...
+
+
+@overload
+async def lformat(loc: Localization, input: T, **variables: Any) -> T: ...
+
+
+async def lformat(loc: Localization = source_loc, input: Any = None, **variables: Any) -> Any:
+	if isinstance(input, str):
+		return await render_icu(input, variables, loc.locale, loc.client)
+	elif isinstance(input, tuple):
+		out = []
+		for elem in input:
+			out.append(await lformat(loc, elem, **variables))
+		return tuple(out)
+	elif isinstance(input, dict):
+		new_dict = {}
+		for key, value in input.items():
+			new_dict[key] = await lformat(loc, value, **variables)
+		return new_dict
+	else:
+		return input

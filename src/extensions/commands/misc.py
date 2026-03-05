@@ -23,7 +23,7 @@ from utilities.config import get_config
 from utilities.dev_commands import redir_prints
 from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization.formatting import amperjoin, fnum
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import fetch
 from utilities.textbox.facepics import get_facepic
@@ -42,18 +42,19 @@ class MiscellaneousCommands(Extension):
 	@contexts(bot_dm=True)
 	async def random_wikipedia(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
-		await fancy_message(ctx, message=await loc.format(loc.l("generic.loading.generic")), ephemeral=not public)
+		await fancy_message(ctx, message=await lformat(loc, loc.l("generic.loading.generic")), ephemeral=not public)
 		try:
 			response = await fetch("https://en.wikipedia.org/api/rest_v1/page/random/summary", output="json")
 		except:
 			print_exc()
 			return await fancy_message(
-				ctx, edit=True, message=await loc.format(loc.l("generic.loading.failed")), ephemeral=not public
+				ctx, edit=True, message=await lformat(loc, loc.l("generic.loading.failed")), ephemeral=not public
 			)
 
 		await fancy_message(
 			ctx,
-			await loc.format(
+			await lformat(
+				loc,
 				loc.l("misc.wikipedia"),
 				link=response["content_urls"]["desktop"]["page"],
 				title=response["title"],
@@ -118,16 +119,16 @@ class MiscellaneousCommands(Extension):
 		rolls = [random.randint(1, sides) for _ in range(amount)]
 
 		result = amperjoin([str(roll) for roll in rolls])
-		description = await loc.format(loc.l("misc.roll.desc"), result=result)
+		description = await lformat(loc, loc.l("misc.roll.desc"), result=result)
 
 		if len(rolls) > 1:
-			description += "\n\n" + await loc.format(loc.l("misc.roll.multi"), total=sum(rolls))
+			description += "\n\n" + await lformat(loc, loc.l("misc.roll.multi"), total=sum(rolls))
 
 		await ctx.send(
 			embeds=Embed(
 				color=Colors.DEFAULT,
 				thumbnail=EmbedAttachment(url=make_emoji_cdn_url(emojis["treasures"]["die"])),
-				title=await loc.format(loc.l("misc.roll.title"), amount=amount if amount > 1 else "", sides=sides),
+				title=await lformat(loc, loc.l("misc.roll.title"), amount=amount if amount > 1 else "", sides=sides),
 				description=description,
 			),
 			ephemeral=not public,
@@ -143,14 +144,14 @@ class MiscellaneousCommands(Extension):
 	@contexts(bot_dm=True)
 	async def cat(self, ctx: SlashContext, public: bool = False):
 		loc = Localization(ctx)
-		embed = Embed(title=await loc.format(loc.l("misc.miaou.title")), color=Colors.DEFAULT)
+		embed = Embed(title=await lformat(loc, loc.l("misc.miaou.title")), color=Colors.DEFAULT)
 
 		if random.randint(0, 100) == 30 + 6 + 14:
-			embed.description = await loc.format(loc.l("misc.miaou.finding.noik"))
+			embed.description = await lformat(loc, loc.l("misc.miaou.finding.noik"))
 			embed.set_image(
 				"https://cdn.discordapp.com/attachments/1028022857877422120/1075445796113219694/ezgif.com-gif-maker_1.gif"
 			)
-			embed.set_footer(await loc.format(loc.l("misc.miaou.finding.footer")))
+			embed.set_footer(await lformat(loc, loc.l("misc.miaou.finding.footer")))
 			return await ctx.send(embed=embed)
 
 		async with aiohttp.ClientSession() as session:
@@ -159,7 +160,7 @@ class MiscellaneousCommands(Extension):
 
 		image = data[0]["url"]
 
-		embed.description = await loc.format(loc.l("misc.miaou.finding.cat"))
+		embed.description = await lformat(loc, loc.l("misc.miaou.finding.cat"))
 		embed.set_image(image)
 		return await ctx.send(embed=embed, ephemeral=not public)
 
@@ -176,7 +177,7 @@ class MiscellaneousCommands(Extension):
 		loc = Localization(ctx)
 		await fancy_message(
 			ctx,
-			await loc.format(loc.l("generic.loading.checking_developer_status")),
+			await lformat(loc, loc.l("generic.loading.checking_developer_status")),
 			ephemeral=True,
 		)
 
@@ -184,13 +185,13 @@ class MiscellaneousCommands(Extension):
 			await asyncio.sleep(3)
 			return await fancy_message(
 				ctx,
-				await loc.format(loc.l("generic.errors.not_a_developer")),
+				await lformat(loc, loc.l("generic.errors.not_a_developer")),
 				facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
 				edit=True,
 			)
 
 		asyncio.create_task(
-			fancy_message(ctx, await loc.format(loc.l("generic.loading.evaluating")), ephemeral=not public)
+			fancy_message(ctx, await lformat(loc, loc.l("generic.loading.evaluating")), ephemeral=not public)
 		)
 
 		method = "eval"

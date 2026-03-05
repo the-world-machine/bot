@@ -4,7 +4,7 @@ import re
 from interactions import Embed, OptionType, SlashContext, slash_option
 
 from utilities.config import get_config
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors, fancy_message
 from utilities.textbox.facepics import get_facepic
 from utilities.textbox.states import State, states
@@ -20,13 +20,13 @@ int_regex = re.compile(r"^\d+$")
 )
 async def command_(self, ctx: SlashContext, search: str = "user:me!0:5"):
 	loc = Localization(ctx)
-	await fancy_message(ctx, await loc.format(loc.l("generic.loading.checking_developer_status")), ephemeral=True)
+	await fancy_message(ctx, await lformat(loc, loc.l("generic.loading.checking_developer_status")), ephemeral=True)
 
 	if str(ctx.author.id) not in get_config("dev.whitelist", typecheck=list):
 		await asyncio.sleep(3)
 		return await fancy_message(
 			ctx,
-			await loc.format(loc.l("generic.errors.not_a_developer")),
+			await lformat(loc, loc.l("generic.errors.not_a_developer")),
 			facepic=await get_facepic("OneShot (fan)/Nikonlanger/Jii"),
 			edit=True,
 		)

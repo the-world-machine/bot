@@ -34,7 +34,7 @@ from interactions import (
 
 from utilities.config import debugging
 from utilities.emojis import emojis
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors, fancy_message
 from utilities.misc import replace_numbers_with_emojis
 
@@ -191,7 +191,7 @@ class InteractCommands(Extension):
 		user_two: str | User,
 	):
 		loc = Localization(ctx)
-		await ctx.respond(content=await loc.format(loc.l("generic.loading.generic")), ephemeral=True)
+		await ctx.respond(content=await lformat(loc, loc.l("generic.loading.generic")), ephemeral=True)
 		"""if ctx.author.id == who.id:
 			return await fancy_message(
 			    ctx,
@@ -202,7 +202,7 @@ class InteractCommands(Extension):
 		if who.id == ctx.client.user.id:
 			return await fancy_message(
 			    ctx,
-			    await loc.format(loc.l('interact.twm_not_being_very_happy'), user_id=ctx.author.id),
+			    await lformat(loc, loc.l('interact.twm_not_being_very_happy'), user_id=ctx.author.id),
 			    ephemeral=True,
 			    color=0XFF0000
 			)
@@ -236,7 +236,7 @@ class InteractCommands(Extension):
 		if ctx.message is None:
 			return await fancy_message(
 				ctx,
-				await loc.format(loc.l("generic.errors.expired")),
+				await lformat(loc, loc.l("generic.errors.expired")),
 				color=Colors.BAD,
 				ephemeral=True,
 			)
@@ -262,7 +262,7 @@ class InteractCommands(Extension):
 			user_two = user_two[2:-2]
 		user_one, user_two = await self.parse_args(ctx, user_one, user_two)
 		try:
-			interaction_raw = await loc.format(loc.l(f"interact{path}", typecheck=Any))  # type:ignore
+			interaction_raw = await lformat(loc, loc.l(f"interact{path}", typecheck=Any))  # type:ignore
 			assert not isinstance(interaction_raw, str), "Assertion failed: " + interaction_raw
 			interaction = (
 				InteractionEntry(interaction_raw["name"], phrases=interaction_raw["phrases"])
@@ -273,7 +273,7 @@ class InteractCommands(Extension):
 			print_exc()
 			return await ctx.send(
 				embeds=Embed(
-					description=f"[ {await loc.format(loc.l('interact.errors.no_path'))} ]"
+					description=f"[ {await lformat(loc, loc.l('interact.errors.no_path'))} ]"
 					+ ("" if not debugging() else f"\n-# Debug: {e}"),
 					color=Colors.BAD,
 				)
@@ -290,7 +290,7 @@ class InteractCommands(Extension):
 	):
 		ctx, loc = cx
 		page, path, user_one, user_two = state
-		interaction_raw: dict | tuple = await loc.format(loc.l(f"interact{path}", typecheck=Any))  # type:ignore
+		interaction_raw: dict | tuple = await lformat(loc, loc.l(f"interact{path}", typecheck=Any))  # type:ignore
 		assert not isinstance(interaction_raw, str)
 		interaction = (
 			InteractionEntry(interaction_raw["name"], phrases=interaction_raw["phrases"])
@@ -305,7 +305,7 @@ class InteractCommands(Extension):
 			if isinstance(phrase, str):
 				return await ctx.send(
 					embeds=Embed(
-						description=f"[ {await loc.format(loc.l('interact.errors.500'))} ]",
+						description=f"[ {await lformat(loc, loc.l('interact.errors.500'))} ]",
 						color=Colors.BAD,
 					)
 				)
@@ -415,7 +415,7 @@ class InteractCommands(Extension):
 					Button(
 						style=ButtonStyle.DANGER,
 						emoji="🔝",
-						label=await loc.format(loc.l("generic.buttons.top")),
+						label=await lformat(loc, loc.l("generic.buttons.top")),
 					)
 				)
 			)
@@ -435,7 +435,8 @@ class InteractCommands(Extension):
 		ctx, loc = cx
 		quote_path, user_one, user_two = state
 
-		interaction: Any = await loc.format(
+		interaction: Any = await lformat(
+			loc,
 			loc.l(f"interact{quote_path}", typecheck=Any),  # type: ignore
 			user_one=self.format_mention(user_one),
 			user_two=self.format_mention(user_two),
@@ -466,7 +467,7 @@ class InteractCommands(Extension):
 		except Exception as e:
 			return await ctx.send(
 				embeds=Embed(
-					description=f"[ {await loc.format(loc.l('interact.errors.fail'))} ]",
+					description=f"[ {await lformat(loc, loc.l('interact.errors.fail'))} ]",
 					color=Colors.BAD,
 				)
 			)

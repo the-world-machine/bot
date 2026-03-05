@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Literal, Optional, Tuple, Union, get_args, overload
 
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import fancy_message
 from utilities.textbox.mediagen import Frame
 
@@ -63,9 +63,11 @@ class State:
 
 	async def to_string(self, loc: Localization) -> str:
 		frames = "\n".join([str(f) for f in self.frames])
-		processed: str = await loc.format(
+		processed: str = await lformat(
+			loc,
 			state_template,
-			comment=await loc.format(
+			comment=await lformat(
+				loc,
 				loc.l("textbox.ttb.comment"),
 				link=f"https://github.com/the-world-machine/bot/blob/main/md/en/textbox/index.md#raw-file-editing-tbb",  # /md/{loc.locale}/textbox
 			),
@@ -254,7 +256,7 @@ async def state_shortcut(
 	except KeyError:
 		await fancy_message(
 			ctx,
-			await loc.format(loc.l("generic.errors.expired")) + f"\n-# **sid:** {str(state_id)}",
+			await lformat(loc, loc.l("generic.errors.expired")) + f"\n-# **sid:** {str(state_id)}",
 			components=[],
 			ephemeral=True,
 		)
@@ -268,7 +270,7 @@ async def state_shortcut(
 	except ValueError:
 		await fancy_message(
 			ctx,
-			await loc.format(loc.l("textbox.errors.invalid_frame_index"), index=str(frame_index)),
+			await lformat(loc, loc.l("textbox.errors.invalid_frame_index"), index=str(frame_index)),
 			ephemeral=True,
 		)
 		raise StateShortcutError(f"Frame index '{frame_index}' is not a valid integer.")
@@ -281,7 +283,7 @@ async def state_shortcut(
 		else:
 			await fancy_message(
 				ctx,
-				await loc.format(loc.l("textbox.errors.unknown_frame"), id=str(frame_index)),
+				await lformat(loc, loc.l("textbox.errors.unknown_frame"), id=str(frame_index)),
 				ephemeral=True,
 			)
 			raise StateShortcutError(f"Frame with index '{idx}' not found in state '{state_id}'.")

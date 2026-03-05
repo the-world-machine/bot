@@ -14,7 +14,7 @@ from interactions import (
 )
 
 from utilities.emojis import make_emoji_cdn_url
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors
 from utilities.misc import replace_numbers_with_emojis
 from utilities.textbox.facepics import f_storage, get_facepic
@@ -63,7 +63,8 @@ async def render_selector_ui(
 	)
 
 	embed = Embed(
-		description=await loc.format(
+		description=await lformat(
+			loc,
 			loc.l("textbox.facepic_picker.layout"),
 			location=location,
 			name=name,

@@ -1,7 +1,7 @@
 from interactions import Embed, SlashContext, User
 
 from utilities.database.schemas import UserData
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors
 from utilities.shop.fetch_items import fetch_badge
 
@@ -23,25 +23,28 @@ async def earn_badge(
 	if user_data.badge_notifications and send_message:
 		return await ctx.send(
 			embeds=Embed(
-				title=await loc.format(
+				title=await lformat(
+					loc,
 					loc.l("profile.notifications.badge.title"),
 					emoji=f"<:i:{badge_data['emoji']}>",
 					badge_name=badge_name,
 				),
-				description=await loc.format(
+				description=await lformat(
+					loc,
 					loc.l("profile.notifications.badge.description"),
 					target_id=target.id,
-					badge_message=await loc.format(
+					badge_message=await lformat(
+						loc,
 						loc.l(f'profile.notifications.badge.types["{badge_data["type"]}"]'),
 						amount=badge_data["requirement"],
 					),
 				),
 				color=Colors.YELLOW,
 				# footer={"text": 'You can change this notification using "/settings badge_notifications"'} # TODO: implement user /settings page # noqa: ERA001
-				# await loc.format(loc.l("profile.notifications.badge.settings_note"))# noqa: ERA001
+				# await lformat(loc, loc.l("profile.notifications.badge.settings_note"))# noqa: ERA001
 				# await put_mini(loc, "profile.notifications.badge.settings_note", user_id=ctx.user.id)# noqa: ERA001
 			),
-			content=await loc.format(loc.l("profile.notifications.badge.content")),
+			content=await lformat(loc, loc.l("profile.notifications.badge.content")),
 		)
 
 

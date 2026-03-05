@@ -47,7 +47,6 @@ class FileWatcher(FileSystemEventHandler):
 
 		for _, predicate, callback in subscribers:
 			if predicate(event):
-				print(f"predicate hit for {event.src_path} {Path(str(event.src_path)).suffix}")
 				callback(event)
 
 

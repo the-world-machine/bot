@@ -2,7 +2,7 @@ import asyncio
 from typing import Literal
 
 from utilities.database.schemas import UserData
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 
 
 async def put_mini(
@@ -21,6 +21,6 @@ async def put_mini(
 		if show_up_amount != -1 and show_up_amount <= reacher:
 			return ""
 		asyncio.create_task(user_data.minis_shown.increment_key(database_key))
-	name: str = await loc.format(loc.l(f"generic.minis.{type}", prefix_override="main"))
-	msg: str = await loc.format(loc.l(message))
+	name: str = await lformat(loc, loc.l(f"generic.minis.{type}", prefix_override="main"))
+	msg: str = await lformat(loc, loc.l(message))
 	return f"{pre}{'-# ' if markdown else ''}{name} {msg}"

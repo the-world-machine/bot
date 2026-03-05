@@ -100,7 +100,7 @@ async def on_startup(event: Startup):
 	await connect_to_db()
 	asyncio.create_task(load_profile_assets())
 	await client.wait_until_ready()
-	asyncio.create_task(client._cache_interactions())
+	await client._cache_interactions()
 	if do_rolling:
 		await roll()
 		roll.start()

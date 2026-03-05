@@ -17,7 +17,7 @@ from interactions import (
 
 from utilities.database.schemas import UserData
 from utilities.emojis import emojis
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors, fancy_message
 
 
@@ -80,13 +80,13 @@ class GambleCommands(Extension):
 	)
 	async def wool(self, ctx: SlashContext, bet: int):
 		loc = Localization(ctx)
-		await fancy_message(ctx, await loc.format(loc.l("generic.loading.generic")))
+		await fancy_message(ctx, await lformat(loc, loc.l("generic.loading.generic")))
 		user_data: UserData = await UserData(_id=ctx.author.id).fetch()
 
 		if user_data.wool < bet:
 			return await fancy_message(
 				ctx,
-				await loc.format(loc.l("wool.gamble.errors.not_enough_wool")),
+				await lformat(loc, loc.l("wool.gamble.errors.not_enough_wool")),
 				ephemeral=True,
 				color=Colors.BAD,
 			)
@@ -176,8 +176,9 @@ class GambleCommands(Extension):
 					else:
 						ticker += f"{s} ┋ "
 			return Embed(
-				description=f"## {await loc.format(loc.l('wool.gamble.slots.title'))}\n\n"
-				+ await loc.format(
+				description=f"## {await lformat(loc, loc.l('wool.gamble.slots.title'))}\n\n"
+				+ await lformat(
+					loc,
 					loc.l(f"wool.gamble.slots.description_{'running' if not result else 'result'}"),
 					bettor_id=ctx.author.id,
 					bet_amount=bet,
@@ -221,11 +222,11 @@ class GambleCommands(Extension):
 		if win_amount > 0:
 			if additional_scoring > 1:
 				result_color = Colors.PURE_YELLOW
-				result = "jackpot"  # result_embed.set_footer(text=await loc.format(loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount)))))
+				result = "jackpot"  # result_embed.set_footer(text=await lformat(loc, loc.l("wool.gamble.slots.result.jackpot", username=ctx.author.username, amount=fnum(abs(win_amount)))))
 			else:
 				if win_amount < bet:
 					result_color = Colors.PURE_ORANGE
-					result = "lost_some"  # result_embed.set_footer(text=await loc.format(loc.l("wool.gamble.slots.result.lost_some"), username=ctx.author.username, amount=fnum(abs(win_amount))))
+					result = "lost_some"  # result_embed.set_footer(text=await lformat(loc, loc.l("wool.gamble.slots.result.lost_some"), username=ctx.author.username, amount=fnum(abs(win_amount))))
 				else:
 					result_color = Colors.PURE_GREEN
 					result = "won_some"
@@ -262,6 +263,6 @@ class GambleCommands(Extension):
 
 		await fancy_message(
 			ctx,
-			f"## {await loc.format(loc.l('wool.gamble.slots.title'))}\n"
-			+ await loc.format(loc.l("wool.gamble.slots.guide.description"), slot_values="\n".join(point_rows)),
+			f"## {await lformat(loc, loc.l('wool.gamble.slots.title'))}\n"
+			+ await lformat(loc, loc.l("wool.gamble.slots.guide.description"), slot_values="\n".join(point_rows)),
 		)

@@ -11,7 +11,7 @@ from interactions import (
 from interactions.api.events import MemberAdd
 
 from utilities.database.schemas import ServerData
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.textbox.mediagen import Frame, render_frame
 
 
@@ -34,7 +34,8 @@ class MemberAddEvent(Extension):
 			return
 
 		message = config.message or loc.l("misc.welcome.placeholder_text", typecheck=str)
-		message = await loc.format(
+		message = await lformat(
+			loc,
 			message,
 			user_name=event.member.display_name,
 			server_name=guild.name,

@@ -20,7 +20,7 @@ from interactions import (
 from utilities.database.schemas import UserData
 from utilities.emojis import emojis, make_emoji_cdn_url
 from utilities.localization.formatting import fnum
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.localization.minis import put_mini
 from utilities.message_decorations import Colors, fancy_message
 from utilities.textbox.facepics import get_facepic
@@ -81,7 +81,8 @@ class WoolCommands(Extension):
 			who_path = "bot"
 		return await fancy_message(
 			ctx,
-			await loc.format(
+			await lformat(
+				loc,
 				loc.l(f"wool.balance.{who_path}.{'none' if wool == 0 else 'some'}"),
 				account_holder_id=of.id,
 				balance=fnum(wool, locale=ctx.locale),
@@ -119,7 +120,7 @@ class WoolCommands(Extension):
 		if to.id == ctx.author.id:
 			return await fancy_message(
 				ctx,
-				await loc.format(loc.l("wool.transfer.errors.self_transfer")),
+				await lformat(loc, loc.l("wool.transfer.errors.self_transfer")),
 				ephemeral=True,
 				color=Colors.BAD,
 			)
@@ -128,19 +129,19 @@ class WoolCommands(Extension):
 			buttons = [
 				Button(
 					style=ButtonStyle.RED,
-					label=await loc.format(loc.l("generic.buttons.yes")),
+					label=await lformat(loc, loc.l("generic.buttons.yes")),
 					custom_id=f"yes",
 				),
 				Button(
 					style=ButtonStyle.GRAY,
-					label=await loc.format(loc.l("generic.buttons.cancel")),
+					label=await lformat(loc, loc.l("generic.buttons.cancel")),
 					custom_id=f"cancel",
 				),
 			]
 
 			confirmation_m = await fancy_message(
 				ctx,
-				message=await loc.format(loc.l("wool.transfer.to.bot.confirmation"))
+				message=await lformat(loc, loc.l("wool.transfer.to.bot.confirmation"))
 				+ await put_mini(
 					loc,
 					"wool.transfer.to.bot.notefirmation",
@@ -160,7 +161,7 @@ class WoolCommands(Extension):
 					return
 			except asyncio.TimeoutError:
 				await confirmation_m.edit(
-					content=await loc.format(loc.l("generic.responses.timeout.yn")), components=[]
+					content=await lformat(loc, loc.l("generic.responses.timeout.yn")), components=[]
 				)
 				await ctx.delete()
 				await asyncio.sleep(15)
@@ -168,7 +169,7 @@ class WoolCommands(Extension):
 
 		loading = await fancy_message(
 			ctx,
-			await loc.format(loc.l("generic.loading.hint")),
+			await lformat(loc, loc.l("generic.loading.hint")),
 			ephemeral=ephemeral_override if ephemeral_override is not None else False,
 		)
 		from_user: UserData = await UserData(_id=ctx.author.id).fetch()
@@ -177,7 +178,8 @@ class WoolCommands(Extension):
 		if from_user.wool < amount:
 			return await fancy_message(
 				ctx,
-				await loc.format(
+				await lformat(
+					loc,
 					loc.l("wool.transfer.errors.not_enough"),
 					balance=from_user.wool,
 					sender_id=from_user._id,
@@ -196,7 +198,8 @@ class WoolCommands(Extension):
 		if amount < 0:
 			return await fancy_message(
 				ctx,
-				await loc.format(
+				await lformat(
+					loc,
 					loc.l("wool.transfer.steal"),
 					sender_id=from_user._id,
 					receiver_id=to_user._id,
@@ -205,7 +208,8 @@ class WoolCommands(Extension):
 			)
 		await fancy_message(
 			ctx,
-			await loc.format(
+			await lformat(
+				loc,
 				loc.l(f"wool.transfer.to.{'bot' if to.bot else 'user'}.{'none' if amount == 0 else 'some'}"),
 				sender_id=from_user._id,
 				receiver_id=to_user._id,
@@ -228,7 +232,8 @@ class WoolCommands(Extension):
 		if unable_until and now < unable_until:
 			return await fancy_message(
 				ctx,
-				await loc.format(
+				await lformat(
+					loc,
 					loc.l("wool.pray.errors.timeout"),
 					unable_until=unable_until,
 				),
@@ -251,9 +256,10 @@ class WoolCommands(Extension):
 		await ctx.send(
 			embed=Embed(
 				thumbnail=EmbedAttachment(make_emoji_cdn_url(emojis["treasures"]["die"])),
-				title=await loc.format(loc.l("wool.pray.title")),
-				description=f"{await loc.format(loc.l(f'wool.pray.finds.{finding[0]}'))}\n-# "
-				+ await loc.format(
+				title=await lformat(loc, loc.l("wool.pray.title")),
+				description=f"{await lformat(loc, loc.l(f'wool.pray.finds.{finding[0]}'))}\n-# "
+				+ await lformat(
+					loc,
 					loc.l(f"wool.pray.Change.{'gain' if amount > 0 else 'loss'}"),
 					amount=abs(amount),
 				),

@@ -15,7 +15,7 @@ from interactions import (
 import utilities.profile.badge_manager as bm
 from utilities.database.schemas import UserData
 from utilities.localization.formatting import fnum
-from utilities.localization.localization import Localization
+from utilities.localization.localization import Localization, lformat
 from utilities.message_decorations import Colors, Embed, fancy_message
 
 
@@ -48,7 +48,8 @@ class ExplodeCommands(Extension):
 			if datetime.now() < self.last_called[uid]:
 				return await fancy_message(
 					ctx,
-					await loc.format(
+					await lformat(
+						loc,
 						loc.l("generic.command_cooldown"),
 						cooldown_end=self.last_called[uid],
 					),
@@ -68,24 +69,24 @@ class ExplodeCommands(Extension):
 		if not sad:
 			embed = Embed(color=Colors.RED)
 
-			dialogues: tuple[str] = await loc.format(loc.l("explode.dialogue.why", typecheck=tuple))
+			dialogues: tuple[str] = await lformat(loc, loc.l("explode.dialogue.why", typecheck=tuple))
 			dialogue = random.choice(dialogues)
 
 			if "69" in str(explosion_amount) or "42" in str(explosion_amount):
-				dialogue = await loc.format(loc.l("explode.dialogue.sixninefourtwo"))
+				dialogue = await lformat(loc, loc.l("explode.dialogue.sixninefourtwo"))
 
 			if len(str(explosion_amount)) > 3 and all(char == "9" for char in str(explosion_amount)):
-				dialogue = await loc.format(loc.l("explode.dialogue.nineninenineninenine"))
+				dialogue = await lformat(loc, loc.l("explode.dialogue.nineninenineninenine"))
 			if not dialogue:
 				dialogue = "." * random.randint(3, 9)
 
 			embed.description = "-# " + dialogue
 			embed.set_image(url=self.explosion_image[random_number])
-			embed.set_footer(await loc.format(loc.l("explode.info"), amount=fnum(explosion_amount, ctx.locale)))
+			embed.set_footer(await lformat(loc, loc.l("explode.info"), amount=fnum(explosion_amount, ctx.locale)))
 		else:
 			embed = Embed(title="...")
 			embed.set_image(url=self.sad_image)
-			embed.set_footer(await loc.format(loc.l("explode.YouKilledNiko")))
+			embed.set_footer(await lformat(loc, loc.l("explode.YouKilledNiko")))
 
 		if not sad:
 			await bm.increment_value(ctx, "times_shattered", 1, ctx.user)
