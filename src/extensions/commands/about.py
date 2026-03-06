@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import platform
 from datetime import datetime, timezone
 from typing import Literal, TypedDict, Union, overload
@@ -269,6 +270,7 @@ class AboutCommand(Extension):
 
 	@component_callback("about_contributors")
 	async def handle_contributors_button(self, ctx: ComponentContext):
+		asyncio.create_task(ctx.defer(ephemeral=True))
 		global_loc = Localization(ctx)
 		loc = Localization(ctx, prefix="commands.info.about.contributors")
 
@@ -282,7 +284,4 @@ class AboutCommand(Extension):
 				{"\n".join([await contributor.render(loc, simple=True) for contributor in contributors["translators"]])}"""
 			)
 		)
-		await ctx.respond(
-			components=ContainerComponent(*components, accent_color=Colors.DEFAULT),
-			ephemeral=True,
-		)
+		await ctx.edit(components=ContainerComponent(*components, accent_color=Colors.DEFAULT))
