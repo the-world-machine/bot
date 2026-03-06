@@ -1,26 +1,147 @@
+from __future__ import annotations
+
 import platform
 from datetime import datetime, timezone
+from typing import Literal, TypedDict, Union, overload
 
 from interactions import (
 	ActionRow,
 	Button,
 	ButtonStyle,
+	ComponentContext,
+	ContainerComponent,
 	Embed,
 	EmbedField,
 	Extension,
 	OptionType,
+	SectionComponent,
 	SlashContext,
+	Snowflake,
+	TextDisplayComponent,
+	ThumbnailComponent,
+	UnfurledMediaItem,
+	component_callback,
 	contexts,
 	integration_types,
 	slash_command,
 	slash_option,
 )
+from yaml import full_load
 
-from utilities.emojis import emojis
-from utilities.localization.formatting import fnum, ftime
+from utilities.localization.formatting import amperjoin, fnum, ftime
 from utilities.localization.localization import Localization, lformat, source_loc
 from utilities.message_decorations import Colors, fancy_message
+from utilities.source_watcher import FileModifiedEvent, all_of, filter_file_suffix, filter_path, subscribe
 from utilities.stats import get_stats, get_version
+
+
+class Contributor:
+	name: str
+	country: str | None
+	discord_id: Snowflake | None
+	roles: list[str]
+	links: list[str]
+
+	def __init__(
+		self,
+		name: str,
+		country: str | None = None,
+		discord_id: Snowflake | None = None,
+		roles: list[str] | None = None,
+		links: list[str] | None = None,
+	):
+		self.name = name
+		self.country = country
+		self.discord_id = discord_id
+		self.roles = roles or []
+		self.links = links or []
+
+	@overload
+	async def render(self, loc: Localization, simple: Literal[True]) -> str: ...
+
+	@overload
+	async def render(
+		self, loc: Localization, simple: Literal[False] = False
+	) -> Union[SectionComponent, TextDisplayComponent]: ...
+
+	async def render(
+		self, loc: Localization, simple: bool = False
+	) -> Union[str, SectionComponent, TextDisplayComponent]:
+		ploc = Localization(loc, prefix="commands.info.about.contributors")
+		roles = amperjoin([await lformat(ploc, ploc.l(f"roles['{role}']")) for role in self.roles])
+		links = " · ".join(item for item in [await format_link(ploc, link) for link in self.links] if item is not None)
+		text: str | TextDisplayComponent = await lformat(
+			ploc,
+			ploc.l(f"contrib.layout['{'simple' if simple else 'full'}']"),
+			name=self.name,
+			roles=roles,
+			country_flags=self.country,
+			links=links,
+		)
+		if simple:
+			return text
+		text = TextDisplayComponent(text)
+		user = None if not ploc.client or not self.discord_id else (await ploc.client.fetch_user(self.discord_id))
+		if not user:
+			return text
+		return SectionComponent(
+			components=text,
+			accessory=ThumbnailComponent(
+				media=UnfurledMediaItem(url=user.display_avatar.as_url(size=4096)),
+				description=await lformat(ploc, ploc.l("pfp_alt_text")),
+			),
+		)
+
+
+async def format_link(loc, link):
+	lloc = Localization(loc, prefix="commands.info.about")
+	split = link.split(": ")
+	if len(split) != 2:
+		return None
+	service = split[0]
+	url = split[1]
+
+	service = await lformat(lloc, lloc.l(f"buttons['{service}']"))
+
+	return f"[`{service}`]({url})"
+
+
+class Contributors(TypedDict):
+	developers: list[Contributor]
+	translators: list[Contributor]
+
+
+def load_contributors(e: FileModifiedEvent | None = None) -> Contributors:
+	with open("src/data/contributors.yml", "r") as f:
+		raw_contribs = full_load(f)
+	return Contributors(
+		developers=[
+			Contributor(
+				c["name"],
+				c["country"] if "country" in c else None,
+				Snowflake(c["discord_id"]) if "discord_id" in c else None,
+				c["roles"] if "roles" in c else [],
+				c["links"] if "links" in c else [],
+			)
+			if not isinstance(c, str)
+			else Contributor(c)
+			for c in raw_contribs["developers"]
+		],
+		translators=[
+			Contributor(
+				c["name"],
+				c["country"] if "country" in c else None,
+				Snowflake(c["discord_id"]) if "discord_id" in c else None,
+				c["roles"] if "roles" in c else [],
+				c["links"] if "links" in c else [],
+			)
+			for c in raw_contribs["translators"]
+		],
+	)
+
+
+contributors: Contributors = load_contributors()
+subscribe(all_of(filter_path("src/data/contributors"), filter_file_suffix((".yml"))), load_contributors)
 
 
 class AboutCommand(Extension):
@@ -33,17 +154,21 @@ class AboutCommand(Extension):
 	@integration_types(guild=True, user=True)
 	@contexts(bot_dm=True)
 	async def about(self, ctx: SlashContext, public: bool = False):
-		start_time = datetime.now(timezone.utc)
 
-		loading_message = await fancy_message(ctx, f"-# {emojis['icons']['loading']}", ephemeral=not public)
+		loc = Localization(ctx)
+		stats_loc = Localization(ctx, prefix="commands.info.about")
+		_content = await lformat(loc, stats_loc.l("loading"))
+
+		start_time = datetime.now(timezone.utc)
+		loading_message = await fancy_message(ctx, _content, ephemeral=not public)
 
 		reception_latency = start_time - datetime.fromtimestamp(ctx.id.created_at.timestamp(), tz=timezone.utc)
 
 		reply_latency = datetime.fromtimestamp(loading_message.created_at.timestamp(), tz=timezone.utc) - start_time
 
-		loc = Localization(ctx)
-		stats_loc = Localization(ctx, prefix="commands.info.about")
-		buttons: list[Button] = []
+		buttons: list[Button] = [
+			Button(custom_id="about_contributors", label=stats_loc.l("buttons.contributors"), style=ButtonStyle.BLURPLE)
+		]
 		strbuttons: list[str] = []
 		processed_lines: list[str] = []
 		_first_processed: bool = False
@@ -135,3 +260,23 @@ class AboutCommand(Extension):
 		for i in range(0, len(buttons), 5):
 			rows.append(ActionRow(*buttons[i : i + 5]))
 		return await ctx.edit(embeds=[embed], components=rows)
+
+	@component_callback("about_contributors")
+	async def handle_contributors_button(self, ctx: ComponentContext):
+		global_loc = Localization(ctx)
+		loc = Localization(ctx, prefix="commands.info.about.contributors")
+
+		components = []
+		components.append(TextDisplayComponent(content=loc.l(f"categories.developers")))
+		components.extend([await contributor.render(loc) for contributor in contributors["developers"]])
+		components.append(
+			TextDisplayComponent(
+				# TODO sort by country flag
+				f"""{await lformat(loc, loc.l("categories.translators"))}:
+				{"\n".join([await contributor.render(loc, simple=True) for contributor in contributors["translators"]])}"""
+			)
+		)
+		await ctx.respond(
+			components=ContainerComponent(*components, accent_color=Colors.DEFAULT),
+			ephemeral=True,
+		)
