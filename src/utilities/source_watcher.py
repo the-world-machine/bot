@@ -2,7 +2,7 @@ import threading
 import time
 from pathlib import Path
 from threading import Thread
-from typing import Callable
+from typing import Any, Callable
 
 from watchdog.events import FileModifiedEvent as _fme
 from watchdog.events import FileSystemEventHandler
@@ -13,7 +13,7 @@ from utilities.config import get_config
 FileModifiedEvent = _fme
 
 Predicate = Callable[[FileModifiedEvent], bool]
-subscribers: list[tuple[int, Predicate, Callable[[FileModifiedEvent], None]]] = []
+subscribers: list[tuple[int, Predicate, Callable[[FileModifiedEvent], Any]]] = []
 
 
 class FileWatcher(FileSystemEventHandler):
@@ -53,7 +53,7 @@ class FileWatcher(FileSystemEventHandler):
 id = 0
 
 
-def subscribe(predicate: Callable[[FileModifiedEvent], bool], cb: Callable[[FileModifiedEvent], None]):
+def subscribe(predicate: Callable[[FileModifiedEvent], bool], cb: Callable[[FileModifiedEvent], Any]):
 	global id
 	id += 1
 	subscribers.append((id, predicate, cb))
