@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from traceback import print_exc
-from typing import Any, Type, TypeVar, overload
+from typing import Any, Optional, Type, TypeVar, Union, overload
 
 import yaml as yaml
 from interactions import BaseInteractionContext, Client, Guild, Message
@@ -183,7 +183,7 @@ class Localization:
 
 	def __init__(
 		self,
-		locale_source: str | Client | Guild | BaseInteractionContext | Message | None = None,
+		locale_source: Optional[Union[str, Client, Guild, BaseInteractionContext, Message, "Localization"]] = None,
 		raw_locale: str | None = None,
 		prefix: str = "main",
 	):
@@ -192,6 +192,10 @@ class Localization:
 		if isinstance(locale_source, BaseInteractionContext):
 			self.client = locale_source.bot
 			raw_locale = locale_source.locale
+		if isinstance(locale_source, Localization):
+			self.client = locale_source.client
+			raw_locale = locale_source.locale
+			self.prefix = locale_source.prefix
 		if isinstance(locale_source, Message):
 			self.client = locale_source.bot
 			raw_locale = locale_source.guild.preferred_locale
@@ -211,7 +215,8 @@ class Localization:
 				final_locale = get_config("localization.main-locale")
 
 		self.locale = final_locale
-		self.prefix = trailing_dots_regex.sub("", prefix)
+		if not hasattr(self, prefix) or not self.prefix:
+			self.prefix = trailing_dots_regex.sub("", prefix)
 
 	@overload
 	async def format(self, input: str, **variables: Any) -> str: ...
