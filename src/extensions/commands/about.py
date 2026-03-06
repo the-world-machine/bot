@@ -88,7 +88,7 @@ class Contributor:
 			components=text,
 			accessory=ThumbnailComponent(
 				media=UnfurledMediaItem(url=user.display_avatar.as_url(size=4096)),
-				description=await lformat(ploc, ploc.l("pfp_alt_text")),
+				description=await lformat(ploc, ploc.l("contrib.pfp_alt_text")),
 			),
 		)
 
