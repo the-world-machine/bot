@@ -1,4 +1,4 @@
-print(10, "\033[999B", end="", flush=True)
+print("\033[999B", end="", flush=True)
 
 from datetime import datetime
 from logging import INFO
