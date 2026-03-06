@@ -70,7 +70,7 @@ def register_locale(locale: str, is_reload: bool = False) -> bool:
 
 		_locales[locale] = FrozenDict(data)
 
-		if locale == get_config("localization.main-locale"):
+		if locale == get_config("localization.source-locale"):
 			fallback_locale = _locales[locale]
 
 		if is_reload:
@@ -80,7 +80,7 @@ def register_locale(locale: str, is_reload: bool = False) -> bool:
 		if is_reload:
 			print(colored(" FAILED TO RELOAD", "red"))
 		else:
-			if get_config("localization.main-locale") == locale:
+			if get_config("localization.source-locale") == locale:
 				raise e
 			if debugging():
 				print(colored("| FAILED TO REGISTER MAIN LOCALE " + locale, "red"))
@@ -162,8 +162,8 @@ else:
 
 subscribe(all_of(filter_file_suffix(".yml"), filter_path(get_config("paths.localization.root"))), on_file_update)
 
-if get_config("localization.main-locale") in _locales:
-	_uhh_loc = get_config("localization.main-locale")
+if get_config("localization.source-locale") in _locales:
+	_uhh_loc = get_config("localization.source-locale")
 	fallback_locale = get_locale(_uhh_loc)
 	print(f"Loaded fallback locale ({_uhh_loc})")
 
@@ -207,12 +207,12 @@ class Localization:
 
 		final_locale: str
 		if raw_locale is None:
-			final_locale = get_config("localization.main-locale")
+			final_locale = get_config("localization.source-locale")
 		else:
 			try:
 				final_locale = parse_locale(str(raw_locale))
 			except UnknownLanguageError:
-				final_locale = get_config("localization.main-locale")
+				final_locale = get_config("localization.source-locale")
 
 		self.locale = final_locale
 		if not hasattr(self, prefix) or not self.prefix:

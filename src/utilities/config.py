@@ -102,7 +102,7 @@ if cl is not None:
 	to_check: list[tuple[str, bool]] = [
 		("bot.token", True),
 		("database.uri", True),
-		("localization.main-locale", True),
+		("localization.source-locale", True),
 		("bot.prod.token", False),
 		("bot.rolling.avatar", False),
 		("bot.rolling.status", False),

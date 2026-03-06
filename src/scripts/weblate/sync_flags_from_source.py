@@ -14,7 +14,7 @@ PROJECT_SLUG = os.environ.get("PROJECT_SLUG", "the-world-machine")
 LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en_GB")
 
 LOCALES_ROOT = Path(get_config("paths.localization.root"))
-SOURCE_LOCALE = get_config("localization.main-locale")
+SOURCE_LOCALE = get_config("localization.source-locale")
 SOURCE_PATH = LOCALES_ROOT / SOURCE_LOCALE
 
 SEMAPHORE = asyncio.Semaphore(15)

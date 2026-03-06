@@ -50,7 +50,7 @@ if run == "textboxweb":
 	run_server()
 	exit(0)
 
-from interactions import Client, Intents, IntervalTrigger, Task, listen
+from interactions import Client, Intents, IntervalTrigger, Task, listen, smart_cache
 from interactions.api.events import Startup
 
 from utilities.database.main import connect_to_db
@@ -61,7 +61,13 @@ from utilities.rolling import roll_avatar, roll_status
 from utilities.stats import system_monitor_task
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT | Intents.MESSAGES | Intents.GUILD_MEMBERS | Intents.GUILDS
-
+intents &= ~(
+	Intents.GUILD_MESSAGE_REACTIONS
+	| Intents.DIRECT_MESSAGE_REACTIONS
+	| Intents.GUILD_INVITES
+	| Intents.GUILD_MESSAGE_TYPING
+	| Intents.GUILD_MODERATION
+)
 
 class TWMClient(Client):
 	started_at: datetime | None
@@ -77,6 +83,9 @@ client = TWMClient(
 	sync_interactions=False,
 	sync_ext=False,
 	logger=createLogger("client"),
+	message_cache=smart_cache.create_cache(150, 5),
+	member_cache=smart_cache.create_cache(150, 5000),
+	user_cache=smart_cache.create_cache(150, 5000),
 )
 client.started_at: datetime = datetime.now()  # type: ignore
 if do_rolling := get_config("bot.rolling.avatar", typecheck=bool) or get_config("bot.rolling.status"):

@@ -291,7 +291,6 @@ async def set_status(client: Client, text: str | list | None):
 				input=text,
 				shard_count=len(client.shards) if hasattr(client, "shards") else 1,  # type: ignore
 				guild_count=len(client.guilds),
-				token=client.token,
 			)
 		)
 	await client.change_presence(activity=Activity(name="meow", type=ActivityType.CUSTOM, state=status))
