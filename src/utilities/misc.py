@@ -216,7 +216,7 @@ def rabbit(
 						raise KeyError(f"Tried to access property ('{part}') of string in fallback")
 					else:
 						current_fallback = None
-				except Exception:
+				except KeyError:
 					current_fallback = None
 
 			try:
@@ -226,7 +226,7 @@ def rabbit(
 					raise KeyError(f"Tried to access property ('{part}') of string")
 				else:
 					current_value = None
-			except Exception:
+			except KeyError:
 				current_value = None
 
 			if current_value is None and current_fallback is not None:

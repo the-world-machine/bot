@@ -157,7 +157,7 @@ class AboutCommand(Extension):
 
 		loc = Localization(ctx)
 		stats_loc = Localization(ctx, prefix="commands.info.about")
-		_content = await lformat(loc, stats_loc.l("loading"))
+		_content = await lformat(stats_loc, stats_loc.l("loading"))
 
 		start_time = datetime.now(timezone.utc)
 		loading_message = await fancy_message(ctx, _content, ephemeral=not public)
@@ -179,7 +179,7 @@ class AboutCommand(Extension):
 						name, url = line.split(":", 1)
 						name = name.strip()
 
-						loc_name = await lformat(loc, stats_loc.l(f"buttons['{name.lower()}']"))
+						loc_name = await lformat(stats_loc, stats_loc.l(f"buttons['{name.lower()}']"))
 						if not loc_name.startswith("`"):
 							name = loc_name
 
@@ -190,8 +190,12 @@ class AboutCommand(Extension):
 					else:
 						if not _first_processed:
 							_first_processed = True
-							original_lines = list(await lformat(source_loc, source_loc.l("mes", typecheck=tuple)))
-							translated_lines = list(await lformat(loc, stats_loc.l("mes", typecheck=tuple)))
+							original_lines = list(
+								await lformat(
+									source_loc, Localization(prefix=stats_loc.prefix).l("mes", typecheck=tuple)
+								)
+							)
+							translated_lines = list(await lformat(stats_loc, stats_loc.l("mes", typecheck=tuple)))
 							index = original_lines.index(line)
 							line = translated_lines[index]
 						processed_lines.append(line)
@@ -208,27 +212,29 @@ class AboutCommand(Extension):
 		embed = Embed(description=processed_description, color=Colors.DEFAULT)  # fixme: no way to see owners now
 		embed.add_fields(
 			EmbedField(
-				name=await lformat(loc, stats_loc.l("fields.avg_ping.name")),
-				value=await lformat(loc, stats_loc.l("generic_values.time"), sec=fnum(ctx.client.latency, ctx.locale)),
+				name=await lformat(stats_loc, stats_loc.l("fields.avg_ping.name")),
+				value=await lformat(
+					stats_loc, stats_loc.l("generic_values.time"), sec=fnum(ctx.client.latency, ctx.locale)
+				),
 				inline=True,
 			),
 			EmbedField(
-				name=await lformat(loc, stats_loc.l("fields.latency.name")),
-				value=f"{await lformat(loc, stats_loc.l('generic_values.time'), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await lformat(loc, stats_loc.l('generic_values.time'), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
+				name=await lformat(stats_loc, stats_loc.l("fields.latency.name")),
+				value=f"{await lformat(stats_loc, stats_loc.l('generic_values.time'), sec=fnum(reception_latency.microseconds / 1e6, ctx.locale))} / {await lformat(stats_loc, stats_loc.l('generic_values.time'), sec=fnum(reply_latency.microseconds / 1e6, ctx.locale))}",
 				inline=True,
 			),
 			EmbedField(
-				await lformat(loc, stats_loc.l("fields.uptime.name")),
+				await lformat(stats_loc, stats_loc.l("fields.uptime.name")),
 				ftime(datetime.now() - ctx.client.start_time, ctx.locale),
 				inline=True,
 			),
 			EmbedField(
-				name=await lformat(loc, stats_loc.l("fields.server_count.name")),
+				name=await lformat(stats_loc, stats_loc.l("fields.server_count.name")),
 				value=str(ctx.client.guild_count),
 				inline=True,
 			),
 			EmbedField(
-				name=await lformat(loc, stats_loc.l("fields.load.name")),
+				name=await lformat(stats_loc, stats_loc.l("fields.load.name")),
 				value=await lformat(
 					loc,
 					stats_loc.l("fields.load.value"),
@@ -238,7 +244,7 @@ class AboutCommand(Extension):
 				inline=True,
 			),
 			EmbedField(
-				name=await lformat(loc, stats_loc.l("fields.version.name")),
+				name=await lformat(stats_loc, stats_loc.l("fields.version.name")),
 				value=await lformat(
 					loc,
 					stats_loc.l("fields.version.value"),
@@ -250,12 +256,12 @@ class AboutCommand(Extension):
 				inline=True,
 			),
 			EmbedField(
-				await lformat(loc, stats_loc.l("fields.host.name")),
+				await lformat(stats_loc, stats_loc.l("fields.host.name")),
 				f"{platform.system()} {platform.release()} ({platform.architecture()[0]})",
 				inline=True,
 			),
 		)
-		# embed.add_field(await lformat(loc, stats_loc.l("fields.user_installs.name")), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
+		# embed.add_field(await lformat(stats_loc, stats_loc.l("fields.user_installs.name")), len(ctx.client.app.users))  # NONEXISTENT  # noqa: ERA001
 		rows = []
 		for i in range(0, len(buttons), 5):
 			rows.append(ActionRow(*buttons[i : i + 5]))
